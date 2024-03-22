@@ -1,0 +1,57 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+  addresses Address[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  color       String
+  size        String
+  material    String
+  brand       String
+  price       String
+  stock       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt
+ 
+
+  @@map("products")
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  street     String   @map("street")
+  number     Int      @map("number")
+  complement String?  @map("complement") 
+  city       String   @map("city")
+  state      String   @map("state")
+  country    String   @map("country")
+  zipCode    String   @map("zip_code")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("addresses")
+}
+
+
