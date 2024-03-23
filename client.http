@@ -21,6 +21,6 @@ POST http://localhost:3333/sessions
 Content-Type: application/json
 
 {
-  "email": "test@test.com",
+  "email": "wbrunos22ss@wbdigitalsolutions.com",
   "password": "123456"
 }
