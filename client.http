@@ -6,7 +6,7 @@ Content-Type: application/json
 
 {
   "name": "Bruno",
-  "email": "wbruno22ss@wbdigitalsolutions.com",
+  "email": "wbrunos22ss@wbdigitalsolutions.com",
   "password": "123456"
 }
 
@@ -14,3 +14,13 @@ Content-Type: application/json
 @name= get-all-accounts
 GET http://localhost:3333/accounts
 Content-Type: application/json
+
+### 
+@name= authenticate-account
+POST http://localhost:3333/sessions
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "123456"
+}
