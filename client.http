@@ -1,23 +1,23 @@
 @BASE_URL = http://localhost:3333
-@authToken = autenticate.response.body.accessToken
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
 
-@name =create-account
+# @name create-account
 POST {{BASE_URL}}/accounts
 Content-Type: application/json
 
 {
   "name": "Bruno",
-  "email": "wbrunos22ss@wbdigitalsolutions.com",
+  "email": "wbrunossd22ss@wbdigitalsolutions.com",
   "password": "123456"
 }
 
 ###
-@name= get-all-accounts
+# @name get-all-accounts
 GET {{BASE_URL}}/accounts
 Content-Type: application/json
 
 ### 
-@name= authenticate-account
+# @name authenticate
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
@@ -27,10 +27,12 @@ Content-Type: application/json
 }
 
 ###
-@name= create-products
+
+# @name create-products
 POST {{BASE_URL}}/products
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 
