@@ -33,6 +33,23 @@ POST {{BASE_URL}}/products
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
+{
+  "name": "Product 1",
+  "description": "Product 1 description",
+  "color": "red",
+  "size": "M",
+  "material": "cotton",
+  "brand": "brand 1",
+  "price": "100.00",
+  "stock": "10"
+}
+
+###
+# @name get-all-accounts
+GET {{BASE_URL}}/products
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 
