@@ -11,6 +11,9 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+private_key.pem
+public_key.pem
+
 
 # OS
 .DS_Store
