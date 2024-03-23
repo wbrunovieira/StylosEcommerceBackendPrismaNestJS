@@ -46,7 +46,6 @@ export class CreateProductController {
         brand,
         price,
         stock: Number(stock),
-        id: userId,
       },
     });
   }
