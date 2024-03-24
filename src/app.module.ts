@@ -8,6 +8,7 @@ import { envSchema } from 'src/env';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { CreateProductController } from './controllers/create-products.controller';
 import { ListAllProductsController } from './controllers/list-allproducts.controller';
+import { ListAllAccountsController } from './controllers/list-all-accounts.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ListAllProductsController } from './controllers/list-allproducts.contro
     AuthenticateController,
     CreateProductController,
     ListAllProductsController,
+    ListAllAccountsController,
   ],
   providers: [PrismaService],
 })

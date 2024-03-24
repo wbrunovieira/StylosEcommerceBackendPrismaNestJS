@@ -1,12 +1,5 @@
 import { ConflictException } from '@nestjs/common';
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Post,
-  UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
@@ -49,15 +42,5 @@ export class CreateAccountController {
         password: hashPassword,
       },
     });
-  }
-
-  @Get()
-  async show() {
-    const users = await this.prisma.user.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
-    return { users };
   }
 }

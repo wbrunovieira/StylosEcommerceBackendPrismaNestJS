@@ -11,10 +11,7 @@ Content-Type: application/json
   "password": "123456"
 }
 
-###
-# @name get-all-accounts
-GET {{BASE_URL}}/accounts
-Content-Type: application/json
+
 
 ### 
 # @name authenticate
@@ -27,6 +24,12 @@ Content-Type: application/json
 }
 
 ###
+# @name get-all-accounts
+GET {{BASE_URL}}/accounts?page=1
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+###
 
 # @name create-products
 POST {{BASE_URL}}/products
@@ -34,8 +37,8 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 2",
-  "description": "Product 2 description",
+  "name": "calcinha 1",
+  "description": "calcinha 1 description",
   "color": "blue",
   "size": "M",
   "material": "cotton",
