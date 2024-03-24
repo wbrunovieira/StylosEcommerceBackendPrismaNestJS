@@ -49,9 +49,4 @@ export class CreateProductController {
       },
     });
   }
-
-  @Get()
-  async show() {
-    return await this.prisma.product.findMany();
-  }
 }

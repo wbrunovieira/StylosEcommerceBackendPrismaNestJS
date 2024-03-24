@@ -6,8 +6,8 @@ POST {{BASE_URL}}/accounts
 Content-Type: application/json
 
 {
-  "name": "Bruno",
-  "email": "wbrunossd22ss@wbdigitalsolutions.com",
+  "name": "Adriano",
+  "email": "adrianos@wbdigitalsolutions.com",
   "password": "123456"
 }
 
@@ -34,7 +34,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "Product 2",
+  "name": "calcinha 2",
   "description": "Product 2 description",
   "color": "blue",
   "size": "M",

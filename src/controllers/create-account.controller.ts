@@ -53,6 +53,11 @@ export class CreateAccountController {
 
   @Get()
   async show() {
-    return await this.prisma.user.findMany();
+    const users = await this.prisma.user.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    });
+    return { users };
   }
 }
