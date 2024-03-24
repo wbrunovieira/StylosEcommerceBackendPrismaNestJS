@@ -64,6 +64,8 @@ docker-compose exec app /bin/sh
 docker-compose logs app
 docker-compose logs db
 
+docker-compose logs -f app
+
 ## Prisma
 
 # prisma studio

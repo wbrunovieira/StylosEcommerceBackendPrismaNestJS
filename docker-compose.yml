@@ -41,6 +41,14 @@ services:
     networks:
       - backend
 
+  test:
+    build: .
+    command: npm run test:e2e
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:docker@db:5432/db_stylos_prima?schema=public
+
 volumes:
   postgres_data:
 
