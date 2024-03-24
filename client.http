@@ -6,11 +6,10 @@ POST {{BASE_URL}}/accounts
 Content-Type: application/json
 
 {
-  "name": "Adriano",
-  "email": "adrianos@wbdigitalsolutions.com",
+  "name": "Adriano dd",
+  "email": "adrianods@wbdigitalsolutions.com",
   "password": "123456"
 }
-
 
 
 ### 

@@ -11,6 +11,17 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
+    command: >
+      sh -c "
+      echo 'Aguardando o banco de dados ficar pronto...';
+      while ! nc -z db 5432; do
+        sleep 1;
+      done;
+      echo 'Banco de dados pronto!';
+      npx prisma generate
+      npx prisma migrate deploy;
+      npm run start:dev;
+      "
     networks:
       - backend
 

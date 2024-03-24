@@ -55,6 +55,10 @@ docker-compose exec app npx typeorm migration:create src/migration/CreateUser
 
 docker-compose exec app npm run typeorm migration:run
 
+# entrar no container
+
+docker-compose exec app /bin/sh
+
 ## Logs
 
 docker-compose logs app
@@ -69,3 +73,9 @@ docker-compose exec app npx prisma studio
 # prisma migrate
 
 docker-compose exec app npx prisma migrate dev
+
+## apagar, construir e iniciar tudo de uma vez
+
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
