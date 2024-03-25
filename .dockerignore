@@ -1,4 +1,5 @@
-node_module
-dist
-.prisma/client
+node_modules/
+dist/
+.prisma/client/
 node_modules/@prisma/client
+data/

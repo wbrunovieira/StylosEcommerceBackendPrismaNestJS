@@ -4,7 +4,8 @@ services:
     build: .
     container_name: stylos_backP
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - ./prisma:/app/prisma
     ports:
       - '3333:3333'
     environment:
@@ -43,12 +44,16 @@ services:
 
   test:
     build: .
-    command: npm run test:e2e
+    command: sh -c "npm run test:e2e && tail -f /dev/null"
     container_name: stylos_db_test
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
     depends_on:
       - db
     environment:
       - DATABASE_URL=${DATABASE_URL}
+
     networks:
       - backend
 networks:
