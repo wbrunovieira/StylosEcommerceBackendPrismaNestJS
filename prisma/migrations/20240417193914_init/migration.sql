@@ -4,6 +4,9 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "profileImageUrl" TEXT,
+    "googleUserId" TEXT,
+    "isGoogleUser" BOOLEAN,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

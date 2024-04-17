@@ -6,10 +6,25 @@ POST {{BASE_URL}}/accounts
 Content-Type: application/json
 
 {
-  "name": "Adriano dd",
-  "email": "adrianods@wbdigitalsolutions.com",
-  "password": "123456"
+  "name": "bruno",
+  "email": "brunogmail@bruno.com",
+  "password": "123456",
+  
 }
+
+###
+
+# @name create-account-google
+POST {{BASE_URL}}/accounts/google
+Content-Type: application/json
+
+{
+  "name": "bruno",
+  "email": "brunogmail@bruno.com",
+  "googleUserId": "123456",
+  "profileImageUrl": "https://www.google.com.br"
+}
+
 
 
 ### 
@@ -18,7 +33,7 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "wbrunos22ss@wbdigitalsolutions.com",
+  "email": "bruno@bruno.com",
   "password": "123456"
 }
 

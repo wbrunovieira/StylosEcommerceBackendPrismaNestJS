@@ -10,13 +10,16 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-  addresses Address[]
+  id                 String    @id @default(uuid())
+  name               String
+  email              String    @unique
+  password           String
+  profileImageUrl    String?   
+  googleUserId       String?  
+  isGoogleUser       Boolean?  
+
+  addresses          Address[]
 
   @@map("users")
 }
