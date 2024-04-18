@@ -47,13 +47,19 @@ export class CreateAccountController {
 
     const hashPassword = await hash(password, 8);
 
-    await this.prisma.user.create({
+    const newUser = await this.prisma.user.create({
       data: {
         name,
         email,
         password: hashPassword,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
     });
+    return newUser;
   }
   @Post('/google')
   @HttpCode(201)
@@ -61,6 +67,7 @@ export class CreateAccountController {
   async handleGoogleAccountCreation(
     @Body() body: CreateGoogleAccountBodySchema
   ) {
+    console.log('criando conta do google', body);
     const { name, email, googleUserId, profileImageUrl } = body;
 
     const userAlreadyExists = await this.prisma.user.findUnique({
@@ -75,7 +82,7 @@ export class CreateAccountController {
 
     const hashPassword = await hash('senha_padrao_qualquer', 8);
 
-    await this.prisma.user.create({
+    const newUser = await this.prisma.user.create({
       data: {
         name,
         email,
@@ -84,6 +91,13 @@ export class CreateAccountController {
         isGoogleUser: true,
         profileImageUrl,
       },
+      select: {
+        id: true,
+
+        email: true,
+      },
     });
+    return newUser;
+    console.log('criando conta do google', newUser);
   }
 }

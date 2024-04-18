@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "name": "bruno",
-  "email": "brunogmail@bruno.com",
+  "email": "bruno2gmail@bruno.com",
   "password": "123456",
   
 }
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
   "name": "bruno",
-  "email": "brunogmail@bruno.com",
+  "email": "brunogmdail@bruno.com",
   "googleUserId": "123456",
   "profileImageUrl": "https://www.google.com.br"
 }
