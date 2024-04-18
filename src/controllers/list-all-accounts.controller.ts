@@ -24,7 +24,7 @@ export class ListAllAccountsController {
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
     const perPage = 10;
 
-    const accounts = await this.prisma.product.findMany({
+    const accounts = await this.prisma.user.findMany({
       take: perPage,
       skip: (page - 1) * perPage,
       orderBy: {
