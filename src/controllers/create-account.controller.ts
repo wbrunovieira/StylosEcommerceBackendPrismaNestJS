@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, Delete, Param } from '@nestjs/common';
 import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hash } from 'bcryptjs';
@@ -99,5 +99,23 @@ export class CreateAccountController {
     });
     return newUser;
     console.log('criando conta do google', newUser);
+  }
+
+  @Delete('/:id')
+  @HttpCode(204)
+  async deleteAccount(@Param('id') id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+    await this.prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }
