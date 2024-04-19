@@ -34,6 +34,13 @@ export class AuthenticateController {
       where: {
         email,
       },
+      select: {
+        id: true,
+        name: true,
+        profileImageUrl: true,
+        email: true,
+        password: true,
+      },
     });
 
     if (!user) {
@@ -45,11 +52,13 @@ export class AuthenticateController {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
     const accessToken = this.jwt.sign({ sub: user.id });
+    const { password: _, ...userWithoutPassword } = user;
+    console.log(userWithoutPassword);
 
     return {
       access_token: accessToken,
+      user: userWithoutPassword,
     };
   }
 }
