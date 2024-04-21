@@ -1,4 +1,11 @@
-import { ConflictException, Delete, Param } from '@nestjs/common';
+import {
+  ConflictException,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+} from '@nestjs/common';
 import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hash } from 'bcryptjs';
@@ -63,6 +70,7 @@ export class CreateAccountController {
       },
     });
     const accessToken = this.jwt.sign({ sub: user.id });
+    console.log('criando conta', user, accessToken);
     return { user, accessToken };
   }
   @Post('/google')
@@ -101,8 +109,8 @@ export class CreateAccountController {
         email: true,
       },
     });
-    return newUser;
     console.log('criando conta do google', newUser);
+    return newUser;
   }
 
   @Delete('/:id')
@@ -121,5 +129,27 @@ export class CreateAccountController {
         id: id,
       },
     });
+  }
+
+  @Post('/check')
+  async checkUserByEmail(@Body('email') email: string) {
+    if (!email) {
+      throw new HttpException(
+        'Email is required in request body',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (user) {
+      return true;
+    }
+
+    return false;
   }
 }
