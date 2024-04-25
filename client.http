@@ -7,13 +7,13 @@ Content-Type: application/json
 
 {
   "name": "bruno",
-  "email": "bruno45b@bruno.com",
+  "email": "bru@bruno.com",
   "password":"123456"
 }
 
 ###
 # @name delete-account
-DELETE {{BASE_URL}}/accounts/7a2a0052-d810-4973-b84b-1ead00dc2a11
+DELETE {{BASE_URL}}/accounts/e5b4251e-ffdf-426b-9f81-f45d1645843d
 Content-Type: application/json
 
 
@@ -38,7 +38,7 @@ POST {{BASE_URL}}/accounts/check
 Content-Type: application/json
 
 {
-  "email": "wbrunovieira77@gmail.com"
+  "email": "wbrunovieira17@gmail.com"
 }
 
 
@@ -48,7 +48,7 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "bruno@bruno.com",
+  "email": "bru@bruno.com",
   "password": "123456"
 }
 
@@ -66,15 +66,23 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 1",
+  "name": "calcinha 8",
   "description": "calcinha 1 description",
   "color": "blue",
+  "images": ["link1"],
   "size": "M",
   "material": "cotton",
   "brand": "brand 1",
-  "price": "100.00",
-  "stock": "10"
+  "price": 100.00,
+  "stock": 10,
+  "category": "lingerie",
+  "discount": 15,
+  "discountPrice": 85.00,
+  "isNew": true,
+  "isOnSale": true,
+  "isFeatured": true
 }
+
 
 ###
 # @name get-all-products
