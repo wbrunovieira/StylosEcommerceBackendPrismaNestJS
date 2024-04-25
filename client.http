@@ -66,10 +66,10 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 2",
-  "description": "calcinha 1 description",
+  "name": "calcinha 14",
+  "description": "calcinha  description",
   "color": "blue",
-  "images": ["link1"],
+  
   "size": "M",
   "material": "cotton",
   "brand": "brand 1",
@@ -78,9 +78,10 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "category": "lingerie",
   "discount": 15,
   "discountPrice": 85.00,
-  "isNew": true,
-  "isOnSale": true,
+  "isNew": false,
+  "onSale": true,
   "isFeatured": true
+
 }
 
 
@@ -104,5 +105,9 @@ Content-Type: application/json
 DELETE {{BASE_URL}}/products/06e0dcdb-2843-4412-b1e9-950dc2a1b98f
 Authorization: Bearer {{AUTH_TOKEN}}
 
+###
 
+# @name get-product-by-id
+GET {{BASE_URL}}/products/98875c4c-4703-463d-84b5-da230d4d869d
+Authorization: Bearer {{AUTH_TOKEN}}
 

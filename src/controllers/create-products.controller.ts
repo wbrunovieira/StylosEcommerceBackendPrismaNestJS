@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -30,6 +31,7 @@ const createProductBodySchema = z.object({
   onSale: z.boolean().optional(),
   isNew: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  FinalPrice: z.number().optional(),
 });
 
 const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
@@ -46,6 +48,7 @@ export class CreateProductController {
     @Body(bodyValidationPipe) body: CreateProductBodySchema,
     @CurrentUser() user: UserPayload
   ) {
+    console.log('body', body);
     const {
       name,
       description,
@@ -57,15 +60,18 @@ export class CreateProductController {
       stock,
       images,
       discount,
-      onSale,
       isNew,
       isFeatured,
+      onSale,
     } = body;
     const userId = user.sub;
 
     const priceAsFloat = parseFloat(price.toString());
 
-    await this.prisma.product.create({
+    const validDiscount = typeof discount === 'number' ? discount : 0;
+    const finalPrice = price * (1 - validDiscount / 100);
+
+    const product = await this.prisma.product.create({
       data: {
         name,
         description,
@@ -77,12 +83,14 @@ export class CreateProductController {
         price: priceAsFloat,
         stock: Number(stock),
         discount: discount ? parseFloat(discount.toString()) : undefined,
-        onSale: onSale ? true : false,
-        isNew: isNew ? true : false,
+        onSale,
+        isNew,
         isFeatured: isFeatured ? true : false,
-        FinalPrice: 0,
+        FinalPrice: finalPrice,
       },
     });
+    console.log('product', product);
+    return { product };
   }
 
   @Delete(':id')
@@ -104,5 +112,14 @@ export class CreateProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Get(':id')
+  async getProduct(@Param('id') id: string) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      throw new HttpException('Produto não encontrado', HttpStatus.NOT_FOUND);
+    }
+    return { product };
   }
 }
