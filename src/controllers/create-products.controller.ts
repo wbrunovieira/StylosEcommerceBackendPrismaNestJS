@@ -10,12 +10,17 @@ import { z } from 'zod';
 const createProductBodySchema = z.object({
   name: z.string(),
   description: z.string(),
-  color: z.string(),
-  size: z.string(),
-  material: z.string(),
+  color: z.string().optional(),
+  size: z.string().optional(),
+  images: z.array(z.string()).max(5).optional(),
+  material: z.string().optional(),
   brand: z.string(),
-  price: z.string(),
-  stock: z.string(),
+  price: z.number(),
+  stock: z.number(),
+  discount: z.number().optional(),
+  OnSale: z.boolean().optional(),
+  IsNew: z.boolean().optional(),
+  IsFeatured: z.boolean().optional(),
 });
 
 const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
@@ -32,20 +37,41 @@ export class CreateProductController {
     @Body(bodyValidationPipe) body: CreateProductBodySchema,
     @CurrentUser() user: UserPayload
   ) {
-    const { name, description, color, size, material, brand, price, stock } =
-      body;
+    const {
+      name,
+      description,
+      color,
+      size,
+      material,
+      brand,
+      price,
+      stock,
+      images,
+      discount,
+      OnSale,
+      IsNew,
+      IsFeatured,
+    } = body;
     const userId = user.sub;
+
+    const priceAsFloat = parseFloat(price.toString());
 
     await this.prisma.product.create({
       data: {
         name,
         description,
+        images,
         color,
         size,
         material,
         brand,
-        price,
+        price: priceAsFloat,
         stock: Number(stock),
+        discount: discount ? parseFloat(discount.toString()) : undefined,
+        onSale: OnSale ? true : false,
+        isNew: IsNew ? true : false,
+        isFeatured: IsFeatured ? true : false,
+        FinalPrice: 0,
       },
     });
   }
