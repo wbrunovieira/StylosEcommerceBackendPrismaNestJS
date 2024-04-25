@@ -16,11 +16,11 @@ const queryValidationPipe = new ZodValidationsPipe(pageQueryParamSchema);
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>;
 
 @Controller('/products')
-@UseGuards(JwtAuthGuard)
 export class ListAllProductsController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
     const perPage = 10;
 
@@ -29,6 +29,21 @@ export class ListAllProductsController {
       skip: (page - 1) * perPage,
       orderBy: {
         name: 'asc',
+      },
+    });
+
+    return { products };
+  }
+
+  @Get('/featured-products')
+  async feature() {
+    const products = await this.prisma.product.findMany({
+      where: {
+        isFeatured: true,
+      },
+      take: 9,
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 

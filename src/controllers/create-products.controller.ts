@@ -1,4 +1,13 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/current-user-decorator';
 import { UserPayload } from 'src/auth/jwt.strategy';
@@ -18,9 +27,9 @@ const createProductBodySchema = z.object({
   price: z.number(),
   stock: z.number(),
   discount: z.number().optional(),
-  OnSale: z.boolean().optional(),
-  IsNew: z.boolean().optional(),
-  IsFeatured: z.boolean().optional(),
+  onSale: z.boolean().optional(),
+  isNew: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
 });
 
 const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
@@ -48,9 +57,9 @@ export class CreateProductController {
       stock,
       images,
       discount,
-      OnSale,
-      IsNew,
-      IsFeatured,
+      onSale,
+      isNew,
+      isFeatured,
     } = body;
     const userId = user.sub;
 
@@ -68,11 +77,32 @@ export class CreateProductController {
         price: priceAsFloat,
         stock: Number(stock),
         discount: discount ? parseFloat(discount.toString()) : undefined,
-        onSale: OnSale ? true : false,
-        isNew: IsNew ? true : false,
-        isFeatured: IsFeatured ? true : false,
+        onSale: onSale ? true : false,
+        isNew: isNew ? true : false,
+        isFeatured: isFeatured ? true : false,
         FinalPrice: 0,
       },
     });
+  }
+
+  @Delete(':id')
+  async deleteProduct(@Param('id') id: string) {
+    try {
+      const product = await this.prisma.product.findUnique({ where: { id } });
+      if (!product) {
+        throw new HttpException('Produto não encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      await this.prisma.product.delete({ where: { id } });
+      return { message: 'Produto deletado com sucesso.' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Erro ao deletar o produto',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 }
