@@ -12,8 +12,20 @@ Content-Type: application/json
 }
 
 ###
+
+# @name update-account
+PUT {{BASE_URL}}/accounts/27997069-e5ed-4af7-a428-e6f32c102c8e
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "email": "brunao@brunao.com"
+ 
+}
+
+###
 # @name delete-account
-DELETE {{BASE_URL}}/accounts/e5b4251e-ffdf-426b-9f81-f45d1645843d
+DELETE {{BASE_URL}}/accounts/109eaa76-5b9b-4912-b2c9-e24d5c96eefa
 Content-Type: application/json
 
 
@@ -66,20 +78,20 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 14",
-  "description": "calcinha  description",
-  "color": "blue",
-  
-  "size": "M",
-  "material": "cotton",
-  "brand": "brand 1",
+  "name": "calcinha 17",
+  "description": "calcinha description 16 mais texto, legal, muiito legal" ,
+  "images": ["/images/liz1.webp", "/images/liz2.webp", "/images/liz3.webp", "/images/liz4.webp"],
+  "color": "red",
+  "size": "G",
+  "material": "algodão",
+  "brand": "brand 2",
   "price": 100.00,
   "stock": 10,
   "category": "lingerie",
   "discount": 15,
   "discountPrice": 85.00,
   "isNew": false,
-  "onSale": true,
+  "onSale": false,
   "isFeatured": true
 
 }
@@ -108,6 +120,6 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/98875c4c-4703-463d-84b5-da230d4d869d
-Authorization: Bearer {{AUTH_TOKEN}}
+GET {{BASE_URL}}/products/ca4ed536-5cb7-4df4-b04c-7b3ea3e8b914
+
 

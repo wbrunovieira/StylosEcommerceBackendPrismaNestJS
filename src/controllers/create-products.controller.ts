@@ -39,10 +39,10 @@ const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
 type CreateProductBodySchema = z.infer<typeof createProductBodySchema>;
 
 @Controller('/products')
-@UseGuards(JwtAuthGuard)
 export class CreateProductController {
   constructor(private prisma: PrismaService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async handle(
     @Body(bodyValidationPipe) body: CreateProductBodySchema,
@@ -93,6 +93,7 @@ export class CreateProductController {
     return { product };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteProduct(@Param('id') id: string) {
     try {
@@ -112,14 +113,5 @@ export class CreateProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
-  }
-
-  @Get(':id')
-  async getProduct(@Param('id') id: string) {
-    const product = await this.prisma.product.findUnique({ where: { id } });
-    if (!product) {
-      throw new HttpException('Produto não encontrado', HttpStatus.NOT_FOUND);
-    }
-    return { product };
   }
 }
