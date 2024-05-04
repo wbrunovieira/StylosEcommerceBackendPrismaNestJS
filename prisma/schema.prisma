@@ -1,67 +1,61 @@
-
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User {
-  id                 String    @id @default(uuid())
-  name               String
-  email              String    @unique
-  password           String
-  profileImageUrl    String?   
-  googleUserId       String?  
-  isGoogleUser       Boolean?  
 
-  addresses          Address[]
+model User {
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  password        String
+  profileImageUrl String?
+  googleUserId    String?
+  isGoogleUser    Boolean?
+  addresses       Address[]
 
   @@map("users")
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   description String
   color       String?
   size        String?
   material    String?
   brand       String
-  discount    Float?  
+  discount    Float?
   price       Float
   FinalPrice  Float
-  onSale      Boolean  @default(false)
-  isNew       Boolean  @default(false)
-  isFeatured  Boolean  @default(false) 
+  onSale      Boolean   @default(false)
+  isNew       Boolean   @default(false)
+  isFeatured  Boolean   @default(false)
   images      String[]
   stock       Int
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt
 
   @@map("products")
 }
 
 model Address {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   userId     String
-  street     String   @map("street")
-  number     Int      @map("number")
-  complement String?  @map("complement") 
-  city       String   @map("city")
-  state      String   @map("state")
-  country    String   @map("country")
-  zipCode    String   @map("zip_code")
-  createdAt  DateTime @default(now()) @map("created_at")
+  street     String    @map("street")
+  number     Int       @map("number")
+  complement String?   @map("complement")
+  city       String    @map("city")
+  state      String    @map("state")
+  country    String    @map("country")
+  zipCode    String    @map("zip_code")
+  createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime? @updatedAt @map("updated_at")
-
-  user       User     @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
 
   @@map("addresses")
 }
-
-
