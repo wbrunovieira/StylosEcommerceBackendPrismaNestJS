@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "name": "bruno",
-  "email": "bru@bruno.com",
+  "email": "brus@bruno.com",
   "password":"123456"
 }
 
@@ -60,7 +60,7 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "bru@bruno.com",
+  "email": "brus@bruno.com",
   "password": "123456"
 }
 
@@ -78,9 +78,9 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 17",
+  "name": "calcinha 19",
   "description": "calcinha description 16 mais texto, legal, muiito legal" ,
-  "images": ["/images/liz1.webp", "/images/liz2.webp", "/images/liz3.webp", "/images/liz4.webp"],
+  "images": ["/images/foto1.jpg", "/images/foto2.jpg", "/images/foto3.jpg"],
   "color": "red",
   "size": "G",
   "material": "algodão",
