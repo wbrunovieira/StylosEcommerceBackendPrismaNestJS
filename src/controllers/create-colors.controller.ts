@@ -9,6 +9,7 @@ export class ColorsController {
   constructor(private readonly createColorUseCase: CreateColorUseCase, private readonly PrismaColorRepository: PrismaColorRepository, private readonly deleteColorUseCase: DeleteColorUseCase,) {}
   
 
+  
   @Post()
   async createColor(@Body() body: { name: string }) {
     try {
