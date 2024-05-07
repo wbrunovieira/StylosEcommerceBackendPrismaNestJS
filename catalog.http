@@ -21,6 +21,12 @@ Content-Type: application/json
 Delete  {{BASE_URL}}/colors/480d3a04-de4c-4620-991d-a720c3a11fdb
 Content-Type: application/json
 
+###
+
+# @name find-color-by-id
+GET  {{BASE_URL}}/colors/d1f4f8e2-d580-4f5c-ae75-e5df1648d409
+Content-Type: application/json
+
 
 
 

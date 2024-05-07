@@ -61,5 +61,19 @@ export class ColorsController {
       throw new HttpException('Failed to delete color', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Get(':id')
+  async getColorById(@Param('id') id: string) {
+    try {
+      const color = await this.PrismaColorRepository.findById(id);
+      if (!color) {
+        throw new HttpException('Color not found', HttpStatus.NOT_FOUND);
+      }
+      return color;
+    } catch (error) {
+      console.error("Erro ao recuperar cor:", error);
+      throw new HttpException('Failed to retrieve color', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
   
 }
