@@ -1,4 +1,4 @@
-import { InMemoryColorRepository } from '@/test/repositories/in-memory-color-repository';
+import { InMemoryColorRepository } from '../../../../../test/repositories/in-memory-color-repository';
 
 import { CreateColorUseCase } from './create-color';
 
