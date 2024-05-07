@@ -1,6 +1,7 @@
-import { SizeRepository } from '../repositories/size-repository';
-import { Size } from '../../enterprise/entities/size';
-import { Either, right } from '@/core/either';
+import { Size } from "../../enterprise/entities/size";
+import { Either, right } from "@/core/either";
+import { PrismaSizeRepository } from "../repositories/prima-size-repository";
+import { Injectable } from "@nestjs/common";
 
 interface CreateSizeUseCaseRequest {
   name: string;
@@ -13,8 +14,9 @@ type CreateSizeUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class CreateSizeUseCase {
-  constructor(private sizeRepository: SizeRepository) {}
+  constructor(private sizeRepository: PrismaSizeRepository) {}
 
   async execute({
     name,
