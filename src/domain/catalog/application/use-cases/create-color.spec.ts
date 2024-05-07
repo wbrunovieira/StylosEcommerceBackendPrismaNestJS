@@ -8,7 +8,7 @@ let sut: CreateColorUseCase;
 describe('CreateColorUseCase', () => {
   beforeEach(() => {
     inMemoryColorRepository = new InMemoryColorRepository();
-    sut = new CreateColorUseCase(inMemoryColorRepository);
+    sut = new CreateColorUseCase(inMemoryColorRepository as any);
   });
 
   it('should be able to create a color', async () => {

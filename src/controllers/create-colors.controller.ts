@@ -1,12 +1,13 @@
-import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Param, BadRequestException, Delete } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Param, BadRequestException, Delete, Put } from '@nestjs/common';
 import { CreateColorUseCase } from '../domain/catalog/application/use-cases/create-color';
 import { PrismaColorRepository } from '../domain/catalog/application/repositories/prisma-color-repository';
 
 import { DeleteColorUseCase } from '@/domain/catalog/application/use-cases/delete-color';
+import { EditColorUseCase } from '@/domain/catalog/application/use-cases/edit-color';
 
 @Controller('colors')
 export class ColorsController {
-  constructor(private readonly createColorUseCase: CreateColorUseCase, private readonly PrismaColorRepository: PrismaColorRepository, private readonly deleteColorUseCase: DeleteColorUseCase,) {}
+  constructor(private readonly createColorUseCase: CreateColorUseCase, private readonly PrismaColorRepository: PrismaColorRepository, private readonly deleteColorUseCase: DeleteColorUseCase,private readonly editColorUseCase: EditColorUseCase,) {}
   
 
   
@@ -73,6 +74,20 @@ export class ColorsController {
     } catch (error) {
       console.error("Erro ao recuperar cor:", error);
       throw new HttpException('Failed to retrieve color', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Put(':id')
+  async editColor(@Param('id') id: string, @Body() body: { name: string }) {
+    try {
+      const result = await this.editColorUseCase.execute({ colorId: id, name: body.name });
+      if (result.isLeft()) {
+        throw new HttpException('Color not found', HttpStatus.NOT_FOUND);
+      }
+      return result.value;
+    } catch (error) {
+      console.error("Erro ao editar cor:", error);
+      throw new HttpException('Failed to edit color', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   
