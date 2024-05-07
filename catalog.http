@@ -27,6 +27,17 @@ Content-Type: application/json
 GET  {{BASE_URL}}/colors/d1f4f8e2-d580-4f5c-ae75-e5df1648d409
 Content-Type: application/json
 
+###
+
+# @name edit-color
+PUT  {{BASE_URL}}/colors/b8ba2acd-10cf-4a87-83cd-4b9f9367199a
+Content-Type: application/json
+
+{
+  "name": "rosinha"
+  
+}
+
 
 
 

@@ -6,6 +6,7 @@ import { CreateColorUseCase } from './application/use-cases/create-color';
 import { PrismaColorRepository } from '../../domain/catalog/application/repositories/prisma-color-repository'
 import { PrismaService } from '../../prisma/prisma.service';
 import { DeleteColorUseCase } from './application/use-cases/delete-color';
+import { EditColorUseCase } from './application/use-cases/edit-color';
 
 @Module({
   controllers: [ColorsController],
@@ -17,7 +18,8 @@ import { DeleteColorUseCase } from './application/use-cases/delete-color';
       useClass: PrismaColorRepository,
     },
     PrismaService,
-    DeleteColorUseCase
+    DeleteColorUseCase,
+    EditColorUseCase
   ],
   exports: [], 
 })
