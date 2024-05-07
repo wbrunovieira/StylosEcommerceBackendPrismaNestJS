@@ -6,7 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { envSchema } from 'src/env';
 import { AuthenticateController } from './controllers/authenticate.controller';
-import { CreateProductController } from './controllers/create-products.controller';
+// import { CreateProductController } from './controllers/create-products.controller';
 import { ListAllProductsController } from './controllers/list-allproducts.controller';
 import { ListAllAccountsController } from './controllers/list-all-accounts.controller';
 
@@ -21,7 +21,7 @@ import { ListAllAccountsController } from './controllers/list-all-accounts.contr
   controllers: [
     CreateAccountController,
     AuthenticateController,
-    CreateProductController,
+    
     ListAllProductsController,
     ListAllAccountsController,
   ],
