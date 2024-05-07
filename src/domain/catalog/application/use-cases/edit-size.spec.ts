@@ -1,6 +1,6 @@
 import { EditSizeUseCase } from './edit-size';
-import { InMemorySizeRepository } from '@/test/repositories/in-memory-size-repository';
-import { makeSize } from '@/test/factories/make-size';
+import { InMemorySizeRepository } from '../../../../../test/repositories/in-memory-size-repository';
+import { makeSize } from '../../../../../test/factories/make-size';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
 
@@ -10,7 +10,7 @@ let sut: EditSizeUseCase;
 describe('Edit Size', () => {
   beforeEach(() => {
     inMemorySizesRepository = new InMemorySizeRepository();
-    sut = new EditSizeUseCase(inMemorySizesRepository);
+    sut = new EditSizeUseCase(inMemorySizesRepository as any);
   });
 
   it('should be able to edit a size', async () => {
