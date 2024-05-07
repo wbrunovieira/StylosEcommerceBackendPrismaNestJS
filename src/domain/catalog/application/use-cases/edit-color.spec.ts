@@ -1,6 +1,6 @@
 import { EditColorUseCase } from './edit-color';
-import { InMemoryColorRepository } from '@/test/repositories/in-memory-color-repository';
-import { makeColor } from '@/test/factories/make-color';
+import { InMemoryColorRepository } from '../../../../../test/repositories/in-memory-color-repository';
+import { makeColor } from '../../../../../test/factories/make-color';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
 
@@ -10,7 +10,7 @@ let sut: EditColorUseCase;
 describe('Edit Color', () => {
   beforeEach(() => {
     inMemoryColorsRepository = new InMemoryColorRepository();
-    sut = new EditColorUseCase(inMemoryColorsRepository);
+    sut = new EditColorUseCase(inMemoryColorsRepository as any);
   });
 
   it('should be able to edit a color', async () => {
