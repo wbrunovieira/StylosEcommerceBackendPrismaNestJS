@@ -1,11 +1,13 @@
-import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Param, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Param, BadRequestException, Delete } from '@nestjs/common';
 import { CreateColorUseCase } from '../domain/catalog/application/use-cases/create-color';
 import { PrismaColorRepository } from '../domain/catalog/application/repositories/prisma-color-repository';
-import { PaginationParams } from '@/core/repositories/pagination-params';
+
+import { DeleteColorUseCase } from '@/domain/catalog/application/use-cases/delete-color';
 
 @Controller('colors')
 export class ColorsController {
-  constructor(private readonly createColorUseCase: CreateColorUseCase, private readonly PrismaColorRepository: PrismaColorRepository) {}
+  constructor(private readonly createColorUseCase: CreateColorUseCase, private readonly PrismaColorRepository: PrismaColorRepository, private readonly deleteColorUseCase: DeleteColorUseCase,) {}
+  
 
   @Post()
   async createColor(@Body() body: { name: string }) {
@@ -23,11 +25,10 @@ export class ColorsController {
     @Query('pageSize') pageSize: string
   ) {
     try {
-      // Assegure-se de que 'page' e 'pageSize' são strings antes de passar para parseInt.
-      const pageInt = parseInt(page, 10) || 1;  // Converta e use 1 como padrão se falhar
-      const pageSizeInt = parseInt(pageSize, 10) || 10; // Converta e use 10 como padrão se falhar
   
-      // Verifique se os números são válidos
+      const pageInt = parseInt(page, 10) || 1;  
+      const pageSizeInt = parseInt(pageSize, 10) || 10; 
+  
       if (isNaN(pageInt) || isNaN(pageSizeInt)) {
         console.error('Invalid pagination parameters', { page: pageInt, pageSize: pageSizeInt });
         throw new BadRequestException('Invalid pagination parameters');
@@ -38,6 +39,25 @@ export class ColorsController {
     } catch (error) {
       console.error("Erro ao recuperar cores:", error);
       throw new HttpException('Failed to retrieve colors', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Delete(':id')
+  async deleteColor(@Param('id') id: string) {
+    try {
+      const result = await this.deleteColorUseCase.execute({ colorId: id });
+      if (result.isLeft()) {
+        throw new HttpException('Color not found', HttpStatus.NOT_FOUND);
+      }
+      return { message: 'Color deleted successfully' };
+    } catch (error: unknown) {
+      console.error("Erro ao deletar cor:", error);
+      if (error instanceof HttpException) {
+        if (error.getStatus() === HttpStatus.NOT_FOUND) {
+          throw error;
+        }
+      }
+      throw new HttpException('Failed to delete color', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   
