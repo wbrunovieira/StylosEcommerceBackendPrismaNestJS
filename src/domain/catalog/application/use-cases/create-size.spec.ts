@@ -1,19 +1,19 @@
-import { InMemorySizeRepository } from '@/test/repositories/in-memory-size-repository';
+import { InMemorySizeRepository } from "../../../../../test/repositories/in-memory-size-repository";
 
-import { CreateSizeUseCase } from './create-size';
+import { CreateSizeUseCase } from "./create-size";
 
 let inMemorySizeRepository: InMemorySizeRepository;
 let sut: CreateSizeUseCase;
 
-describe('CreateSizeUseCase', () => {
+describe("CreateSizeUseCase", () => {
   beforeEach(() => {
     inMemorySizeRepository = new InMemorySizeRepository();
-    sut = new CreateSizeUseCase(inMemorySizeRepository);
+    sut = new CreateSizeUseCase(inMemorySizeRepository as any);
   });
 
-  it('should be able to create a size', async () => {
+  it("should be able to create a size", async () => {
     const result = await sut.execute({
-      name: 'red',
+      name: "red",
     });
 
     expect(result.isRight).toBeTruthy();
