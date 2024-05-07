@@ -5,7 +5,7 @@ POST {{BASE_URL}}/colors
 Content-Type: application/json
 
 {
-  "name": "vermelho"
+  "name": "rosa"
   
 }
 

@@ -43,14 +43,23 @@ export class PrismaColorRepository implements ColorRepository {
   }
 
   async findAll(params: PaginationParams): Promise<Color[]> {
+    console.log('params',params)
 
-  const skip = (params.page - 1) * params.pageSize;
-  const take = params.pageSize;
+  const page = params.page || 1; 
+  const pageSize = params.pageSize || 10;  
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
+  console.log('Pagination params:', { skip, take });
     const records = await this.prisma.color.findMany({
         skip: skip,
         take: take,
         orderBy: { createdAt: 'asc' },
     });
+    console.log('skip', skip)
+    console.log('take', take)
+    console.log('records', records)
+
     return records.map(record => Color.create({ name: record.name }, new UniqueEntityID(record.id)));
   }
 }
