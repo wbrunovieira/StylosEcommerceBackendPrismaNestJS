@@ -1,6 +1,8 @@
 import { Either, left, right } from '@/core/either';
-import { ColorRepository } from '../repositories/color-repository';
+
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { Injectable } from '@nestjs/common';
+import { PrismaColorRepository } from '../repositories/prisma-color-repository';
 
 interface DeleteColorUseCaseRequest {
   colorId: string;
@@ -8,8 +10,9 @@ interface DeleteColorUseCaseRequest {
 
 type DeleteColorUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
+@Injectable()
 export class DeleteColorUseCase {
-  constructor(private colorsRepository: ColorRepository) {}
+  constructor(private colorsRepository: PrismaColorRepository) {}
 
   async execute({
     colorId,

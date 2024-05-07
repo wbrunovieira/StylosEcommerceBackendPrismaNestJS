@@ -15,4 +15,12 @@ Content-Type: application/json
 GET  {{BASE_URL}}/colors
 Content-Type: application/json
 
+###
+
+# @name delete-colors
+Delete  {{BASE_URL}}/colors/480d3a04-de4c-4620-991d-a720c3a11fdb
+Content-Type: application/json
+
+
+
 
