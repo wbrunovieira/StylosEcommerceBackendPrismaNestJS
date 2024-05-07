@@ -1,0 +1,58 @@
+.
+├── auth
+│   ├── application
+│   └── enterprise
+│       └── entities
+│           └── user.ts
+├── catalog
+│   ├── application
+│   │   ├── repositories
+│   │   │   ├── color-repository.ts
+│   │   │   ├── product-color-repository.ts
+│   │   │   └── product-repository.ts
+│   │   └── use-cases
+│   │       ├── create-color.spec.ts
+│   │       ├── create-color.ts
+│   │       ├── create-product.spec.ts
+│   │       ├── create-product.ts
+│   │       ├── delete-color.spec.ts
+│   │       ├── delete-color.ts
+│   │       ├── delete-product.spec.ts
+│   │       ├── delete-product.ts
+│   │       ├── edit-color.spec.ts
+│   │       ├── edit-color.ts
+│   │       ├── edit-product.spec.ts
+│   │       ├── edit-product.ts
+│   │       ├── errors
+│   │       │   ├── not-allowed-error.ts
+│   │       │   └── resource-not-found-error.ts
+│   │       ├── get-product-by-slug.spec.ts
+│   │       ├── get-product-by-slug.ts
+│   │       ├── list-all-colors.spec.ts
+│   │       ├── list-all-colors.ts
+│   │       ├── list-recent-products.spec.ts
+│   │       └── list-recent-products.ts
+│   └── enterprise
+│       └── entities
+│           ├── brand.ts
+│           ├── color.ts
+│           ├── material.ts
+│           ├── product-color.ts
+│           ├── product.ts
+│           ├── size.ts
+│           └── value-objects
+│               ├── slug.spec.ts
+│               └── slug.ts
+├── costumer
+│   ├── application
+│   │   ├── repositories
+│   │   └── use-cases
+│   └── enterprise
+│       └── entities
+│           └── cart.ts
+├── logistic
+├── order
+├── payment
+└── project_tree_from_domain.txt
+
+22 directories, 34 files

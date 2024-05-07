@@ -18,21 +18,25 @@
 // import { z } from 'zod';
 
 // const createProductBodySchema = z.object({
-//   name: z.string(),
-//   description: z.string(),
-//   color: z.string().optional(),
-//   size: z.string().optional(),
-//   images: z.array(z.string()).max(5).optional(),
-//   material: z.string().optional(),
-//   brand: z.string(),
-//   price: z.number(),
-//   stock: z.number(),
-//   discount: z.number().optional(),
-//   onSale: z.boolean().optional(),
-//   isNew: z.boolean().optional(),
-//   isFeatured: z.boolean().optional(),
-//   FinalPrice: z.number().optional(),
-// });
+//     name: z.string(),
+//     description: z.string(),
+//     colorIds: z.array(z.string()).optional(),
+//     sizeIds: z.array(z.string()).optional(),
+//     categoryIds: z.array(z.string()),
+//     materialId: z.string(),
+//     brandId: z.string(),
+//     price: z.number(),
+//     stock: z.number(),
+//     discount: z.number().optional(),
+//     onSale: z.boolean().optional(),
+//     isNew: z.boolean().optional(),
+//     isFeatured: z.boolean().optional(),
+//     images: z.array(z.string()).max(5).optional(),
+//     height: z.number().optional(),
+//     width: z.number().optional(),
+//     length: z.number().optional(),
+//     weight: z.number().optional(),
+//   });
 
 // const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
 
@@ -72,26 +76,36 @@
 //     const finalPrice = price * (1 - validDiscount / 100);
 
 //     const product = await this.prisma.product.create({
-//       data: {
-//         name,
-//         description,
-//         images,
-//         color,
-//         size,
-//         material,
-//         brand,
-//         price: priceAsFloat,
-//         stock: Number(stock),
-//         discount: discount ? parseFloat(discount.toString()) : undefined,
-//         onSale,
-//         isNew,
-//         isFeatured: isFeatured ? true : false,
-//         FinalPrice: finalPrice,
-//       },
-//     });
-//     console.log('product', product);
-//     return { product };
-//   }
+//         data: {
+//           name: body.name,
+//           description: body.description,
+//           materialId: body.materialId,
+//           brandId: body.brandId,
+//           price: body.price,
+//           stock: body.stock,
+//           discount: validDiscount,
+//           FinalPrice: finalPrice,
+//           onSale: body.onSale,
+//           isNew: body.isNew,
+//           isFeatured: body.isFeatured,
+//           images: body.images,
+//           height: body.height,
+//           width: body.width,
+//           length: body.length,
+//           weight: body.weight,
+//           colors: {
+//             connect: body.colorIds?.map(colorId => ({ id: colorId })),
+//           },
+//           products: {
+//             connect: body.sizeIds?.map(sizeId => ({ id: sizeId })),
+//           },
+//           categories: {
+//             connect: body.categoryIds.map(categoryId => ({ id: categoryId })),
+//           }
+//         }
+//       });
+//       return { product };
+//     }
 
 //   @UseGuards(JwtAuthGuard)
 //   @Delete(':id')
