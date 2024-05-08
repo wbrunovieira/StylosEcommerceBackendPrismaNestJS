@@ -1,0 +1,43 @@
+@BASE_URL = http://localhost:3333
+
+# @name create-material
+POST {{BASE_URL}}/materials
+Content-Type: application/json
+
+{
+  "name": "material 1"
+  
+}
+
+###
+
+# @name get-materials
+GET  {{BASE_URL}}/materials
+Content-Type: application/json
+
+###
+
+# @name delete-materials
+Delete  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+Content-Type: application/json
+
+###
+
+# @name find-material-by-id
+GET  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+Content-Type: application/json
+
+###
+
+# @name edit-material
+PUT  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+Content-Type: application/json
+
+{
+  "name": "material 2"
+  
+}
+
+
+
+

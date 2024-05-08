@@ -1,7 +1,8 @@
-import { MaterialRepository } from '../repositories/material-repository';
-import { Material } from '../../enterprise/entities/material';
-import { Either, left, right } from '@/core/either';
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { Material } from "../../enterprise/entities/material";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
+import { Injectable } from "@nestjs/common";
 
 interface EditMaterialUseCaseRequest {
   materialId: string;
@@ -15,8 +16,9 @@ type EditMaterialUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class EditMaterialUseCase {
-  constructor(private materialsRepository: MaterialRepository) {}
+  constructor(private materialsRepository: PrismaMaterialRepository) {}
 
   async execute({
     materialId,

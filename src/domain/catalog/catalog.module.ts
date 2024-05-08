@@ -16,13 +16,24 @@ import { CreateBrandUseCase } from "./application/use-cases/create-brand";
 import { PrismaBrandRepository } from "./application/repositories/prisma-brand-repository";
 import { DeleteBrandUseCase } from "./application/use-cases/delete-brand";
 import { EditBrandUseCase } from "./application/use-cases/edit-brand";
+import { MaterialController } from "@/controllers/create-material.controller";
+import { CreateMaterialUseCase } from "./application/use-cases/create-material";
+import { PrismaMaterialRepository } from "./application/repositories/prisma-material-repository";
+import { EditMaterialUseCase } from "./application/use-cases/edit-material";
+import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
 
 @Module({
-  controllers: [ColorsController, SizeController, BrandController],
+  controllers: [
+    ColorsController,
+    SizeController,
+    BrandController,
+    MaterialController,
+  ],
   providers: [
     CreateColorUseCase,
     CreateSizeUseCase,
     CreateBrandUseCase,
+    CreateMaterialUseCase,
 
     {
       provide: PrismaColorRepository,
@@ -36,6 +47,10 @@ import { EditBrandUseCase } from "./application/use-cases/edit-brand";
       provide: PrismaBrandRepository,
       useClass: PrismaBrandRepository,
     },
+    {
+      provide: PrismaMaterialRepository,
+      useClass: PrismaMaterialRepository,
+    },
     PrismaService,
     DeleteColorUseCase,
     EditColorUseCase,
@@ -43,6 +58,8 @@ import { EditBrandUseCase } from "./application/use-cases/edit-brand";
     EditSizeUseCase,
     DeleteBrandUseCase,
     EditBrandUseCase,
+    EditMaterialUseCase,
+    DeleteMaterialUseCase,
   ],
   exports: [],
 })
