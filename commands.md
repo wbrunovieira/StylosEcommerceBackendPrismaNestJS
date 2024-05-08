@@ -88,3 +88,5 @@ docker compose exec app npx prisma migrate deploy
 docker compose exec app npx prisma generate
 
 docker compose exec app npm run test -- src/domain/catalog/application/use-cases/create-category.spec.ts
+
+docker compose exec app npm run test:e2e -- src/controllers/create-colors.controller.e2e-spec.ts
