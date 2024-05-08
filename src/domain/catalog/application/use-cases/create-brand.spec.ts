@@ -1,19 +1,19 @@
-import { InMemoryBrandRepository } from '@/test/repositories/in-memory-brand-repository';
+import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
 
-import { CreateBrandUseCase } from './create-brand';
+import { CreateBrandUseCase } from "./create-brand";
 
 let inMemoryBrandRepository: InMemoryBrandRepository;
 let sut: CreateBrandUseCase;
 
-describe('CreateBrandUseCase', () => {
+describe("CreateBrandUseCase", () => {
   beforeEach(() => {
     inMemoryBrandRepository = new InMemoryBrandRepository();
-    sut = new CreateBrandUseCase(inMemoryBrandRepository);
+    sut = new CreateBrandUseCase(inMemoryBrandRepository as any);
   });
 
-  it('should be able to create a brand', async () => {
+  it("should be able to create a brand", async () => {
     const result = await sut.execute({
-      name: 'red',
+      name: "red",
     });
 
     expect(result.isRight).toBeTruthy();

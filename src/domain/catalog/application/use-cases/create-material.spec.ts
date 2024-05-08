@@ -1,19 +1,19 @@
-import { InMemoryMaterialRepository } from '@/test/repositories/in-memory-material-repository';
+import { InMemoryMaterialRepository } from "@test/repositories/in-memory-material-repository";
 
-import { CreateMaterialUseCase } from './create-material';
+import { CreateMaterialUseCase } from "./create-material";
 
 let inMemoryMaterialRepository: InMemoryMaterialRepository;
 let sut: CreateMaterialUseCase;
 
-describe('CreateMaterialUseCase', () => {
+describe("CreateMaterialUseCase", () => {
   beforeEach(() => {
     inMemoryMaterialRepository = new InMemoryMaterialRepository();
     sut = new CreateMaterialUseCase(inMemoryMaterialRepository);
   });
 
-  it('should be able to create a material', async () => {
+  it("should be able to create a material", async () => {
     const result = await sut.execute({
-      name: 'red',
+      name: "red",
     });
 
     expect(result.isRight).toBeTruthy();
