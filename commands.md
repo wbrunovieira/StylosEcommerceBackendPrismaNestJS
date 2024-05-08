@@ -81,3 +81,8 @@ docker-compose exec app npx prisma migrate dev
 docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
+
+docker compose exec app npx prisma migrate reset
+docker compose exec app npx prisma migrate dev --name init  
+docker compose exec app npx prisma migrate deploy
+docker compose exec app npx prisma generate

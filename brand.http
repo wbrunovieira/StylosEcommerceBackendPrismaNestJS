@@ -1,0 +1,43 @@
+@BASE_URL = http://localhost:3333
+
+# @name create-brand
+POST {{BASE_URL}}/brands
+Content-Type: application/json
+
+{
+  "name": "marca 1"
+  
+}
+
+###
+
+# @name get-brands
+GET  {{BASE_URL}}/brands
+Content-Type: application/json
+
+###
+
+# @name delete-brands
+Delete  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+Content-Type: application/json
+
+###
+
+# @name find-brand-by-id
+GET  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+Content-Type: application/json
+
+###
+
+# @name edit-brand
+PUT  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+Content-Type: application/json
+
+{
+  "name": "brand 2"
+  
+}
+
+
+
+

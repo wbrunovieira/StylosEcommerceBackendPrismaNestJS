@@ -1,7 +1,9 @@
-import { BrandRepository } from '../repositories/brand-repository';
+
 import { Brand } from '../../enterprise/entities/brand';
 import { Either, left, right } from '@/core/either';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { PrismaBrandRepository } from '../repositories/prisma-brand-repository';
+import { Injectable } from '@nestjs/common';
 
 interface EditBrandUseCaseRequest {
   brandId: string;
@@ -15,8 +17,9 @@ type EditBrandUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class EditBrandUseCase {
-  constructor(private brandsRepository: BrandRepository) {}
+  constructor(private brandsRepository: PrismaBrandRepository) {}
 
   async execute({
     brandId,

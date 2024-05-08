@@ -7,6 +7,8 @@ CREATE TABLE "users" (
     "profileImageUrl" TEXT,
     "googleUserId" TEXT,
     "isGoogleUser" BOOLEAN,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -121,6 +123,8 @@ CREATE TABLE "materials" (
 CREATE TABLE "brands" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "brands_pkey" PRIMARY KEY ("id")
 );

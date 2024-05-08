@@ -1,6 +1,6 @@
-import { Entity } from '@/core/entities/entity';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Optional } from '@/core/types/optional';
+import { Entity } from "@/core/entities/entity";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Optional } from "@/core/types/optional";
 
 export interface BrandProps {
   name: string;
@@ -26,7 +26,7 @@ export class Brand extends Entity<BrandProps> {
   }
 
   static create(
-    props: Optional<BrandProps, 'createdAt' | 'updatedAt'>,
+    props: Optional<BrandProps, "createdAt" | "updatedAt">,
     id?: UniqueEntityID
   ) {
     const brand = new Brand(

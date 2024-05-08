@@ -1,6 +1,8 @@
 import { Either, left, right } from '@/core/either';
-import { BrandRepository } from '../repositories/brand-repository';
+
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { PrismaBrandRepository } from '../repositories/prisma-brand-repository';
+import { Injectable } from '@nestjs/common';
 
 interface DeleteBrandUseCaseRequest {
   brandId: string;
@@ -8,8 +10,9 @@ interface DeleteBrandUseCaseRequest {
 
 type DeleteBrandUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
+@Injectable()
 export class DeleteBrandUseCase {
-  constructor(private brandsRepository: BrandRepository) {}
+  constructor(private brandsRepository: PrismaBrandRepository) {}
 
   async execute({
     brandId,
