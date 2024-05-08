@@ -1,6 +1,8 @@
-import { Either, left, right } from '@/core/either';
-import { MaterialRepository } from '../repositories/material-repository';
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { Either, left, right } from "@/core/either";
+
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
+import { Injectable } from "@nestjs/common";
 
 interface DeleteMaterialUseCaseRequest {
   materialId: string;
@@ -8,8 +10,9 @@ interface DeleteMaterialUseCaseRequest {
 
 type DeleteMaterialUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
+@Injectable()
 export class DeleteMaterialUseCase {
-  constructor(private materialsRepository: MaterialRepository) {}
+  constructor(private materialsRepository: PrismaMaterialRepository) {}
 
   async execute({
     materialId,
