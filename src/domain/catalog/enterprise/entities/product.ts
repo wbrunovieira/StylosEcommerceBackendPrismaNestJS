@@ -1,21 +1,33 @@
-import { Slug } from './value-objects/slug';
+import { Slug } from "./value-objects/slug";
 
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Optional } from '@/core/types/optional';
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Optional } from "@/core/types/optional";
 
-import dayjs from 'dayjs';
-import { Entity } from '@/core/entities/entity';
+import dayjs from "dayjs";
+import { Entity } from "@/core/entities/entity";
 
 export interface ProductProps {
   name: string;
   description: string;
-
-  sizeId?: UniqueEntityID[];
+  sizes?: UniqueEntityID[];
+  colors?: UniqueEntityID[];
+  categories?: UniqueEntityID[];
   materialId?: UniqueEntityID;
+  sizeId?: UniqueEntityID[];
+  finalPrice?: number;
   brandID: UniqueEntityID;
+  discount?: number;
   price: number;
   stock: number;
   slug: Slug;
+  height?: number;
+  width?: number;
+  length?: number;
+  weight?: number;
+  onSale?: boolean;
+  isFeatured?: boolean;
+  isNew?: boolean;
+  images?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -65,11 +77,11 @@ export class Product extends Entity<ProductProps> {
   }
 
   get isNew(): boolean {
-    return dayjs().diff(this.createdAt, 'days') <= 30;
+    return dayjs().diff(this.createdAt, "days") <= 30;
   }
 
   get excerpt() {
-    return this.description.substring(0, 120).trimEnd().concat('...');
+    return this.description.substring(0, 120).trimEnd().concat("...");
   }
 
   set name(name: string) {
@@ -120,8 +132,32 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
+  addSize(sizeId: UniqueEntityID) {
+    if (!this.props.sizes) {
+      this.props.sizes = [];
+    }
+    this.props.sizes.push(sizeId);
+    this.touch();
+  }
+
+  addColor(colorId: UniqueEntityID) {
+    if (!this.props.colors) {
+      this.props.colors = [];
+    }
+    this.props.colors.push(colorId);
+    this.touch();
+  }
+
+  addCategory(categoryId: UniqueEntityID) {
+    if (!this.props.categories) {
+      this.props.categories = [];
+    }
+    this.props.categories.push(categoryId);
+    this.touch();
+  }
+
   static create(
-    props: Optional<ProductProps, 'createdAt' | 'slug' | 'updatedAt'>,
+    props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
     id?: UniqueEntityID
   ): Product {
     const now = new Date();

@@ -34,7 +34,7 @@ model Product {
   materialId  String 
 
   material    Material?     @relation(fields: [materialId], references: [id])
-
+  slug        String        @unique 
   brandId     String
   brand       Brand?        @relation(fields: [brandId], references: [id])
   discount    Float?
@@ -44,7 +44,7 @@ model Product {
   width       Float?
   length      Float?
   weight      Float?
-
+  
   onSale      Boolean   @default(false)
   isNew       Boolean   @default(false)
   isFeatured  Boolean   @default(false)
