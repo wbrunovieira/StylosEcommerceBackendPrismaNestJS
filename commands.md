@@ -86,3 +86,5 @@ docker compose exec app npx prisma migrate reset
 docker compose exec app npx prisma migrate dev --name init  
 docker compose exec app npx prisma migrate deploy
 docker compose exec app npx prisma generate
+
+docker compose exec app npm run test -- src/domain/catalog/application/use-cases/create-category.spec.ts
