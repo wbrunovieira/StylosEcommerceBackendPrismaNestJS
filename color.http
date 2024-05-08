@@ -5,7 +5,7 @@ POST {{BASE_URL}}/colors
 Content-Type: application/json
 
 {
-  "name": "rosa"
+  "name": "blue"
   
 }
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 ###
 
 # @name delete-colors
-Delete  {{BASE_URL}}/colors/480d3a04-de4c-4620-991d-a720c3a11fdb
+Delete  {{BASE_URL}}/colors/5487c6ad-376b-4512-9461-f3814716f9ab
 Content-Type: application/json
 
 ###
