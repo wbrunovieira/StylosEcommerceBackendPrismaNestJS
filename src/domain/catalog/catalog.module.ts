@@ -21,6 +21,11 @@ import { CreateMaterialUseCase } from "./application/use-cases/create-material";
 import { PrismaMaterialRepository } from "./application/repositories/prisma-material-repository";
 import { EditMaterialUseCase } from "./application/use-cases/edit-material";
 import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
+import { CategoryController } from "@/controllers/create-category.controller";
+import { CreateCategoryUseCase } from "./application/use-cases/create-category";
+import { PrismaCategoryRepository } from "./application/repositories/prisma-category-repository";
+import { EditCategoryUseCase } from "./application/use-cases/edit-category";
+import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
 
 @Module({
   controllers: [
@@ -28,12 +33,14 @@ import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
     SizeController,
     BrandController,
     MaterialController,
+    CategoryController,
   ],
   providers: [
     CreateColorUseCase,
     CreateSizeUseCase,
     CreateBrandUseCase,
     CreateMaterialUseCase,
+    CreateCategoryUseCase,
 
     {
       provide: PrismaColorRepository,
@@ -51,6 +58,10 @@ import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
       provide: PrismaMaterialRepository,
       useClass: PrismaMaterialRepository,
     },
+    {
+      provide: PrismaCategoryRepository,
+      useClass: PrismaCategoryRepository,
+    },
     PrismaService,
     DeleteColorUseCase,
     EditColorUseCase,
@@ -60,6 +71,8 @@ import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
     EditBrandUseCase,
     EditMaterialUseCase,
     DeleteMaterialUseCase,
+    EditCategoryUseCase,
+    DeleteCategoryUseCase,
   ],
   exports: [],
 })

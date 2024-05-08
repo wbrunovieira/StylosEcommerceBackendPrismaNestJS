@@ -1,0 +1,43 @@
+@BASE_URL = http://localhost:3333
+
+# @name create-category
+POST {{BASE_URL}}/category
+Content-Type: application/json
+
+{
+  "name": "category 1"
+  
+}
+
+###
+
+# @name get-category
+GET  {{BASE_URL}}/category
+Content-Type: application/json
+
+###
+
+# @name delete-category
+Delete  {{BASE_URL}}/category/ef33c049-93d0-4ee7-915e-909abfa2e2d7
+Content-Type: application/json
+
+###
+
+# @name find-category-by-id
+GET  {{BASE_URL}}/category/ef33c049-93d0-4ee7-915e-909abfa2e2d7
+Content-Type: application/json
+
+###
+
+# @name edit-brand
+PUT  {{BASE_URL}}/category/ef33c049-93d0-4ee7-915e-909abfa2e2d7
+Content-Type: application/json
+
+{
+  "name": "category 2"
+  
+}
+
+
+
+
