@@ -19,10 +19,11 @@ CREATE TABLE "products" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "materialId" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "brandId" TEXT NOT NULL,
     "discount" DOUBLE PRECISION,
     "price" DOUBLE PRECISION NOT NULL,
-    "FinalPrice" DOUBLE PRECISION NOT NULL,
+    "FinalPrice" DOUBLE PRECISION,
     "height" DOUBLE PRECISION,
     "width" DOUBLE PRECISION,
     "length" DOUBLE PRECISION,
@@ -131,6 +132,9 @@ CREATE TABLE "brands" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

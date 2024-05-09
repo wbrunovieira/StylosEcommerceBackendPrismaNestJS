@@ -8,6 +8,16 @@ import { Size } from '../../enterprise/entities/size';
 @Injectable()
 export class PrismaSizeRepository implements SizeRepository {
   constructor(private prisma: PrismaService) {}
+  
+  async create(size: Size): Promise<void> {
+    await this.prisma.size.create({
+      data: {
+        name: size.name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+  }
 
   async findById(id: string): Promise<Size | null> {
     const record = await this.prisma.size.findUnique({
@@ -26,15 +36,6 @@ export class PrismaSizeRepository implements SizeRepository {
     });
 }
 
-  async create(size: Size): Promise<void> {
-    await this.prisma.size.create({
-      data: {
-        name: size.name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-  }
 
   async delete(size: Size): Promise<void> {
     await this.prisma.size.delete({

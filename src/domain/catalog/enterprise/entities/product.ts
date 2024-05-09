@@ -7,11 +7,12 @@ import dayjs from "dayjs";
 import { Entity } from "@/core/entities/entity";
 
 export interface ProductProps {
+  id?: UniqueEntityID ;
   name: string;
   description: string;
-  sizes?: UniqueEntityID[];
-  colors?: UniqueEntityID[];
-  categories?: UniqueEntityID[];
+  productSizes?: UniqueEntityID[];
+  productColors?: UniqueEntityID[];
+  productCategories?: UniqueEntityID[];
   materialId?: UniqueEntityID;
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
@@ -20,10 +21,10 @@ export interface ProductProps {
   price: number;
   stock: number;
   slug: Slug;
-  height?: number;
-  width?: number;
-  length?: number;
-  weight?: number;
+  height?: number | null;
+  width?: number | null;
+  length?: number | null;
+  weight?: number | null;
   onSale?: boolean;
   isFeatured?: boolean;
   isNew?: boolean;
@@ -132,27 +133,54 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  addSize(sizeId: UniqueEntityID) {
-    if (!this.props.sizes) {
-      this.props.sizes = [];
-    }
-    this.props.sizes.push(sizeId);
+  get productColors(): UniqueEntityID[] | undefined {
+    return this.props.productColors;
+  }
+
+  set productColors(productColors: UniqueEntityID[]) {
+    this.props.productColors = productColors;
     this.touch();
   }
 
-  addColor(colorId: UniqueEntityID) {
-    if (!this.props.colors) {
-      this.props.colors = [];
+  get productSizes(): UniqueEntityID[] | undefined {
+    return this.props.productSizes;
+  }
+
+  set productSizes(sizes: UniqueEntityID[]) {
+    this.props.productSizes = sizes;
+    this.touch();
+  }
+
+  get productCategories(): UniqueEntityID[] | undefined {
+    return this.props.productCategories;
+  }
+
+  set productCategories(categories: UniqueEntityID[]) {
+    this.props.productCategories = categories;
+    this.touch();
+  }
+
+  addSize(sizeId: UniqueEntityID) {
+    if (!this.props.productSizes) {
+      this.props.productSizes = [];
     }
-    this.props.colors.push(colorId);
+    this.props.productSizes.push(sizeId);
+    this.touch();
+  }
+
+  addColor(productColorsId: UniqueEntityID) {
+    if (!this.props.productColors) {
+      this.props.productColors = [];
+    }
+    this.props.productColors.push(productColorsId);
     this.touch();
   }
 
   addCategory(categoryId: UniqueEntityID) {
-    if (!this.props.categories) {
-      this.props.categories = [];
+    if (!this.props.productCategories) {
+      this.props.productCategories = [];
     }
-    this.props.categories.push(categoryId);
+    this.props.productCategories.push(categoryId);
     this.touch();
   }
 
@@ -171,5 +199,9 @@ export class Product extends Entity<ProductProps> {
       id
     );
     return product;
+  }
+
+  static fromPersistence(props: ProductProps, id?: UniqueEntityID): Product {
+    return new Product({ ...props, id });
   }
 }

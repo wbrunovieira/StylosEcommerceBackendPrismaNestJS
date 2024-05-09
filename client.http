@@ -62,7 +62,7 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "brus@bruno.com",
+  "email": "bru@bruno.com",
   "password": "123456"
 }
 
@@ -80,16 +80,16 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 19",
+  "name": "calcinha 2",
   "description": "calcinha description 16 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg", "/images/foto2.jpg", "/images/foto3.jpg"],
   "color": "red",
   "size": "G",
-  "material": "algodão",
-  "brand": "brand 2",
+  "materialId": "36e54e13-0545-422c-b52e-1d04bb03cf96",
+  "brandId": "e5798475-2907-4f94-87ec-7696c0ac956a",
   "price": 100.00,
   "stock": 10,
-  "category": "lingerie",
+  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01e"],
   "discount": 15,
   "discountPrice": 85.00,
   "isNew": false,

@@ -1,29 +1,44 @@
-import { Either, left, right } from '@/core/either';
-import { Product } from '../../enterprise/entities/product';
-import { ProductColor } from '../../enterprise/entities/product-color';
+import { Either, left, right } from "@/core/either";
+import { Product } from "../../enterprise/entities/product";
+import { ProductColor } from "../../enterprise/entities/product-color";
 
-import { ProductRepository } from '../repositories/product-repository';
+import { ProductRepository } from "../repositories/product-repository";
 
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { ProductColorRepository } from '../repositories/product-color-repository';
-import { ColorRepository } from '../repositories/color-repository';
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
-import { BrandRepository } from '../repositories/brand-repository';
-import { MaterialRepository } from '../repositories/material-repository';
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { ProductColorRepository } from "../repositories/product-color-repository";
+import { ColorRepository } from "../repositories/color-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { BrandRepository } from "../repositories/brand-repository";
+import { MaterialRepository } from "../repositories/material-repository";
 
-import { ProductSize } from '../../enterprise/entities/product-size';
-import { SizeRepository } from '../repositories/size-repository';
-import { ProductSizeRepository } from '../repositories/product-size-repository';
+import { ProductSize } from "../../enterprise/entities/product-size";
+import { SizeRepository } from "../repositories/size-repository";
+import { ProductSizeRepository } from "../repositories/product-size-repository";
+import { PrismaProductCategoryRepository } from "../repositories/prisma-product-category-repository";
+import { PrismaProductSizeRepository } from "../repositories/prisma-product-size-repository";
+import { PrismaProductColorRepository } from "../repositories/prisma-product-color-repository";
+import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
+import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
   description: string;
-  colorIds: string[];
-  sizeIds: string[];
-  materialId: string;
-  brandID: string;
+  productColors?: string[];
+  productSizes?: string[];
+  productCategories?: string[];
+  materialId?: string;
+  brandId: string;
   price: number;
   stock: number;
+  height?: number | null;
+  width?: number | null;
+  length?: number | null;
+  weight?: number | null;
+  onSale?: boolean;
+  discount?: number;
+  isFeatured?: boolean;
+  isNew?: boolean;
+  images?: string[];
 }
 
 type CreateProductUseCaseResponse = Either<
@@ -35,70 +50,88 @@ type CreateProductUseCaseResponse = Either<
 export class CreateProductUseCase {
   constructor(
     private productRepository: ProductRepository,
-    private productColorRepository: ProductColorRepository,
-    private colorRepository: ColorRepository,
-    private brandRepository: BrandRepository,
-    private sizeRepository: SizeRepository,
-    private productSizeRepository: ProductSizeRepository
-    // private materialRepository: MaterialRepository,
+    private productColorRepository: PrismaProductColorRepository,
+    private productSizeRepository: PrismaProductSizeRepository,
+    private productCategoryRepository: PrismaProductCategoryRepository,
+
+    private brandRepository: PrismaBrandRepository,
+    private materialRepository: PrismaMaterialRepository
   ) {}
 
   async execute({
     name,
     description,
-    colorIds,
-    sizeIds,
+    productColors,
+    productSizes,
+    productCategories,
     materialId,
-    brandID,
+    brandId,
     price,
     stock,
+    height = null,
+    width = null,
+    length = null,
+    weight = null,
+    onSale = false,
+    discount = 0,
+    isFeatured = false,
+    isNew = false,
+    images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    const brand = await this.brandRepository.findById(brandID);
+    console.log("úse case do create product entrou");
+    const brand = await this.brandRepository.findById(brandId);
+    console.log("entro na brand do produto", brand);
     if (!brand) {
       return left(new ResourceNotFoundError());
     }
+    console.log("brand do product", brand);
+
+    if (materialId) {
+      const material = await this.materialRepository.findById(materialId);
+      if (!material) {
+        return left(new ResourceNotFoundError());
+      }
+    }
+    console.log("material do produto", materialId);
+
     const product = Product.create({
       name,
       description,
       materialId: new UniqueEntityID(materialId),
-      brandID: new UniqueEntityID(brandID),
+      brandID: new UniqueEntityID(brandId),
       price,
       stock,
+      height,
+      width,
+      length,
+      weight,
+      onSale,
+      discount,
+      isFeatured,
+      isNew,
+      images,
     });
+    console.log(" quase produto criado", product);
 
     await this.productRepository.create(product);
+    console.log(" produto criado", product);
 
-    for (const colorId of colorIds) {
-      console.log(' aqui esta a cor', this.colorRepository.findById(colorId));
-      const color = await this.colorRepository.findById(colorId);
-      if (!color) {
-        return left(new ResourceNotFoundError());
+    if (productColors) {
+      for (const colorId of productColors) {
+        const idAsString = product.id.toString();
+        await this.productColorRepository.create(idAsString, colorId);
       }
     }
-
-    for (const colorId of colorIds) {
-      const productColor = new ProductColor({
-        productId: product.id,
-        colorId: new UniqueEntityID(colorId),
-      });
-      await this.productColorRepository.create(productColor);
-    }
-
-    //size
-
-    for (const sizeId of sizeIds) {
-      console.log(' aqui esta o tamanho', this.sizeRepository.findById(sizeId));
-      const size = await this.sizeRepository.findById(sizeId);
-      if (!size) {
-        return left(new ResourceNotFoundError());
+    if (productSizes) {
+      for (const sizeId of productSizes) {
+        const idAsString = product.id.toString();
+        await this.productSizeRepository.create(idAsString, sizeId);
       }
-
-      for (const sizeId of sizeIds) {
-        const productSize = new ProductSize({
-          productId: product.id,
-          sizeId: new UniqueEntityID(sizeId),
-        });
-        await this.productSizeRepository.create(productSize);
+    }
+    if (productCategories) {
+      for (const categoryId of productCategories) {
+        const idAsString = product.id.toString();
+        await this.productCategoryRepository.create(idAsString, categoryId);
       }
     }
 

@@ -26,6 +26,12 @@ import { CreateCategoryUseCase } from "./application/use-cases/create-category";
 import { PrismaCategoryRepository } from "./application/repositories/prisma-category-repository";
 import { EditCategoryUseCase } from "./application/use-cases/edit-category";
 import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
+import { CreateProductController } from "@/controllers/create-products.controller";
+import { CreateProductUseCase } from "./application/use-cases/create-product";
+import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
+import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
+import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
+import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
 
 @Module({
   controllers: [
@@ -34,6 +40,7 @@ import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
     BrandController,
     MaterialController,
     CategoryController,
+    CreateProductController,
   ],
   providers: [
     CreateColorUseCase,
@@ -41,6 +48,7 @@ import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
     CreateBrandUseCase,
     CreateMaterialUseCase,
     CreateCategoryUseCase,
+    CreateProductUseCase,
 
     {
       provide: PrismaColorRepository,
@@ -61,6 +69,22 @@ import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
     {
       provide: PrismaCategoryRepository,
       useClass: PrismaCategoryRepository,
+    },
+    {
+      provide: PrismaProductRepository,
+      useClass: PrismaProductRepository,
+    },
+    {
+      provide: PrismaProductColorRepository,
+      useClass: PrismaProductColorRepository,
+    },
+    {
+      provide: PrismaProductSizeRepository,
+      useClass: PrismaProductSizeRepository,
+    },
+    {
+      provide: PrismaProductCategoryRepository,
+      useClass: PrismaProductCategoryRepository,
     },
     PrismaService,
     DeleteColorUseCase,
