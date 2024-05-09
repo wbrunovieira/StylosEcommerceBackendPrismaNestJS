@@ -28,18 +28,17 @@ model Product {
   id          String    @id @default(uuid())
   name        String
   description String
-  colors      ProductColor[]
-  products ProductSize[]
-  categories  ProductCategory[]
+  productColors ProductColor[]
+  productSizes ProductSize[]
+  productCategories  ProductCategory[]
   materialId  String 
-
   material    Material?     @relation(fields: [materialId], references: [id])
   slug        String        @unique 
   brandId     String
   brand       Brand?        @relation(fields: [brandId], references: [id])
   discount    Float?
   price       Float
-  FinalPrice  Float
+  FinalPrice  Float?
   height      Float?
   width       Float?
   length      Float?
@@ -76,9 +75,10 @@ model Address {
 model Color {
   id   String @id @default(uuid())
   name String
+  productColors ProductColor[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  products    ProductColor[]
+  
   
 
   @@map("colors")
@@ -97,7 +97,7 @@ model ProductColor {
 model Size {
   id       String        @id @default(uuid())
   name     String
-  products ProductSize[]
+  productSizes ProductSize[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -117,9 +117,9 @@ model ProductSize {
 model Category {
   id       String            @id @default(uuid())
   name     String
-  products ProductCategory[]
+  productCategories ProductCategory[]
 
-   createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@map("categories")
