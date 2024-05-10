@@ -1,28 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { ProductRepository } from "./product-repository";
+import { IProductRepository } from "./product-repository";
 import { Product } from "../../enterprise/entities/product";
 
 import { PrismaProductColorRepository } from "./prisma-product-color-repository";
 
 import { PrismaProductSizeRepository } from "./prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./prisma-product-category-repository";
+import { generateSlug } from "../utils/generate-slug";
+import { Slug } from "../../enterprise/entities/value-objects/slug";
 
-function generateSlug(name: string, brandName: string): string {
-  const baseSlug = `${name}-${brandName}`
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9 -]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
 
-  const uniqueSuffix = Date.now().toString(36);
-  return `${baseSlug}-${uniqueSuffix}`;
-}
 
 @Injectable()
-export class PrismaProductRepository implements ProductRepository {
+export class PrismaProductRepository implements IProductRepository {
   constructor(
     private prisma: PrismaService,
     private productColorRepository: PrismaProductColorRepository,
@@ -106,7 +97,7 @@ export class PrismaProductRepository implements ProductRepository {
       }
     }
 
-    const slug = generateSlug(name, brandExist.name);
+    const slug = generateSlug(name, brandExist.name).toString();
 
     const createdProduct = await this.prisma.product.create({
       data: {

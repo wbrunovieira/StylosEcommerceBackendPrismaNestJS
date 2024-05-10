@@ -1,24 +1,16 @@
 import { Either, left, right } from "@/core/either";
 import { Product } from "../../enterprise/entities/product";
-import { ProductColor } from "../../enterprise/entities/product-color";
-
-import { ProductRepository } from "../repositories/product-repository";
 
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ProductColorRepository } from "../repositories/product-color-repository";
-import { ColorRepository } from "../repositories/color-repository";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { BrandRepository } from "../repositories/brand-repository";
-import { MaterialRepository } from "../repositories/material-repository";
 
-import { ProductSize } from "../../enterprise/entities/product-size";
-import { SizeRepository } from "../repositories/size-repository";
-import { ProductSizeRepository } from "../repositories/product-size-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+
 import { PrismaProductCategoryRepository } from "../repositories/prisma-product-category-repository";
 import { PrismaProductSizeRepository } from "../repositories/prisma-product-size-repository";
 import { PrismaProductColorRepository } from "../repositories/prisma-product-color-repository";
 import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
 import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
+import { PrismaProductRepository } from "../repositories/prisma-product-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -49,7 +41,7 @@ type CreateProductUseCaseResponse = Either<
 >;
 export class CreateProductUseCase {
   constructor(
-    private productRepository: ProductRepository,
+    private productRepository: PrismaProductRepository,
     private productColorRepository: PrismaProductColorRepository,
     private productSizeRepository: PrismaProductSizeRepository,
     private productCategoryRepository: PrismaProductCategoryRepository,
@@ -79,6 +71,7 @@ export class CreateProductUseCase {
     images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     console.log("úse case do create product entrou");
+    console.log("brandid", brandId);
     const brand = await this.brandRepository.findById(brandId);
     console.log("entro na brand do produto", brand);
     if (!brand) {
