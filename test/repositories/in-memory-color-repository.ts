@@ -1,9 +1,10 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { ColorRepository } from '@/domain/catalog/application/repositories/color-repository';
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { ColorRepository } from "@/domain/catalog/application/repositories/color-repository";
 
-import { Color } from '@/domain/catalog/enterprise/entities/color';
+import { Color } from "@/domain/catalog/enterprise/entities/color";
 
 export class InMemoryColorRepository implements ColorRepository {
+  public items: Color[] = [];
   async findAll({ page }: PaginationParams): Promise<Color[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -17,7 +18,7 @@ export class InMemoryColorRepository implements ColorRepository {
     if (itemIndex >= 0) {
       this.items[itemIndex] = color;
     } else {
-      console.log('erro to save color');
+      console.log("erro to save color");
     }
   }
   async findById(id: string) {
@@ -35,7 +36,6 @@ export class InMemoryColorRepository implements ColorRepository {
 
     this.items.splice(itemIndex, 1);
   }
-  public items: Color[] = [];
 
   async create(color: Color) {
     this.items.push(color);

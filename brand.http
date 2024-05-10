@@ -24,7 +24,7 @@ Content-Type: application/json
 ###
 
 # @name find-brand-by-id
-GET  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+GET  {{BASE_URL}}/brands/d5d1b4d6-3449-461a-8efd-a5179b43a6f4
 Content-Type: application/json
 
 ###

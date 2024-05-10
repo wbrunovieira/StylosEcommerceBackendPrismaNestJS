@@ -80,22 +80,15 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 2",
+  "name": "calcinha 6",
   "description": "calcinha description 16 mais texto, legal, muiito legal" ,
-  "images": ["/images/foto1.jpg", "/images/foto2.jpg", "/images/foto3.jpg"],
-  "color": "red",
-  "size": "G",
-  "materialId": "36e54e13-0545-422c-b52e-1d04bb03cf96",
-  "brandId": "e5798475-2907-4f94-87ec-7696c0ac956a",
-  "price": 100.00,
+  "images": ["/images/foto1.jpg"],
+  "materialId": "8ff4869f-f57c-4346-99ed-085b9b16e0e6",
+  "brandId": "d5d1b4d6-3449-461a-8efd-a5179b43a6f4",
+  "price": 100,
   "stock": 10,
-  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01e"],
-  "discount": 15,
-  "discountPrice": 85.00,
-  "isNew": false,
-  "onSale": false,
-  "isFeatured": true
-
+  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01e"]
+  
 }
 
 

@@ -35,9 +35,9 @@ export class InMemorySizeRepository implements SizeRepository {
 
     this.items.splice(itemIndex, 1);
   }
-  public items: Size[] = [];
-
   async create(size: Size) {
     this.items.push(size);
   }
+  public items: Size[] = [];
+
 }

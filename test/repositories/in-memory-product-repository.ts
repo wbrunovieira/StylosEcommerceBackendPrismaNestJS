@@ -1,53 +1,64 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { ProductRepository } from '@/domain/catalog/application/repositories/product-repository';
-import { Product } from '@/domain/catalog/enterprise/entities/product';
+import { IProductRepository } from "@/domain/catalog/application/repositories/product-repository";
+import { Product } from "@/domain/catalog/enterprise/entities/product";
 
-export class InMemoryProductRepository implements ProductRepository {
-  async save(product: Product) {
-    const itemIndex = this.items.findIndex((item) => item.id === product.id);
-    if (itemIndex >= 0) {
-      this.items[itemIndex] = product;
-    } else {
-      console.log('erro to save product');
-    }
-  }
+import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
+import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
+import { InMemoryProductCategoryRepository } from "./in-memory-product-category";
+
+export class InMemoryProductRepository implements IProductRepository {
+  private productColorRepository: InMemoryProductColorRepository;
+  private productSizeRepository: InMemoryProductSizeRepository;
+  private productCategoryRepository: InMemoryProductCategoryRepository;
   public items: Product[] = [];
+  public colors: { productId: string; colorId: string }[] = [];
+  public sizes: { productId: string; sizeId: string }[] = [];
+  public categories: { productId: string; categoryId: string }[] = [];
+  public materials: { id: string; material: any }[] = [];
+  public brands: { id: string; name: string }[] = [];
 
-  async create(product: Product) {
+  constructor() {
+    this.productColorRepository = new InMemoryProductColorRepository();
+    this.productSizeRepository = new InMemoryProductSizeRepository();
+    this.productCategoryRepository = new InMemoryProductCategoryRepository();
+  }
+
+  async create(product: Product): Promise<void> {
+    const slug = generateSlug(product.name, "brand");
+    product.slug = slug;
+
+    // Push the product into the items array
     this.items.push(product);
-  }
 
-  async findManyRecent({ page }: PaginationParams) {
-    const product = this.items
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20);
-
-    return product;
-  }
-
-  async findBySlug(slug: string) {
-    const product = this.items.find((item) => item.slug.value === slug);
-
-    if (!product) {
-      return null;
+    // Link product colors if they exist
+    if (product.productColors) {
+      product.productColors.forEach(async (colorId) => {
+        await this.productColorRepository.create(
+          product.id.toString(),
+          colorId.toString()
+        );
+      });
     }
 
-    return product;
-  }
-
-  async findById(id: string) {
-    const product = this.items.find((item) => item.id.toString() === id);
-
-    if (!product) {
-      return null;
+    // Link product sizes if they exist
+    if (product.productSizes) {
+      product.productSizes.forEach(async (sizeId) => {
+        await this.productSizeRepository.create(
+          product.id.toString(),
+          sizeId.toString()
+        );
+      });
     }
 
-    return product;
-  }
-
-  async delete(product: Product) {
-    const itemIndex = this.items.findIndex((item) => item.id === product.id);
-
-    this.items.splice(itemIndex, 1);
+    // Link product categories if they exist
+    if (product.productCategories) {
+      product.productCategories.forEach(async (categoryId) => {
+        await this.productCategoryRepository.create(
+          product.id.toString(),
+          categoryId.toString()
+        );
+      });
+    }
   }
 }
