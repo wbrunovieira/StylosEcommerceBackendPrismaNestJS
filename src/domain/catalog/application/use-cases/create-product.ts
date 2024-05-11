@@ -74,14 +74,16 @@ export class CreateProductUseCase {
     if (!name.trim()) {
       return left(new ResourceNotFoundError("Product name is required"));
     }
-    console.log("úse case do create product entrou");
-    console.log("brandid", brandId);
+    
+    if (stock < 0) {
+      return left(new ResourceNotFoundError("Stock cannot be negative"));
+    }
+
     const brand = await this.brandRepository.findById(brandId);
-    console.log("entro na brand do produto", brand);
+
     if (!brand) {
       return left(new ResourceNotFoundError());
     }
-    console.log("brand do product", brand);
 
     if (materialId) {
       const material = await this.materialRepository.findById(materialId);
@@ -89,7 +91,6 @@ export class CreateProductUseCase {
         return left(new ResourceNotFoundError());
       }
     }
-    console.log("material do produto", materialId);
 
     const product = Product.create({
       name,
@@ -108,10 +109,8 @@ export class CreateProductUseCase {
       isNew,
       images,
     });
-    console.log(" quase produto criado", product);
 
     await this.productRepository.create(product);
-    console.log(" produto criado", product);
 
     if (productColors) {
       for (const colorId of productColors) {
