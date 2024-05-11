@@ -5,68 +5,89 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 import { IBrandRepository } from "./i-brand-repository";
 import { Brand } from "../../enterprise/entities/brand";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
 @Injectable()
 export class PrismaBrandRepository implements IBrandRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Brand | null> {
-    console.log("éntrou no brand do find by id", id);
-    const record = await this.prisma.brand.findUnique({
-      where: { id },
-    });
-    console.log("record", record);
-    return record
-      ? Brand.create({ name: record.name }, new UniqueEntityID(record.id))
-      : null;
+  async create(brand: Brand): Promise<Either<Error, void>> {
+    try {
+      await this.prisma.brand.create({
+        data: {
+          id: brand.id.toString(),
+          name: brand.name,
+          createdAt: brand.createdAt,
+          updatedAt: brand.updatedAt,
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to create brand"));
+    }
   }
 
-  async save(brand: Brand): Promise<void> {
-    await this.prisma.brand.update({
-      where: { id: brand.id.toString() },
-      data: {
-        name: brand.name,
-        updatedAt: new Date(),
-      },
-    });
+  async findById(id: string): Promise<Either<Error, Brand>> {
+    try {
+      const brandData = await this.prisma.brand.findUnique({
+        where: { id },
+      });
+      if (!brandData) return left(new ResourceNotFoundError("Brand not found"));
+
+      const brand = Brand.create(
+        { name: brandData.name },
+        new UniqueEntityID(brandData.id)
+      );
+
+      return right(brand);
+    } catch (error) {
+      return left(new Error("Database error"));
+    }
   }
 
-  async create(brand: Brand): Promise<void> {
-    await this.prisma.brand.create({
-      data: {
-        name: brand.name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+  async save(brand: Brand): Promise<Either<Error, void>> {
+    try {
+      await this.prisma.brand.update({
+        where: {
+          id: brand.id.toString(),
+        },
+        data: {
+          name: brand.name,
+          updatedAt: new Date(),
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to update brand"));
+    }
   }
 
-  async delete(brand: Brand): Promise<void> {
-    await this.prisma.brand.delete({
-      where: { id: brand.id.toString() },
-    });
+  async delete(brand: Brand): Promise<Either<Error, void>> {
+    try {
+      const result = await this.prisma.brand.delete({
+        where: {
+          id: brand.id.toString(),
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to delete brand"));
+    }
   }
 
-  async findAll(params: PaginationParams): Promise<Brand[]> {
-    console.log("params", params);
-
-    const page = params.page || 1;
-    const pageSize = params.pageSize || 10;
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
-
-    console.log("Pagination params:", { skip, take });
-    const records = await this.prisma.brand.findMany({
-      skip: skip,
-      take: take,
-      orderBy: { createdAt: "asc" },
-    });
-    console.log("skip", skip);
-    console.log("take", take);
-    console.log("records", records);
-
-    return records.map((record) =>
-      Brand.create({ name: record.name }, new UniqueEntityID(record.id))
-    );
+  async findAll(params: PaginationParams): Promise<Either<Error, Brand[]>> {
+    try {
+      const brands = await this.prisma.brand.findMany({
+        skip: (params.page - 1) * params.pageSize,
+        take: params.pageSize,
+      });
+      const convertedBrands = brands.map((b) =>
+        Brand.create({ name: b.name }, new UniqueEntityID(b.id))
+      );
+      return right(convertedBrands);
+    } catch (error) {
+      return left(new Error("Failed to find brands"));
+    }
   }
 }
