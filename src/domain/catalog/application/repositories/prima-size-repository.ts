@@ -2,11 +2,11 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { PaginationParams } from "../../../../core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
-import { SizeRepository } from "./i-size-repository";
+import { ISizeRepository } from "./i-size-repository";
 import { Size } from "../../enterprise/entities/size";
 
 @Injectable()
-export class PrismaSizeRepository implements SizeRepository {
+export class PrismaSizeRepository implements ISizeRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(size: Size): Promise<void> {

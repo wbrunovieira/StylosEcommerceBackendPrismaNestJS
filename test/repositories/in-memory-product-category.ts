@@ -1,10 +1,10 @@
 import { ProductCategory } from "@/domain/catalog/enterprise/entities/product-category";
 
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
+import { IProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
 
 export class InMemoryProductCategoryRepository
-  implements ProductCategoryRepository
+  implements IProductCategoryRepository
 {
   public items: ProductCategory[] = [];
 

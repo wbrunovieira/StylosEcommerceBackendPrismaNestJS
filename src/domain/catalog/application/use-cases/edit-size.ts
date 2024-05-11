@@ -1,4 +1,3 @@
-import { SizeRepository } from "../repositories/i-size-repository";
 import { Size } from "../../enterprise/entities/size";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";

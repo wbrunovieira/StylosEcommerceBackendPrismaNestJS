@@ -1,9 +1,9 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { ColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
+import { IColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
 
 import { Color } from "@/domain/catalog/enterprise/entities/color";
 
-export class InMemoryColorRepository implements ColorRepository {
+export class InMemoryColorRepository implements IColorRepository {
   public items: Color[] = [];
   async findAll({ page }: PaginationParams): Promise<Color[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));

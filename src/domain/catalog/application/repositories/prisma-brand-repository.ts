@@ -3,11 +3,11 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { PaginationParams } from "../../../../core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
-import { BrandRepository } from "./i-brand-repository";
+import { IBrandRepository } from "./i-brand-repository";
 import { Brand } from "../../enterprise/entities/brand";
 
 @Injectable()
-export class PrismaBrandRepository implements BrandRepository {
+export class PrismaBrandRepository implements IBrandRepository {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<Brand | null> {

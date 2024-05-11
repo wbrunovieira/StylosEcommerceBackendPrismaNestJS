@@ -1,9 +1,9 @@
 import { ProductColor } from "@/domain/catalog/enterprise/entities/product-color";
 
-import { ProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
+import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
-export class InMemoryProductColorRepository implements ProductColorRepository {
+export class InMemoryProductColorRepository implements IProductColorRepository {
   public items: ProductColor[] = [];
 
   async create(productId: string, colorId: string): Promise<void> {

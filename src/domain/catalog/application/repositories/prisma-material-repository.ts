@@ -4,11 +4,11 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-import { MaterialRepository } from "./i-material-repository";
+import { IMaterialRepository } from "./i-material-repository";
 import { Material } from "../../enterprise/entities/material";
 
 @Injectable()
-export class PrismaMaterialRepository implements MaterialRepository {
+export class PrismaMaterialRepository implements IMaterialRepository {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<Material | null> {
