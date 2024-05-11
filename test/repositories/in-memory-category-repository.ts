@@ -1,10 +1,10 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
+import { PaginationParams } from "@/core/repositories/pagination-params";
 
-import { CategoryRepository } from '@/domain/catalog/application/repositories/category-repository';
+import { ICategoryRepository } from "@/domain/catalog/application/repositories/i-category-repository";
 
-import { Category } from '@/domain/catalog/enterprise/entities/category';
+import { Category } from "@/domain/catalog/enterprise/entities/category";
 
-export class InMemoryCategoryRepository implements CategoryRepository {
+export class InMemoryCategoryRepository implements ICategoryRepository {
   async findAll({ page }: PaginationParams): Promise<Category[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -18,7 +18,7 @@ export class InMemoryCategoryRepository implements CategoryRepository {
     if (itemIndex >= 0) {
       this.items[itemIndex] = category;
     } else {
-      console.log('erro to save category');
+      console.log("erro to save category");
     }
   }
   async findById(id: string) {

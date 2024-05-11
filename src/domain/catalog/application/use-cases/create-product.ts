@@ -5,12 +5,12 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
-import { PrismaProductCategoryRepository } from "../repositories/prisma-product-category-repository";
-import { PrismaProductSizeRepository } from "../repositories/prisma-product-size-repository";
-import { PrismaProductColorRepository } from "../repositories/prisma-product-color-repository";
-import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
-import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
-import { PrismaProductRepository } from "../repositories/prisma-product-repository";
+import { IProductRepository } from "../repositories/i-product-repository";
+import { IProductColorRepository } from "../repositories/i-product-color-repository";
+import { IProductSizeRepository } from "../repositories/i-product-size-repository";
+import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
+import { IBrandRepository } from "../repositories/i-brand-repository";
+import { IMaterialRepository } from "../repositories/i-material-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -41,13 +41,13 @@ type CreateProductUseCaseResponse = Either<
 >;
 export class CreateProductUseCase {
   constructor(
-    private productRepository: PrismaProductRepository,
-    private productColorRepository: PrismaProductColorRepository,
-    private productSizeRepository: PrismaProductSizeRepository,
-    private productCategoryRepository: PrismaProductCategoryRepository,
+    private productRepository: IProductRepository,
+    private productColorRepository: IProductColorRepository,
+    private productSizeRepository: IProductSizeRepository,
+    private productCategoryRepository: IProductCategoryRepository,
 
-    private brandRepository: PrismaBrandRepository,
-    private materialRepository: PrismaMaterialRepository
+    private brandRepository: IBrandRepository,
+    private materialRepository: IMaterialRepository
   ) {}
 
   async execute({

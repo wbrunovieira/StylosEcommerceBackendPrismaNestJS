@@ -2,7 +2,7 @@ import { IProductRepository } from "@/domain/catalog/application/repositories/i-
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 
 import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
 import { InMemoryProductCategoryRepository } from "./in-memory-product-category";
@@ -28,10 +28,9 @@ export class InMemoryProductRepository implements IProductRepository {
     const slug = generateSlug(product.name, "brand");
     product.slug = slug;
 
-    // Push the product into the items array
     this.items.push(product);
 
-    // Link product colors if they exist
+   
     if (product.productColors) {
       product.productColors.forEach(async (colorId) => {
         await this.productColorRepository.create(
@@ -41,7 +40,7 @@ export class InMemoryProductRepository implements IProductRepository {
       });
     }
 
-    // Link product sizes if they exist
+    
     if (product.productSizes) {
       product.productSizes.forEach(async (sizeId) => {
         await this.productSizeRepository.create(
@@ -51,7 +50,7 @@ export class InMemoryProductRepository implements IProductRepository {
       });
     }
 
-    // Link product categories if they exist
+   
     if (product.productCategories) {
       product.productCategories.forEach(async (categoryId) => {
         await this.productCategoryRepository.create(

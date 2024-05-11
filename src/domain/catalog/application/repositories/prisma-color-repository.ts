@@ -1,12 +1,12 @@
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { ColorRepository } from "./i-color-repository";
+import { IColorRepository } from "./i-color-repository";
 import { Color } from "../../enterprise/entities/color";
 import { PaginationParams } from "../../../../core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class PrismaColorRepository implements ColorRepository {
+export class PrismaColorRepository implements IColorRepository {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<Color | null> {

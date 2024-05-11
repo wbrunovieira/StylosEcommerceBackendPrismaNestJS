@@ -1,9 +1,9 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { BrandRepository } from "@/domain/catalog/application/repositories/i-brand-repository";
+import { IBrandRepository } from "@/domain/catalog/application/repositories/i-brand-repository";
 
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 
-export class InMemoryBrandRepository implements BrandRepository {
+export class InMemoryBrandRepository implements IBrandRepository {
   async findAll({ page }: PaginationParams): Promise<Brand[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
 

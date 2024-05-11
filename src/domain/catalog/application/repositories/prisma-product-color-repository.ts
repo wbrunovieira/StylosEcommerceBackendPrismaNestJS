@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { ProductColorRepository } from "./i-product-color-repository";
+import { IProductColorRepository } from "./i-product-color-repository";
 
 @Injectable()
-export class PrismaProductColorRepository implements ProductColorRepository {
+export class PrismaProductColorRepository implements IProductColorRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(productId: string, colorId: string): Promise<void> {

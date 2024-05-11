@@ -1,9 +1,9 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { SizeRepository } from "@/domain/catalog/application/repositories/i-size-repository";
+import { ISizeRepository } from "@/domain/catalog/application/repositories/i-size-repository";
 
 import { Size } from "@/domain/catalog/enterprise/entities/size";
 
-export class InMemorySizeRepository implements SizeRepository {
+export class InMemorySizeRepository implements ISizeRepository {
   async findAll({ page }: PaginationParams): Promise<Size[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
 

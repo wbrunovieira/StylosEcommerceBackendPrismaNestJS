@@ -4,11 +4,11 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-import { CategoryRepository } from "./category-repository";
+import { ICategoryRepository } from "./i-category-repository";
 import { Category } from "../../enterprise/entities/category";
 
 @Injectable()
-export class PrismaCategoryRepository implements CategoryRepository {
+export class PrismaCategoryRepository implements ICategoryRepository {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<Category | null> {

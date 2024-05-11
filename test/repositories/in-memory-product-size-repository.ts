@@ -1,10 +1,10 @@
 import { ProductSize } from "@/domain/catalog/enterprise/entities/product-size";
 
-import { ProductSizeRepository } from "@/domain/catalog/application/repositories/i-product-size-repository";
+import { IProductSizeRepository } from "@/domain/catalog/application/repositories/i-product-size-repository";
 
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
-export class InMemoryProductSizeRepository implements ProductSizeRepository {
+export class InMemoryProductSizeRepository implements IProductSizeRepository {
   public items: ProductSize[] = [];
 
   async create(productId: string, sizeId: string): Promise<void> {

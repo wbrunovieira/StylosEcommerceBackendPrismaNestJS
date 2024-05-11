@@ -1,9 +1,9 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { MaterialRepository } from "@/domain/catalog/application/repositories/i-material-repository";
+import { IMaterialRepository } from "@/domain/catalog/application/repositories/i-material-repository";
 
 import { Material } from "@/domain/catalog/enterprise/entities/material";
 
-export class InMemoryMaterialRepository implements MaterialRepository {
+export class InMemoryMaterialRepository implements IMaterialRepository {
   async findAll({ page }: PaginationParams): Promise<Material[]> {
     const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
 
