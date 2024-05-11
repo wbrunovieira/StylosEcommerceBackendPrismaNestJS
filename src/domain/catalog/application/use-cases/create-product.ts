@@ -11,7 +11,8 @@ import { IProductSizeRepository } from "../repositories/i-product-size-repositor
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
-import { ValidationError } from "zod-validation-error";
+
+
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -82,11 +83,10 @@ export class CreateProductUseCase {
     const brandResult = await this.brandRepository.findById(brandId);
 
     if (brandResult.isLeft()) {
-      // If the brand is not found, return an error
+     
       return left(new ResourceNotFoundError("Brand not found"));
     }
 
-    // Extract the brand safely after confirming it's a Right result
     const brand = brandResult.value;
 
     if (materialId) {

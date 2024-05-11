@@ -59,6 +59,7 @@ describe("CreateProductUseCase", () => {
     );
 
     const brandId = new UniqueEntityID("validBrandId");
+    console.log("Mock Setup Brand ID:", brandId.toString());
     consistentBrand = makeBrand(
       {
         name: "Test Brand Name",
@@ -66,15 +67,13 @@ describe("CreateProductUseCase", () => {
       brandId
     );
 
-    mockBrandRepository.findById = vi.fn((id: string) =>
-      id === brandId.toString()
+    mockBrandRepository.findById = vi.fn((id: string) => {
+      const expectedId = brandId.toString();
+      console.log(`FindById called with: ${id}, expected: ${expectedId}`);
+      return id === expectedId
         ? Promise.resolve(right(consistentBrand))
-        : Promise.resolve(left(new ResourceNotFoundError("Brand not found")))
-    );
-
-    mockMaterialRepository.findById = vi.fn((id: string) =>
-      Promise.resolve(makeMaterial())
-    );
+        : Promise.resolve(left(new ResourceNotFoundError("Brand not found")));
+    });
   });
 
   it("should create a product", async () => {
@@ -107,7 +106,7 @@ describe("CreateProductUseCase", () => {
         new UniqueEntityID("category_id_as_string").toString(),
       ],
       materialId: consistentBrand.id.toString(),
-      brandId: consistentBrand.id.toString(),
+      brandId: "validBrandId",
       price: 200,
       stock: 20,
       height: 2,
@@ -213,5 +212,26 @@ describe("CreateProductUseCase", () => {
     } else {
       fail("Expected a Left with an error but got Right");
     }
+  });
+
+  it("should integrate well with repositories and create a product successfully", async () => {
+    const fullRequest = {
+      name: "Full Test Product",
+      description: "Complete product creation flow",
+      productColors: [colorId.toString()],
+      productSizes: [new UniqueEntityID("size_id").toString()],
+      productCategories: [categoryId.toString()],
+      materialId: "1",
+      brandId: "validBrandId",
+      price: 300,
+      stock: 15,
+      onSale: true,
+      discount: 25,
+      isFeatured: true,
+      isNew: true,
+      images: ["complete1.jpg", "complete2.jpg"],
+    };
+    const result = await useCase.execute(fullRequest);
+    expect(result.isRight()).toBeTruthy();
   });
 });
