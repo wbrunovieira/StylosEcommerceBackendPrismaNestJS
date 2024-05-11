@@ -1,7 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { BrandRepository } from '@/domain/catalog/application/repositories/brand-repository';
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { BrandRepository } from "@/domain/catalog/application/repositories/i-brand-repository";
 
-import { Brand } from '@/domain/catalog/enterprise/entities/brand';
+import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 
 export class InMemoryBrandRepository implements BrandRepository {
   async findAll({ page }: PaginationParams): Promise<Brand[]> {
@@ -17,7 +17,7 @@ export class InMemoryBrandRepository implements BrandRepository {
     if (itemIndex >= 0) {
       this.items[itemIndex] = brand;
     } else {
-      console.log('erro to save brand');
+      console.log("erro to save brand");
     }
   }
   async findById(id: string) {

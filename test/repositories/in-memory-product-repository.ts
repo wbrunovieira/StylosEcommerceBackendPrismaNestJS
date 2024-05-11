@@ -1,4 +1,4 @@
-import { IProductRepository } from "@/domain/catalog/application/repositories/product-repository";
+import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 
 import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";

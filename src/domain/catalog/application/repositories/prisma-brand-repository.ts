@@ -3,7 +3,7 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { PaginationParams } from "../../../../core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
-import { BrandRepository } from "./brand-repository";
+import { BrandRepository } from "./i-brand-repository";
 import { Brand } from "../../enterprise/entities/brand";
 
 @Injectable()

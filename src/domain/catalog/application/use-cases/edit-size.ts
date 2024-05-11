@@ -1,9 +1,9 @@
-import { SizeRepository } from '../repositories/size-repository';
-import { Size } from '../../enterprise/entities/size';
-import { Either, left, right } from '@/core/either';
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
-import { Injectable } from '@nestjs/common';
-import { PrismaSizeRepository } from '../repositories/prima-size-repository';
+import { SizeRepository } from "../repositories/i-size-repository";
+import { Size } from "../../enterprise/entities/size";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { Injectable } from "@nestjs/common";
+import { PrismaSizeRepository } from "../repositories/prima-size-repository";
 
 interface EditSizeUseCaseRequest {
   sizeId: string;

@@ -1,7 +1,7 @@
 import { ProductCategory } from "@/domain/catalog/enterprise/entities/product-category";
 
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ProductCategoryRepository } from "@/domain/catalog/application/repositories/product-category-repository";
+import { ProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
 
 export class InMemoryProductCategoryRepository
   implements ProductCategoryRepository

@@ -1,7 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { MaterialRepository } from '@/domain/catalog/application/repositories/material-repository';
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { MaterialRepository } from "@/domain/catalog/application/repositories/i-material-repository";
 
-import { Material } from '@/domain/catalog/enterprise/entities/material';
+import { Material } from "@/domain/catalog/enterprise/entities/material";
 
 export class InMemoryMaterialRepository implements MaterialRepository {
   async findAll({ page }: PaginationParams): Promise<Material[]> {
@@ -17,7 +17,7 @@ export class InMemoryMaterialRepository implements MaterialRepository {
     if (itemIndex >= 0) {
       this.items[itemIndex] = material;
     } else {
-      console.log('erro to save material');
+      console.log("erro to save material");
     }
   }
   async findById(id: string) {

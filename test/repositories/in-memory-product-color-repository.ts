@@ -1,21 +1,18 @@
 import { ProductColor } from "@/domain/catalog/enterprise/entities/product-color";
 
-
-import { ProductColorRepository } from "@/domain/catalog/application/repositories/product-color-repository";
+import { ProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 export class InMemoryProductColorRepository implements ProductColorRepository {
   public items: ProductColor[] = [];
 
   async create(productId: string, colorId: string): Promise<void> {
-  
     const productIdUnique = new UniqueEntityID(productId);
     const colorIdUnique = new UniqueEntityID(colorId);
 
-   
     const productColor = new ProductColor({
       productId: productIdUnique,
-      colorId: colorIdUnique
+      colorId: colorIdUnique,
     });
 
     this.items.push(productColor);
