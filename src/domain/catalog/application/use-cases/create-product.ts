@@ -91,7 +91,7 @@ export class CreateProductUseCase {
       name,
       description,
       materialId: new UniqueEntityID(materialId),
-      brandID: new UniqueEntityID(brandId),
+      brandId: new UniqueEntityID(brandId),
       price,
       stock,
       height,

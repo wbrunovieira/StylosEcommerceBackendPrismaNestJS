@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { Entity } from "@/core/entities/entity";
 
 export interface ProductProps {
-  id?: UniqueEntityID ;
+  id?: UniqueEntityID;
   name: string;
   description: string;
   productSizes?: UniqueEntityID[];
@@ -16,7 +16,7 @@ export interface ProductProps {
   materialId?: UniqueEntityID;
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
-  brandID: UniqueEntityID;
+  brandId: UniqueEntityID;
   discount?: number;
   price: number;
   stock: number;
@@ -34,8 +34,34 @@ export interface ProductProps {
 }
 
 export class Product extends Entity<ProductProps> {
+  
   private touch() {
     this.props.updatedAt = new Date();
+  }
+
+  get height() {
+    return this.props.height;
+  }
+  get onSale() {
+    return this.props.onSale;
+  }
+  get discount() {
+    return this.props.discount;
+  }
+  get isFeatured() {
+    return this.props.isFeatured;
+  }
+  get images() {
+    return this.props.images;
+  }
+  get width() {
+    return this.props.width;
+  }
+  get length() {
+    return this.props.length;
+  }
+  get weight() {
+    return this.props.weight;
   }
   get name() {
     return this.props.name;
@@ -46,7 +72,7 @@ export class Product extends Entity<ProductProps> {
   }
 
   get brandId() {
-    return this.props.brandID;
+    return this.props.brandId;
   }
 
   get materialId(): UniqueEntityID | undefined {
@@ -99,7 +125,7 @@ export class Product extends Entity<ProductProps> {
   }
 
   set brandId(brandId: UniqueEntityID) {
-    this.props.brandID = brandId;
+    this.props.brandId = brandId;
 
     this.touch();
   }
