@@ -1,7 +1,4 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { ProductSize } from '../../enterprise/entities/product-size';
-
-export interface ProductSizeRepository {
+export interface IProductSizeRepository {
   create(productId: string, sizeId: string): Promise<void>;
   // findByProductId(productId: string): Promise<ProductSize[]>;
   // findBySizeId(

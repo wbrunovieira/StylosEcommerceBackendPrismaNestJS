@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductRepository } from "./product-repository";
+import { IProductRepository } from "./i-product-repository";
 import { Product } from "../../enterprise/entities/product";
 
 import { PrismaProductColorRepository } from "./prisma-product-color-repository";
@@ -9,8 +9,6 @@ import { PrismaProductSizeRepository } from "./prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./prisma-product-category-repository";
 import { generateSlug } from "../utils/generate-slug";
 import { Slug } from "../../enterprise/entities/value-objects/slug";
-
-
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {

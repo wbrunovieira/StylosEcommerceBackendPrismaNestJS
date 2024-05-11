@@ -1,4 +1,4 @@
-import { MaterialRepository } from "../repositories/material-repository";
+import { MaterialRepository } from "../repositories/i-material-repository";
 import { Material } from "../../enterprise/entities/material";
 import { Either, right } from "@/core/either";
 import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";

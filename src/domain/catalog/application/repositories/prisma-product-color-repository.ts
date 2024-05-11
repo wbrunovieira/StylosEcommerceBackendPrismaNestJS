@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { ProductColorRepository } from "./product-color-repository";
-
+import { ProductColorRepository } from "./i-product-color-repository";
 
 @Injectable()
 export class PrismaProductColorRepository implements ProductColorRepository {

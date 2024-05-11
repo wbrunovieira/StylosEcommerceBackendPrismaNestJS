@@ -1,7 +1,6 @@
-import { PaginationParams } from "@/core/repositories/pagination-params";
 import { Size } from "../../enterprise/entities/size";
 
-export interface SizeRepository {
+export interface ISizeRepository {
   create(size: Size): Promise<void>;
   // findById(id: string): Promise<Size | null>;
   // delete(size: Size): Promise<void>;

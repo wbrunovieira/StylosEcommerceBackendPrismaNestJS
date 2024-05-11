@@ -1,7 +1,7 @@
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { Color } from '../../enterprise/entities/color';
 
-export interface ColorRepository {
+export interface IColorRepository {
   findById(id: string): Promise<Color | null>;
   create(color: Color): Promise<void>;
   delete(color: Color): Promise<void>;

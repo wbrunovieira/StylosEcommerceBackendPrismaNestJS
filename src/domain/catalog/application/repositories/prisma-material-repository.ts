@@ -4,7 +4,7 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-import { MaterialRepository } from "./material-repository";
+import { MaterialRepository } from "./i-material-repository";
 import { Material } from "../../enterprise/entities/material";
 
 @Injectable()

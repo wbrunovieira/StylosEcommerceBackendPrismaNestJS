@@ -1,5 +1,5 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { ColorRepository } from "@/domain/catalog/application/repositories/color-repository";
+import { ColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
 
 import { Color } from "@/domain/catalog/enterprise/entities/color";
 

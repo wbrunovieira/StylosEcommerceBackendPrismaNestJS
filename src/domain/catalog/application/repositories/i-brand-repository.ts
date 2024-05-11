@@ -1,7 +1,7 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { Brand } from "../../enterprise/entities/brand";
 
-export interface BrandRepository {
+export interface IBrandRepository {
   findById(id: string): Promise<Brand | null>;
   create(brand: Brand): Promise<void>;
   delete(brand: Brand): Promise<void>;

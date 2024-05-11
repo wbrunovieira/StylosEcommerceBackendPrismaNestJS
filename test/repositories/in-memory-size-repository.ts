@@ -1,7 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { SizeRepository } from '@/domain/catalog/application/repositories/size-repository';
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { SizeRepository } from "@/domain/catalog/application/repositories/i-size-repository";
 
-import { Size } from '@/domain/catalog/enterprise/entities/size';
+import { Size } from "@/domain/catalog/enterprise/entities/size";
 
 export class InMemorySizeRepository implements SizeRepository {
   async findAll({ page }: PaginationParams): Promise<Size[]> {
@@ -17,7 +17,7 @@ export class InMemorySizeRepository implements SizeRepository {
     if (itemIndex >= 0) {
       this.items[itemIndex] = size;
     } else {
-      console.log('erro to save size');
+      console.log("erro to save size");
     }
   }
   async findById(id: string) {
@@ -39,5 +39,4 @@ export class InMemorySizeRepository implements SizeRepository {
     this.items.push(size);
   }
   public items: Size[] = [];
-
 }
