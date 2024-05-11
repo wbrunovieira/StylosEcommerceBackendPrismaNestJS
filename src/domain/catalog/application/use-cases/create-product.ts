@@ -74,16 +74,20 @@ export class CreateProductUseCase {
     if (!name.trim()) {
       return left(new ResourceNotFoundError("Product name is required"));
     }
-    
+
     if (stock < 0) {
       return left(new ResourceNotFoundError("Stock cannot be negative"));
     }
 
-    const brand = await this.brandRepository.findById(brandId);
+    const brandResult = await this.brandRepository.findById(brandId);
 
-    if (!brand) {
-      return left(new ResourceNotFoundError());
+    if (brandResult.isLeft()) {
+      // If the brand is not found, return an error
+      return left(new ResourceNotFoundError("Brand not found"));
     }
+
+    // Extract the brand safely after confirming it's a Right result
+    const brand = brandResult.value;
 
     if (materialId) {
       const material = await this.materialRepository.findById(materialId);

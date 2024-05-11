@@ -1,8 +1,9 @@
-import { Either, left, right } from '@/core/either';
+import { Either, left, right } from "@/core/either";
 
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
-import { PrismaBrandRepository } from '../repositories/prisma-brand-repository';
-import { Injectable } from '@nestjs/common';
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
+import { Injectable } from "@nestjs/common";
+import { IBrandRepository } from "../repositories/i-brand-repository";
 
 interface DeleteBrandUseCaseRequest {
   brandId: string;
@@ -12,16 +13,18 @@ type DeleteBrandUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
 @Injectable()
 export class DeleteBrandUseCase {
-  constructor(private brandsRepository: PrismaBrandRepository) {}
+  constructor(private brandsRepository: IBrandRepository) {}
 
   async execute({
     brandId,
   }: DeleteBrandUseCaseRequest): Promise<DeleteBrandUseCaseResponse> {
-    const brand = await this.brandsRepository.findById(brandId);
+    const brandResult = await this.brandsRepository.findById(brandId);
 
-    if (!brand) {
-      return left(new ResourceNotFoundError());
+    if (brandResult.isLeft()) {
+      return left(new ResourceNotFoundError("Brand not found"));
     }
+
+    const brand = brandResult.value;
 
     await this.brandsRepository.delete(brand);
 

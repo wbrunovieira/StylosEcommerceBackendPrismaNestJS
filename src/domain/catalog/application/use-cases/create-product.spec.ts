@@ -16,17 +16,18 @@ import { makeBrand } from "@test/factories/make-brand";
 import { makeMaterial } from "@test/factories/make-material";
 import { makeProduct } from "@test/factories/make-product";
 import { makeColor } from "@test/factories/make-color";
-import { makeSize } from "@test/factories/make-size";
+
 import { makeCategory } from "@test/factories/make-category";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { fail } from "assert";
+import { left, right } from "@/core/either";
 
 const colorId = new UniqueEntityID("your_string_id_here");
 const color = makeColor({}, colorId);
 
 const categoryId = new UniqueEntityID("your_string_id_here");
-const brandId = new UniqueEntityID("your_string_id_here");
+
 const category = makeCategory({}, categoryId);
 
 describe("CreateProductUseCase", () => {
@@ -37,6 +38,8 @@ describe("CreateProductUseCase", () => {
   let mockProductCategoryRepository: IProductCategoryRepository;
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
+
+  let consistentBrand;
 
   beforeEach(() => {
     mockProductRepository = new InMemoryProductRepository();
@@ -55,9 +58,20 @@ describe("CreateProductUseCase", () => {
       mockMaterialRepository
     );
 
-    mockBrandRepository.findById = vi.fn((id: string) =>
-      Promise.resolve(makeBrand())
+    const brandId = new UniqueEntityID("validBrandId");
+    consistentBrand = makeBrand(
+      {
+        name: "Test Brand Name",
+      },
+      brandId
     );
+
+    mockBrandRepository.findById = vi.fn((id: string) =>
+      id === brandId.toString()
+        ? Promise.resolve(right(consistentBrand))
+        : Promise.resolve(left(new ResourceNotFoundError("Brand not found")))
+    );
+
     mockMaterialRepository.findById = vi.fn((id: string) =>
       Promise.resolve(makeMaterial())
     );
@@ -84,51 +98,35 @@ describe("CreateProductUseCase", () => {
   });
 
   it("should create a product with all fields", async () => {
-    const product = makeProduct({
-      productColors: [new UniqueEntityID("color_id_as_string")],
-      productSizes: [new UniqueEntityID("size_id_as_string")],
-      productCategories: [new UniqueEntityID("category_id_as_string")],
-      materialId: new UniqueEntityID("material_id_as_string"),
-      brandId: new UniqueEntityID("material_id_as_string"),
-
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [new UniqueEntityID("color_id_as_string").toString()],
+      productSizes: [new UniqueEntityID("size_id_as_string").toString()],
+      productCategories: [
+        new UniqueEntityID("category_id_as_string").toString(),
+      ],
+      materialId: consistentBrand.id.toString(),
+      brandId: consistentBrand.id.toString(),
       price: 200,
       stock: 20,
       height: 2,
       width: 2,
       length: 2,
       weight: 2,
-
       onSale: true,
       discount: 10,
       isFeatured: true,
       isNew: true,
       images: ["image1.jpg", "image2.jpg"],
-    });
-
-    const request = {
-      name: product.name,
-      description: product.description,
-      productColors: product.productColors?.map((color) => color.toString()),
-      productSizes: product.productSizes?.map((size) => size.toString()),
-      productCategories: product.productCategories?.map((category) =>
-        category.toString()
-      ),
-      materialId: product.materialId?.toString(),
-      brandId: product.brandId.toString(),
-      price: product.price,
-      stock: product.stock,
-      height: product.height,
-      width: product.width,
-      length: product.length,
-      weight: product.weight,
-      onSale: product.onSale,
-      discount: product.discount,
-      isFeatured: product.isFeatured,
-      isNew: product.isNew,
-      images: product.images,
     };
 
     const result = await useCase.execute(request);
+    if (result.isLeft()) {
+      console.error("Test Failed:", result.value);
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toBe("Error message detail");
+    }
     expect(result.isRight()).toBeTruthy();
   });
 
@@ -183,6 +181,35 @@ describe("CreateProductUseCase", () => {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 
       expect(result.value.message).toEqual("Stock cannot be negative");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
+
+  it("should handle errors when fetching brand data", async () => {
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "1",
+      brandId: "non-exist",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+
+    const result = await useCase.execute(request);
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toEqual("Brand not found");
     } else {
       fail("Expected a Left with an error but got Right");
     }

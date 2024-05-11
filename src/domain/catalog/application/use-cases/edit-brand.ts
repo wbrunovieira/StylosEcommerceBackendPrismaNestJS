@@ -1,39 +1,37 @@
-
-import { Brand } from '../../enterprise/entities/brand';
-import { Either, left, right } from '@/core/either';
-import { ResourceNotFoundError } from './errors/resource-not-found-error';
-import { PrismaBrandRepository } from '../repositories/prisma-brand-repository';
-import { Injectable } from '@nestjs/common';
+import { Brand } from "../../enterprise/entities/brand";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
+import { Injectable } from "@nestjs/common";
+import { IBrandRepository } from "../repositories/i-brand-repository";
 
 interface EditBrandUseCaseRequest {
   brandId: string;
   name: string;
 }
 
-type EditBrandUseCaseResponse = Either<
-  ResourceNotFoundError,
-  {
-    brand: Brand;
-  }
->;
+type EditBrandUseCaseResponse = Either<ResourceNotFoundError, { brand: Brand }>;
 
 @Injectable()
 export class EditBrandUseCase {
-  constructor(private brandsRepository: PrismaBrandRepository) {}
+  constructor(private brandsRepository: IBrandRepository) {}
 
   async execute({
     brandId,
     name,
   }: EditBrandUseCaseRequest): Promise<EditBrandUseCaseResponse> {
-    const brand = await this.brandsRepository.findById(brandId);
+    const brandResult = await this.brandsRepository.findById(brandId);
 
-    if (!brand) {
-      return left(new ResourceNotFoundError());
+    if (brandResult.isLeft()) {
+      return left(new ResourceNotFoundError("Brand not found"));
     }
 
+    const brand = brandResult.value;
     brand.name = name;
-
-    await this.brandsRepository.save(brand);
+    const saveResult = await this.brandsRepository.save(brand);
+    if (saveResult.isLeft()) {
+      return left(new ResourceNotFoundError("Failed to update brand"));
+    }
 
     return right({
       brand,
