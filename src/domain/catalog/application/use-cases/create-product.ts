@@ -11,6 +11,7 @@ import { IProductSizeRepository } from "../repositories/i-product-size-repositor
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
+import { ValidationError } from "zod-validation-error";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -70,6 +71,9 @@ export class CreateProductUseCase {
     isNew = false,
     images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
+    if (!name.trim()) {
+      return left(new ResourceNotFoundError("Product name is required"));
+    }
     console.log("úse case do create product entrou");
     console.log("brandid", brandId);
     const brand = await this.brandRepository.findById(brandId);
