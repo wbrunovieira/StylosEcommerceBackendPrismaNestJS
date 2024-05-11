@@ -19,6 +19,8 @@ import { makeColor } from "@test/factories/make-color";
 import { makeSize } from "@test/factories/make-size";
 import { makeCategory } from "@test/factories/make-category";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { fail } from "assert";
 
 const colorId = new UniqueEntityID("your_string_id_here");
 const color = makeColor({}, colorId);
@@ -128,5 +130,33 @@ describe("CreateProductUseCase", () => {
 
     const result = await useCase.execute(request);
     expect(result.isRight()).toBeTruthy();
+  });
+
+  it("should fail if required fields are missing", async () => {
+    const request = {
+      name: "",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "1",
+      brandId: "1",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+    const result = await useCase.execute(request);
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+     
+      expect(result.value.message).toEqual("Product name is required");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
   });
 });
