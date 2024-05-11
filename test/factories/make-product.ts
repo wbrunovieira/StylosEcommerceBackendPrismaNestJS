@@ -17,7 +17,7 @@ export function makeProduct(
       price: Number(faker.commerce.price()),
 
       sizeId: [new UniqueEntityID()],
-      brandID: new UniqueEntityID(),
+      brandId: new UniqueEntityID(),
 
       materialId: new UniqueEntityID(),
       stock: faker.helpers.rangeToNumber(100),
