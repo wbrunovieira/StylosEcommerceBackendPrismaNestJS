@@ -6,7 +6,10 @@ import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
 import { InMemoryProductCategoryRepository } from "./in-memory-product-category";
+import { Either, right } from "@/core/either";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class InMemoryProductRepository implements IProductRepository {
   private productColorRepository: InMemoryProductColorRepository;
   private productSizeRepository: InMemoryProductSizeRepository;
@@ -24,7 +27,8 @@ export class InMemoryProductRepository implements IProductRepository {
     this.productCategoryRepository = new InMemoryProductCategoryRepository();
   }
 
-  async create(product: Product): Promise<void> {
+  async create(product: Product): Promise<Either<Error, void>> {
+
     const slug = generateSlug(product.name, "brand");
     product.slug = slug;
 
@@ -38,6 +42,8 @@ export class InMemoryProductRepository implements IProductRepository {
           colorId.toString()
         );
       });
+
+
     }
 
     
@@ -59,5 +65,6 @@ export class InMemoryProductRepository implements IProductRepository {
         );
       });
     }
+    return right(undefined);
   }
 }

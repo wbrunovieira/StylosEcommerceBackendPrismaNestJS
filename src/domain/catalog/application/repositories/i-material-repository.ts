@@ -4,8 +4,8 @@ import { Either } from "@/core/either";
 
 export interface IMaterialRepository {
   findById(id: string): Promise<Either<Error, Material>>;
-  create(product: Material): Promise<Either<Error, void>>;
-  delete(product: Material): Promise<Either<Error, void>>;
-  save(product: Material): Promise<Either<Error, void>>;
+  create(material: Material): Promise<Either<Error, void>>;
+  delete(material: Material): Promise<Either<Error, void>>;
+  save(material: Material): Promise<Either<Error, void>>;
   findAll(params: PaginationParams): Promise<Either<Error, Material[]>>;
 }
