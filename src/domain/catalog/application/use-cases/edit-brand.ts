@@ -1,4 +1,4 @@
-import { Brand } from "../../enterprise/entities/brand";
+import { Brand } from "../../enterprise/entities/brand";   
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
@@ -29,6 +29,7 @@ export class EditBrandUseCase {
     const brand = brandResult.value;
     brand.name = name;
     const saveResult = await this.brandsRepository.save(brand);
+    
     if (saveResult.isLeft()) {
       return left(new ResourceNotFoundError("Failed to update brand"));
     }

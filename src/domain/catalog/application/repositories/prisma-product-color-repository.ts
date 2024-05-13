@@ -7,6 +7,11 @@ export class PrismaProductColorRepository implements IProductColorRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(productId: string, colorId: string): Promise<void> {
+    console.log(
+      " entrou productId e colorId no repositorio deles",
+      productId,
+      colorId
+    );
     const colorExists = await this.prisma.color.findUnique({
       where: { id: colorId },
     });
