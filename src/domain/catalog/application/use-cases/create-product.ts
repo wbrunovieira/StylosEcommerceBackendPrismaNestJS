@@ -11,6 +11,8 @@ import { IProductSizeRepository } from "../repositories/i-product-size-repositor
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
+import { Injectable } from "@nestjs/common";
+import { IColorRepository } from "../repositories/i-color-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -39,13 +41,15 @@ type CreateProductUseCaseResponse = Either<
     product: Product;
   }
 >;
+
+@Injectable()
 export class CreateProductUseCase {
   constructor(
     private productRepository: IProductRepository,
     private productColorRepository: IProductColorRepository,
     private productSizeRepository: IProductSizeRepository,
     private productCategoryRepository: IProductCategoryRepository,
-
+    private colorRepository: IColorRepository,
     private brandRepository: IBrandRepository,
     private materialRepository: IMaterialRepository
   ) {}
@@ -90,6 +94,21 @@ export class CreateProductUseCase {
       }
     }
 
+    if (productColors) {
+      console.log(
+        "chamou o productcolor no usecase create product",
+        productColors
+      );
+
+      for (const colorId of productColors) {
+        console.log("no log do for no create product usecase", colorId);
+        const colorExists = await this.colorRepository.findById(colorId);
+        if (colorExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
+        }
+      }
+    }
+
     const product = Product.create({
       name,
       description,
@@ -108,14 +127,23 @@ export class CreateProductUseCase {
       images,
     });
 
-    await this.productRepository.create(product);
-
     if (productColors) {
+      console.log(
+        "chamou o productcolor no usecase create product",
+        productColors
+      );
       for (const colorId of productColors) {
+        console.log("no log do for no create product usecase", colorId);
         const idAsString = product.id.toString();
+        console.log(
+          "no log do for quase no repo productid e colorid",
+          idAsString,
+          colorId
+        );
         await this.productColorRepository.create(idAsString, colorId);
       }
     }
+
     if (productSizes) {
       for (const sizeId of productSizes) {
         const idAsString = product.id.toString();
@@ -128,6 +156,8 @@ export class CreateProductUseCase {
         await this.productCategoryRepository.create(idAsString, categoryId);
       }
     }
+
+    await this.productRepository.create(product);
 
     return right({
       product,

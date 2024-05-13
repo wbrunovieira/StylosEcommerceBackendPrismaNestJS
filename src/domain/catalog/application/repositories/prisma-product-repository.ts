@@ -9,6 +9,7 @@ import { PrismaProductSizeRepository } from "./prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./prisma-product-category-repository";
 import { generateSlug } from "../utils/generate-slug";
 import { Slug } from "../../enterprise/entities/value-objects/slug";
+import { Either, right } from "@/core/either";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
@@ -19,7 +20,7 @@ export class PrismaProductRepository implements IProductRepository {
     private productCategoryRepository: PrismaProductCategoryRepository
   ) {}
 
-  async create(product: Product): Promise<void> {
+  async create(product: Product): Promise<Either<Error, void>> {
     const {
       productColors,
       productSizes,
@@ -129,6 +130,7 @@ export class PrismaProductRepository implements IProductRepository {
         validCategory.id
       );
     }
+    return right(undefined);
   }
 
   //   async findById(id: string): Promise<Product | null> {

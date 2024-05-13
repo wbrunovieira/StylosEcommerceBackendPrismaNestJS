@@ -22,8 +22,10 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { fail } from "assert";
 import { left, right } from "@/core/either";
+import { InMemoryColorRepository } from "@test/repositories/in-memory-color-repository";
+import { IColorRepository } from "../repositories/i-color-repository";
 
-const colorId = new UniqueEntityID("your_string_id_here");
+const colorId = new UniqueEntityID("color-id");
 const color = makeColor({}, colorId);
 
 const categoryId = new UniqueEntityID("your_string_id_here");
@@ -38,6 +40,7 @@ describe("CreateProductUseCase", () => {
   let mockProductCategoryRepository: IProductCategoryRepository;
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
+  let mockColorRepository: IColorRepository;
 
   let brandId;
   let consistentBrand;
@@ -60,6 +63,7 @@ describe("CreateProductUseCase", () => {
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
+    mockColorRepository = new InMemoryColorRepository();
 
     useCase = new CreateProductUseCase(
       mockProductRepository,
@@ -67,7 +71,12 @@ describe("CreateProductUseCase", () => {
       mockProductSizeRepository,
       mockProductCategoryRepository,
       mockBrandRepository,
-      mockMaterialRepository
+      mockMaterialRepository,
+      mockColorRepository
+    );
+
+    mockProductColorRepository.create = vi.fn(() =>
+      Promise.resolve(left(new Error("Color not found")))
     );
 
     mockBrandRepository.findById = vi.fn((id) => {
@@ -144,7 +153,7 @@ describe("CreateProductUseCase", () => {
     expect(result.isRight()).toBeTruthy();
   });
 
-  it("should fail if required fields are missing", async () => {
+  it("should fail if required name fields are missing", async () => {
     const request = {
       name: "",
       description: "A test product description",
@@ -253,6 +262,38 @@ describe("CreateProductUseCase", () => {
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError);
       expect(result.value.message).toEqual("Material not found");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
+
+  it("should handle errors when fetching product-color data non-existent color ID", async () => {
+    const nonExistentColorId = new UniqueEntityID("any-color").toString();
+
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [nonExistentColorId],
+      productSizes: [],
+      productCategories: [],
+      brandId: brandId.toString(),
+      materialId: materialId.toString(),
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+
+    const result = await useCase.execute(request);
+
+    expect(mockProductColorRepository.create).toHaveBeenCalled();
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message);
     } else {
       fail("Expected a Left with an error but got Right");
     }
