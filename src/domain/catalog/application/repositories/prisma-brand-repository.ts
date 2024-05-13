@@ -29,6 +29,7 @@ export class PrismaBrandRepository implements IBrandRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Brand>> {
+    
     try {
       const brandData = await this.prisma.brand.findUnique({
         where: { id },

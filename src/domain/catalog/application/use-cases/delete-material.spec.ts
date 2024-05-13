@@ -11,7 +11,7 @@ let sut: DeleteMaterialUseCase;
 describe("Delete Material", () => {
   beforeEach(() => {
     inMemoryMaterialRepository = new InMemoryMaterialRepository();
-    sut = new DeleteMaterialUseCase(inMemoryMaterialRepository);
+    sut = new DeleteMaterialUseCase(inMemoryMaterialRepository as any);
   });
 
   it("should be able to delete a material", async () => {

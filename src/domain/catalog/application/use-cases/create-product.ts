@@ -12,15 +12,13 @@ import { IProductCategoryRepository } from "../repositories/i-product-category-r
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
 
-
-
 interface CreateProductUseCaseRequest {
   name: string;
   description: string;
   productColors?: string[];
   productSizes?: string[];
   productCategories?: string[];
-  materialId?: string;
+  materialId?: string | null;
   brandId: string;
   price: number;
   stock: number;
@@ -58,7 +56,7 @@ export class CreateProductUseCase {
     productColors,
     productSizes,
     productCategories,
-    materialId,
+    materialId = null,
     brandId,
     price,
     stock,
@@ -81,25 +79,21 @@ export class CreateProductUseCase {
     }
 
     const brandResult = await this.brandRepository.findById(brandId);
-
     if (brandResult.isLeft()) {
-     
       return left(new ResourceNotFoundError("Brand not found"));
     }
 
-    const brand = brandResult.value;
-
     if (materialId) {
-      const material = await this.materialRepository.findById(materialId);
-      if (!material) {
-        return left(new ResourceNotFoundError());
+      const materialResult = await this.materialRepository.findById(materialId);
+      if (materialResult.isLeft()) {
+        return left(new ResourceNotFoundError("Material not found"));
       }
     }
 
     const product = Product.create({
       name,
       description,
-      materialId: new UniqueEntityID(materialId),
+      materialId: materialId ? new UniqueEntityID(materialId) : undefined,
       brandId: new UniqueEntityID(brandId),
       price,
       stock,

@@ -39,9 +39,21 @@ describe("CreateProductUseCase", () => {
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
 
+  let brandId;
   let consistentBrand;
+  let materialId;
+  let consistentMaterial;
 
   beforeEach(() => {
+    brandId = new UniqueEntityID();
+    consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
+
+    materialId = new UniqueEntityID();
+    consistentMaterial = makeMaterial(
+      { name: "Test Material Name" },
+      materialId
+    );
+
     mockProductRepository = new InMemoryProductRepository();
     mockProductColorRepository = new InMemoryProductColorRepository();
     mockProductSizeRepository = new InMemoryProductSizeRepository();
@@ -58,21 +70,24 @@ describe("CreateProductUseCase", () => {
       mockMaterialRepository
     );
 
-    const brandId = new UniqueEntityID("validBrandId");
-    console.log("Mock Setup Brand ID:", brandId.toString());
-    consistentBrand = makeBrand(
-      {
-        name: "Test Brand Name",
-      },
-      brandId
-    );
-
-    mockBrandRepository.findById = vi.fn((id: string) => {
-      const expectedId = brandId.toString();
-      console.log(`FindById called with: ${id}, expected: ${expectedId}`);
-      return id === expectedId
+    mockBrandRepository.findById = vi.fn((id) => {
+      console.log(
+        `FindById called with: ${id}, expected: ${brandId.toString()}`
+      );
+      return id === brandId.toString()
         ? Promise.resolve(right(consistentBrand))
         : Promise.resolve(left(new ResourceNotFoundError("Brand not found")));
+    });
+
+    mockMaterialRepository.findById = vi.fn((id) => {
+      console.log(
+        `FindById called with: ${id}, expected: ${materialId.toString()}`
+      );
+      return id === materialId.toString()
+        ? Promise.resolve(right(consistentMaterial))
+        : Promise.resolve(
+            left(new ResourceNotFoundError("Material not found"))
+          );
     });
   });
 
@@ -105,8 +120,8 @@ describe("CreateProductUseCase", () => {
       productCategories: [
         new UniqueEntityID("category_id_as_string").toString(),
       ],
-      materialId: consistentBrand.id.toString(),
-      brandId: "validBrandId",
+      materialId: consistentMaterial.id.toString(),
+      brandId: consistentBrand.id.toString(),
       price: 200,
       stock: 20,
       height: 2,
@@ -192,8 +207,8 @@ describe("CreateProductUseCase", () => {
       productColors: [],
       productSizes: [],
       productCategories: [],
-      materialId: "1",
-      brandId: "non-exist",
+      materialId: materialId.toString(),
+      brandId: "wrong id",
       price: 100,
       stock: 10,
       onSale: false,
@@ -214,6 +229,35 @@ describe("CreateProductUseCase", () => {
     }
   });
 
+  it("should handle errors when fetching material data", async () => {
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      brandId: brandId.toString(),
+      materialId: "definitely wrong id",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+
+    const result = await useCase.execute(request);
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toEqual("Material not found");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
+
   it("should integrate well with repositories and create a product successfully", async () => {
     const fullRequest = {
       name: "Full Test Product",
@@ -221,8 +265,8 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString()],
       productSizes: [new UniqueEntityID("size_id").toString()],
       productCategories: [categoryId.toString()],
-      materialId: "1",
-      brandId: "validBrandId",
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
       price: 300,
       stock: 15,
       onSale: true,
