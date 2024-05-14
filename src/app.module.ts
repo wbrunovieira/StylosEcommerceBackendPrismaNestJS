@@ -24,7 +24,6 @@ import { CatalogModule } from './domain/catalog/catalog.module';
   controllers: [
     CreateAccountController,
     AuthenticateController,
-   
     ListAllProductsController,
     ListAllAccountsController,
   ],

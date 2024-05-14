@@ -50,42 +50,6 @@ import { PrismaProductCategoryRepository } from "./application/repositories/pris
     CreateCategoryUseCase,
     CreateProductUseCase,
 
-    {
-      provide: PrismaColorRepository,
-      useClass: PrismaColorRepository,
-    },
-    {
-      provide: PrismaSizeRepository,
-      useClass: PrismaSizeRepository,
-    },
-    {
-      provide: PrismaBrandRepository,
-      useClass: PrismaBrandRepository,
-    },
-    {
-      provide: PrismaMaterialRepository,
-      useClass: PrismaMaterialRepository,
-    },
-    {
-      provide: PrismaCategoryRepository,
-      useClass: PrismaCategoryRepository,
-    },
-    {
-      provide: PrismaProductRepository,
-      useClass: PrismaProductRepository,
-    },
-    {
-      provide: PrismaProductColorRepository,
-      useClass: PrismaProductColorRepository,
-    },
-    {
-      provide: PrismaProductSizeRepository,
-      useClass: PrismaProductSizeRepository,
-    },
-    {
-      provide: PrismaProductCategoryRepository,
-      useClass: PrismaProductCategoryRepository,
-    },
     PrismaService,
     DeleteColorUseCase,
     EditColorUseCase,
@@ -98,6 +62,6 @@ import { PrismaProductCategoryRepository } from "./application/repositories/pris
     EditCategoryUseCase,
     DeleteCategoryUseCase,
   ],
-  exports: [],
+  exports: [CreateBrandUseCase, PrismaBrandRepository, CreateProductUseCase],
 })
 export class CatalogModule {}

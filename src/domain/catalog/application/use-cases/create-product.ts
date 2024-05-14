@@ -11,7 +11,7 @@ import { IProductSizeRepository } from "../repositories/i-product-size-repositor
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IColorRepository } from "../repositories/i-color-repository";
 
 interface CreateProductUseCaseRequest {
@@ -45,6 +45,7 @@ type CreateProductUseCaseResponse = Either<
 @Injectable()
 export class CreateProductUseCase {
   constructor(
+    @Inject("IProductRepository")
     private productRepository: IProductRepository,
     private productColorRepository: IProductColorRepository,
     private productSizeRepository: IProductSizeRepository,

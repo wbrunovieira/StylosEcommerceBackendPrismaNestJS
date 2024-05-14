@@ -42,16 +42,16 @@ describe("CreateProductUseCase", () => {
   let mockMaterialRepository: IMaterialRepository;
   let mockColorRepository: IColorRepository;
 
-  let brandId;
+  let brandId: UniqueEntityID;
   let consistentBrand;
-  let materialId;
+  let materialId: UniqueEntityID;
   let consistentMaterial;
 
   beforeEach(() => {
-    brandId = new UniqueEntityID();
+    brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
     consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
 
-    materialId = new UniqueEntityID();
+    materialId = new UniqueEntityID("f056524a-85bf-45a9-bf40-ebade896343c");
     consistentMaterial = makeMaterial(
       { name: "Test Material Name" },
       materialId
@@ -81,7 +81,7 @@ describe("CreateProductUseCase", () => {
 
     mockBrandRepository.findById = vi.fn((id) => {
       console.log(
-        `FindById called with: ${id}, expected: ${brandId.toString()}`
+        `FindById Brand called with: ${id}, expected: ${brandId.toString()}`
       );
       return id === brandId.toString()
         ? Promise.resolve(right(consistentBrand))
@@ -90,7 +90,7 @@ describe("CreateProductUseCase", () => {
 
     mockMaterialRepository.findById = vi.fn((id) => {
       console.log(
-        `FindById called with: ${id}, expected: ${materialId.toString()}`
+        `FindById Material called with: ${id}, expected: ${materialId.toString()}`
       );
       return id === materialId.toString()
         ? Promise.resolve(right(consistentMaterial))
@@ -129,8 +129,8 @@ describe("CreateProductUseCase", () => {
       productCategories: [
         new UniqueEntityID("category_id_as_string").toString(),
       ],
-      materialId: consistentMaterial.id.toString(),
-      brandId: consistentBrand.id.toString(),
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
       price: 200,
       stock: 20,
       height: 2,
@@ -148,7 +148,9 @@ describe("CreateProductUseCase", () => {
     if (result.isLeft()) {
       console.error("Test Failed:", result.value);
       expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-      expect(result.value.message).toBe("Error message detail");
+      expect(result.value.message).toMatch(
+        /Brand not found|Material not found/
+      );
     }
     expect(result.isRight()).toBeTruthy();
   });
