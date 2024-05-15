@@ -13,7 +13,7 @@ import {
 } from "@nestjs/common";
 
 import { CreateCategoryUseCase } from "@/domain/catalog/application/use-cases/create-category";
-import { PrismaCategoryRepository } from "@/domain/catalog/application/repositories/prisma-category-repository";
+
 import { DeleteCategoryUseCase } from "@/domain/catalog/application/use-cases/delete-category";
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 
@@ -21,7 +21,7 @@ import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit
 export class CategoryController {
   constructor(
     private readonly createCategoryUseCase: CreateCategoryUseCase,
-    private readonly prismaCategoryRepository: PrismaCategoryRepository,
+
     private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
     private readonly editCategoryUseCase: EditCategoryUseCase
   ) {}
@@ -37,36 +37,6 @@ export class CategoryController {
       console.error("Erro ao criar category:", error);
       throw new HttpException(
         "Failed to create category",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-  @Get()
-  async findAllCategories(
-    @Query("page") page: string,
-    @Query("pageSize") pageSize: string
-  ) {
-    try {
-      const pageInt = parseInt(page, 10) || 1;
-      const pageSizeInt = parseInt(pageSize, 10) || 10;
-
-      if (isNaN(pageInt) || isNaN(pageSizeInt)) {
-        console.error("Invalid pagination parameters", {
-          page: pageInt,
-          pageSize: pageSizeInt,
-        });
-        throw new BadRequestException("Invalid pagination parameters");
-      }
-
-      const categories = await this.prismaCategoryRepository.findAll({
-        page: pageInt,
-        pageSize: pageSizeInt,
-      });
-      return categories;
-    } catch (error) {
-      console.error("Erro ao recuperar category:", error);
-      throw new HttpException(
-        "Failed to retrieve category",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
@@ -91,23 +61,6 @@ export class CategoryController {
       }
       throw new HttpException(
         "Failed to delete category",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  @Get(":id")
-  async getCategoryById(@Param("id") id: string) {
-    try {
-      const category = await this.prismaCategoryRepository.findById(id);
-      if (!category) {
-        throw new HttpException("category not found", HttpStatus.NOT_FOUND);
-      }
-      return category;
-    } catch (error) {
-      console.error("Erro ao recuperar category:", error);
-      throw new HttpException(
-        "Failed to retrieve category",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

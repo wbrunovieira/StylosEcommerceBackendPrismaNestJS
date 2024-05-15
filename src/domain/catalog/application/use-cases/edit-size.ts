@@ -2,7 +2,8 @@ import { Size } from "../../enterprise/entities/size";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
-import { PrismaSizeRepository } from "../repositories/prima-size-repository";
+
+import { ISizeRepository } from "../repositories/i-size-repository";
 
 interface EditSizeUseCaseRequest {
   sizeId: string;
@@ -17,21 +18,25 @@ type EditSizeUseCaseResponse = Either<
 >;
 @Injectable()
 export class EditSizeUseCase {
-  constructor(private sizesRepository: PrismaSizeRepository) {}
+  constructor(private sizesRepository: ISizeRepository) {}
 
   async execute({
     sizeId,
     name,
   }: EditSizeUseCaseRequest): Promise<EditSizeUseCaseResponse> {
-    const size = await this.sizesRepository.findById(sizeId);
+    const sizeResult = await this.sizesRepository.findById(sizeId);
 
-    if (!size) {
-      return left(new ResourceNotFoundError());
+    if (sizeResult.isLeft()) {
+      return left(new ResourceNotFoundError("Size not found"));
     }
 
+    const size = sizeResult.value;
     size.name = name;
-
-    await this.sizesRepository.save(size);
+    const saveResult = await this.sizesRepository.save(size);
+    
+    if (saveResult.isLeft()) {
+      return left(new ResourceNotFoundError("Failed to update size"));
+    }
 
     return right({
       size,

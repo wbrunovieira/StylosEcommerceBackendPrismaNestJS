@@ -3,7 +3,8 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 import { Injectable } from "@nestjs/common";
 import { Category } from "../../enterprise/entities/category";
-import { PrismaCategoryRepository } from "../repositories/prisma-category-repository";
+
+import { ICategoryRepository } from "../repositories/i-category-repository";
 
 interface EditCategoryUseCaseRequest {
   categoryId: string;
@@ -19,7 +20,7 @@ type EditCategoryUseCaseResponse = Either<
 
 @Injectable()
 export class EditCategoryUseCase {
-  constructor(private categoryRepository: PrismaCategoryRepository) {}
+  constructor(private categoryRepository: ICategoryRepository) {}
 
   async execute({
     categoryId,

@@ -1,7 +1,8 @@
-import { PrismaColorRepository } from '../repositories/prisma-color-repository';
-import { Color } from '../../enterprise/entities/color';
-import { Either, right } from '@/core/either';
-import { Injectable } from '@nestjs/common';
+import { PrismaColorRepository } from "../repositories/prisma-color-repository";
+import { Color } from "../../enterprise/entities/color";
+import { Either, right } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { IColorRepository } from "../repositories/i-color-repository";
 
 interface CreateColorUseCaseRequest {
   name: string;
@@ -16,7 +17,7 @@ type CreateColorUseCaseResponse = Either<
 
 @Injectable()
 export class CreateColorUseCase {
-  constructor(private PrismaColorRepository: PrismaColorRepository) {}
+  constructor(private PrismaColorRepository: IColorRepository) {}
 
   async execute({
     name,
