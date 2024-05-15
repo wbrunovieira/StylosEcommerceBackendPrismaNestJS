@@ -1,13 +1,14 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 describe("Brand Controller (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let brandId;
+  let authToken: string;
+  let brandId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -17,6 +18,18 @@ describe("Brand Controller (E2E)", () => {
     app = moduleRef.createNestApplication();
     prisma = moduleRef.get(PrismaService);
     await app.init();
+
+    const response = await request(app.getHttpServer())
+      .post("/sessions")
+      .send({ email: "admin@example.com", password: "adminpassword" });
+
+    console.log("Authentication Response:", response.body);
+    authToken = response.body.access_token;
+    console.log("authTOken", authToken);
+
+    if (!authToken) {
+      throw new Error("Authentication failed: No token received");
+    }
   });
 
   beforeEach(async () => {
@@ -33,27 +46,31 @@ describe("Brand Controller (E2E)", () => {
   test("[POST] /brands", async () => {
     const response = await request(app.getHttpServer())
       .post("/brands")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({ name: "marca 2" });
 
-    const brandResponse = response.body.brand.props;
+    console.log("Create Brand Response:", response.body);
+    const brandResponse = response.body.brand;
+    console.log("brandResponse", brandResponse);
 
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toHaveProperty("brand");
-    expect(response.body.brand).toHaveProperty("props");
-    expect(brandResponse.name).toEqual("marca 2");
-    expect(brandResponse).toHaveProperty("createdAt");
-    expect(brandResponse).toHaveProperty("updatedAt");
-   
+    expect(brandResponse).toHaveProperty("props");
+    expect(brandResponse.props.name).toEqual("marca 2");
 
-    brandId = response.body.brand._id.value;
+    expect(brandResponse.props).toHaveProperty("createdAt");
+    expect(brandResponse.props).toHaveProperty("updatedAt");
+
+    brandId = brandResponse.id;
   });
 
   test("[POST] /brands with invalid data", async () => {
     const response = await request(app.getHttpServer())
       .post("/brands")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({});
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(response.body.message).toContain("Validation failed");
   });
 

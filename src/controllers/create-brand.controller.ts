@@ -13,6 +13,7 @@ import { CreateBrandUseCase } from "@/domain/catalog/application/use-cases/creat
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 const createBrandSchema = z.object({
   name: z
@@ -24,18 +25,33 @@ const bodyValidationPipe = new ZodValidationsPipe(createBrandSchema);
 type CreateBrandBodySchema = z.infer<typeof createBrandSchema>;
 
 @Controller("brands")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("admin")
 export class BrandController {
   constructor(private readonly createBrandUseCase: CreateBrandUseCase) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   async createBrand(@Body(bodyValidationPipe) body: CreateBrandBodySchema) {
     try {
       const result = await this.createBrandUseCase.execute({ name: body.name });
-      return result.value;
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(
+            error.message,
+            HttpStatus.BAD_REQUEST
+          );
+        }
+        throw new HttpException(
+          "Failed to create brand",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+
+      return { brand: result.value.brand };
+      
     } catch (error) {
-      console.error("Erro ao criar brand:", error);
+      
       throw new HttpException(
         "Failed to create brand",
         HttpStatus.INTERNAL_SERVER_ERROR
