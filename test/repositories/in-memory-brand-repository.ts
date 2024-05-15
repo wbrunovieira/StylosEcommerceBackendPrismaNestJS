@@ -4,6 +4,11 @@ import { IBrandRepository } from "@/domain/catalog/application/repositories/i-br
 
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+
 export class InMemoryBrandRepository implements IBrandRepository {
   public items: Brand[] = [];
 
@@ -29,6 +34,15 @@ export class InMemoryBrandRepository implements IBrandRepository {
     console.log("entrou no findby id do inmmemoryrepo brand", id);
     const brand = this.items.find((item) => item.id.toString() === id);
     console.log("brand no repo inmmemoryrepo ", brand);
+    if (!brand) {
+      return left(new Error("Brand not found"));
+    }
+    return right(brand);
+  }
+
+  async findByName(name: string): Promise<Either<Error, Brand>> {
+    const normalizedName = normalizeName(name);
+    const brand = this.items.find((item) => normalizeName(item.name) === normalizedName);
     if (!brand) {
       return left(new Error("Brand not found"));
     }
