@@ -89,3 +89,4 @@ docker compose exec app npx prisma generate
 docker compose exec app npm run test -- src/domain/catalog/application/use-cases/create-brand.spec.ts
 
 docker compose exec app npm run test:e2e -- src/controllers/create-colors.controller.e2e-spec.ts
+docker compose exec app npm run test:e2e -- src/controllers/create-brand.controller.e2e-spec.ts

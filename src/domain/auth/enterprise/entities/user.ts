@@ -1,6 +1,6 @@
-import { Entity } from '@/core/entities/entity';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Optional } from '@/core/types/optional';
+import { Entity } from "@/core/entities/entity";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Optional } from "@/core/types/optional";
 
 interface UserProps {
   name: string;
@@ -8,11 +8,16 @@ interface UserProps {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  role: "user" | "admin";
 }
 
 export class User extends Entity<UserProps> {
   get name(): string {
     return this.props.name;
+  }
+
+  get role(): string {
+    return this.props.role;
   }
 
   get email(): string {
@@ -41,7 +46,7 @@ export class User extends Entity<UserProps> {
   }
 
   public static create(
-    props: Optional<UserProps, 'createdAt' | 'updatedAt'>,
+    props: Optional<UserProps, "createdAt" | "updatedAt">,
     id?: UniqueEntityID
   ) {
     const user = new User(

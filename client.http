@@ -65,6 +65,17 @@ Content-Type: application/json
   "email": "bru@bruno.com",
   "password": "123456"
 }
+### 
+
+
+# @name authenticate-admin
+POST {{BASE_URL}}/sessions
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "adminpassword"
+}
 
 ###
 # @name get-all-accounts
