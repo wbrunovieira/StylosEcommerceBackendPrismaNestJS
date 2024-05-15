@@ -16,6 +16,7 @@ model User {
   profileImageUrl String?
   googleUserId    String?
   isGoogleUser    Boolean?
+  role            String
   addresses       Address[]
 
   createdAt DateTime @default(now()) @map("created_at")

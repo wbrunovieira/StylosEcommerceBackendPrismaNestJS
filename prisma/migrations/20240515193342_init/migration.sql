@@ -7,6 +7,7 @@ CREATE TABLE "users" (
     "profileImageUrl" TEXT,
     "googleUserId" TEXT,
     "isGoogleUser" BOOLEAN,
+    "role" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 

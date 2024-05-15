@@ -21,6 +21,8 @@ const createAccountBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
+  role: z.enum(['user', 'admin']).default('user'),
+
 });
 
 const createGoogleAccountBodySchema = z.object({
@@ -28,12 +30,14 @@ const createGoogleAccountBodySchema = z.object({
   email: z.string().email(),
   googleUserId: z.string(),
   profileImageUrl: z.string(),
+  role: z.enum(['user', 'admin']).default('user'),
 });
 
 const updateUserBodySchema = z.object({
   name: z.string().optional(),
   email: z.string().email().optional(),
   password: z.string().min(6).optional(),
+  role: z.enum(['user', 'admin']).optional(),
 });
 
 type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
@@ -55,7 +59,7 @@ export class CreateAccountController {
   @HttpCode(201)
   @UsePipes(new ZodValidationsPipe(createAccountBodySchema))
   async handle(@Body() body: CreateAccountBodyBodySchema) {
-    const { name, email, password } = body;
+    const { name, email, password , role } = body;
 
     const userAlreadyExists = await this.prisma.user.findUnique({
       where: {
@@ -74,15 +78,17 @@ export class CreateAccountController {
         name,
         email,
         password: hashPassword,
+        role,
       },
       select: {
         id: true,
         name: true,
         email: true,
+        role: true,
       },
     });
-    const accessToken = this.jwt.sign({ sub: user.id });
-    console.log('criando conta', user, accessToken);
+    const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
+    
     return { user, accessToken };
   }
   @Post('/google')
@@ -91,8 +97,8 @@ export class CreateAccountController {
   async handleGoogleAccountCreation(
     @Body() body: CreateGoogleAccountBodySchema
   ) {
-    console.log('criando conta do google', body);
-    const { name, email, googleUserId, profileImageUrl } = body;
+    
+    const { name, email, googleUserId, profileImageUrl, role } = body;
 
     const userAlreadyExists = await this.prisma.user.findUnique({
       where: {
@@ -114,14 +120,16 @@ export class CreateAccountController {
         googleUserId,
         isGoogleUser: true,
         profileImageUrl,
+        role,
       },
       select: {
         id: true,
 
         email: true,
+        role: true,
       },
     });
-    console.log('criando conta do google', newUser);
+    
     return newUser;
   }
 
@@ -169,9 +177,8 @@ export class CreateAccountController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('id') id: string, @Body() body: any) {
-    const { name, email, password } = body;
-    console.log('Rota updateUser foi acessada');
-    console.log('atualizando usuario', body, id);
+    const { name, email, password, role } = body;
+   
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -190,6 +197,7 @@ export class CreateAccountController {
       const hashPassword = await hash(password, 8);
       updatedUserData.password = hashPassword;
     }
+    if (role !== undefined) updatedUserData.role = role;
 
     const updatedUser = await this.prisma.user.update({
       where: {
