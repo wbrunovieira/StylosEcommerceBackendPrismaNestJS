@@ -37,25 +37,16 @@ export class BrandController {
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.BAD_REQUEST
-          );
+          throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
-        throw new HttpException(
-          "Failed to create brand",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
+      } else {
+        return { brand: result.value.brand };
       }
-
-      return { brand: result.value.brand };
-      
     } catch (error) {
-      
-      throw new HttpException(
-        "Failed to create brand",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw error;
     }
   }
 }
