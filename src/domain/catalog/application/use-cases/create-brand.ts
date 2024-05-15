@@ -1,7 +1,7 @@
 import { Brand } from "../../enterprise/entities/brand";
 import { Either, right } from "@/core/either";
 
-import { Inject, Injectable } from "@nestjs/common";
+import {  Injectable } from "@nestjs/common";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 
 interface CreateBrandUseCaseRequest {
@@ -17,9 +17,7 @@ type CreateBrandUseCaseResponse = Either<
 
 @Injectable()
 export class CreateBrandUseCase {
-  constructor(
-    @Inject("IBrandRepository") private brandRepository: IBrandRepository
-  ) {}
+  constructor(private brandRepository: IBrandRepository) {}
 
   async execute({
     name,

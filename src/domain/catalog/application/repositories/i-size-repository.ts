@@ -1,9 +1,11 @@
+import { Either } from "@/core/either";
 import { Size } from "../../enterprise/entities/size";
+import { PaginationParams } from "@/core/repositories/pagination-params";
 
-export interface ISizeRepository {
-  create(size: Size): Promise<void>;
-  // findById(id: string): Promise<Size | null>;
-  // delete(size: Size): Promise<void>;
-  // save(size: Size): Promise<void>;
-  // findAll(params: PaginationParams): Promise<Size[]>;
+export abstract class ISizeRepository {
+  abstract create(size: Size): Promise<Either<Error, Size>>;
+  abstract findById(id: string): Promise<Either<Error, Size>>;
+  abstract delete(size: Size): Promise<Either<Error, void>>;
+  abstract save(size: Size): Promise<Either<Error, void>>;
+  abstract findAll(params: PaginationParams): Promise<Either<Error, Size[]>>;
 }

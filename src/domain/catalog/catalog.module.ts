@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { ColorsController } from "../../controllers/create-colors.controller";
 import { CreateColorUseCase } from "./application/use-cases/create-color";
 
+import { IBrandRepository } from "./application/repositories/i-brand-repository";
+
 import { PrismaColorRepository } from "../../domain/catalog/application/repositories/prisma-color-repository";
 import { PrismaService } from "../../prisma/prisma.service";
 import { DeleteColorUseCase } from "./application/use-cases/delete-color";
@@ -26,42 +28,78 @@ import { CreateCategoryUseCase } from "./application/use-cases/create-category";
 import { PrismaCategoryRepository } from "./application/repositories/prisma-category-repository";
 import { EditCategoryUseCase } from "./application/use-cases/edit-category";
 import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
-import { CreateProductController } from "@/controllers/create-products.controller";
-import { CreateProductUseCase } from "./application/use-cases/create-product";
-import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
+// import { CreateProductController } from "@/controllers/create-products.controller";
+// import { CreateProductUseCase } from "./application/use-cases/create-product";
+// import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
 import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
 import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
+import { IColorRepository } from "./application/repositories/i-color-repository";
+import { ISizeRepository } from "./application/repositories/i-size-repository";
+import { IMaterialRepository } from "./application/repositories/i-material-repository";
+import { ICategoryRepository } from "./application/repositories/i-category-repository";
 
 @Module({
   controllers: [
+    BrandController,
     ColorsController,
     SizeController,
-    BrandController,
     MaterialController,
     CategoryController,
-    CreateProductController,
+    // CreateProductController,
   ],
   providers: [
-    CreateColorUseCase,
-    CreateSizeUseCase,
     CreateBrandUseCase,
-    CreateMaterialUseCase,
-    CreateCategoryUseCase,
-    CreateProductUseCase,
-
-    PrismaService,
-    DeleteColorUseCase,
-    EditColorUseCase,
-    DeleteSizeUseCase,
-    EditSizeUseCase,
-    DeleteBrandUseCase,
     EditBrandUseCase,
+    DeleteBrandUseCase,
+    CreateColorUseCase,
+    EditColorUseCase,
+    DeleteColorUseCase,
+    CreateSizeUseCase,
+    EditSizeUseCase,
+    DeleteSizeUseCase,
+    CreateMaterialUseCase,
     EditMaterialUseCase,
     DeleteMaterialUseCase,
+    CreateCategoryUseCase,
     EditCategoryUseCase,
     DeleteCategoryUseCase,
+    // CreateProductUseCase,
+
+    PrismaService,
+    {
+      provide: IBrandRepository,
+      useClass: PrismaBrandRepository,
+    },
+    {
+      provide: IColorRepository,
+      useClass: PrismaColorRepository,
+    },
+    {
+      provide: ISizeRepository,
+      useClass: PrismaSizeRepository,
+    },
+    {
+      provide: IMaterialRepository,
+      useClass: PrismaMaterialRepository,
+    },
+    {
+      provide: ICategoryRepository,
+      useClass: PrismaCategoryRepository,
+    },
+    // {
+    //   provide: IProductRepository,
+    //   useClass: PrismaProductRepository,
+    // },
   ],
-  exports: [CreateBrandUseCase, PrismaBrandRepository, CreateProductUseCase],
+  exports: [
+    PrismaService,
+    IBrandRepository,
+    IColorRepository,
+    ISizeRepository,
+    IMaterialRepository,
+    ICategoryRepository,
+    // IProductRepository
+  ],
 })
 export class CatalogModule {}

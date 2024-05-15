@@ -2,7 +2,8 @@ import { Either, left, right } from "@/core/either";
 
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
-import { PrismaSizeRepository } from "../repositories/prima-size-repository";
+
+import { ISizeRepository } from "../repositories/i-size-repository";
 
 interface DeleteSizeUseCaseRequest {
   sizeId: string;
@@ -12,16 +13,18 @@ type DeleteSizeUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
 @Injectable()
 export class DeleteSizeUseCase {
-  constructor(private sizesRepository: PrismaSizeRepository) {}
+  constructor(private sizesRepository: ISizeRepository) {}
 
   async execute({
     sizeId,
   }: DeleteSizeUseCaseRequest): Promise<DeleteSizeUseCaseResponse> {
-    const size = await this.sizesRepository.findById(sizeId);
+    const sizeResult = await this.sizesRepository.findById(sizeId);
 
-    if (!size) {
-      return left(new ResourceNotFoundError());
+    if (sizeResult.isLeft()) {
+      return left(new ResourceNotFoundError("Size not found"));
     }
+
+    const size = sizeResult.value;
 
     await this.sizesRepository.delete(size);
 

@@ -1,11 +1,11 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { Color } from '../../enterprise/entities/color';
-import { Either } from '@/core/either';
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { Color } from "../../enterprise/entities/color";
+import { Either } from "@/core/either";
 
-export interface IColorRepository {
-  findById(id: string): Promise<Either<Error, Color>>;
-  create(color: Color): Promise<Either<Error, void>>;
-  delete(color: Color): Promise<Either<Error, void>>;
-  save(color: Color): Promise<Either<Error, void>>;
-  findAll(params: PaginationParams): Promise<Either<Error, Color[]>>
+export abstract class IColorRepository {
+  abstract findById(id: string): Promise<Either<Error, Color>>;
+  abstract create(color: Color): Promise<Either<Error, void>>;
+  abstract delete(color: Color): Promise<Either<Error, void>>;
+  abstract save(color: Color): Promise<Either<Error, void>>;
+  abstract findAll(params: PaginationParams): Promise<Either<Error, Color[]>>;
 }

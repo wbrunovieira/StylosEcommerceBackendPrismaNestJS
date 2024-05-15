@@ -2,7 +2,8 @@ import { Either, right } from "@/core/either";
 
 import { Injectable } from "@nestjs/common";
 import { Category } from "../../enterprise/entities/category";
-import { PrismaCategoryRepository } from "../repositories/prisma-category-repository";
+
+import { ICategoryRepository } from "../repositories/i-category-repository";
 
 interface CreateCategoryUseCaseRequest {
   name: string;
@@ -16,7 +17,7 @@ type CreateCategoryUseCaseResponse = Either<
 >;
 @Injectable()
 export class CreateCategoryUseCase {
-  constructor(private categoryRepository: PrismaCategoryRepository) {}
+  constructor(private categoryRepository: ICategoryRepository) {}
 
   async execute({
     name,

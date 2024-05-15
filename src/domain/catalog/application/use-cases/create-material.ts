@@ -1,8 +1,9 @@
 
 import { Material } from "../../enterprise/entities/material";
 import { Either, right } from "@/core/either";
-import { PrismaMaterialRepository } from "../repositories/prisma-material-repository";
+
 import { Injectable } from "@nestjs/common";
+import { IMaterialRepository } from "../repositories/i-material-repository";
 
 interface CreateMaterialUseCaseRequest {
   name: string;
@@ -17,7 +18,7 @@ type CreateMaterialUseCaseResponse = Either<
 
 @Injectable()
 export class CreateMaterialUseCase {
-  constructor(private materialRepository: PrismaMaterialRepository) {}
+  constructor(private materialRepository: IMaterialRepository) {}
 
   async execute({
     name,
