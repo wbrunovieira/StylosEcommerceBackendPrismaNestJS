@@ -4,10 +4,14 @@ import { BrandController } from "./create-brand.controller";
 import { CreateBrandUseCase } from "@/domain/catalog/application/use-cases/create-brand";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
-import { vi } from "vitest";
-
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
+import { RolesGuard } from "@/auth/roles.guard";
+import { Reflector } from "@nestjs/core";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
+import { ExecutionContext } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt"; // Import the JwtService
+import { vi } from "vitest";
 
 describe("BrandController", () => {
   let brandController: BrandController;
@@ -15,8 +19,7 @@ describe("BrandController", () => {
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
-
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BrandController],
@@ -27,13 +30,41 @@ describe("BrandController", () => {
             execute: vi.fn(),
           },
         },
+        Reflector,
+        {
+          provide: JwtAuthGuard,
+          useValue: {
+            canActivate: (context: ExecutionContext) => {
+              const request = context.switchToHttp().getRequest();
+              request.user = { role: "admin" };
+              return true;
+            },
+          },
+        },
+        {
+          provide: RolesGuard,
+          useValue: {
+            canActivate: (context: ExecutionContext) => {
+              const request = context.switchToHttp().getRequest();
+              request.user = { role: "admin" };
+              return true;
+            },
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: () => "test-token",
+            verify: () => ({ id: "admin-id", role: "admin" }),
+          },
+        },
       ],
-
     }).compile();
 
     brandController = module.get<BrandController>(BrandController);
     createBrandUseCase = module.get<CreateBrandUseCase>(CreateBrandUseCase);
   });
+
   afterEach(() => {
     consoleErrorSpy.mockRestore();
   });
@@ -77,17 +108,17 @@ describe("BrandController", () => {
   });
 
   it("should handle ResourceNotFoundError", async () => {
-    const mockError = left(new ResourceNotFoundError("Brand not found"));
-    vi.spyOn(createBrandUseCase, "execute").mockImplementation(() => {
-      throw new Error("CreateBrandUseCase error");
-    });
+    const mockError = left(
+      new ResourceNotFoundError("Brand not found")
+    ) as Either<ResourceNotFoundError | null, { brand: Brand }>;
+    vi.spyOn(createBrandUseCase, "execute").mockResolvedValue(mockError);
 
     try {
       await brandController.createBrand({ name: "NonExistentBrand" });
     } catch (error) {
       if (error instanceof HttpException) {
-        expect(error.message).toBe("Failed to create brand");
-        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(error.message).toBe("Brand not found");
+        expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
       } else {
         throw new Error("Expected HttpException");
       }
