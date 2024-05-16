@@ -7,6 +7,8 @@ import {
   UseGuards,
   Put,
   Param,
+  Get,
+  Query,
 } from "@nestjs/common";
 import { z } from "zod";
 import { ZodValidationsPipe } from "../pipes/zod-validations-pipe";
@@ -17,6 +19,7 @@ import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
+import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
 
 const createBrandSchema = z.object({
   name: z
@@ -26,7 +29,6 @@ const createBrandSchema = z.object({
 });
 const bodyValidationPipe = new ZodValidationsPipe(createBrandSchema);
 type CreateBrandBodySchema = z.infer<typeof createBrandSchema>;
-
 
 const editBrandSchema = z.object({
   name: z
@@ -41,7 +43,11 @@ type EditBrandBodySchema = z.infer<typeof editBrandSchema>;
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
 export class BrandController {
-  constructor(private readonly createBrandUseCase: CreateBrandUseCase,private readonly editBrandUseCase: EditBrandUseCase) {}
+  constructor(
+    private readonly createBrandUseCase: CreateBrandUseCase,
+    private readonly editBrandUseCase: EditBrandUseCase,
+    private readonly findBrandByNameUseCase: FindBrandByNameUseCase
+  ) {}
 
   @Post()
   async createBrand(@Body(bodyValidationPipe) body: CreateBrandBodySchema) {
@@ -59,7 +65,10 @@ export class BrandController {
       if (error instanceof ResourceNotFoundError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
-      throw new HttpException("Failed to create brand", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        "Failed to create brand",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
@@ -85,7 +94,33 @@ export class BrandController {
       if (error instanceof ResourceNotFoundError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
-      throw new HttpException("Failed to update brand", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        "Failed to update brand",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get()
+  async findBrandByName(@Query("name") name: string) {
+    try {
+      const result = await this.findBrandByNameUseCase.execute({ name });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { brand: result.value.brand };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find brand",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

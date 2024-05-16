@@ -13,11 +13,13 @@ import { ExecutionContext } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
+import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
 
 describe("BrandController", () => {
   let brandController: BrandController;
   let createBrandUseCase: CreateBrandUseCase;
   let editBrandUseCase: EditBrandUseCase;
+  let findBrandByNameUseCase: FindBrandByNameUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -34,6 +36,12 @@ describe("BrandController", () => {
         },
         {
           provide: EditBrandUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
+        {
+          provide: FindBrandByNameUseCase,
           useValue: {
             execute: vi.fn(),
           },
@@ -72,6 +80,9 @@ describe("BrandController", () => {
     brandController = module.get<BrandController>(BrandController);
     createBrandUseCase = module.get<CreateBrandUseCase>(CreateBrandUseCase);
     editBrandUseCase = module.get<EditBrandUseCase>(EditBrandUseCase);
+    findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
+      FindBrandByNameUseCase
+    );
   });
 
   afterEach(() => {
@@ -158,4 +169,44 @@ describe("BrandController", () => {
       }
     }
   });
+
+  it("should find a brand by name successfully", async () => {
+    const mockBrand = Brand.create(
+      {
+        name: "BrandName",
+      },
+      new UniqueEntityID("brand-1")
+    );
+    const mockResult = right({ brand: mockBrand }) as Either<
+      ResourceNotFoundError,
+      { brand: Brand }
+    >;
+    vi.spyOn(findBrandByNameUseCase, "execute").mockResolvedValue(mockResult);
+
+    const result = await brandController.findBrandByName("BrandName");
+
+    expect(result).toEqual(mockResult.value);
+    expect(findBrandByNameUseCase.execute).toHaveBeenCalledWith({
+      name: "BrandName",
+    });
+  });
+
+  it("should handle errors thrown by FindBrandByNameUseCase", async () => {
+    vi.spyOn(findBrandByNameUseCase, "execute").mockImplementation(() => {
+      throw new Error("FindBrandByNameUseCase error");
+    });
+
+    try {
+      await brandController.findBrandByName("BrandWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to find brand");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
+
+
 });

@@ -28,9 +28,7 @@ import { CreateCategoryUseCase } from "./application/use-cases/create-category";
 import { PrismaCategoryRepository } from "./application/repositories/prisma-category-repository";
 import { EditCategoryUseCase } from "./application/use-cases/edit-category";
 import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
-// import { CreateProductController } from "@/controllers/create-products.controller";
-// import { CreateProductUseCase } from "./application/use-cases/create-product";
-// import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
+
 import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
 import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
@@ -38,6 +36,7 @@ import { IColorRepository } from "./application/repositories/i-color-repository"
 import { ISizeRepository } from "./application/repositories/i-size-repository";
 import { IMaterialRepository } from "./application/repositories/i-material-repository";
 import { ICategoryRepository } from "./application/repositories/i-category-repository";
+import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-name";
 
 @Module({
   controllers: [
@@ -46,12 +45,13 @@ import { ICategoryRepository } from "./application/repositories/i-category-repos
     SizeController,
     MaterialController,
     CategoryController,
-    // CreateProductController,
+   
   ],
   providers: [
     CreateBrandUseCase,
     EditBrandUseCase,
     DeleteBrandUseCase,
+    FindBrandByNameUseCase,
     CreateColorUseCase,
     EditColorUseCase,
     DeleteColorUseCase,
@@ -64,7 +64,7 @@ import { ICategoryRepository } from "./application/repositories/i-category-repos
     CreateCategoryUseCase,
     EditCategoryUseCase,
     DeleteCategoryUseCase,
-    // CreateProductUseCase,
+   
 
     PrismaService,
     {
@@ -87,10 +87,7 @@ import { ICategoryRepository } from "./application/repositories/i-category-repos
       provide: ICategoryRepository,
       useClass: PrismaCategoryRepository,
     },
-    // {
-    //   provide: IProductRepository,
-    //   useClass: PrismaProductRepository,
-    // },
+
   ],
   exports: [
     PrismaService,
@@ -99,7 +96,7 @@ import { ICategoryRepository } from "./application/repositories/i-category-repos
     ISizeRepository,
     IMaterialRepository,
     ICategoryRepository,
-    // IProductRepository
+   
   ],
 })
 export class CatalogModule {}
