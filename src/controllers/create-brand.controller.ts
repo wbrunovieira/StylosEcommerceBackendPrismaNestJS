@@ -9,6 +9,7 @@ import {
   Param,
   Get,
   Query,
+  Delete,
 } from "@nestjs/common";
 import { z } from "zod";
 import { ZodValidationsPipe } from "../pipes/zod-validations-pipe";
@@ -23,6 +24,7 @@ import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/f
 import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
 import { left } from "@/core/either";
 import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id.use-case";
+import { DeleteBrandUseCase } from "@/domain/catalog/application/use-cases/delete-brand";
 
 const createBrandSchema = z.object({
   name: z
@@ -61,7 +63,8 @@ export class BrandController {
     private readonly editBrandUseCase: EditBrandUseCase,
     private readonly findBrandByNameUseCase: FindBrandByNameUseCase,
     private readonly getAllBrandsUseCase: GetAllBrandsUseCase,
-    private readonly findBrandByIdUseCase: FindBrandByIdUseCase
+    private readonly findBrandByIdUseCase: FindBrandByIdUseCase,
+    private readonly deleteBrandUseCase: DeleteBrandUseCase
   ) {}
 
   @Post()
@@ -174,6 +177,29 @@ export class BrandController {
       }
       throw new HttpException(
         "Failed to find brand",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Delete(":id")
+  async deleteBrand(@Param("id") id: string) {
+    try {
+      const result = await this.deleteBrandUseCase.execute({ brandId: id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { message: "Brand deleted successfully" };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to delete brand",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

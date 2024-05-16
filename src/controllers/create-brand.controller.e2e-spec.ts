@@ -123,15 +123,14 @@ describe("Brand Controller (E2E)", () => {
     expect(response.body.brand.props.name).toEqual("marca 1");
   });
 
-  // test("[DELETE] /brands/:id", async () => {
-  //   const response = await request(app.getHttpServer()).delete(
-  //     `/brands/${brandId}`
-  //   );
-  //   expect(response.statusCode).toBe(200);
+  test("[DELETE] /brands/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .delete(`/brands/${brandId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
 
-  //   expect(response.body.message).toEqual("brand deleted successfully");
-  //   console.log("delete brand response body", response.body);
-  // });
+    expect(response.body.message).toEqual("Brand deleted successfully");
+  });
 
   afterAll(async () => {
     await app.close();

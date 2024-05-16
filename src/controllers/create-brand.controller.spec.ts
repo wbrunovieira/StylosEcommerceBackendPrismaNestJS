@@ -16,6 +16,7 @@ import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-br
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
 import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
 import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id.use-case";
+import { DeleteBrandUseCase } from "@/domain/catalog/application/use-cases/delete-brand";
 
 describe("BrandController", () => {
   let brandController: BrandController;
@@ -24,6 +25,7 @@ describe("BrandController", () => {
   let findBrandByNameUseCase: FindBrandByNameUseCase;
   let getAllBrandsUseCase: GetAllBrandsUseCase;
   let findBrandByIdUseCase: FindBrandByIdUseCase;
+  let deleteBrandUseCase: DeleteBrandUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -58,6 +60,12 @@ describe("BrandController", () => {
         },
         {
           provide: FindBrandByIdUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
+        {
+          provide: DeleteBrandUseCase,
           useValue: {
             execute: vi.fn(),
           },
@@ -102,6 +110,7 @@ describe("BrandController", () => {
     getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
     findBrandByIdUseCase =
       module.get<FindBrandByIdUseCase>(FindBrandByIdUseCase);
+      deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
   });
 
   afterEach(() => {
@@ -309,6 +318,38 @@ describe("BrandController", () => {
     } catch (error) {
       if (error instanceof HttpException) {
         expect(error.message).toBe("Failed to find brand");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
+
+  it("should delete a brand successfully", async () => {
+    const mockResult = right({}) as Either<
+      ResourceNotFoundError,
+      {}
+    >;
+    vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
+
+    const result = await brandController.deleteBrand("brand-1");
+
+    expect(result).toEqual({ message: "Brand deleted successfully" });
+    expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
+      brandId: "brand-1",
+    });
+  });
+
+  it("should handle errors thrown by DeleteBrandUseCase", async () => {
+    vi.spyOn(deleteBrandUseCase, "execute").mockImplementation(() => {
+      throw new Error("DeleteBrandUseCase error");
+    });
+
+    try {
+      await brandController.deleteBrand("BrandWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to delete brand");
         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
       } else {
         throw new Error("Expected HttpException");
