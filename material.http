@@ -44,8 +44,9 @@ Content-Type: application/json
 ###
 
 # @name find-material-by-id
-GET  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+GET  {{BASE_URL}}/materials/b2d81494-7b62-478d-8983-45cbfa1d4cd1
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 

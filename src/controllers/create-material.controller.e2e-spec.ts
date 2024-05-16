@@ -78,14 +78,15 @@ describe("Materials Controller (E2E)", () => {
   //   expect(response.body.length).toBeGreaterThan(0);
   // });
 
-  // test("[GET] /materials/:id", async () => {
-  //   const response = await request(app.getHttpServer()).get(
-  //     `/materials/${materialId}`
-  //   );
-  //   expect(response.statusCode).toBe(200);
-  //   console.log("Response body:", JSON.stringify(response.body, null, 2));
-  //   expect(response.body.props.name).toEqual("material 1");
-  // });
+  test("[GET] /materials/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/materials/${materialId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body).toHaveProperty("material");
+    expect(response.body.material.props.name).toEqual("material 1");
+  });
 
   test("[PUT] /materials/:id", async () => {
     const updatedMaterialData = { name: "marca 3" };

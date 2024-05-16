@@ -23,6 +23,7 @@ import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { FindMaterialByNameUseCase} from "@/domain/catalog/application/use-cases/find-material-by-name";
+import { FindMaterialByIdUseCase } from "@/domain/catalog/application/use-cases/find-material-by-id";
 
 const createMaterialSchema = z.object({
   name: z
@@ -49,7 +50,8 @@ export class MaterialController {
   constructor(
     private readonly createMaterialUseCase: CreateMaterialUseCase,
     private readonly editMaterialUseCase: EditMaterialUseCase,
-    private readonly findMaterialByNameUseCase: FindMaterialByNameUseCase
+    private readonly findMaterialByNameUseCase: FindMaterialByNameUseCase,
+    private readonly findMaterialByIdUseCase: FindMaterialByIdUseCase
 
     // private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
   ) {}
@@ -135,10 +137,35 @@ export class MaterialController {
     }
   }
 
+
+
   @Get()
   async findMaterialByName(@Query("name") name: string) {
     try {
       const result = await this.findMaterialByNameUseCase.execute({ name });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { material: result.value.material };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find material",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get(":id")
+  async findMaterialById(@Param("id") id: string) {
+    try {
+      const result = await this.findMaterialByIdUseCase.execute({ id });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
