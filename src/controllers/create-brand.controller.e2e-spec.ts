@@ -86,6 +86,17 @@ describe("Brand Controller (E2E)", () => {
     expect(response.body.brand.props.name).toEqual(updatedBrandData.name);
   });
 
+  test("[GET] /brands", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/brands")
+      .query({ name: "marca 1" })
+      .set("Authorization", `Bearer ${authToken}`);
+
+    expect(response.statusCode).toBe(HttpStatus.OK);
+    expect(response.body).toHaveProperty("brand");
+    expect(response.body.brand.props.name).toEqual("marca 1");
+  });
+
   // test("[GET] /brands", async () => {
   //   const response = await request(app.getHttpServer())
   //     .get("/brands")
