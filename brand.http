@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "marca 11"
+  "name": "marca 112"
   
 }
 
@@ -38,14 +38,10 @@ Content-Type: application/json
 ###
 
 # @name get-brands-by-name
-GET  {{BASE_URL}}/brands?name=marca 9
+GET  {{BASE_URL}}/brands?name=marca 112
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
-{
-  "name": "marca 11"
-  
-}
 
 ###
 # @name get-brands-all

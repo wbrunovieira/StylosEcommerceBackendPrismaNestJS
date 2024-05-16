@@ -16,12 +16,13 @@ import { MaterialController } from "./create-material.controller";
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 import { Material } from "@/domain/catalog/enterprise/entities/material";
 import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
+import { FindMaterialByNameUseCase } from "@/domain/catalog/application/use-cases/find-material-by-name";
 
 describe("MaterialController", () => {
   let materialController: MaterialController;
   let createMaterialUseCase: CreateMaterialUseCase;
   let editMaterialUseCase: EditMaterialUseCase;
-  //   let findBrandByNameUseCase: FindBrandByNameUseCase;
+  let findMaterialByNameUseCase: FindMaterialByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   //   let findBrandByIdUseCase: FindBrandByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
@@ -45,12 +46,12 @@ describe("MaterialController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: FindBrandByNameUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: FindMaterialByNameUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: GetAllBrandsUseCase,
         //   useValue: {
@@ -105,9 +106,9 @@ describe("MaterialController", () => {
       CreateMaterialUseCase
     );
     editMaterialUseCase = module.get<EditMaterialUseCase>(EditMaterialUseCase);
-    // findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
-    //   FindBrandByNameUseCase
-    // );
+    findMaterialByNameUseCase = module.get<FindMaterialByNameUseCase>(
+      FindMaterialByNameUseCase
+    );
     // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
     // findBrandByIdUseCase =
     //   module.get<FindBrandByIdUseCase>(FindBrandByIdUseCase);
@@ -201,43 +202,45 @@ describe("MaterialController", () => {
     }
   });
 
-  // it("should find a brand by name successfully", async () => {
-  //   const mockMaterial = Brand.create(
-  //     {
-  //       name: "BrandName",
-  //     },
-  //     new UniqueEntityID("brand-1")
-  //   );
-  //   const mockResult = right({ brand: mockBrand }) as Either<
-  //     ResourceNotFoundError,
-  //     { material: Brand }
-  //   >;
-  //   vi.spyOn(findBrandByNameUseCase, "execute").mockResolvedValue(mockResult);
+  it("should find a material by name successfully", async () => {
+    const mockMaterial = Material.create(
+      {
+        name: "MaterialName",
+      },
+      new UniqueEntityID("material-1")
+    );
+    const mockResult = right({ material: mockMaterial }) as Either<
+      ResourceNotFoundError,
+      { material: Material }
+    >;
+    vi.spyOn(findMaterialByNameUseCase, "execute").mockResolvedValue(
+      mockResult
+    );
 
-  //   const result = await brandController.findBrandByName("BrandName");
+    const result = await materialController.findMaterialByName("MaterialName");
 
-  //   expect(result).toEqual(mockResult.value);
-  //   expect(findBrandByNameUseCase.execute).toHaveBeenCalledWith({
-  //     name: "BrandName",
-  //   });
-  // });
+    expect(result).toEqual(mockResult.value);
+    expect(findMaterialByNameUseCase.execute).toHaveBeenCalledWith({
+      name: "MaterialName",
+    });
+  });
 
-  //   it("should handle errors thrown by FindBrandByNameUseCase", async () => {
-  //     vi.spyOn(findBrandByNameUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("FindBrandByNameUseCase error");
-  //     });
+  it("should handle errors thrown by findMaterialByNameUseCase", async () => {
+    vi.spyOn(findMaterialByNameUseCase, "execute").mockImplementation(() => {
+      throw new Error("findMaterialByNameUseCase error");
+    });
 
-  //     try {
-  //       await brandController.findBrandByName("BrandWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to find brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await materialController.findMaterialByName("MAterialWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to find material");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   //   it("should get all brands successfully", async () => {
   //     const mockBrand1 = Brand.create(
@@ -317,7 +320,7 @@ describe("MaterialController", () => {
   //     });
 
   //     try {
-  //       await brandController.findBrandById("BrandWithError");
+  //       await brandController.findBrandById("MAterialWithError");
   //     } catch (error) {
   //       if (error instanceof HttpException) {
   //         expect(error.message).toBe("Failed to find brand");

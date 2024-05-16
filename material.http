@@ -23,6 +23,14 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
+# @name get-materials-by-name
+GET  {{BASE_URL}}/materials?name=material 5
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+###
+
 # @name get-materials
 GET  {{BASE_URL}}/materials
 Content-Type: application/json
