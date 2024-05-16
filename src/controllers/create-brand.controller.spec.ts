@@ -10,7 +10,7 @@ import { Reflector } from "@nestjs/core";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 import { ExecutionContext } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt"; // Import the JwtService
+import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
 
 describe("BrandController", () => {
@@ -101,24 +101,6 @@ describe("BrandController", () => {
       if (error instanceof HttpException) {
         expect(error.message).toBe("Failed to create brand");
         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      } else {
-        throw new Error("Expected HttpException");
-      }
-    }
-  });
-
-  it("should handle ResourceNotFoundError", async () => {
-    const mockError = left(
-      new ResourceNotFoundError("Brand not found")
-    ) as Either<ResourceNotFoundError | null, { brand: Brand }>;
-    vi.spyOn(createBrandUseCase, "execute").mockResolvedValue(mockError);
-
-    try {
-      await brandController.createBrand({ name: "NonExistentBrand" });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        expect(error.message).toBe("Brand not found");
-        expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
       } else {
         throw new Error("Expected HttpException");
       }

@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "marca 6"
+  "name": "marca 7"
   
 }
 
@@ -43,11 +43,12 @@ Content-Type: application/json
 ###
 
 # @name edit-brand
-PUT  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+PUT  {{BASE_URL}}/brands/638002d1-b91c-4666-9030-66cbc25fc0ac
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "brand 2"
+  "name": "brand 4"
   
 }
 
