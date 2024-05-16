@@ -57,8 +57,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name delete-brands
-Delete  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
+Delete  {{BASE_URL}}/brands/0a808470-4977-412a-a9a4-521aca95e84f
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
