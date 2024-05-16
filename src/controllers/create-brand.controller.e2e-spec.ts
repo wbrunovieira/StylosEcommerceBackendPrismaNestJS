@@ -74,6 +74,18 @@ describe("Brand Controller (E2E)", () => {
     expect(response.body.message).toContain("Validation failed");
   });
 
+  test("[PUT] /brands/:id", async () => {
+    const updatedBrandData = { name: "marca 3" };
+    const response = await request(app.getHttpServer())
+      .put(`/brands/${brandId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .send(updatedBrandData);
+
+    expect(response.statusCode).toBe(200);
+    console.log("put brand response body", response.body);
+    expect(response.body.brand.props.name).toEqual(updatedBrandData.name);
+  });
+
   // test("[GET] /brands", async () => {
   //   const response = await request(app.getHttpServer())
   //     .get("/brands")
@@ -90,17 +102,6 @@ describe("Brand Controller (E2E)", () => {
   //   expect(response.statusCode).toBe(200);
   //   console.log("Response body:", JSON.stringify(response.body, null, 2));
   //   expect(response.body.props.name).toEqual("marca 1");
-  // });
-
-  // test("[PUT] /brands/:id", async () => {
-  //   const updatedBrandData = { name: "marca 3" };
-  //   const response = await request(app.getHttpServer())
-  //     .put(`/brands/${brandId}`)
-  //     .send(updatedBrandData);
-
-  //   expect(response.statusCode).toBe(200);
-  //   console.log("put brand response body", response.body);
-  //   expect(response.body.brand.props.name).toEqual(updatedBrandData.name);
   // });
 
   // test("[DELETE] /brands/:id", async () => {
