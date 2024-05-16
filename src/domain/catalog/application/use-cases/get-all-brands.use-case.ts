@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { Brand } from "../../enterprise/entities/brand";
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+
 
 type GetAllBrandsUseCaseResponse = Either<Error, Brand[]>;
 

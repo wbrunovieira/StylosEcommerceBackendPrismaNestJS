@@ -41,6 +41,7 @@ import { GetAllBrandsUseCase } from "./application/use-cases/get-all-brands.use-
 import { FindBrandByIdUseCase } from "./application/use-cases/find-brand-by-id.use-case";
 import { FindMaterialByNameUseCase } from "./application/use-cases/find-material-by-name";
 import { FindMaterialByIdUseCase } from "./application/use-cases/find-material-by-id";
+import { GetAllMaterialsUseCase } from "./application/use-cases/get-all-materials";
 
 @Module({
   controllers: [
@@ -71,6 +72,7 @@ import { FindMaterialByIdUseCase } from "./application/use-cases/find-material-b
     FindBrandByIdUseCase,
     FindMaterialByNameUseCase,
     FindMaterialByIdUseCase,
+    GetAllMaterialsUseCase,
 
     PrismaService,
     {

@@ -18,14 +18,16 @@ import { Material } from "@/domain/catalog/enterprise/entities/material";
 import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
 import { FindMaterialByNameUseCase } from "@/domain/catalog/application/use-cases/find-material-by-name";
 import { FindMaterialByIdUseCase } from "@/domain/catalog/application/use-cases/find-material-by-id";
+import { GetAllMaterialsUseCase } from "@/domain/catalog/application/use-cases/get-all-materials";
 
 describe("MaterialController", () => {
   let materialController: MaterialController;
   let createMaterialUseCase: CreateMaterialUseCase;
   let editMaterialUseCase: EditMaterialUseCase;
   let findMaterialByNameUseCase: FindMaterialByNameUseCase;
-  //   let getAllBrandsUseCase: GetAllBrandsUseCase;
-   let findMaterialByIdUseCase: FindMaterialByIdUseCase;
+  let getAllMaterialsUseCase: GetAllMaterialsUseCase;
+
+  let findMaterialByIdUseCase: FindMaterialByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
   let consoleErrorSpy: any;
 
@@ -53,12 +55,12 @@ describe("MaterialController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: GetAllBrandsUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: GetAllMaterialsUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         {
           provide: FindMaterialByIdUseCase,
           useValue: {
@@ -110,9 +112,12 @@ describe("MaterialController", () => {
     findMaterialByNameUseCase = module.get<FindMaterialByNameUseCase>(
       FindMaterialByNameUseCase
     );
-    // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
-    findMaterialByIdUseCase =
-    module.get<FindMaterialByIdUseCase>(FindMaterialByIdUseCase);
+    getAllMaterialsUseCase = module.get<GetAllMaterialsUseCase>(
+      GetAllMaterialsUseCase
+    );
+    findMaterialByIdUseCase = module.get<FindMaterialByIdUseCase>(
+      FindMaterialByIdUseCase
+    );
     //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
   });
 
@@ -243,94 +248,94 @@ describe("MaterialController", () => {
     }
   });
 
-  //   it("should get all brands successfully", async () => {
-  //     const mockBrand1 = Brand.create(
-  //       {
-  //         name: "Brand1",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
+  it("should get all materials successfully", async () => {
+    const mockMaterial1 = Material.create(
+      {
+        name: "Material1",
+      },
+      new UniqueEntityID("material-1")
+    );
 
-  //     const mockBrand2 = Brand.create(
-  //       {
-  //         name: "Brand2",
-  //       },
-  //       new UniqueEntityID("brand-2")
-  //     );
+    const mockMaterial2 = Material.create(
+      {
+        name: "Material2",
+      },
+      new UniqueEntityID("material-2")
+    );
 
-  //     const mockResult = right([mockBrand1, mockBrand2]) as Either<
-  //       ResourceNotFoundError,
-  //       Brand[]
-  //     >;
+    const mockResult = right([mockMaterial1, mockMaterial2]) as Either<
+      ResourceNotFoundError,
+      Material[]
+    >;
 
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockResolvedValue(mockResult);
+    vi.spyOn(getAllMaterialsUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await brandController.getAllBrands({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
-
-  //     expect(result).toEqual({ brands: mockResult.value });
-  //     expect(getAllBrandsUseCase.execute).toHaveBeenCalledWith({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
-  //   });
-
-  //   it("should handle errors thrown by GetAllBrandsUseCase", async () => {
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("GetAllBrandsUseCase error");
-  //     });
-
-  //     try {
-  //       await brandController.getAllBrands({ page: 1, pageSize: 10 });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to retrieve brands");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
-
-    it("should find a material by id successfully", async () => {
-      const mockMaterial = Material.create(
-        {
-          name: "materialName",
-        },
-        new UniqueEntityID("material-1")
-      );
-      const mockResult = right({ material: mockMaterial }) as Either<
-        ResourceNotFoundError,
-        { material: Material }
-      >;
-      vi.spyOn(findMaterialByIdUseCase, "execute").mockResolvedValue(mockResult);
-
-      const result = await materialController.findMaterialById("material-1");
-
-      expect(result).toEqual(mockResult.value);
-      expect(findMaterialByIdUseCase.execute).toHaveBeenCalledWith({
-        id: "material-1",
-      });
+    const result = await materialController.getAllMaterials({
+      page: 1,
+      pageSize: 10,
     });
 
-    it("should handle errors thrown by FindMaterialByIdUseCase", async () => {
-      vi.spyOn(findMaterialByIdUseCase, "execute").mockImplementation(() => {
-        throw new Error("FindMaterialByIdUseCase error");
-      });
+    expect(result).toEqual({ materials: mockResult.value });
+    expect(getAllMaterialsUseCase.execute).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 10,
+    });
+  });
 
-      try {
-        await materialController.findMaterialById("MAterialWithError");
-      } catch (error) {
-        if (error instanceof HttpException) {
-          expect(error.message).toBe("Failed to find material");
-          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-          throw new Error("Expected HttpException");
-        }
+  it("should handle errors thrown by GetAllMaterialsUseCase", async () => {
+    vi.spyOn(getAllMaterialsUseCase, "execute").mockImplementation(() => {
+      throw new Error("GetAllMaterialsUseCase error");
+    });
+
+    try {
+      await materialController.getAllMaterials({ page: 1, pageSize: 10 });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to retrieve Materials");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
       }
+    }
+  });
+
+  it("should find a material by id successfully", async () => {
+    const mockMaterial = Material.create(
+      {
+        name: "materialName",
+      },
+      new UniqueEntityID("material-1")
+    );
+    const mockResult = right({ material: mockMaterial }) as Either<
+      ResourceNotFoundError,
+      { material: Material }
+    >;
+    vi.spyOn(findMaterialByIdUseCase, "execute").mockResolvedValue(mockResult);
+
+    const result = await materialController.findMaterialById("material-1");
+
+    expect(result).toEqual(mockResult.value);
+    expect(findMaterialByIdUseCase.execute).toHaveBeenCalledWith({
+      id: "material-1",
     });
+  });
+
+  it("should handle errors thrown by FindMaterialByIdUseCase", async () => {
+    vi.spyOn(findMaterialByIdUseCase, "execute").mockImplementation(() => {
+      throw new Error("FindMaterialByIdUseCase error");
+    });
+
+    try {
+      await materialController.findMaterialById("MAterialWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to find material");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   //   it("should delete a brand successfully", async () => {
   //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;

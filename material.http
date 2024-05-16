@@ -17,23 +17,24 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "material 5"
+  "name": "material 7"
   
 }
 
 ###
 
 # @name get-materials-by-name
-GET  {{BASE_URL}}/materials?name=material 5
+GET  {{BASE_URL}}/materials/?name=material 5
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 
 ###
 
-# @name get-materials
-GET  {{BASE_URL}}/materials
+# @name get-all-materials
+GET  {{BASE_URL}}/materials/all?page=1&pageSize=10
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
