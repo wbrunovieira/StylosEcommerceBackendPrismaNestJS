@@ -17,7 +17,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "material 3"
+  "name": "material 5"
   
 }
 
@@ -42,11 +42,12 @@ Content-Type: application/json
 ###
 
 # @name edit-material
-PUT  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+PUT  {{BASE_URL}}/materials/e4685282-0b71-40d2-9665-e2bb3b6e8575
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "material 2"
+  "name": "material 6"
   
 }
 

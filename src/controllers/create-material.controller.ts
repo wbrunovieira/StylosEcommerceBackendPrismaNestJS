@@ -15,7 +15,7 @@ import {
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 
 // import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
-// import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
+import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { z } from "zod";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
@@ -32,15 +32,24 @@ const createMaterialSchema = z.object({
 const bodyValidationPipe = new ZodValidationsPipe(createMaterialSchema);
 type CreateMaterialBodySchema = z.infer<typeof createMaterialSchema>;
 
+const editMaterialSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name must not be empty")
+    .max(50, "Name must not exceed 50 characters"),
+});
+const editBodyValidationPipe = new ZodValidationsPipe(editMaterialSchema);
+type EditMaterialBodySchema = z.infer<typeof editMaterialSchema>;
+
 @Controller("materials")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
 export class MaterialController {
   constructor(
-    private readonly createMaterialUseCase: CreateMaterialUseCase
+    private readonly createMaterialUseCase: CreateMaterialUseCase,
+    private readonly editMaterialUseCase: EditMaterialUseCase
 
     // private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
-    // private readonly editMaterialUseCase: EditMaterialUseCase
   ) {}
 
   @Post()
@@ -94,23 +103,33 @@ export class MaterialController {
   //   }
   // }
 
-  // @Put(":id")
-  // async editMaterial(@Param("id") id: string, @Body() body: { name: string }) {
-  //   try {
-  //     const result = await this.editMaterialUseCase.execute({
-  //       materialId: id,
-  //       name: body.name,
-  //     });
-  //     if (result.isLeft()) {
-  //       throw new HttpException("material not found", HttpStatus.NOT_FOUND);
-  //     }
-  //     return result.value;
-  //   } catch (error) {
-  //     console.error("Erro ao editar material:", error);
-  //     throw new HttpException(
-  //       "Failed to edit material",
-  //       HttpStatus.INTERNAL_SERVER_ERROR
-  //     );
-  //   }
-  // }
+  @Put(":id")
+  async editMaterial(
+    @Param("id") id: string,
+    @Body(editBodyValidationPipe) body: EditMaterialBodySchema
+  ) {
+    try {
+      const result = await this.editMaterialUseCase.execute({
+        materialId: id,
+        name: body.name,
+      });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+        }
+      } else {
+        return { material: result.value.material };
+      }
+      
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        "Failed to update material",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }

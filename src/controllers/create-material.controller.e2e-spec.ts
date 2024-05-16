@@ -76,16 +76,17 @@ describe("Materials Controller (E2E)", () => {
   //   expect(response.body.props.name).toEqual("material 1");
   // });
 
-  // test("[PUT] /materials/:id", async () => {
-  //   const updatedMaterialData = { name: "material 3" };
-  //   const response = await request(app.getHttpServer())
-  //     .put(`/materials/${materialId}`)
-  //     .send(updatedMaterialData);
+  test("[PUT] /materials/:id", async () => {
+    const updatedMaterialData = { name: "marca 3" };
+    const response = await request(app.getHttpServer())
+      .put(`/materials/${materialId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .send(updatedMaterialData);
 
-  //   expect(response.statusCode).toBe(200);
-  //   console.log("put material response body", response.body);
-  //   expect(response.body.material.props.name).toEqual(updatedMaterialData.name);
-  // });
+    expect(response.statusCode).toBe(200);
+
+    expect(response.body.material.props.name).toEqual(updatedMaterialData.name);
+  });
 
   // test("[DELETE] /materials/:id", async () => {
   //   const response = await request(app.getHttpServer()).delete(
