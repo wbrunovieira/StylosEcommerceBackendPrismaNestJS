@@ -82,7 +82,7 @@ describe("Brand Controller (E2E)", () => {
       .send(updatedBrandData);
 
     expect(response.statusCode).toBe(200);
-    console.log("put brand response body", response.body);
+
     expect(response.body.brand.props.name).toEqual(updatedBrandData.name);
   });
 
@@ -97,14 +97,21 @@ describe("Brand Controller (E2E)", () => {
     expect(response.body.brand.props.name).toEqual("marca 1");
   });
 
-  // test("[GET] /brands", async () => {
-  //   const response = await request(app.getHttpServer())
-  //     .get("/brands")
-  //     .query({ page: "1", pageSize: "10" });
-  //   expect(response.statusCode).toBe(200);
-  //   expect(Array.isArray(response.body)).toBeTruthy();
-  //   expect(response.body.length).toBeGreaterThan(0);
-  // });
+  test("[GET] /brands/all", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/brands/all")
+      .query({ page: 1, pageSize: 10 })
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+    console.log("get all Brand Response:", response.body);
+    console.log("response", response);
+    expect(response.body.brands).toHaveLength(1);
+    expect(response.body.brands[0].props.name).toEqual("marca 1");
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
 
   // test("[GET] /brands/:id", async () => {
   //   const response = await request(app.getHttpServer()).get(

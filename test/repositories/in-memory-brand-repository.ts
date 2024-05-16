@@ -5,9 +5,8 @@ import { IBrandRepository } from "@/domain/catalog/application/repositories/i-br
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
-
 
 export class InMemoryBrandRepository implements IBrandRepository {
   public items: Brand[] = [];
@@ -24,10 +23,17 @@ export class InMemoryBrandRepository implements IBrandRepository {
   }
 
   async findAll(params: PaginationParams): Promise<Either<Error, Brand[]>> {
-    const { page, pageSize } = params;
-    const startIndex = (page - 1) * pageSize;
-    const paginatedItems = this.items.slice(startIndex, startIndex + pageSize);
-    return right(paginatedItems);
+    try {
+      const { page, pageSize } = params;
+      const startIndex = (page - 1) * pageSize;
+      const paginatedItems = this.items.slice(
+        startIndex,
+        startIndex + pageSize
+      );
+      return right(paginatedItems);
+    } catch (error) {
+      return left(new Error("Failed to find brands"));
+    }
   }
 
   async findById(id: string): Promise<Either<Error, Brand>> {
@@ -42,7 +48,9 @@ export class InMemoryBrandRepository implements IBrandRepository {
 
   async findByName(name: string): Promise<Either<Error, Brand>> {
     const normalizedName = normalizeName(name);
-    const brand = this.items.find((item) => normalizeName(item.name) === normalizedName);
+    const brand = this.items.find(
+      (item) => normalizeName(item.name) === normalizedName
+    );
     if (!brand) {
       return left(new Error("Brand not found"));
     }
