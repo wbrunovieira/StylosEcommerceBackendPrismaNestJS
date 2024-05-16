@@ -45,7 +45,6 @@ describe("Materials Controller (E2E)", () => {
       .send({ name: "material 2" });
 
     const materialResponse = response.body.material;
-    
 
     expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toHaveProperty("material");
@@ -56,6 +55,18 @@ describe("Materials Controller (E2E)", () => {
     expect(materialResponse.props).toHaveProperty("updatedAt");
 
     materialId = response.body.material._id.value;
+  });
+
+  test("[GET] /materials", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/materials")
+      .query({ name: "material 1" })
+      .set("Authorization", `Bearer ${authToken}`);
+
+    expect(response.statusCode).toBe(HttpStatus.OK);
+    console.log("material response", response.body);
+    expect(response.body).toHaveProperty("material");
+    expect(response.body.material.props.name).toEqual("material 1");
   });
 
   // test("[GET] /materials", async () => {

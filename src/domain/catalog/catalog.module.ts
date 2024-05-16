@@ -39,6 +39,7 @@ import { ICategoryRepository } from "./application/repositories/i-category-repos
 import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-name";
 import { GetAllBrandsUseCase } from "./application/use-cases/get-all-brands.use-case";
 import { FindBrandByIdUseCase } from "./application/use-cases/find-brand-by-id.use-case";
+import { FindMaterialByNameUseCase } from "./application/use-cases/find-material-by-name";
 
 @Module({
   controllers: [
@@ -67,6 +68,7 @@ import { FindBrandByIdUseCase } from "./application/use-cases/find-brand-by-id.u
     DeleteCategoryUseCase,
     GetAllBrandsUseCase,
     FindBrandByIdUseCase,
+    FindMaterialByNameUseCase,
 
     PrismaService,
     {
