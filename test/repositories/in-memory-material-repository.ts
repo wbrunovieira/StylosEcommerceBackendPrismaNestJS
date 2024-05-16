@@ -4,6 +4,10 @@ import { IMaterialRepository } from "@/domain/catalog/application/repositories/i
 
 import { Material } from "@/domain/catalog/enterprise/entities/material";
 
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 export class InMemoryMaterialRepository implements IMaterialRepository {
   public items: Material[] = [];
 
@@ -25,6 +29,17 @@ export class InMemoryMaterialRepository implements IMaterialRepository {
     return right(paginatedItems);
   }
 
+
+  async findByName(name: string): Promise<Either<Error, Material>> {
+    const normalizedName = normalizeName(name);
+    const material = this.items.find(
+      (item) => normalizeName(item.name) === normalizedName
+    );
+    if (!material) {
+      return left(new Error("material not found"));
+    }
+    return right(material);
+  }
   async save(material: Material): Promise<Either<Error, void>> {
     const index = this.items.findIndex(
       (b) => b.id.toString() === material.id.toString()

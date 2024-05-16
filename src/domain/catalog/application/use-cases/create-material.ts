@@ -1,16 +1,16 @@
-
 import { Material } from "../../enterprise/entities/material";
-import { Either, right } from "@/core/either";
+import { Either, left, right } from "@/core/either";
 
 import { Injectable } from "@nestjs/common";
 import { IMaterialRepository } from "../repositories/i-material-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 interface CreateMaterialUseCaseRequest {
   name: string;
 }
 
 type CreateMaterialUseCaseResponse = Either<
-  null,
+  ResourceNotFoundError | null,
   {
     material: Material;
   }
@@ -23,14 +23,45 @@ export class CreateMaterialUseCase {
   async execute({
     name,
   }: CreateMaterialUseCaseRequest): Promise<CreateMaterialUseCaseResponse> {
-    const material = Material.create({
-      name,
-    });
+    try {
+      const trimmedName = name.trim();
+      if (!trimmedName || trimmedName.length === 0) {
+        return left(new ResourceNotFoundError("Material name is required"));
+      }
 
-    await this.materialRepository.create(material);
+      if (trimmedName.length < 3) {
+        return left(
+          new ResourceNotFoundError(
+            "Material name must be at least 3 characters long"
+          )
+        );
+      }
 
-    return right({
-      material,
-    });
+      if (trimmedName.length > 50) {
+        return left(
+          new ResourceNotFoundError(
+            "Material name must be less than 50 characters long"
+          )
+        );
+      }
+
+      const existingMaterial = await this.materialRepository.findByName(trimmedName);
+      if (existingMaterial.isRight()) {
+        return left(
+          new ResourceNotFoundError("Material with this name already exists")
+        );
+      }
+      const material = Material.create({
+        name: trimmedName,
+      });
+
+      await this.materialRepository.create(material);
+
+      return right({
+        material,
+      });
+    } catch (error) {
+      return left(error as Error);
+    }
   }
 }

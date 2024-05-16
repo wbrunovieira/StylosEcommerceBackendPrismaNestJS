@@ -7,34 +7,62 @@ import {
   HttpStatus,
   HttpException,
   Param,
-  BadRequestException,
   Delete,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 
-import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
-import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
+// import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
+// import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
+import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
+import { z } from "zod";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
+import { RolesGuard } from "@/auth/roles.guard";
+import { Roles } from "@/auth/roles.decorator";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+
+const createMaterialSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name must not be empty")
+    .max(50, "Name must not exceed 50 characters"),
+});
+const bodyValidationPipe = new ZodValidationsPipe(createMaterialSchema);
+type CreateMaterialBodySchema = z.infer<typeof createMaterialSchema>;
 
 @Controller("materials")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("admin")
 export class MaterialController {
   constructor(
-    private readonly createMaterialUseCase: CreateMaterialUseCase,
+    private readonly createMaterialUseCase: CreateMaterialUseCase
 
-    private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
-    private readonly editMaterialUseCase: EditMaterialUseCase
+    // private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
+    // private readonly editMaterialUseCase: EditMaterialUseCase
   ) {}
 
   @Post()
-  async createMaterial(@Body() body: { name: string }) {
+  async createMaterial(
+    @Body(bodyValidationPipe) body: CreateMaterialBodySchema
+  ) {
     try {
       const result = await this.createMaterialUseCase.execute({
         name: body.name,
       });
-      return result.value;
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+        }
+      } else {
+        return { material: result.value.material };
+      }
     } catch (error) {
-      console.error("Erro ao criar material:", error);
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
       throw new HttpException(
         "Failed to create material",
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -42,47 +70,47 @@ export class MaterialController {
     }
   }
 
-  @Delete(":id")
-  async deleteMaterial(@Param("id") id: string) {
-    try {
-      const result = await this.deleteMaterialdUseCase.execute({
-        materialId: id,
-      });
-      if (result.isLeft()) {
-        throw new HttpException("material not found", HttpStatus.NOT_FOUND);
-      }
-      return { message: "material deleted successfully" };
-    } catch (error: unknown) {
-      console.error("Erro ao deletar material:", error);
-      if (error instanceof HttpException) {
-        if (error.getStatus() === HttpStatus.NOT_FOUND) {
-          throw error;
-        }
-      }
-      throw new HttpException(
-        "Failed to delete material",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
+  // @Delete(":id")
+  // async deleteMaterial(@Param("id") id: string) {
+  //   try {
+  //     const result = await this.deleteMaterialdUseCase.execute({
+  //       materialId: id,
+  //     });
+  //     if (result.isLeft()) {
+  //       throw new HttpException("material not found", HttpStatus.NOT_FOUND);
+  //     }
+  //     return { message: "material deleted successfully" };
+  //   } catch (error: unknown) {
+  //     console.error("Erro ao deletar material:", error);
+  //     if (error instanceof HttpException) {
+  //       if (error.getStatus() === HttpStatus.NOT_FOUND) {
+  //         throw error;
+  //       }
+  //     }
+  //     throw new HttpException(
+  //       "Failed to delete material",
+  //       HttpStatus.INTERNAL_SERVER_ERROR
+  //     );
+  //   }
+  // }
 
-  @Put(":id")
-  async editMaterial(@Param("id") id: string, @Body() body: { name: string }) {
-    try {
-      const result = await this.editMaterialUseCase.execute({
-        materialId: id,
-        name: body.name,
-      });
-      if (result.isLeft()) {
-        throw new HttpException("material not found", HttpStatus.NOT_FOUND);
-      }
-      return result.value;
-    } catch (error) {
-      console.error("Erro ao editar material:", error);
-      throw new HttpException(
-        "Failed to edit material",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
+  // @Put(":id")
+  // async editMaterial(@Param("id") id: string, @Body() body: { name: string }) {
+  //   try {
+  //     const result = await this.editMaterialUseCase.execute({
+  //       materialId: id,
+  //       name: body.name,
+  //     });
+  //     if (result.isLeft()) {
+  //       throw new HttpException("material not found", HttpStatus.NOT_FOUND);
+  //     }
+  //     return result.value;
+  //   } catch (error) {
+  //     console.error("Erro ao editar material:", error);
+  //     throw new HttpException(
+  //       "Failed to edit material",
+  //       HttpStatus.INTERNAL_SERVER_ERROR
+  //     );
+  //   }
+  // }
 }

@@ -1,11 +1,23 @@
 @BASE_URL = http://localhost:3333
 
-# @name create-material
-POST {{BASE_URL}}/materials
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
+# @name authenticate
+POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "name": "material 1"
+  "email": "admin@example.com",
+  "password": "adminpassword"
+}
+
+###
+# @name create-material
+POST {{BASE_URL}}/materials
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "name": "material 3"
   
 }
 
