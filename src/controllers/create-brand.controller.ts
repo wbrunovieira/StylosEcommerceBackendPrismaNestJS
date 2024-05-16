@@ -22,6 +22,7 @@ import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-br
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
 import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
 import { left } from "@/core/either";
+import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id.use-case";
 
 const createBrandSchema = z.object({
   name: z
@@ -59,7 +60,8 @@ export class BrandController {
     private readonly createBrandUseCase: CreateBrandUseCase,
     private readonly editBrandUseCase: EditBrandUseCase,
     private readonly findBrandByNameUseCase: FindBrandByNameUseCase,
-    private readonly getAllBrandsUseCase: GetAllBrandsUseCase
+    private readonly getAllBrandsUseCase: GetAllBrandsUseCase,
+    private readonly findBrandByIdUseCase: FindBrandByIdUseCase
   ) {}
 
   @Post()
@@ -151,6 +153,29 @@ export class BrandController {
       }
     } catch (error) {
       return left(new Error("Repository error"));
+    }
+  }
+
+  @Get(":id")
+  async findBrandById(@Param("id") id: string) {
+    try {
+      const result = await this.findBrandByIdUseCase.execute({ id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { brand: result.value.brand };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find brand",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

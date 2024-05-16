@@ -113,14 +113,15 @@ describe("Brand Controller (E2E)", () => {
     await app.close();
   });
 
-  // test("[GET] /brands/:id", async () => {
-  //   const response = await request(app.getHttpServer()).get(
-  //     `/brands/${brandId}`
-  //   );
-  //   expect(response.statusCode).toBe(200);
-  //   console.log("Response body:", JSON.stringify(response.body, null, 2));
-  //   expect(response.body.props.name).toEqual("marca 1");
-  // });
+  test("[GET] /brands/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/brands/${brandId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body).toHaveProperty("brand");
+    expect(response.body.brand.props.name).toEqual("marca 1");
+  });
 
   // test("[DELETE] /brands/:id", async () => {
   //   const response = await request(app.getHttpServer()).delete(
