@@ -9,6 +9,11 @@ import { Material } from "../../enterprise/entities/material";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
+
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 @Injectable()
 export class PrismaMaterialRepository implements IMaterialRepository {
   constructor(private prisma: PrismaService) {}
@@ -45,7 +50,7 @@ export class PrismaMaterialRepository implements IMaterialRepository {
       });
       return right(undefined);
     } catch (error) {
-      return left(new Error("Failed to update brand"));
+      return left(new Error("Failed to update material"));
     }
   }
 
@@ -74,7 +79,7 @@ export class PrismaMaterialRepository implements IMaterialRepository {
       });
       return right(undefined);
     } catch (error) {
-      return left(new Error("Failed to delete brand"));
+      return left(new Error("Failed to delete material"));
     }
   }
 
@@ -90,6 +95,26 @@ export class PrismaMaterialRepository implements IMaterialRepository {
       return right(convertedMaterials);
     } catch (error) {
       return left(new Error("Failed to find material"));
+    }
+  }
+
+  async findByName(name: string): Promise<Either<Error, Material>> {
+    const normalizedName = normalizeName(name);
+    try {
+      const materialData = await this.prisma.material.findFirst({
+        where: {  name: normalizedName },
+      });
+
+      if (!materialData) return left(new ResourceNotFoundError("Material not found"));
+
+      const material = Material.create(
+        { name: materialData.name },
+        new UniqueEntityID(materialData.id)
+      );
+
+      return right(material);
+    } catch (error) {
+      return left(new Error("Database error"));
     }
   }
 }

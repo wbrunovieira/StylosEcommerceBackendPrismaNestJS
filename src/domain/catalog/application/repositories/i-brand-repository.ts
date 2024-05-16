@@ -6,7 +6,7 @@ export abstract class IBrandRepository {
   abstract create(brand: Brand): Promise<Either<Error, void>>;
   abstract findById(id: string): Promise<Either<Error, Brand>>;
   abstract findByName(name: string): Promise<Either<Error, Brand>>;
-  abstract delete(brand: Brand): Promise<Either<Error, void>>;
-  abstract save(brand: Brand): Promise<Either<Error, void>>;
   abstract findAll(params: PaginationParams): Promise<Either<Error, Brand[]>>;
+  abstract save(brand: Brand): Promise<Either<Error, void>>;
+  abstract delete(brand: Brand): Promise<Either<Error, void>>;
 }

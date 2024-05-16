@@ -23,9 +23,9 @@ describe("Brand Controller (E2E)", () => {
       .post("/sessions")
       .send({ email: "admin@example.com", password: "adminpassword" });
 
-    console.log("Authentication Response:", response.body);
+  
     authToken = response.body.access_token;
-    console.log("authTOken", authToken);
+   
 
     if (!authToken) {
       throw new Error("Authentication failed: No token received");
@@ -49,9 +49,9 @@ describe("Brand Controller (E2E)", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .send({ name: "marca 2" });
 
-    console.log("Create Brand Response:", response.body);
+    
     const brandResponse = response.body.brand;
-    console.log("brandResponse", brandResponse);
+   
 
     expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toHaveProperty("brand");
@@ -103,8 +103,7 @@ describe("Brand Controller (E2E)", () => {
       .query({ page: 1, pageSize: 10 })
       .set("Authorization", `Bearer ${authToken}`)
       .expect(HttpStatus.OK);
-    console.log("get all Brand Response:", response.body);
-    console.log("response", response);
+  
     expect(response.body.brands).toHaveLength(1);
     expect(response.body.brands[0].props.name).toEqual("marca 1");
   });
