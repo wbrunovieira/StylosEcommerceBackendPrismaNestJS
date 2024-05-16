@@ -15,11 +15,12 @@ import { vi } from "vitest";
 import { MaterialController } from "./create-material.controller";
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 import { Material } from "@/domain/catalog/enterprise/entities/material";
+import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
 
 describe("MaterialController", () => {
   let materialController: MaterialController;
   let createMaterialUseCase: CreateMaterialUseCase;
-  //   let editBrandUseCase: EditBrandUseCase;
+  let editMaterialUseCase: EditMaterialUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   //   let findBrandByIdUseCase: FindBrandByIdUseCase;
@@ -38,12 +39,12 @@ describe("MaterialController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: EditBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: EditMaterialUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: FindBrandByNameUseCase,
         //   useValue: {
@@ -103,7 +104,7 @@ describe("MaterialController", () => {
     createMaterialUseCase = module.get<CreateMaterialUseCase>(
       CreateMaterialUseCase
     );
-    // editBrandUseCase = module.get<EditBrandUseCase>(EditBrandUseCase);
+    editMaterialUseCase = module.get<EditMaterialUseCase>(EditMaterialUseCase);
     // findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
     //   FindBrandByNameUseCase
     // );
@@ -157,69 +158,69 @@ describe("MaterialController", () => {
     }
   });
 
-  //   it("should edit a brand successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "UpdatedBrandName",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(editBrandUseCase, "execute").mockResolvedValue(mockResult);
+  it("should edit a material successfully", async () => {
+    const mockMaterial = Material.create(
+      {
+        name: "UpdatedMaterialName",
+      },
+      new UniqueEntityID("material-1")
+    );
+    const mockResult = right({ material: mockMaterial }) as Either<
+      ResourceNotFoundError,
+      { material: Material }
+    >;
+    vi.spyOn(editMaterialUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await brandController.editBrand("brand-1", {
-  //       name: "UpdatedBrandName",
-  //     });
+    const result = await materialController.editMaterial("material-1", {
+      name: "UpdatedMaterialName",
+    });
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(editBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "brand-1",
-  //       name: "UpdatedBrandName",
-  //     });
-  //   });
+    expect(result).toEqual(mockResult.value);
+    expect(editMaterialUseCase.execute).toHaveBeenCalledWith({
+      materialId: "material-1",
+      name: "UpdatedMaterialName",
+    });
+  });
 
-  //   it("should handle errors thrown by EditBrandUseCase", async () => {
-  //     vi.spyOn(editBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("EditBrandUseCase error");
-  //     });
+  it("should handle errors thrown by EditMaterialUseCase", async () => {
+    vi.spyOn(editMaterialUseCase, "execute").mockImplementation(() => {
+      throw new Error("EditMaterialUseCase error");
+    });
 
-  //     try {
-  //       await brandController.editBrand("brand-1", {
-  //         name: "UpdatedBrandWithError",
-  //       });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to update brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await materialController.editMaterial("material-1", {
+        name: "UpdatedBrandWithError",
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to update material");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
-  //   it("should find a brand by name successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "BrandName",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(findBrandByNameUseCase, "execute").mockResolvedValue(mockResult);
-
-  //     const result = await brandController.findBrandByName("BrandName");
-
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(findBrandByNameUseCase.execute).toHaveBeenCalledWith({
+  // it("should find a brand by name successfully", async () => {
+  //   const mockMaterial = Brand.create(
+  //     {
   //       name: "BrandName",
-  //     });
+  //     },
+  //     new UniqueEntityID("brand-1")
+  //   );
+  //   const mockResult = right({ brand: mockBrand }) as Either<
+  //     ResourceNotFoundError,
+  //     { material: Brand }
+  //   >;
+  //   vi.spyOn(findBrandByNameUseCase, "execute").mockResolvedValue(mockResult);
+
+  //   const result = await brandController.findBrandByName("BrandName");
+
+  //   expect(result).toEqual(mockResult.value);
+  //   expect(findBrandByNameUseCase.execute).toHaveBeenCalledWith({
+  //     name: "BrandName",
   //   });
+  // });
 
   //   it("should handle errors thrown by FindBrandByNameUseCase", async () => {
   //     vi.spyOn(findBrandByNameUseCase, "execute").mockImplementation(() => {
