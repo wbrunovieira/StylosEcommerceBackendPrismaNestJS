@@ -63,8 +63,9 @@ Content-Type: application/json
 ###
 
 # @name find-brand-by-id
-GET  {{BASE_URL}}/brands/d5d1b4d6-3449-461a-8efd-a5179b43a6f4
+GET  {{BASE_URL}}/brands/0a808470-4977-412a-a9a4-521aca95e84f
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
