@@ -20,6 +20,8 @@ import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
+import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
+import { left } from "@/core/either";
 
 const createBrandSchema = z.object({
   name: z
@@ -39,6 +41,16 @@ const editBrandSchema = z.object({
 const editBodyValidationPipe = new ZodValidationsPipe(editBrandSchema);
 type EditBrandBodySchema = z.infer<typeof editBrandSchema>;
 
+const paginationParamsSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)),
+  pageSize: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).max(100).default(10)
+  ),
+});
+const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
+type PaginationParams = z.infer<typeof paginationParamsSchema>;
+
 @Controller("brands")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
@@ -46,7 +58,8 @@ export class BrandController {
   constructor(
     private readonly createBrandUseCase: CreateBrandUseCase,
     private readonly editBrandUseCase: EditBrandUseCase,
-    private readonly findBrandByNameUseCase: FindBrandByNameUseCase
+    private readonly findBrandByNameUseCase: FindBrandByNameUseCase,
+    private readonly getAllBrandsUseCase: GetAllBrandsUseCase
   ) {}
 
   @Post()
@@ -121,6 +134,23 @@ export class BrandController {
         "Failed to find brand",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  @Get("all")
+  async getAllBrands(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllBrandsUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find brands",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { brands: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
     }
   }
 }

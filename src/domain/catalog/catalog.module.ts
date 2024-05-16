@@ -37,6 +37,7 @@ import { ISizeRepository } from "./application/repositories/i-size-repository";
 import { IMaterialRepository } from "./application/repositories/i-material-repository";
 import { ICategoryRepository } from "./application/repositories/i-category-repository";
 import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-name";
+import { GetAllBrandsUseCase } from "./application/use-cases/get-all-brands.use-case";
 
 @Module({
   controllers: [
@@ -45,7 +46,6 @@ import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-na
     SizeController,
     MaterialController,
     CategoryController,
-   
   ],
   providers: [
     CreateBrandUseCase,
@@ -64,7 +64,7 @@ import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-na
     CreateCategoryUseCase,
     EditCategoryUseCase,
     DeleteCategoryUseCase,
-   
+    GetAllBrandsUseCase,
 
     PrismaService,
     {
@@ -87,7 +87,6 @@ import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-na
       provide: ICategoryRepository,
       useClass: PrismaCategoryRepository,
     },
-
   ],
   exports: [
     PrismaService,
@@ -96,7 +95,6 @@ import { FindBrandByNameUseCase } from "./application/use-cases/find-brand-by-na
     ISizeRepository,
     IMaterialRepository,
     ICategoryRepository,
-   
   ],
 })
 export class CatalogModule {}

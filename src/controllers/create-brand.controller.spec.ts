@@ -14,12 +14,14 @@ import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
+import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
 
 describe("BrandController", () => {
   let brandController: BrandController;
   let createBrandUseCase: CreateBrandUseCase;
   let editBrandUseCase: EditBrandUseCase;
   let findBrandByNameUseCase: FindBrandByNameUseCase;
+  let getAllBrandsUseCase: GetAllBrandsUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -42,6 +44,12 @@ describe("BrandController", () => {
         },
         {
           provide: FindBrandByNameUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
+        {
+          provide: GetAllBrandsUseCase,
           useValue: {
             execute: vi.fn(),
           },
@@ -83,6 +91,7 @@ describe("BrandController", () => {
     findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
       FindBrandByNameUseCase
     );
+    getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
   });
 
   afterEach(() => {
@@ -208,5 +217,54 @@ describe("BrandController", () => {
     }
   });
 
+  it("should get all brands successfully", async () => {
+    const mockBrand1 = Brand.create(
+      {
+        name: "Brand1",
+      },
+      new UniqueEntityID("brand-1")
+    );
 
+    const mockBrand2 = Brand.create(
+      {
+        name: "Brand2",
+      },
+      new UniqueEntityID("brand-2")
+    );
+
+    const mockResult = right([mockBrand1, mockBrand2]) as Either<
+      ResourceNotFoundError,
+      Brand[]
+    >;
+
+    vi.spyOn(getAllBrandsUseCase, "execute").mockResolvedValue(mockResult);
+
+    const result = await brandController.getAllBrands({
+      page: 1,
+      pageSize: 10,
+    });
+
+    expect(result).toEqual({ brands: mockResult.value });
+    expect(getAllBrandsUseCase.execute).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 10,
+    });
+  });
+
+  it("should handle errors thrown by GetAllBrandsUseCase", async () => {
+    vi.spyOn(getAllBrandsUseCase, "execute").mockImplementation(() => {
+      throw new Error("GetAllBrandsUseCase error");
+    });
+
+    try {
+      await brandController.getAllBrands({ page: 1, pageSize: 10 });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to retrieve brands");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 });

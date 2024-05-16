@@ -48,6 +48,13 @@ Authorization: Bearer {{AUTH_TOKEN}}
 }
 
 ###
+# @name get-brands-all
+GET {{BASE_URL}}/brands/all?page=1&pageSize=10
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+###
 
 # @name delete-brands
 Delete  {{BASE_URL}}/brands/270d50a6-1f97-43e1-96b7-8e909a67cf79
