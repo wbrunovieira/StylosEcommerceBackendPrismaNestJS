@@ -94,7 +94,7 @@ export class PrismaMaterialRepository implements IMaterialRepository {
       );
       return right(convertedMaterials);
     } catch (error) {
-      return left(new Error("Failed to find material"));
+      return left(new Error("Failed to find materials"));
     }
   }
 

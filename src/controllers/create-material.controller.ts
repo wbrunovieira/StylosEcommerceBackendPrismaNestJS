@@ -22,8 +22,10 @@ import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
-import { FindMaterialByNameUseCase} from "@/domain/catalog/application/use-cases/find-material-by-name";
+import { FindMaterialByNameUseCase } from "@/domain/catalog/application/use-cases/find-material-by-name";
 import { FindMaterialByIdUseCase } from "@/domain/catalog/application/use-cases/find-material-by-id";
+import { GetAllMaterialsUseCase } from "@/domain/catalog/application/use-cases/get-all-materials";
+import { left } from "@/core/either";
 
 const createMaterialSchema = z.object({
   name: z
@@ -43,6 +45,16 @@ const editMaterialSchema = z.object({
 const editBodyValidationPipe = new ZodValidationsPipe(editMaterialSchema);
 type EditMaterialBodySchema = z.infer<typeof editMaterialSchema>;
 
+const paginationParamsSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)),
+  pageSize: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).max(100).default(10)
+  ),
+});
+const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
+type PaginationParams = z.infer<typeof paginationParamsSchema>;
+
 @Controller("materials")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
@@ -51,7 +63,8 @@ export class MaterialController {
     private readonly createMaterialUseCase: CreateMaterialUseCase,
     private readonly editMaterialUseCase: EditMaterialUseCase,
     private readonly findMaterialByNameUseCase: FindMaterialByNameUseCase,
-    private readonly findMaterialByIdUseCase: FindMaterialByIdUseCase
+    private readonly findMaterialByIdUseCase: FindMaterialByIdUseCase,
+    private readonly getAllMaterialUseCase: GetAllMaterialsUseCase
 
     // private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
   ) {}
@@ -125,7 +138,6 @@ export class MaterialController {
       } else {
         return { material: result.value.material };
       }
-      
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -136,8 +148,6 @@ export class MaterialController {
       );
     }
   }
-
-
 
   @Get()
   async findMaterialByName(@Query("name") name: string) {
@@ -182,6 +192,23 @@ export class MaterialController {
         "Failed to find material",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  @Get("all")
+  async getAllMaterials(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllMaterialUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find materials",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { materials: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
     }
   }
 }

@@ -100,6 +100,17 @@ describe("Materials Controller (E2E)", () => {
     expect(response.body.material.props.name).toEqual(updatedMaterialData.name);
   });
 
+  test("[GET] /materials/all", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/materials/all")
+      .query({ page: 1, pageSize: 10 })
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+    console.log("get all materials response", response.body);
+    expect(response.body.materials).toHaveLength(1);
+    expect(response.body.materials[0].props.name).toEqual("material 1");
+  });
+
   // test("[DELETE] /materials/:id", async () => {
   //   const response = await request(app.getHttpServer()).delete(
   //     `/materials/${materialId}`
