@@ -1,7 +1,7 @@
 import { Brand } from "../../enterprise/entities/brand";   
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { PrismaBrandRepository } from "../repositories/prisma-brand-repository";
+
 import { Injectable } from "@nestjs/common";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 

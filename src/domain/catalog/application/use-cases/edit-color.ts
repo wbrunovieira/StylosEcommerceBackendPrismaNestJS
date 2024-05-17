@@ -1,7 +1,7 @@
 import { Color } from "../../enterprise/entities/color";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { PrismaColorRepository } from "../repositories/prisma-color-repository";
+
 import { Injectable } from "@nestjs/common";
 import { IColorRepository } from "../repositories/i-color-repository";
 

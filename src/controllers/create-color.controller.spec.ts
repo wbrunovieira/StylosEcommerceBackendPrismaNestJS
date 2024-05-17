@@ -15,11 +15,12 @@ import { vi } from "vitest";
 
 import { CreateColorUseCase } from "@/domain/catalog/application/use-cases/create-color";
 import { Color } from "@/domain/catalog/enterprise/entities/color";
+import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
 
 describe("ColorController", () => {
   let colorController: ColorsController;
   let createColorUseCase: CreateColorUseCase;
-  //   let editBrandUseCase: EditBrandUseCase;
+  let editColorUseCase: EditColorUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   //   let findBrandByIdUseCase: FindBrandByIdUseCase;
@@ -38,12 +39,12 @@ describe("ColorController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: EditBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: EditColorUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: FindBrandByNameUseCase,
         //   useValue: {
@@ -101,7 +102,7 @@ describe("ColorController", () => {
 
     colorController = module.get<ColorsController>(ColorsController);
     createColorUseCase = module.get<CreateColorUseCase>(CreateColorUseCase);
-    // editBrandUseCase = module.get<EditBrandUseCase>(EditBrandUseCase);
+    editColorUseCase = module.get<EditColorUseCase>(EditColorUseCase);
     // findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
     //   FindBrandByNameUseCase
     // );
@@ -153,48 +154,48 @@ describe("ColorController", () => {
     }
   });
 
-  //   it("should edit a color successfully", async () => {
-  //     const mockBrand = Color.create(
-  //       {
-  //         name: "UpdatedBrandName",
-  //       },
-  //       new UniqueEntityID("color-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(editBrandUseCase, "execute").mockResolvedValue(mockResult);
+    it("should edit a color successfully", async () => {
+      const mockColor = Color.create(
+        {
+          name: "UpdatedColorName",
+        },
+        new UniqueEntityID("color-1")
+      );
+      const mockResult = right({ color: mockColor }) as Either<
+        ResourceNotFoundError,
+        { color: Color }
+      >;
+      vi.spyOn(editColorUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.editBrand("color-1", {
-  //       name: "UpdatedBrandName",
-  //     });
+      const result = await colorController.editColor("color-1", {
+        name: "UpdatedColorName",
+      });
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(editBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "color-1",
-  //       name: "UpdatedBrandName",
-  //     });
-  //   });
+      expect(result).toEqual(mockResult.value);
+      expect(editColorUseCase.execute).toHaveBeenCalledWith({
+        colorId: "color-1",
+        name: "UpdatedColorName",
+      });
+    });
 
-  //   it("should handle errors thrown by EditBrandUseCase", async () => {
-  //     vi.spyOn(editBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("EditBrandUseCase error");
-  //     });
+    it("should handle errors thrown by EditColorUseCase", async () => {
+      vi.spyOn(editColorUseCase, "execute").mockImplementation(() => {
+        throw new Error("EditColorUseCase error");
+      });
 
-  //     try {
-  //       await colorController.editBrand("color-1", {
-  //         name: "UpdatedBrandWithError",
-  //       });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to update color");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+      try {
+        await colorController.editColor("color-1", {
+          name: "UpdatedColorWithError",
+        });
+      } catch (error) {
+        if (error instanceof HttpException) {
+          expect(error.message).toBe("Failed to update color");
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+          throw new Error("Expected HttpException");
+        }
+      }
+    });
 
   //   it("should find a color by name successfully", async () => {
   //     const mockBrand = Brand.create(
