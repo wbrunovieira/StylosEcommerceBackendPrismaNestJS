@@ -39,8 +39,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name delete-materials
-Delete  {{BASE_URL}}/materials/02bb6207-4f89-4385-af4a-f9d0ddb24caf
+Delete  {{BASE_URL}}/materials/3a53878a-9a6e-40cd-8234-3a0ceb54339c
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
