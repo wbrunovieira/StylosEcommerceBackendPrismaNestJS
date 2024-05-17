@@ -16,9 +16,9 @@ Content-Type: application/json
 POST {{BASE_URL}}/colors
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
+
 {
   "name": "blue"
-  
 }
 
 ###
