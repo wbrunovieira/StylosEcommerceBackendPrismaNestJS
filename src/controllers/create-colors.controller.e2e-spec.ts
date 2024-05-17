@@ -91,10 +91,11 @@ describe("Colors Controller (E2E)", () => {
     const updatedColorData = { name: "green" };
     const response = await request(app.getHttpServer())
       .put(`/colors/${colorId}`)
+      .set("Authorization", `Bearer ${authToken}`)
       .send(updatedColorData);
 
     expect(response.statusCode).toBe(200);
-    console.log("put colors response body", response.body);
+
     expect(response.body.color.props.name).toEqual(updatedColorData.name);
   });
 
