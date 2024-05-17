@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { ColorsController } from "../../controllers/create-colors.controller";
-import { CreateColorUseCase } from "./application/use-cases/create-color";
 
 import { IBrandRepository } from "./application/repositories/i-brand-repository";
 
@@ -29,9 +28,6 @@ import { PrismaCategoryRepository } from "./application/repositories/prisma-cate
 import { EditCategoryUseCase } from "./application/use-cases/edit-category";
 import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
 
-import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
-import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
-import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
 import { IColorRepository } from "./application/repositories/i-color-repository";
 import { ISizeRepository } from "./application/repositories/i-size-repository";
 import { IMaterialRepository } from "./application/repositories/i-material-repository";
@@ -42,6 +38,7 @@ import { FindBrandByIdUseCase } from "./application/use-cases/find-brand-by-id.u
 import { FindMaterialByNameUseCase } from "./application/use-cases/find-material-by-name";
 import { FindMaterialByIdUseCase } from "./application/use-cases/find-material-by-id";
 import { GetAllMaterialsUseCase } from "./application/use-cases/get-all-materials";
+import { CreateColorUseCase } from "./application/use-cases/create-color";
 
 @Module({
   controllers: [
