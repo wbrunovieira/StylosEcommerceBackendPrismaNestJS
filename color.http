@@ -42,8 +42,9 @@ Content-Type: application/json
 ###
 
 # @name edit-color
-PUT  {{BASE_URL}}/colors/b8ba2acd-10cf-4a87-83cd-4b9f9367199a
+PUT  {{BASE_URL}}/colors/e6fcf64a-cfbd-4674-b9c0-ab4fb84abfa5
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 {
   "name": "rosinha"
