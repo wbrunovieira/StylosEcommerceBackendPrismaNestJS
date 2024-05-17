@@ -7,6 +7,11 @@ import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
+
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 @Injectable()
 export class PrismaColorRepository implements IColorRepository {
   constructor(private prisma: PrismaService) {}
@@ -18,6 +23,25 @@ export class PrismaColorRepository implements IColorRepository {
       });
       if (!colorData)
         return left(new ResourceNotFoundError("Color not found"));
+
+      const color = Color.create(
+        { name: colorData.name },
+        new UniqueEntityID(colorData.id)
+      );
+
+      return right(color);
+    } catch (error) {
+      return left(new Error("Database error"));
+    }
+  }
+  async findByName(name: string): Promise<Either<Error, Color>> {
+    const normalizedName = normalizeName(name);
+    try {
+      const colorData = await this.prisma.brand.findFirst({
+        where: {  name: normalizedName },
+      });
+
+      if (!colorData) return left(new ResourceNotFoundError("Color not found"));
 
       const color = Color.create(
         { name: colorData.name },
