@@ -26,6 +26,7 @@ import { FindMaterialByNameUseCase } from "@/domain/catalog/application/use-case
 import { FindMaterialByIdUseCase } from "@/domain/catalog/application/use-cases/find-material-by-id";
 import { GetAllMaterialsUseCase } from "@/domain/catalog/application/use-cases/get-all-materials";
 import { left } from "@/core/either";
+import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
 
 const createMaterialSchema = z.object({
   name: z
@@ -64,9 +65,9 @@ export class MaterialController {
     private readonly editMaterialUseCase: EditMaterialUseCase,
     private readonly findMaterialByNameUseCase: FindMaterialByNameUseCase,
     private readonly findMaterialByIdUseCase: FindMaterialByIdUseCase,
-    private readonly getAllMaterialUseCase: GetAllMaterialsUseCase
+    private readonly getAllMaterialUseCase: GetAllMaterialsUseCase,
 
-    // private readonly deleteMaterialdUseCase: DeleteMaterialUseCase,
+    private readonly deleteMaterialdUseCase: DeleteMaterialUseCase
   ) {}
 
   @Post()
@@ -96,29 +97,29 @@ export class MaterialController {
     }
   }
 
-  // @Delete(":id")
-  // async deleteMaterial(@Param("id") id: string) {
-  //   try {
-  //     const result = await this.deleteMaterialdUseCase.execute({
-  //       materialId: id,
-  //     });
-  //     if (result.isLeft()) {
-  //       throw new HttpException("material not found", HttpStatus.NOT_FOUND);
-  //     }
-  //     return { message: "material deleted successfully" };
-  //   } catch (error: unknown) {
-  //     console.error("Erro ao deletar material:", error);
-  //     if (error instanceof HttpException) {
-  //       if (error.getStatus() === HttpStatus.NOT_FOUND) {
-  //         throw error;
-  //       }
-  //     }
-  //     throw new HttpException(
-  //       "Failed to delete material",
-  //       HttpStatus.INTERNAL_SERVER_ERROR
-  //     );
-  //   }
-  // }
+  @Delete(":id")
+  async deleteMaterial(@Param("id") id: string) {
+    try {
+      const result = await this.deleteMaterialdUseCase.execute({
+        materialId: id,
+      });
+      if (result.isLeft()) {
+        throw new HttpException("material not found", HttpStatus.NOT_FOUND);
+      }
+      return { message: "Material deleted successfully" };
+    } catch (error: unknown) {
+      console.error("Erro ao deletar material:", error);
+      if (error instanceof HttpException) {
+        if (error.getStatus() === HttpStatus.NOT_FOUND) {
+          throw error;
+        }
+      }
+      throw new HttpException(
+        "Failed to delete material",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
   @Put(":id")
   async editMaterial(

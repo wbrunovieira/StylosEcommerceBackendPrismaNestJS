@@ -102,15 +102,14 @@ describe("Materials Controller (E2E)", () => {
     expect(response.body.materials[0].props.name).toEqual("material 1");
   });
 
-  // test("[DELETE] /materials/:id", async () => {
-  //   const response = await request(app.getHttpServer()).delete(
-  //     `/materials/${materialId}`
-  //   );
-  //   expect(response.statusCode).toBe(200);
+  test("[DELETE] /materials/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .delete(`/materials/${materialId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
 
-  //   expect(response.body.message).toEqual("material deleted successfully");
-  //   console.log("material material response body", response.body);
-  // });
+    expect(response.body.message).toEqual("Material deleted successfully");
+  });
 
   afterAll(async () => {
     await app.close();

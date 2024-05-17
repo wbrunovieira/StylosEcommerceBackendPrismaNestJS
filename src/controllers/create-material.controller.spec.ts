@@ -19,6 +19,7 @@ import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit
 import { FindMaterialByNameUseCase } from "@/domain/catalog/application/use-cases/find-material-by-name";
 import { FindMaterialByIdUseCase } from "@/domain/catalog/application/use-cases/find-material-by-id";
 import { GetAllMaterialsUseCase } from "@/domain/catalog/application/use-cases/get-all-materials";
+import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
 
 describe("MaterialController", () => {
   let materialController: MaterialController;
@@ -28,7 +29,7 @@ describe("MaterialController", () => {
   let getAllMaterialsUseCase: GetAllMaterialsUseCase;
 
   let findMaterialByIdUseCase: FindMaterialByIdUseCase;
-  //   let deleteBrandUseCase: DeleteBrandUseCase;
+  let deleteMaterialUseCase: DeleteMaterialUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -67,12 +68,12 @@ describe("MaterialController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: DeleteBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: DeleteMaterialUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         Reflector,
         {
           provide: JwtAuthGuard,
@@ -118,7 +119,7 @@ describe("MaterialController", () => {
     findMaterialByIdUseCase = module.get<FindMaterialByIdUseCase>(
       FindMaterialByIdUseCase
     );
-    //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
+       deleteMaterialUseCase = module.get<DeleteMaterialUseCase>(DeleteMaterialUseCase);
   });
 
   afterEach(() => {
@@ -196,7 +197,7 @@ describe("MaterialController", () => {
 
     try {
       await materialController.editMaterial("material-1", {
-        name: "UpdatedBrandWithError",
+        name: "UpdatedMaterialWithError",
       });
     } catch (error) {
       if (error instanceof HttpException) {
@@ -337,32 +338,32 @@ describe("MaterialController", () => {
     }
   });
 
-  //   it("should delete a brand successfully", async () => {
-  //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
+    it("should delete a material successfully", async () => {
+      const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
+      vi.spyOn(deleteMaterialUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await brandController.deleteBrand("brand-1");
+      const result = await materialController.deleteMaterial("material-1");
 
-  //     expect(result).toEqual({ message: "Brand deleted successfully" });
-  //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "brand-1",
-  //     });
-  //   });
+      expect(result).toEqual({ message: "Material deleted successfully" });
+      expect(deleteMaterialUseCase.execute).toHaveBeenCalledWith({
+        materialId: "material-1",
+      });
+    });
 
-  //   it("should handle errors thrown by DeleteBrandUseCase", async () => {
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("DeleteBrandUseCase error");
-  //     });
+    it("should handle errors thrown by DeleteMaterialUseCase", async () => {
+      vi.spyOn(deleteMaterialUseCase, "execute").mockImplementation(() => {
+        throw new Error("DeleteMaterialUseCase error");
+      });
 
-  //     try {
-  //       await brandController.deleteBrand("BrandWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to delete brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+      try {
+        await materialController.deleteMaterial("MaterialWithError");
+      } catch (error) {
+        if (error instanceof HttpException) {
+          expect(error.message).toBe("Failed to delete material");
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+          throw new Error("Expected HttpException");
+        }
+      }
+    });
 });
