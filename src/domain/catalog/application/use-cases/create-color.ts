@@ -1,15 +1,16 @@
 import { PrismaColorRepository } from "../repositories/prisma-color-repository";
 import { Color } from "../../enterprise/entities/color";
-import { Either, right } from "@/core/either";
+import { Either, left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
 import { IColorRepository } from "../repositories/i-color-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 interface CreateColorUseCaseRequest {
   name: string;
 }
 
 type CreateColorUseCaseResponse = Either<
-  null,
+  ResourceNotFoundError | null,
   {
     color: Color;
   }
@@ -17,19 +18,50 @@ type CreateColorUseCaseResponse = Either<
 
 @Injectable()
 export class CreateColorUseCase {
-  constructor(private PrismaColorRepository: IColorRepository) {}
+  constructor(private colorRepository: IColorRepository) {}
 
   async execute({
     name,
   }: CreateColorUseCaseRequest): Promise<CreateColorUseCaseResponse> {
-    const color = Color.create({
-      name,
-    });
+    try {
+      const trimmedName = name.trim();
+      if (!trimmedName || trimmedName.length === 0) {
+        return left(new ResourceNotFoundError("Color name is required"));
+      }
 
-    await this.PrismaColorRepository.create(color);
+      if (trimmedName.length < 3) {
+        return left(
+          new ResourceNotFoundError(
+            "Color name must be at least 3 characters long"
+          )
+        );
+      }
 
-    return right({
-      color,
-    });
+      if (trimmedName.length > 20) {
+        return left(
+          new ResourceNotFoundError(
+            "Color name must be less than 20 characters long"
+          )
+        );
+      }
+
+      const existingColor = await this.colorRepository.findByName(trimmedName);
+      if (existingColor.isRight()) {
+        return left(
+          new ResourceNotFoundError("Color with this name already exists")
+        );
+      }
+      const color = Color.create({
+        name: trimmedName,
+      });
+
+      await this.colorRepository.create(color);
+
+      return right({
+        color,
+      });
+    } catch (error) {
+      return left(error as Error);
+    }
   }
 }

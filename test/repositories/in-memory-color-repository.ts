@@ -4,8 +4,11 @@ import { IColorRepository } from "@/domain/catalog/application/repositories/i-co
 
 import { Color } from "@/domain/catalog/enterprise/entities/color";
 
-export class InMemoryColorRepository implements IColorRepository {
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
 
+export class InMemoryColorRepository implements IColorRepository {
   public items: Color[] = [];
 
   async create(color: Color): Promise<Either<Error, void>> {
@@ -19,14 +22,25 @@ export class InMemoryColorRepository implements IColorRepository {
     return right(undefined);
   }
 
-  async findAll( params: PaginationParams ): Promise<Either<Error, Color[]>> {
+  async findByName(name: string): Promise<Either<Error, Color>> {
+    const normalizedName = normalizeName(name);
+    const color = this.items.find(
+      (item) => normalizeName(item.name) === normalizedName
+    );
+    if (!color) {
+      return left(new Error("Color not found"));
+    }
+    return right(color);
+  }
+
+  async findAll(params: PaginationParams): Promise<Either<Error, Color[]>> {
     const { page, pageSize } = params;
     const startIndex = (page - 1) * pageSize;
     const paginatedItems = this.items.slice(startIndex, startIndex + pageSize);
     return right(paginatedItems);
   }
 
-  async save(color: Color): Promise<Either<Error, void>>  {
+  async save(color: Color): Promise<Either<Error, void>> {
     const index = this.items.findIndex(
       (b) => b.id.toString() === color.id.toString()
     );
@@ -37,7 +51,7 @@ export class InMemoryColorRepository implements IColorRepository {
     return right(undefined);
   }
 
-  async findById(id: string): Promise<Either<Error, Color>>  {
+  async findById(id: string): Promise<Either<Error, Color>> {
     console.log("entrou no findby id do inmmemoryrepo color", id);
     const color = this.items.find((item) => item.id.toString() === id);
     console.log("color no repo inmmemoryrepo ", color);
@@ -47,7 +61,7 @@ export class InMemoryColorRepository implements IColorRepository {
     return right(color);
   }
 
-  async delete(color: Color): Promise<Either<Error, void>>  {
+  async delete(color: Color): Promise<Either<Error, void>> {
     const index = this.items.findIndex(
       (b) => b.id.toString() === color.id.toString()
     );
@@ -57,7 +71,4 @@ export class InMemoryColorRepository implements IColorRepository {
     this.items.splice(index, 1);
     return right(undefined);
   }
-  }
-
-
-
+}
