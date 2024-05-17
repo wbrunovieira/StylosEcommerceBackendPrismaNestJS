@@ -69,15 +69,6 @@ describe("Materials Controller (E2E)", () => {
     expect(response.body.material.props.name).toEqual("material 1");
   });
 
-  // test("[GET] /materials", async () => {
-  //   const response = await request(app.getHttpServer())
-  //     .get("/materials")
-  //     .query({ page: "1", pageSize: "10" });
-  //   expect(response.statusCode).toBe(200);
-  //   expect(Array.isArray(response.body)).toBeTruthy();
-  //   expect(response.body.length).toBeGreaterThan(0);
-  // });
-
   test("[GET] /materials/:id", async () => {
     const response = await request(app.getHttpServer())
       .get(`/materials/${materialId}`)

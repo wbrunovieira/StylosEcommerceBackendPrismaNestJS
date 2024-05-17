@@ -9,9 +9,8 @@ import { Material } from "../../enterprise/entities/material";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
-
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 @Injectable()
@@ -85,15 +84,18 @@ export class PrismaMaterialRepository implements IMaterialRepository {
 
   async findAll(params: PaginationParams): Promise<Either<Error, Material[]>> {
     try {
+      console.log("Finding materials with params:", params);
       const materials = await this.prisma.material.findMany({
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
+      console.log("Materials from database:", materials);
       const convertedMaterials = materials.map((b) =>
         Material.create({ name: b.name }, new UniqueEntityID(b.id))
       );
       return right(convertedMaterials);
     } catch (error) {
+      console.error("Error in findAll:", error);
       return left(new Error("Failed to find materials"));
     }
   }
@@ -102,10 +104,11 @@ export class PrismaMaterialRepository implements IMaterialRepository {
     const normalizedName = normalizeName(name);
     try {
       const materialData = await this.prisma.material.findFirst({
-        where: {  name: normalizedName },
+        where: { name: normalizedName },
       });
 
-      if (!materialData) return left(new ResourceNotFoundError("Material not found"));
+      if (!materialData)
+        return left(new ResourceNotFoundError("Material not found"));
 
       const material = Material.create(
         { name: materialData.name },
