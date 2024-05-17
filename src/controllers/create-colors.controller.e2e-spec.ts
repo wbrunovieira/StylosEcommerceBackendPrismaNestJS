@@ -79,12 +79,14 @@ describe("Colors Controller (E2E)", () => {
   });
 
   test("[GET] /colors/:id", async () => {
-    const response = await request(app.getHttpServer()).get(
-      `/colors/${colorId}`
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/colors/${colorId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
     expect(response.statusCode).toBe(200);
-    console.log("Response body:", JSON.stringify(response.body, null, 2));
-    expect(response.body.props.name).toEqual("blue");
+
+    expect(response.body.color.props.name).toEqual("blue");
   });
 
   test("[PUT] /colors/:id", async () => {
