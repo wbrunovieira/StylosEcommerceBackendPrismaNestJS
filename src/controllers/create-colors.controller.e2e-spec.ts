@@ -1,13 +1,14 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 describe("Colors Controller (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let colorId;
+  let authToken: string;
+  let colorId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -17,6 +18,16 @@ describe("Colors Controller (E2E)", () => {
     app = moduleRef.createNestApplication();
     prisma = moduleRef.get(PrismaService);
     await app.init();
+
+    const response = await request(app.getHttpServer())
+      .post("/sessions")
+      .send({ email: "admin@example.com", password: "adminpassword" });
+
+    authToken = response.body.access_token;
+
+    if (!authToken) {
+      throw new Error("Authentication failed: No token received");
+    }
   });
 
   beforeEach(async () => {
@@ -31,6 +42,7 @@ describe("Colors Controller (E2E)", () => {
   test("[POST] /colors", async () => {
     const response = await request(app.getHttpServer())
       .post("/colors")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({ name: "red" });
 
     const colorResponse = response.body.color.props;
@@ -45,6 +57,16 @@ describe("Colors Controller (E2E)", () => {
     colorId = response.body.color._id.value;
     console.log("colorId dentro do post", colorId);
     console.log("post response body", response.body);
+  });
+
+  test("[POST] /colors with invalid data", async () => {
+    const response = await request(app.getHttpServer())
+      .post("/colors")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({});
+
+    expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(response.body.message).toContain("Validation failed");
   });
 
   test("[GET] /colors", async () => {
