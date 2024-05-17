@@ -172,6 +172,25 @@ export class MaterialController {
     }
   }
 
+  @Get("all")
+  async getAllMaterials(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      console.log("Pagination Params:", params);
+      const result = await this.getAllMaterialUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find materials",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        console.log("Materials found:", result.value);
+        return { materials: result.value };
+      }
+    } catch (error) {
+      console.error("Error in getAllMaterials:", error);
+      return left(new Error("Repository error"));
+    }
+  }
   @Get(":id")
   async findMaterialById(@Param("id") id: string) {
     try {
@@ -192,23 +211,6 @@ export class MaterialController {
         "Failed to find material",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
-    }
-  }
-
-  @Get("all")
-  async getAllMaterials(@Query(paginationPipe) params: PaginationParams) {
-    try {
-      const result = await this.getAllMaterialUseCase.execute(params);
-      if (result.isLeft()) {
-        throw new HttpException(
-          "Failed to find materials",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      } else {
-        return { materials: result.value };
-      }
-    } catch (error) {
-      return left(new Error("Repository error"));
     }
   }
 }

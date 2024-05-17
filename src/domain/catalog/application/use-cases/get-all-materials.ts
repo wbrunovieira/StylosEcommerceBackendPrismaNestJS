@@ -17,12 +17,16 @@ export class GetAllMaterialsUseCase {
     params: PaginationParams
   ): Promise<GetAllMaterialsUseCaseResponse> {
     try {
+      console.log("Executing GetAllMaterialsUseCase with params:", params);
       const materialsResult = await this.materialsRepository.findAll(params);
       if (materialsResult.isLeft()) {
+        console.error("Failed to find materials:", materialsResult.value);
         return left(new Error("Failed to find materials"));
       }
+      console.log("Materials retrieved:", materialsResult.value);
       return right(materialsResult.value);
     } catch (error) {
+      console.error("Error in GetAllMaterialsUseCase:", error);
       return left(new Error("Repository error"));
     }
   }
