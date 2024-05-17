@@ -39,6 +39,7 @@ import { FindMaterialByNameUseCase } from "./application/use-cases/find-material
 import { FindMaterialByIdUseCase } from "./application/use-cases/find-material-by-id";
 import { GetAllMaterialsUseCase } from "./application/use-cases/get-all-materials";
 import { CreateColorUseCase } from "./application/use-cases/create-color";
+import { FindColorByIdUseCase } from "./application/use-cases/find-color-by-id";
 
 @Module({
   controllers: [
@@ -70,6 +71,7 @@ import { CreateColorUseCase } from "./application/use-cases/create-color";
     FindMaterialByNameUseCase,
     FindMaterialByIdUseCase,
     GetAllMaterialsUseCase,
+    FindColorByIdUseCase,
 
     PrismaService,
     {

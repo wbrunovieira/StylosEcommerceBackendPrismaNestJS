@@ -16,6 +16,7 @@ import { vi } from "vitest";
 import { CreateColorUseCase } from "@/domain/catalog/application/use-cases/create-color";
 import { Color } from "@/domain/catalog/enterprise/entities/color";
 import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
+import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
 
 describe("ColorController", () => {
   let colorController: ColorsController;
@@ -23,7 +24,7 @@ describe("ColorController", () => {
   let editColorUseCase: EditColorUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
-  //   let findBrandByIdUseCase: FindBrandByIdUseCase;
+  let findColorByIdUseCase: FindColorByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
   let consoleErrorSpy: any;
 
@@ -57,12 +58,12 @@ describe("ColorController", () => {
         //     execute: vi.fn(),
         //   },
         // },
-        // {
-        //   provide: FindBrandByIdUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+         {
+          provide: FindColorByIdUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: DeleteBrandUseCase,
         //   useValue: {
@@ -107,8 +108,8 @@ describe("ColorController", () => {
     //   FindBrandByNameUseCase
     // );
     // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
-    // findBrandByIdUseCase =
-    //   module.get<FindBrandByIdUseCase>(FindBrandByIdUseCase);
+  findColorByIdUseCase =
+module.get<FindColorByIdUseCase>(FindColorByIdUseCase);
     //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
   });
 
@@ -197,43 +198,43 @@ describe("ColorController", () => {
       }
     });
 
-  //   it("should find a color by name successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "ColorName",
-  //       },
-  //       new UniqueEntityID("color-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(findBrandByNameUseCase, "execute").mockResolvedValue(mockResult);
+    // it("should find a color by name successfully", async () => {
+    //   const mockBrand = Color.create(
+    //     {
+    //       name: "ColorName",
+    //     },
+    //     new UniqueEntityID("color-1")
+    //   );
+    //   const mockResult = right({ brand: mockBrand }) as Either<
+    //     ResourceNotFoundError,
+    //     { brand: Color }
+    //   >;
+    //   vi.spyOn(findColorByNameUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.findBrandByName("ColorName");
+    //   const result = await colorController.findBrandByName("ColorName");
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(findBrandByNameUseCase.execute).toHaveBeenCalledWith({
-  //       name: "ColorName",
-  //     });
-  //   });
+    //   expect(result).toEqual(mockResult.value);
+    //   expect(findColorByNameUseCase.execute).toHaveBeenCalledWith({
+    //     name: "ColorName",
+    //   });
+    // });
 
-  //   it("should handle errors thrown by FindBrandByNameUseCase", async () => {
-  //     vi.spyOn(findBrandByNameUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("FindBrandByNameUseCase error");
-  //     });
+    // it("should handle errors thrown by FindBrandByNameUseCase", async () => {
+    //   vi.spyOn(findColorByNameUseCase, "execute").mockImplementation(() => {
+    //     throw new Error("FindBrandByNameUseCase error");
+    //   });
 
-  //     try {
-  //       await colorController.findBrandByName("ColorWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to find brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    //   try {
+    //     await colorController.findBrandByName("ColorWithError");
+    //   } catch (error) {
+    //     if (error instanceof HttpException) {
+    //       expect(error.message).toBe("Failed to find brand");
+    //       expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+    //     } else {
+    //       throw new Error("Expected HttpException");
+    //     }
+    //   }
+    // });
 
   //   it("should get all brands successfully", async () => {
   //     const mockBrand1 = Brand.create(
@@ -286,53 +287,53 @@ describe("ColorController", () => {
   //     }
   //   });
 
-  //   it("should find a brand by id successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "BrandName",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(findBrandByIdUseCase, "execute").mockResolvedValue(mockResult);
+    it("should find a Color by id successfully", async () => {
+      const mockColor = Color.create(
+        {
+          name: "ColorName",
+        },
+        new UniqueEntityID("color-1")
+      );
+      const mockResult = right({ color: mockColor }) as Either<
+        ResourceNotFoundError,
+        { color: Color }
+      >;
+      vi.spyOn(findColorByIdUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.findBrandById("brand-1");
+      const result = await colorController.findColorById("color-1");
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(findBrandByIdUseCase.execute).toHaveBeenCalledWith({
-  //       id: "brand-1",
-  //     });
-  //   });
+      expect(result).toEqual(mockResult.value);
+      expect(findColorByIdUseCase.execute).toHaveBeenCalledWith({
+        id: "color-1",
+      });
+    });
 
-  //   it("should handle errors thrown by FindBrandByIdUseCase", async () => {
-  //     vi.spyOn(findBrandByIdUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("FindBrandByIdUseCase error");
-  //     });
+    it("should handle errors thrown by FindColorByIdUseCase", async () => {
+      vi.spyOn(findColorByIdUseCase, "execute").mockImplementation(() => {
+        throw new Error("FindColorByIdUseCase error");
+      });
 
-  //     try {
-  //       await colorController.findBrandById("ColorWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to find brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+      try {
+        await colorController.findColorById("ColorWithError");
+      } catch (error) {
+        if (error instanceof HttpException) {
+          expect(error.message).toBe("Failed to find color");
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+          throw new Error("Expected HttpException");
+        }
+      }
+    });
 
-  //   it("should delete a brand successfully", async () => {
+  //   it("should delete a color successfully", async () => {
   //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
   //     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.deleteBrand("brand-1");
+  //     const result = await colorController.deleteBrand("color-1");
 
   //     expect(result).toEqual({ message: "Brand deleted successfully" });
   //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "brand-1",
+  //       brandId: "color-1",
   //     });
   //   });
 
