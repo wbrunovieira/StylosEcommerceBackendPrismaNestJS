@@ -6,66 +6,89 @@ import { Injectable } from "@nestjs/common";
 
 import { ICategoryRepository } from "./i-category-repository";
 import { Category } from "../../enterprise/entities/category";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Category | null> {
-    const record = await this.prisma.category.findUnique({
-      where: { id },
-    });
-    return record
-      ? Category.create({ name: record.name }, new UniqueEntityID(record.id))
-      : null;
+  async findById(id: string): Promise<Either<Error, Category>> {
+    try {
+      const categoryData = await this.prisma.category.findUnique({
+        where: { id },
+      });
+      if (!categoryData) return left(new ResourceNotFoundError("Category not found"));
+
+      const category = Category.create(
+        { name: categoryData.name },
+        new UniqueEntityID(categoryData.id)
+      );
+
+      return right(category);
+    } catch (error) {
+      return left(new Error("Database error"));
+    }
   }
 
-  async save(category: Category): Promise<void> {
-    await this.prisma.category.update({
-      where: { id: category.id.toString() },
-      data: {
-        name: category.name,
-        updatedAt: new Date(),
-      },
-    });
+  async save(category: Category): Promise<Either<Error, void>> {
+    try {
+      await this.prisma.category.update({
+        where: {
+          id: category.id.toString(),
+        },
+        data: {
+          name: category.name,
+          updatedAt: new Date(),
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to update category"));
+    }
   }
 
-  async create(category: Category): Promise<void> {
-    await this.prisma.category.create({
-      data: {
-        name: category.name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+  async create(category: Category): Promise<Either<Error, void>>  {
+    try {
+      await this.prisma.category.create({
+        data: {
+          id: category.id.toString(),
+          name: category.name,
+          createdAt: category.createdAt,
+          updatedAt: category.updatedAt,
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to create category"));
+    }
   }
 
-  async delete(category: Category): Promise<void> {
-    await this.prisma.category.delete({
-      where: { id: category.id.toString() },
-    });
+  async delete(category: Category): Promise<Either<Error, void>> {
+    try {
+      const result = await this.prisma.category.delete({
+        where: {
+          id: category.id.toString(),
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to delete category"));
+    }
   }
 
-  async findAll(params: PaginationParams): Promise<Category[]> {
-    console.log("params", params);
-
-    const page = params.page || 1;
-    const pageSize = params.pageSize || 10;
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
-
-    console.log("Pagination params:", { skip, take });
-    const records = await this.prisma.category.findMany({
-      skip: skip,
-      take: take,
-      orderBy: { createdAt: "asc" },
-    });
-    console.log("skip", skip);
-    console.log("take", take);
-    console.log("records", records);
-
-    return records.map((record) =>
-      Category.create({ name: record.name }, new UniqueEntityID(record.id))
-    );
+  async findAll(params: PaginationParams): Promise<Either<Error, Category[]>>{
+    try {
+      const category = await this.prisma.category.findMany({
+        skip: (params.page - 1) * params.pageSize,
+        take: params.pageSize,
+      });
+      const convertedCategory = category.map((b) =>
+        Category.create({ name: b.name }, new UniqueEntityID(b.id))
+      );
+      return right(convertedCategory);
+    } catch (error) {
+      return left(new Error("Failed to find category"));
+    }
   }
 }
