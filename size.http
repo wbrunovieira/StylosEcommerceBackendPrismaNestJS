@@ -20,7 +20,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "m"
+  "name": "p"
   
 }
 
@@ -36,11 +36,13 @@ Content-Type: application/json
 Delete  {{BASE_URL}}/size/b0c8de50-35b9-4883-bb3b-e50942735736
 Content-Type: application/json
 
+
 ###
 
 # @name find-size-by-id
-GET  {{BASE_URL}}/size/5a40ebc4-e091-4938-9213-a8bd602d7208
+GET  {{BASE_URL}}/size/510433f1-6eb0-43e9-96bb-1f75ab5f65e1
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 

@@ -1,6 +1,6 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
@@ -67,6 +67,16 @@ describe("Size Controller (E2E)", () => {
     expect(response.statusCode).toBe(200);
 
     expect(response.body.size.props.name).toEqual(updatedSizeData.name);
+  });
+
+  test("[GET] /size/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/size/${sizeId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body).toHaveProperty("size");
+    expect(response.body.size.props.name).toEqual("m");
   });
 
   afterAll(async () => {
