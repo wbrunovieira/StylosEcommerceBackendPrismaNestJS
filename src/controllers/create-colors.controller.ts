@@ -141,6 +141,24 @@ export class ColorsController {
       );
     }
   }
+
+  @Get("all")
+  async getAllColors(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllColorUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find colors",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { colors: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
+    }
+  }
+
   @Get(":id")
   async findColorById(@Param("id") id: string) {
     try {
@@ -161,23 +179,6 @@ export class ColorsController {
         "Failed to find color",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
-    }
-  }
-
-  @Get("all")
-  async getAllColors(@Query(paginationPipe) params: PaginationParams) {
-    try {
-      const result = await this.getAllColorUseCase.execute(params);
-      if (result.isLeft()) {
-        throw new HttpException(
-          "Failed to find colors",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      } else {
-        return { colors: result.value };
-      }
-    } catch (error) {
-      return left(new Error("Repository error"));
     }
   }
 

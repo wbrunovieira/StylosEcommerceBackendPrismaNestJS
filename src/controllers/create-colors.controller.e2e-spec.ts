@@ -92,6 +92,17 @@ describe("Colors Controller (E2E)", () => {
     expect(response.body.color.props.name).toEqual("blue");
   });
 
+  test("[GET] /colors/all", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/colors/all")
+      .query({ page: 1, pageSize: 10 })
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body.colors).toHaveLength(1);
+    expect(response.body.colors[0].props.name).toEqual("blue");
+  });
+
   test("[PUT] /colors/:id", async () => {
     const updatedColorData = { name: "green" };
     const response = await request(app.getHttpServer())

@@ -43,6 +43,15 @@ Content-Type: application/json
 
 ###
 
+
+
+# @name get-colors-all
+GET {{BASE_URL}}/colors/all?page=1&pageSize=10
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+###
+
 # @name edit-color
 PUT  {{BASE_URL}}/colors/e6fcf64a-cfbd-4674-b9c0-ab4fb84abfa5
 Content-Type: application/json
