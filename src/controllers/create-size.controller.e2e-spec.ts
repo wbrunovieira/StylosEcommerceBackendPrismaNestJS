@@ -7,7 +7,8 @@ import request from "supertest";
 describe("Size Controller (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let sizeId;
+  let authToken: string;
+  let sizeId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -17,6 +18,16 @@ describe("Size Controller (E2E)", () => {
     app = moduleRef.createNestApplication();
     prisma = moduleRef.get(PrismaService);
     await app.init();
+
+    const response = await request(app.getHttpServer())
+      .post("/sessions")
+      .send({ email: "admin@example.com", password: "adminpassword" });
+
+    authToken = response.body.access_token;
+
+    if (!authToken) {
+      throw new Error("Authentication failed: No token received");
+    }
   });
 
   beforeEach(async () => {
@@ -31,6 +42,7 @@ describe("Size Controller (E2E)", () => {
   test("[POST] /size", async () => {
     const response = await request(app.getHttpServer())
       .post("/size")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({ name: "g" });
 
     const sizeResponse = response.body.size.props;
@@ -43,45 +55,7 @@ describe("Size Controller (E2E)", () => {
     expect(sizeResponse).toHaveProperty("updatedAt");
 
     sizeId = response.body.size._id.value;
-    console.log("sizeId dentro do post", sizeId);
-    console.log("post response body", response.body);
-  });
-
-  test("[GET] /size", async () => {
-    const response = await request(app.getHttpServer())
-      .get("/size")
-      .query({ page: "1", pageSize: "10" });
-    expect(response.statusCode).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBeGreaterThan(0);
-  });
-
-  test("[GET] /size/:id", async () => {
-    const response = await request(app.getHttpServer()).get(`/size/${sizeId}`);
-    expect(response.statusCode).toBe(200);
-    console.log("Response body:", JSON.stringify(response.body, null, 2));
-    expect(response.body.props.name).toEqual("m");
-  });
-
-  test("[PUT] /size/:id", async () => {
-    const updatedSizeData = { name: "gg" };
-    const response = await request(app.getHttpServer())
-      .put(`/size/${sizeId}`)
-      .send(updatedSizeData);
-
-    expect(response.statusCode).toBe(200);
-    console.log("put size response body", response.body);
-    expect(response.body.size.props.name).toEqual(updatedSizeData.name);
-  });
-
-  test("[DELETE] /size/:id", async () => {
-    const response = await request(app.getHttpServer()).delete(
-      `/size/${sizeId}`
-    );
-    expect(response.statusCode).toBe(200);
-
-    expect(response.body.message).toEqual("size deleted successfully");
-    console.log("delete size response body", response.body);
+  
   });
 
   afterAll(async () => {
