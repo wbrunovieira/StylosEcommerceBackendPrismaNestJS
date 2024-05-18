@@ -20,7 +20,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "g"
+  "name": "m"
   
 }
 
@@ -45,11 +45,12 @@ Content-Type: application/json
 ###
 
 # @name edit-size
-PUT  {{BASE_URL}}/size/5a40ebc4-e091-4938-9213-a8bd602d7208
+PUT  {{BASE_URL}}/size/022220c0-2995-4e31-8a53-c52fa5c683f4
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "m"
+  "name": "G"
   
 }
 

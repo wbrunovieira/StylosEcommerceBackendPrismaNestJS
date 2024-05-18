@@ -55,7 +55,18 @@ describe("Size Controller (E2E)", () => {
     expect(sizeResponse).toHaveProperty("updatedAt");
 
     sizeId = response.body.size._id.value;
-  
+  });
+
+  test("[PUT] /size/:id", async () => {
+    const updatedSizeData = { name: "GG" };
+    const response = await request(app.getHttpServer())
+      .put(`/size/${sizeId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .send(updatedSizeData);
+
+    expect(response.statusCode).toBe(200);
+
+    expect(response.body.size.props.name).toEqual(updatedSizeData.name);
   });
 
   afterAll(async () => {
