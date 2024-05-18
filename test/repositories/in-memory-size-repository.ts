@@ -1,42 +1,80 @@
+import { Either, left, right } from "@/core/either";
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { ISizeRepository } from "@/domain/catalog/application/repositories/i-size-repository";
 
 import { Size } from "@/domain/catalog/enterprise/entities/size";
 
-export class InMemorySizeRepository implements ISizeRepository {
-  async findAll({ page }: PaginationParams): Promise<Size[]> {
-    const sortedItems = this.items.sort((a, b) => a.name.localeCompare(b.name));
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
 
-    const startIndex = (page - 1) * 20;
-    const endIndex = startIndex + 20;
-    return sortedItems.slice(startIndex, endIndex);
+export class InMemorySizeRepository implements ISizeRepository {
+  public items: Size[] = [];
+
+  async create(size: Size): Promise<Either<Error, void>> {
+    const existing = this.items.find(
+      (b) => b.id.toString() === size.id.toString()
+    );
+    if (existing) {
+      return left(new Error("Size already exists"));
+    }
+    this.items.push(size);
+    return right(undefined);
   }
 
-  async save(size: Size) {
-    const itemIndex = this.items.findIndex((item) => item.id === size.id);
-    if (itemIndex >= 0) {
-      this.items[itemIndex] = size;
-    } else {
-      console.log("erro to save size");
+  async findAll(params: PaginationParams): Promise<Either<Error, Size[]>> {
+    try {
+      const { page, pageSize } = params;
+      const startIndex = (page - 1) * pageSize;
+      const paginatedItems = this.items.slice(
+        startIndex,
+        startIndex + pageSize
+      );
+      return right(paginatedItems);
+    } catch (error) {
+      return left(new Error("Failed to find sizes"));
     }
   }
-  async findById(id: string) {
+
+  async findById(id: string): Promise<Either<Error, Size>> {
     const size = this.items.find((item) => item.id.toString() === id);
 
     if (!size) {
-      return null;
+      return left(new Error("Size not found"));
     }
-
-    return size;
+    return right(size);
   }
 
-  async delete(size: Size) {
-    const itemIndex = this.items.findIndex((item) => item.id === size.id);
+  async findByName(name: string): Promise<Either<Error, Size>> {
+    const normalizedName = normalizeName(name);
+    const size = this.items.find(
+      (item) => normalizeName(item.name) === normalizedName
+    );
+    if (!size) {
+      return left(new Error("Size not found"));
+    }
+    return right(size);
+  }
 
-    this.items.splice(itemIndex, 1);
+  async save(size: Size): Promise<Either<Error, void>> {
+    const index = this.items.findIndex(
+      (b) => b.id.toString() === size.id.toString()
+    );
+    if (index === -1) {
+      return left(new Error("Size not found"));
+    }
+    this.items[index] = size;
+    return right(undefined);
   }
-  async create(size: Size) {
-    this.items.push(size);
+
+  async delete(size: Size): Promise<Either<Error, void>> {
+    const index = this.items.findIndex(
+      (b) => b.id.toString() === size.id.toString()
+    );
+    if (index === -1) {
+      return left(new Error("Size not found"));
+    }
+    this.items.splice(index, 1);
+    return right(undefined);
   }
-  public items: Size[] = [];
 }

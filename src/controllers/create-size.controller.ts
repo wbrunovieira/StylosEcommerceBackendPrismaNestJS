@@ -10,14 +10,20 @@ import {
   BadRequestException,
   Delete,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 
 import { CreateSizeUseCase } from "@/domain/catalog/application/use-cases/create-size";
-import { PrismaSizeRepository } from "@/domain/catalog/application/repositories/prima-size-repository";
+
 import { DeleteSizeUseCase } from "@/domain/catalog/application/use-cases/delete-size";
 import { EditSizeUseCase } from "@/domain/catalog/application/use-cases/edit-size";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
+import { RolesGuard } from "@/auth/roles.guard";
+import { Roles } from "@/auth/roles.decorator";
 
 @Controller("size")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("admin")
 export class SizeController {
   constructor(
     private readonly createSizeUseCase: CreateSizeUseCase,

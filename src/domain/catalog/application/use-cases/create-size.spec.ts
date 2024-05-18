@@ -8,15 +8,18 @@ let sut: CreateSizeUseCase;
 describe("CreateSizeUseCase", () => {
   beforeEach(() => {
     inMemorySizeRepository = new InMemorySizeRepository();
-    sut = new CreateSizeUseCase(inMemorySizeRepository as any);
+    sut = new CreateSizeUseCase(inMemorySizeRepository);
   });
 
   it("should be able to create a size", async () => {
     const result = await sut.execute({
-      name: "red",
+      name: "m",
     });
+    console.log("size", result.value);
 
-    expect(result.isRight).toBeTruthy();
-    expect(inMemorySizeRepository.items[0]).toEqual(result.value?.size);
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      expect(inMemorySizeRepository.items[0]).toEqual(result.value.size);
+    }
   });
 });

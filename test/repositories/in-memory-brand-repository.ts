@@ -37,9 +37,9 @@ export class InMemoryBrandRepository implements IBrandRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Brand>> {
-    console.log("entrou no findby id do inmmemoryrepo brand", id);
+   
     const brand = this.items.find((item) => item.id.toString() === id);
-    console.log("brand no repo inmmemoryrepo ", brand);
+    
     if (!brand) {
       return left(new Error("Brand not found"));
     }
