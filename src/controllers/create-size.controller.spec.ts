@@ -19,7 +19,7 @@ import { Size } from "@/domain/catalog/enterprise/entities/size";
 describe("SizeController", () => {
   let sizeController: SizeController;
   let createSizeUseCase: CreateSizeUseCase;
-  //   let editsizeUseCase: EditSizeUseCase;
+  let editsizeUseCase: EditSizeUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   //   let findBrandByIdUseCase: FindBrandByIdUseCase;
@@ -38,12 +38,12 @@ describe("SizeController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: EditSizeUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: EditSizeUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: FindBrandByNameUseCase,
         //   useValue: {
@@ -101,7 +101,7 @@ describe("SizeController", () => {
 
     sizeController = module.get<SizeController>(SizeController);
     createSizeUseCase = module.get<CreateSizeUseCase>(CreateSizeUseCase);
-    // editsizeUseCase = module.get<EditSizeUseCase>(EditSizeUseCase);
+    editsizeUseCase = module.get<EditSizeUseCase>(EditSizeUseCase);
     // findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
     //   FindBrandByNameUseCase
     // );
@@ -142,7 +142,7 @@ describe("SizeController", () => {
     });
 
     try {
-      await sizeController.createSize({ name: "BrandWithError" });
+      await sizeController.createSize({ name: "SizeWithError" });
     } catch (error) {
       if (error instanceof HttpException) {
         expect(error.message).toBe("Failed to create size");
@@ -153,48 +153,48 @@ describe("SizeController", () => {
     }
   });
 
-  //   it("should edit a size successfully", async () => {
-  //     const mockSize = Size.create(
-  //       {
-  //         name: "UpdatedBrandName",
-  //       },
-  //       new UniqueEntityID("size-1")
-  //     );
-  //     const mockResult = right({ size: mockSize }) as Either<
-  //       ResourceNotFoundError,
-  //       { size: Size }
-  //     >;
-  //     vi.spyOn(editsizeUseCase, "execute").mockResolvedValue(mockResult);
+  it("should edit a size successfully", async () => {
+    const mockSize = Size.create(
+      {
+        name: "UpdatedSizeName",
+      },
+      new UniqueEntityID("size-1")
+    );
+    const mockResult = right({ size: mockSize }) as Either<
+      ResourceNotFoundError,
+      { size: Size }
+    >;
+    vi.spyOn(editsizeUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await sizeController.editBrand("size-1", {
-  //       name: "UpdatedBrandName",
-  //     });
+    const result = await sizeController.editSize("size-1", {
+      name: "UpdatedSizeName",
+    });
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(editsizeUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "size-1",
-  //       name: "UpdatedBrandName",
-  //     });
-  //   });
+    expect(result).toEqual(mockResult.value);
+    expect(editsizeUseCase.execute).toHaveBeenCalledWith({
+      sizeId: "size-1",
+      name: "UpdatedSizeName",
+    });
+  });
 
-  //   it("should handle errors thrown by EditSizeUseCase", async () => {
-  //     vi.spyOn(editsizeUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("EditSizeUseCase error");
-  //     });
+  it("should handle errors thrown by EditSizeUseCase", async () => {
+    vi.spyOn(editsizeUseCase, "execute").mockImplementation(() => {
+      throw new Error("EditSizeUseCase error");
+    });
 
-  //     try {
-  //       await sizeController.editBrand("size-1", {
-  //         name: "UpdatedBrandWithError",
-  //       });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to update size");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await sizeController.editSize("size-1", {
+        name: "UpdatedBrandWithError",
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to update size");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   //   it("should find a size by name successfully", async () => {
   //     const mockSize = Size.create(
@@ -223,7 +223,7 @@ describe("SizeController", () => {
   //     });
 
   //     try {
-  //       await sizeController.findBrandByName("BrandWithError");
+  //       await sizeController.findBrandByName("SizeWithError");
   //     } catch (error) {
   //       if (error instanceof HttpException) {
   //         expect(error.message).toBe("Failed to find size");
@@ -334,7 +334,7 @@ describe("SizeController", () => {
 
   //     expect(result).toEqual({ message: "Size deleted successfully" });
   //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "size-1",
+  //       sizeId: "size-1",
   //     });
   //   });
 
