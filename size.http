@@ -20,7 +20,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "p"
+  "name": "pp"
   
 }
 
@@ -55,6 +55,14 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "name": "G"
   
 }
+
+
+###
+# @name get-size-all
+GET {{BASE_URL}}/size/all?page=1&pageSize=10
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 
