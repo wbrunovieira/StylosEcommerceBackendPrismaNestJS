@@ -17,6 +17,7 @@ import { EditSizeUseCase } from "@/domain/catalog/application/use-cases/edit-siz
 import { Size } from "@/domain/catalog/enterprise/entities/size";
 import { FindSizeByIdUseCase } from "@/domain/catalog/application/use-cases/find-size-by-id";
 import { GetAllSizesUseCase } from "@/domain/catalog/application/use-cases/get-all-sizes";
+import { DeleteSizeUseCase } from "@/domain/catalog/application/use-cases/delete-size";
 
 describe("SizeController", () => {
   let sizeController: SizeController;
@@ -24,7 +25,7 @@ describe("SizeController", () => {
   let editsizeUseCase: EditSizeUseCase;
   let getAllSizessUseCase: GetAllSizesUseCase;
   let findSizeByIdUseCase: FindSizeByIdUseCase;
-  //   let deleteBrandUseCase: DeleteBrandUseCase;
+  let deleteSizeUseCase: DeleteSizeUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -58,12 +59,12 @@ describe("SizeController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: DeleteBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: DeleteSizeUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         Reflector,
         {
           provide: JwtAuthGuard,
@@ -101,7 +102,7 @@ describe("SizeController", () => {
 
     getAllSizessUseCase = module.get<GetAllSizesUseCase>(GetAllSizesUseCase);
     findSizeByIdUseCase = module.get<FindSizeByIdUseCase>(FindSizeByIdUseCase);
-    //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
+    deleteSizeUseCase = module.get<DeleteSizeUseCase>(DeleteSizeUseCase);
   });
 
   afterEach(() => {
@@ -214,7 +215,7 @@ describe("SizeController", () => {
       page: 1,
       pageSize: 10,
     });
-    expect(result).toEqual({ sizes: mockResult.value });
+    expect(result).toEqual({ size: mockResult.value });
     expect(getAllSizessUseCase.execute).toHaveBeenCalledWith({
       page: 1,
       pageSize: 10,
@@ -275,35 +276,32 @@ describe("SizeController", () => {
     }
   });
 
-  //   it("should delete a size successfully", async () => {
-  //     const mockResult = right({}) as Either<
-  //       ResourceNotFoundError,
-  //       {}
-  //     >;
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
+  it("should delete a size successfully", async () => {
+    const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
+    vi.spyOn(deleteSizeUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await sizeController.deleteBrand("size-1");
+    const result = await sizeController.deleteSize("size-1");
 
-  //     expect(result).toEqual({ message: "Size deleted successfully" });
-  //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       sizeId: "size-1",
-  //     });
-  //   });
+    expect(result).toEqual({ message: "Size deleted successfully" });
+    expect(deleteSizeUseCase.execute).toHaveBeenCalledWith({
+      sizeId: "size-1",
+    });
+  });
 
-  //   it("should handle errors thrown by DeleteBrandUseCase", async () => {
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("DeleteBrandUseCase error");
-  //     });
+  it("should handle errors thrown by DeleteSizeUseCase", async () => {
+    vi.spyOn(deleteSizeUseCase, "execute").mockImplementation(() => {
+      throw new Error("DeleteSizeUseCase error");
+    });
 
-  //     try {
-  //       await sizeController.deleteBrand("SizeWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to delete size");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await sizeController.deleteSize("SizeWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to delete size");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 });
