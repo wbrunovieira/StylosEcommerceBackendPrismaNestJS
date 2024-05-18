@@ -19,13 +19,14 @@ import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-co
 import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
 import { FindColorByNameUseCase } from "@/domain/catalog/application/use-cases/find-color-by-name";
 import { DeleteColorUseCase } from "@/domain/catalog/application/use-cases/delete-color";
+import { GetAllColorsUseCase } from "@/domain/catalog/application/use-cases/get-all-colors";
 
 describe("ColorController", () => {
   let colorController: ColorsController;
   let createColorUseCase: CreateColorUseCase;
   let editColorUseCase: EditColorUseCase;
   let findColorByNameUseCase: FindColorByNameUseCase;
-  //   let getAllBrandsUseCase: GetAllBrandsUseCase;
+  let getAllColorsUseCase: GetAllColorsUseCase;
   let findColorByIdUseCase: FindColorByIdUseCase;
   let deleteColorUseCase: DeleteColorUseCase;
   let consoleErrorSpy: any;
@@ -54,12 +55,12 @@ describe("ColorController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: GetAllBrandsUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: GetAllColorsUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         {
           provide: FindColorByIdUseCase,
           useValue: {
@@ -109,7 +110,7 @@ describe("ColorController", () => {
     findColorByNameUseCase = module.get<FindColorByNameUseCase>(
       FindColorByNameUseCase
     );
-    // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
+    getAllColorsUseCase = module.get<GetAllColorsUseCase>(GetAllColorsUseCase);
     findColorByIdUseCase =
       module.get<FindColorByIdUseCase>(FindColorByIdUseCase);
     deleteColorUseCase = module.get<DeleteColorUseCase>(DeleteColorUseCase);
@@ -238,56 +239,56 @@ describe("ColorController", () => {
     }
   });
 
-  //   it("should get all brands successfully", async () => {
-  //     const mockBrand1 = Color.create(
-  //       {
-  //         name: "Brand1",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
+  it("should get all colors successfully", async () => {
+    const mockColor1 = Color.create(
+      {
+        name: "Color1",
+      },
+      new UniqueEntityID("color-1")
+    );
 
-  //     const mockBrand2 = Color.create(
-  //       {
-  //         name: "Brand2",
-  //       },
-  //       new UniqueEntityID("brand-2")
-  //     );
+    const mockColor2 = Color.create(
+      {
+        name: "Color2",
+      },
+      new UniqueEntityID("color-2")
+    );
 
-  //     const mockResult = right([mockBrand1, mockBrand2]) as Either<
-  //       ResourceNotFoundError,
-  //       Brand[]
-  //     >;
+    const mockResult = right([mockColor1, mockColor2]) as Either<
+      ResourceNotFoundError,
+      Color[]
+    >;
 
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockResolvedValue(mockResult);
+    vi.spyOn(getAllColorsUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.getAllBrands({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
+    const result = await colorController.getAllColors({
+      page: 1,
+      pageSize: 10,
+    });
 
-  //     expect(result).toEqual({ brands: mockResult.value });
-  //     expect(getAllBrandsUseCase.execute).toHaveBeenCalledWith({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
-  //   });
+    expect(result).toEqual({ colors: mockResult.value });
+    expect(getAllColorsUseCase.execute).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 10,
+    });
+  });
 
-  //   it("should handle errors thrown by GetAllBrandsUseCase", async () => {
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("GetAllBrandsUseCase error");
-  //     });
+  it("should handle errors thrown by GetAllColorsUseCase", async () => {
+    vi.spyOn(getAllColorsUseCase, "execute").mockImplementation(() => {
+      throw new Error("GetAllColorsUseCase error");
+    });
 
-  //     try {
-  //       await colorController.getAllBrands({ page: 1, pageSize: 10 });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to retrieve brands");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await colorController.getAllColors({ page: 1, pageSize: 10 });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to retrieve colors");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   it("should find a Color by id successfully", async () => {
     const mockColor = Color.create(
