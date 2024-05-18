@@ -1,16 +1,17 @@
-import { Either, right } from "@/core/either";
+import { Either, left, right } from "@/core/either";
 
 import { Injectable } from "@nestjs/common";
 import { Category } from "../../enterprise/entities/category";
 
 import { ICategoryRepository } from "../repositories/i-category-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 interface CreateCategoryUseCaseRequest {
   name: string;
 }
 
 type CreateCategoryUseCaseResponse = Either<
-  null,
+ResourceNotFoundError | null,
   {
     category: Category;
   }
@@ -22,14 +23,47 @@ export class CreateCategoryUseCase {
   async execute({
     name,
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
-    const category = Category.create({
-      name,
-    });
 
-    await this.categoryRepository.create(category);
+   try {
+      const trimmedName = name.trim();
+      if (!trimmedName || trimmedName.length === 0) {
+        return left(new ResourceNotFoundError("Category name is required"));
+      }
 
-    return right({
-      category,
-    });
+      if (trimmedName.length < 3) {
+        return left(
+          new ResourceNotFoundError(
+            "Category name must be at least 3 characters long"
+          )
+        );
+      }
+
+      if (trimmedName.length > 50) {
+        return left(
+          new ResourceNotFoundError(
+            "Category name must be less than 20 characters long"
+          )
+        );
+      }
+
+      const existingCAtegory = await this.categoryRepository.findByName(trimmedName);
+      if (existingCAtegory.isRight()) {
+        return left(
+          new ResourceNotFoundError("Category with this name already exists")
+        );
+      }
+      const category = Category.create({
+        name: trimmedName,
+      });
+
+      await this.categoryRepository.create(category);
+
+      return right({
+        category,
+      });
+    } catch (error) {
+      return left(error as Error);
+    }
   }
-}
+  }
+

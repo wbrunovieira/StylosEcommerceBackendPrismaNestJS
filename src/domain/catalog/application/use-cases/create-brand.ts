@@ -23,6 +23,8 @@ export class CreateBrandUseCase {
   async execute({
     name,
   }: CreateBrandUseCaseRequest): Promise<CreateBrandUseCaseResponse> {
+
+    
     try {
       const trimmedName = name.trim();
       if (!trimmedName || trimmedName.length === 0) {
