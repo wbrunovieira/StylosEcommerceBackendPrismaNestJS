@@ -7,9 +7,8 @@ import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
-
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 @Injectable()
@@ -21,8 +20,7 @@ export class PrismaColorRepository implements IColorRepository {
       const colorData = await this.prisma.color.findUnique({
         where: { id },
       });
-      if (!colorData)
-        return left(new ResourceNotFoundError("Color not found"));
+      if (!colorData) return left(new ResourceNotFoundError("Color not found"));
 
       const color = Color.create(
         { name: colorData.name },
@@ -38,7 +36,7 @@ export class PrismaColorRepository implements IColorRepository {
     const normalizedName = normalizeName(name);
     try {
       const colorData = await this.prisma.color.findFirst({
-        where: {  name: normalizedName },
+        where: { name: normalizedName },
       });
 
       if (!colorData) return left(new ResourceNotFoundError("Color not found"));
@@ -70,7 +68,7 @@ export class PrismaColorRepository implements IColorRepository {
     }
   }
 
-  async delete(color: Color): Promise<Either<Error, void>>{
+  async delete(color: Color): Promise<Either<Error, void>> {
     try {
       const result = await this.prisma.color.delete({
         where: {
@@ -89,12 +87,12 @@ export class PrismaColorRepository implements IColorRepository {
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
-      const convertedColor = colors.map((b) =>
+      const convertedColors = colors.map((b) =>
         Color.create({ name: b.name }, new UniqueEntityID(b.id))
       );
-      return right(convertedColor);
+      return right(convertedColors);
     } catch (error) {
-      return left(new Error("Failed to find color"));
+      return left(new Error("Failed to find colors"));
     }
   }
 
@@ -114,5 +112,4 @@ export class PrismaColorRepository implements IColorRepository {
       return left(new Error("Failed to update color"));
     }
   }
-  }
-
+}
