@@ -7,13 +7,18 @@ import { Size } from "../../enterprise/entities/size";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
+
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 @Injectable()
 export class PrismaSizeRepository implements ISizeRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(size: Size): Promise<Either<Error, Size>> {
+  async create(size: Size): Promise<Either<Error, void>> {
     try {
-      const createdRecord = await this.prisma.size.create({
+      await this.prisma.size.create({
         data: {
           id: size.id.toString(),
           name: size.name,
@@ -21,11 +26,7 @@ export class PrismaSizeRepository implements ISizeRepository {
           updatedAt: size.updatedAt,
         },
       });
-      const createdSize = Size.create(
-        { name: createdRecord.name },
-        new UniqueEntityID(createdRecord.id)
-      );
-      return right(createdSize);
+          return right(undefined);
     } catch (error) {
       return left(new Error("Failed to create size"));
     }
@@ -36,6 +37,26 @@ export class PrismaSizeRepository implements ISizeRepository {
       const sizeData = await this.prisma.size.findUnique({
         where: { id },
       });
+      if (!sizeData) return left(new ResourceNotFoundError("Size not found"));
+
+      const size = Size.create(
+        { name: sizeData.name },
+        new UniqueEntityID(sizeData.id)
+      );
+
+      return right(size);
+    } catch (error) {
+      return left(new Error("Database error"));
+    }
+  }
+
+  async findByName(name: string): Promise<Either<Error, Size>> {
+    const normalizedName = normalizeName(name);
+    try {
+      const sizeData = await this.prisma.size.findFirst({
+        where: {  name: normalizedName },
+      });
+
       if (!sizeData) return left(new ResourceNotFoundError("Size not found"));
 
       const size = Size.create(
