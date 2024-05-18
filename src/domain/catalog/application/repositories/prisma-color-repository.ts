@@ -37,7 +37,7 @@ export class PrismaColorRepository implements IColorRepository {
   async findByName(name: string): Promise<Either<Error, Color>> {
     const normalizedName = normalizeName(name);
     try {
-      const colorData = await this.prisma.brand.findFirst({
+      const colorData = await this.prisma.color.findFirst({
         where: {  name: normalizedName },
       });
 

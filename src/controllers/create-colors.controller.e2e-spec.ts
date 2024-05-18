@@ -72,10 +72,13 @@ describe("Colors Controller (E2E)", () => {
   test("[GET] /colors", async () => {
     const response = await request(app.getHttpServer())
       .get("/colors")
-      .query({ page: "1", pageSize: "10" });
-    expect(response.statusCode).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBeGreaterThan(0);
+      .query({ name: "blue" })
+      .set("Authorization", `Bearer ${authToken}`);
+    console.log("color by name", response.body);
+
+    expect(response.statusCode).toBe(HttpStatus.OK);
+    expect(response.body).toHaveProperty("color");
+    expect(response.body.color.props.name).toEqual("blue");
   });
 
   test("[GET] /colors/:id", async () => {

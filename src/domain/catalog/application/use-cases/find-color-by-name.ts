@@ -1,8 +1,6 @@
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
-import { IBrandRepository } from "../repositories/i-brand-repository";
-import { Brand } from "../../enterprise/entities/brand";
 import { Color } from "../../enterprise/entities/color";
 import { IColorRepository } from "../repositories/i-color-repository";
 

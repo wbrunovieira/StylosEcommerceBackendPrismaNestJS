@@ -18,14 +18,15 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "blue"
+  "name": "red"
 }
 
 ###
 
-# @name get-colors
-GET  {{BASE_URL}}/colors
+# @name find-colors-by-name
+GET  {{BASE_URL}}/colors?name=red
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
