@@ -22,6 +22,7 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
 import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
 import { FindColorByNameUseCase } from "@/domain/catalog/application/use-cases/find-color-by-name";
+import { DeleteColorUseCase } from "@/domain/catalog/application/use-cases/delete-color";
 
 const createColorSchema = z.object({
   name: z
@@ -49,7 +50,8 @@ export class ColorsController {
     private readonly createColorUseCase: CreateColorUseCase,
     private readonly editColorUseCase: EditColorUseCase,
     private readonly findByIdColorUseCase: FindColorByIdUseCase,
-    private readonly findColorByNameUseCase: FindColorByNameUseCase
+    private readonly findColorByNameUseCase: FindColorByNameUseCase,
+    private readonly deleteColorUseCase: DeleteColorUseCase
   ) {}
 
   @Post()
@@ -144,6 +146,29 @@ export class ColorsController {
       }
       throw new HttpException(
         "Failed to find color",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Delete(":id")
+  async deleteColor(@Param("id") id: string) {
+    try {
+      const result = await this.deleteColorUseCase.execute({ colorId: id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { message: "Color deleted successfully" };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to delete color",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

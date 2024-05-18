@@ -31,8 +31,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name delete-colors
-Delete  {{BASE_URL}}/colors/5487c6ad-376b-4512-9461-f3814716f9ab
+Delete  {{BASE_URL}}/colors/3cb3b561-61d4-48b9-b4b7-1a6355a23f34
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 

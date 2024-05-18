@@ -18,6 +18,7 @@ import { Color } from "@/domain/catalog/enterprise/entities/color";
 import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
 import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
 import { FindColorByNameUseCase } from "@/domain/catalog/application/use-cases/find-color-by-name";
+import { DeleteColorUseCase } from "@/domain/catalog/application/use-cases/delete-color";
 
 describe("ColorController", () => {
   let colorController: ColorsController;
@@ -26,7 +27,7 @@ describe("ColorController", () => {
   let findColorByNameUseCase: FindColorByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   let findColorByIdUseCase: FindColorByIdUseCase;
-  //   let deleteBrandUseCase: DeleteBrandUseCase;
+  let deleteColorUseCase: DeleteColorUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -65,12 +66,12 @@ describe("ColorController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: DeleteBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: DeleteColorUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         Reflector,
         {
           provide: JwtAuthGuard,
@@ -111,7 +112,7 @@ describe("ColorController", () => {
     // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
     findColorByIdUseCase =
       module.get<FindColorByIdUseCase>(FindColorByIdUseCase);
-    //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
+    deleteColorUseCase = module.get<DeleteColorUseCase>(DeleteColorUseCase);
   });
 
   afterEach(() => {
@@ -238,14 +239,14 @@ describe("ColorController", () => {
   });
 
   //   it("should get all brands successfully", async () => {
-  //     const mockBrand1 = Brand.create(
+  //     const mockBrand1 = Color.create(
   //       {
   //         name: "Brand1",
   //       },
   //       new UniqueEntityID("brand-1")
   //     );
 
-  //     const mockBrand2 = Brand.create(
+  //     const mockBrand2 = Color.create(
   //       {
   //         name: "Brand2",
   //       },
@@ -326,32 +327,32 @@ describe("ColorController", () => {
     }
   });
 
-  //   it("should delete a color successfully", async () => {
-  //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
+  it("should delete a color successfully", async () => {
+    const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
+    vi.spyOn(deleteColorUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await colorController.deleteBrand("color-1");
+    const result = await colorController.deleteColor("color-1");
 
-  //     expect(result).toEqual({ message: "Brand deleted successfully" });
-  //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "color-1",
-  //     });
-  //   });
+    expect(result).toEqual({ message: "Color deleted successfully" });
+    expect(deleteColorUseCase.execute).toHaveBeenCalledWith({
+      colorId: "color-1",
+    });
+  });
 
-  //   it("should handle errors thrown by DeleteBrandUseCase", async () => {
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("DeleteBrandUseCase error");
-  //     });
+  it("should handle errors thrown by DeleteColorUseCase", async () => {
+    vi.spyOn(deleteColorUseCase, "execute").mockImplementation(() => {
+      throw new Error("DeleteColorUseCase error");
+    });
 
-  //     try {
-  //       await colorController.deleteBrand("BrandWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to delete brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+    try {
+      await colorController.deleteColor("ColorWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to delete color");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 });
