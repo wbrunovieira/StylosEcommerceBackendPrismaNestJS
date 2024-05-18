@@ -22,6 +22,7 @@ import { EditSizeUseCase } from "@/domain/catalog/application/use-cases/edit-siz
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { z } from "zod";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { FindSizeByIdUseCase } from "@/domain/catalog/application/use-cases/find-size-by-id";
 
 const createSizeSchema = z.object({
   name: z
@@ -47,7 +48,8 @@ type EditSizeBodySchema = z.infer<typeof editSizeSchema>;
 @Roles("admin")
 export class SizeController {
   constructor(private readonly createSizeUseCase: CreateSizeUseCase,
-              private readonly ediySizeUseCase: EditSizeUseCase
+              private readonly ediySizeUseCase: EditSizeUseCase,
+              private readonly findSizeByIdUseCase: FindSizeByIdUseCase
   ) {}
 
   @Post()
@@ -92,4 +94,29 @@ export class SizeController {
       );
     }
   }
+
+  @Get(":id")
+  async findSizeById(@Param("id") id: string) {
+    try {
+      const result = await this.findSizeByIdUseCase.execute({ id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { size: result.value.size };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find size",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+
 }

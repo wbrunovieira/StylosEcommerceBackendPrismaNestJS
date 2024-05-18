@@ -15,6 +15,7 @@ import { SizeController } from "./create-size.controller";
 import { CreateSizeUseCase } from "@/domain/catalog/application/use-cases/create-size";
 import { EditSizeUseCase } from "@/domain/catalog/application/use-cases/edit-size";
 import { Size } from "@/domain/catalog/enterprise/entities/size";
+import { FindSizeByIdUseCase } from "@/domain/catalog/application/use-cases/find-size-by-id";
 
 describe("SizeController", () => {
   let sizeController: SizeController;
@@ -22,7 +23,7 @@ describe("SizeController", () => {
   let editsizeUseCase: EditSizeUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
-  //   let findBrandByIdUseCase: FindBrandByIdUseCase;
+  let findSizeByIdUseCase: FindSizeByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
   let consoleErrorSpy: any;
 
@@ -56,12 +57,12 @@ describe("SizeController", () => {
         //     execute: vi.fn(),
         //   },
         // },
-        // {
-        //   provide: FindBrandByIdUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: FindSizeByIdUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: DeleteBrandUseCase,
         //   useValue: {
@@ -106,8 +107,7 @@ describe("SizeController", () => {
     //   FindBrandByNameUseCase
     // );
     // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
-    // findBrandByIdUseCase =
-    //   module.get<FindBrandByIdUseCase>(FindBrandByIdUseCase);
+    findSizeByIdUseCase = module.get<FindSizeByIdUseCase>(FindSizeByIdUseCase);
     //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
   });
 
@@ -285,43 +285,43 @@ describe("SizeController", () => {
   //     }
   //   });
 
-  //   it("should find a size by id successfully", async () => {
-  //     const mockSize = Size.create(
-  //       {
-  //         name: "SizeName",
-  //       },
-  //       new UniqueEntityID("size-1")
-  //     );
-  //     const mockResult = right({ size: mockSize }) as Either<
-  //       ResourceNotFoundError,
-  //       { size: Size }
-  //     >;
-  //     vi.spyOn(findBrandByIdUseCase, "execute").mockResolvedValue(mockResult);
+    it("should find a size by id successfully", async () => {
+      const mockSize = Size.create(
+        {
+          name: "SizeName",
+        },
+        new UniqueEntityID("size-1")
+      );
+      const mockResult = right({ size: mockSize }) as Either<
+        ResourceNotFoundError,
+        { size: Size }
+      >;
+      vi.spyOn(findSizeByIdUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     const result = await sizeController.findBrandById("size-1");
+      const result = await sizeController.findSizeById("size-1");
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(findBrandByIdUseCase.execute).toHaveBeenCalledWith({
-  //       id: "size-1",
-  //     });
-  //   });
+      expect(result).toEqual(mockResult.value);
+      expect(findSizeByIdUseCase.execute).toHaveBeenCalledWith({
+        id: "size-1",
+      });
+    });
 
-  //   it("should handle errors thrown by FindBrandByIdUseCase", async () => {
-  //     vi.spyOn(findBrandByIdUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("FindBrandByIdUseCase error");
-  //     });
+    it("should handle errors thrown by SizeByIdUseCase", async () => {
+      vi.spyOn(findSizeByIdUseCase, "execute").mockImplementation(() => {
+        throw new Error("findSizeByIdUseCase error");
+      });
 
-  //     try {
-  //       await sizeController.findBrandById("BrandWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to find size");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+      try {
+        await sizeController.findSizeById("SizeWithError");
+      } catch (error) {
+        if (error instanceof HttpException) {
+          expect(error.message).toBe("Failed to find size");
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+          throw new Error("Expected HttpException");
+        }
+      }
+    });
 
   //   it("should delete a size successfully", async () => {
   //     const mockResult = right({}) as Either<
@@ -344,7 +344,7 @@ describe("SizeController", () => {
   //     });
 
   //     try {
-  //       await sizeController.deleteBrand("BrandWithError");
+  //       await sizeController.deleteBrand("SizeWithError");
   //     } catch (error) {
   //       if (error instanceof HttpException) {
   //         expect(error.message).toBe("Failed to delete size");
