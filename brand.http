@@ -37,7 +37,7 @@ Content-Type: application/json
 
 ###
 
-# @name get-brands-by-name
+# @name find-brands-by-name
 GET  {{BASE_URL}}/brands?name=marca 112
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}

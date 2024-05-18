@@ -104,10 +104,10 @@ export class ColorsController {
     }
   }
 
-  @Get(":id")
-  async findColorById(@Param("id") id: string) {
+  @Get()
+  async findColorByName(@Query("name") name: string) {
     try {
-      const result = await this.findByIdColorUseCase.execute({ id });
+      const result = await this.findColorByNameUseCase.execute({ name });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
@@ -126,11 +126,10 @@ export class ColorsController {
       );
     }
   }
-
-  @Get()
-  async findColorByName(@Query("name") name: string) {
+  @Get(":id")
+  async findColorById(@Param("id") id: string) {
     try {
-      const result = await this.findColorByNameUseCase.execute({ name });
+      const result = await this.findByIdColorUseCase.execute({ id });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
