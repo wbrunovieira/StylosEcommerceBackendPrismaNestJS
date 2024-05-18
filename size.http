@@ -33,8 +33,9 @@ Content-Type: application/json
 ###
 
 # @name delete-size
-Delete  {{BASE_URL}}/size/b0c8de50-35b9-4883-bb3b-e50942735736
+Delete  {{BASE_URL}}/size/022220c0-2995-4e31-8a53-c52fa5c683f4
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 
 ###

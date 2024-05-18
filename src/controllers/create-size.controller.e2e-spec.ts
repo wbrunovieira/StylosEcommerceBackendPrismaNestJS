@@ -80,6 +80,15 @@ describe("Size Controller (E2E)", () => {
     expect(response.body.size[0].props.name).toEqual("m");
   });
 
+  test("[DELETE] /size/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .delete(`/size/${sizeId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body.message).toEqual("Size deleted successfully");
+  });
+
   test("[GET] /size/:id", async () => {
     const response = await request(app.getHttpServer())
       .get(`/size/${sizeId}`)
