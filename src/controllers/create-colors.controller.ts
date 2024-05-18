@@ -22,7 +22,9 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
 import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
 import { FindColorByNameUseCase } from "@/domain/catalog/application/use-cases/find-color-by-name";
+import { GetAllColorsUseCase } from "@/domain/catalog/application/use-cases/get-all-colors";
 import { DeleteColorUseCase } from "@/domain/catalog/application/use-cases/delete-color";
+import { left } from "@/core/either";
 
 const createColorSchema = z.object({
   name: z
@@ -42,6 +44,16 @@ const editColorSchema = z.object({
 const editBodyValidationPipe = new ZodValidationsPipe(editColorSchema);
 type EditColorBodySchema = z.infer<typeof editColorSchema>;
 
+const paginationParamsSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)),
+  pageSize: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).max(100).default(10)
+  ),
+});
+const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
+type PaginationParams = z.infer<typeof paginationParamsSchema>;
+
 @Controller("colors")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
@@ -51,7 +63,8 @@ export class ColorsController {
     private readonly editColorUseCase: EditColorUseCase,
     private readonly findByIdColorUseCase: FindColorByIdUseCase,
     private readonly findColorByNameUseCase: FindColorByNameUseCase,
-    private readonly deleteColorUseCase: DeleteColorUseCase
+    private readonly deleteColorUseCase: DeleteColorUseCase,
+    private readonly getAllColorUseCase: GetAllColorsUseCase
   ) {}
 
   @Post()
@@ -148,6 +161,23 @@ export class ColorsController {
         "Failed to find color",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  @Get("all")
+  async getAllColors(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllColorUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find colors",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { colors: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
     }
   }
 
