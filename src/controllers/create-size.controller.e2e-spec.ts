@@ -69,6 +69,17 @@ describe("Size Controller (E2E)", () => {
     expect(response.body.size.props.name).toEqual(updatedSizeData.name);
   });
 
+  test("[GET] /size/all", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/size/all")
+      .query({ page: 1, pageSize: 10 })
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+    console.log("size all", response.body);
+    expect(response.body.size).toHaveLength(1);
+    expect(response.body.size[0].props.name).toEqual("m");
+  });
+
   test("[GET] /size/:id", async () => {
     const response = await request(app.getHttpServer())
       .get(`/size/${sizeId}`)

@@ -43,6 +43,7 @@ import { FindColorByIdUseCase } from "./application/use-cases/find-color-by-id";
 import { GetAllColorsUseCase } from "./application/use-cases/get-all-colors";
 import { FindColorByNameUseCase } from "./application/use-cases/find-color-by-name";
 import { FindSizeByIdUseCase } from "./application/use-cases/find-size-by-id";
+import { GetAllSizesUseCase } from "./application/use-cases/get-all-sizes";
 
 @Module({
   controllers: [
@@ -78,6 +79,7 @@ import { FindSizeByIdUseCase } from "./application/use-cases/find-size-by-id";
     GetAllColorsUseCase,
     FindColorByNameUseCase,
     FindSizeByIdUseCase,
+    GetAllSizesUseCase,
 
     PrismaService,
     {

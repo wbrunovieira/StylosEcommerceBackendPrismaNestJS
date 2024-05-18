@@ -7,8 +7,6 @@ import {
   HttpStatus,
   HttpException,
   Param,
-  BadRequestException,
-  Delete,
   Put,
   UseGuards,
 } from "@nestjs/common";
@@ -35,7 +33,6 @@ const createSizeSchema = z.object({
 const bodyValidationPipe = new ZodValidationsPipe(createSizeSchema);
 type CreateSizeBodySchema = z.infer<typeof createSizeSchema>;
 
-
 const editSizeSchema = z.object({
   name: z
     .string()
@@ -59,10 +56,11 @@ type PaginationParams = z.infer<typeof paginationParamsSchema>;
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
 export class SizeController {
-  constructor(private readonly createSizeUseCase: CreateSizeUseCase,
-              private readonly ediySizeUseCase: EditSizeUseCase,
-              private readonly findSizeByIdUseCase: FindSizeByIdUseCase,
-              private readonly getAllSizesUseCase: GetAllSizesUseCase
+  constructor(
+    private readonly createSizeUseCase: CreateSizeUseCase,
+    private readonly ediySizeUseCase: EditSizeUseCase,
+    private readonly findSizeByIdUseCase: FindSizeByIdUseCase,
+    private readonly getAllSizesUseCase: GetAllSizesUseCase
   ) {}
 
   @Post()
@@ -108,6 +106,22 @@ export class SizeController {
     }
   }
 
+  @Get("all")
+  async getAllSizes(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllSizesUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find sizes",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { size: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
+    }
+  }
   @Get(":id")
   async findSizeById(@Param("id") id: string) {
     try {
@@ -130,23 +144,4 @@ export class SizeController {
       );
     }
   }
-
-  @Get("all")
-  async getAllSizes(@Query(paginationPipe) params: PaginationParams) {
-    try {
-      const result = await this.getAllSizesUseCase.execute(params);
-      if (result.isLeft()) {
-        throw new HttpException(
-          "Failed to find sizes",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      } else {
-        return { sizes: result.value };
-      }
-    } catch (error) {
-      return left(new Error("Repository error"));
-    }
-  }
-
-
 }
