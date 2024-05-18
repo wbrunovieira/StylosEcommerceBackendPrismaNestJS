@@ -21,6 +21,7 @@ import { z } from "zod";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditColorUseCase } from "@/domain/catalog/application/use-cases/edit-color";
 import { FindColorByIdUseCase } from "@/domain/catalog/application/use-cases/find-color-by-id";
+import { FindColorByNameUseCase } from "@/domain/catalog/application/use-cases/find-color-by-name";
 
 const createColorSchema = z.object({
   name: z
@@ -47,7 +48,8 @@ export class ColorsController {
   constructor(
     private readonly createColorUseCase: CreateColorUseCase,
     private readonly editColorUseCase: EditColorUseCase,
-    private readonly findByIdColorUseCase: FindColorByIdUseCase
+    private readonly findByIdColorUseCase: FindColorByIdUseCase,
+    private readonly findColorByNameUseCase: FindColorByNameUseCase
   ) {}
 
   @Post()
@@ -106,6 +108,29 @@ export class ColorsController {
   async findColorById(@Param("id") id: string) {
     try {
       const result = await this.findByIdColorUseCase.execute({ id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { color: result.value.color };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find color",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get()
+  async findColorByName(@Query("name") name: string) {
+    try {
+      const result = await this.findColorByNameUseCase.execute({ name });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
