@@ -9,6 +9,7 @@ import {
   Param,
   Put,
   UseGuards,
+  Delete,
 } from "@nestjs/common";
 
 import { CreateSizeUseCase } from "@/domain/catalog/application/use-cases/create-size";
@@ -23,6 +24,7 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { FindSizeByIdUseCase } from "@/domain/catalog/application/use-cases/find-size-by-id";
 import { GetAllSizesUseCase } from "@/domain/catalog/application/use-cases/get-all-sizes";
 import { left } from "@/core/either";
+import { DeleteSizeUseCase } from "@/domain/catalog/application/use-cases/delete-size";
 
 const createSizeSchema = z.object({
   name: z
@@ -60,7 +62,8 @@ export class SizeController {
     private readonly createSizeUseCase: CreateSizeUseCase,
     private readonly ediySizeUseCase: EditSizeUseCase,
     private readonly findSizeByIdUseCase: FindSizeByIdUseCase,
-    private readonly getAllSizesUseCase: GetAllSizesUseCase
+    private readonly getAllSizesUseCase: GetAllSizesUseCase,
+    private readonly deleteSizeUseCase: DeleteSizeUseCase
   ) {}
 
   @Post()
@@ -140,6 +143,29 @@ export class SizeController {
       }
       throw new HttpException(
         "Failed to find size",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Delete(":id")
+  async deleteSize(@Param("id") id: string) {
+    try {
+      const result = await this.deleteSizeUseCase.execute({ sizeId: id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { message: "Size deleted successfully" };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to delete size",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
