@@ -105,13 +105,16 @@ describe("Colors Controller (E2E)", () => {
   });
 
   test("[DELETE] /colors/:id", async () => {
-    const response = await request(app.getHttpServer()).delete(
-      `/colors/${colorId}`
-    );
-    expect(response.statusCode).toBe(200);
+    const response = await request(app.getHttpServer())
+      .delete(`/colors/${colorId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
 
     expect(response.body.message).toEqual("Color deleted successfully");
-    console.log("delete colors response body", response.body);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   afterAll(async () => {
