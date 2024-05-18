@@ -23,6 +23,8 @@ import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { z } from "zod";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { FindSizeByIdUseCase } from "@/domain/catalog/application/use-cases/find-size-by-id";
+import { GetAllSizesUseCase } from "@/domain/catalog/application/use-cases/get-all-sizes";
+import { left } from "@/core/either";
 
 const createSizeSchema = z.object({
   name: z
@@ -43,13 +45,24 @@ const editSizeSchema = z.object({
 const editBodyValidationPipe = new ZodValidationsPipe(editSizeSchema);
 type EditSizeBodySchema = z.infer<typeof editSizeSchema>;
 
+const paginationParamsSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)),
+  pageSize: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).max(100).default(10)
+  ),
+});
+const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
+type PaginationParams = z.infer<typeof paginationParamsSchema>;
+
 @Controller("size")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
 export class SizeController {
   constructor(private readonly createSizeUseCase: CreateSizeUseCase,
               private readonly ediySizeUseCase: EditSizeUseCase,
-              private readonly findSizeByIdUseCase: FindSizeByIdUseCase
+              private readonly findSizeByIdUseCase: FindSizeByIdUseCase,
+              private readonly getAllSizesUseCase: GetAllSizesUseCase
   ) {}
 
   @Post()
@@ -115,6 +128,23 @@ export class SizeController {
         "Failed to find size",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  @Get("all")
+  async getAllSizes(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllSizesUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find sizes",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { sizes: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
     }
   }
 
