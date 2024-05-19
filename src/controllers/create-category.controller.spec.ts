@@ -20,6 +20,7 @@ import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";
 import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
 import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/get-all-categories";
+import { DeleteCategoryUseCase } from "@/domain/catalog/application/use-cases/delete-category";
 
 describe("CategoryController", () => {
   let categoryController: CategoryController;
@@ -28,7 +29,7 @@ describe("CategoryController", () => {
   let findCategoryByNameUseCase: FindCategoryByNameUseCase;
   let getAllCategoriesUseCase: GetAllCategoriesUseCase;
   let findCategoryByIdUseCase: FindCategoryByIdUseCase;
-  //   let deleteBrandUseCase: DeleteBrandUseCase;
+  let deleteCategoryUseCase: DeleteCategoryUseCase;
   let consoleErrorSpy: any;
 
   beforeEach(async () => {
@@ -67,12 +68,12 @@ describe("CategoryController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: DeleteBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: DeleteCategoryUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         Reflector,
         {
           provide: JwtAuthGuard,
@@ -120,7 +121,9 @@ describe("CategoryController", () => {
     findCategoryByIdUseCase = module.get<FindCategoryByIdUseCase>(
       FindCategoryByIdUseCase
     );
-    //   deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
+    deleteCategoryUseCase = module.get<DeleteCategoryUseCase>(
+      DeleteCategoryUseCase
+    );
   });
 
   afterEach(() => {
@@ -299,49 +302,49 @@ describe("CategoryController", () => {
     });
   });
 
-    it("should handle errors thrown by GetAllCategoriesUseCase", async () => {
-      vi.spyOn(getAllCategoriesUseCase, "execute").mockImplementation(() => {
-        throw new Error("GetAllCategoriesUseCase error");
-      });
-
-      try {
-        await categoryController.getAllCategories({ page: 1, pageSize: 10 });
-      } catch (error) {
-        if (error instanceof HttpException) {
-          expect(error.message).toBe("Failed to retrieve categories");
-          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-          throw new Error("Expected HttpException");
-        }
-      }
+  it("should handle errors thrown by GetAllCategoriesUseCase", async () => {
+    vi.spyOn(getAllCategoriesUseCase, "execute").mockImplementation(() => {
+      throw new Error("GetAllCategoriesUseCase error");
     });
 
-  //   it("should delete a brand successfully", async () => {
-  //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
+    try {
+      await categoryController.getAllCategories({ page: 1, pageSize: 10 });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to retrieve categories");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
-  //     const result = await categoryController.deleteBrand("brand-1");
+  it("should delete a category successfully", async () => {
+    const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
+    vi.spyOn(deleteCategoryUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     expect(result).toEqual({ message: "Brand deleted successfully" });
-  //     expect(deleteBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "brand-1",
-  //     });
-  //   });
+    const result = await categoryController.deleteCategory("category-1");
 
-  //   it("should handle errors thrown by DeleteBrandUseCase", async () => {
-  //     vi.spyOn(deleteBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("DeleteBrandUseCase error");
-  //     });
+    expect(result).toEqual({ message: "Category deleted successfully" });
+    expect(deleteCategoryUseCase.execute).toHaveBeenCalledWith({
+      categoryId: "category-1",
+    });
+  });
 
-  //     try {
-  //       await categoryController.deleteBrand("CategoryWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to delete brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+  it("should handle errors thrown by DeleteCategoryUseCase", async () => {
+    vi.spyOn(deleteCategoryUseCase, "execute").mockImplementation(() => {
+      throw new Error("DeleteCategoryUseCase error");
+    });
+
+    try {
+      await categoryController.deleteCategory("CategoryWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to delete category");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 });

@@ -26,6 +26,7 @@ import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/
 import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
 import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/get-all-categories";
 import { left } from "@/core/either";
+import { DeleteCategoryUseCase } from "@/domain/catalog/application/use-cases/delete-category";
 
 const createCategorySchema = z.object({
   name: z
@@ -64,7 +65,8 @@ export class CategoryController {
     private readonly editCategoryUseCase: EditCategoryUseCase,
     private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
     private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase,
-    private readonly getAllCategoriesUseCase: GetAllCategoriesUseCase
+    private readonly getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private readonly deleteCategoryUseCase: DeleteCategoryUseCase
   ) {}
 
   @Post()
@@ -144,6 +146,23 @@ export class CategoryController {
     }
   }
 
+  @Get("all")
+  async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllCategoriesUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find categories",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { categories: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
+    }
+  }
+
   @Get()
   async findCategoryByName(@Query("name") name: string) {
     try {
@@ -167,20 +186,28 @@ export class CategoryController {
     }
   }
 
-  @Get("all")
-  async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
+  @Delete(":id")
+  async deleteCategory(@Param("id") id: string) {
     try {
-      const result = await this.getAllCategoriesUseCase.execute(params);
+      const result = await this.deleteCategoryUseCase.execute({
+        categoryId: id,
+      });
       if (result.isLeft()) {
-        throw new HttpException(
-          "Failed to find categories",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
       } else {
-        return { categories: result.value };
+        return { message: "Category deleted successfully" };
       }
     } catch (error) {
-      return left(new Error("Repository error"));
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to delete category",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }
