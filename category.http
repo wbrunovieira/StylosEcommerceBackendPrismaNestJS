@@ -45,6 +45,15 @@ Content-Type: application/json
 
 ###
 
+
+# @name get-category-all
+GET {{BASE_URL}}/category/all?page=1&pageSize=10
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+###
+
 # @name edit-brand
 PUT  {{BASE_URL}}/category/84f4d873-5af4-453d-85d3-a1f26a01ee65
 Authorization: Bearer {{AUTH_TOKEN}}

@@ -82,6 +82,20 @@ describe("Category Controller (E2E)", () => {
     expect(response.body.category.props.name).toEqual(updatedCategoryData.name);
   });
 
+  test("[GET] /category/all", async () => {
+    const response = await request(app.getHttpServer())
+      .get("/category/all")
+      .query({ page: 1, pageSize: 10 })
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    console.log("all categories", response.body);
+    console.log("respose all categories", response);
+
+    expect(response.body.categories).toHaveLength(1);
+    expect(response.body.categories[0].props.name).toEqual("category 1");
+  });
+
   test("[GET] /category/:id", async () => {
     const response = await request(app.getHttpServer())
       .get(`/category/${categoryId}`)
