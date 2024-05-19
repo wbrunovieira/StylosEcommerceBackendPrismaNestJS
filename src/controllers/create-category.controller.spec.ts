@@ -16,11 +16,12 @@ import { makeCategory } from "@test/factories/make-category";
 import { CreateCategoryUseCase } from "@/domain/catalog/application/use-cases/create-category";
 import { CategoryController } from "./create-category.controller";
 import { Category } from "@/domain/catalog/enterprise/entities/category";
+import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 
 describe("CategoryController", () => {
   let categoryController: CategoryController;
   let createCategoryUseCase: CreateCategoryUseCase;
-  //   let editBrandUseCase: EditBrandUseCase;
+  let editCategoryUseCase: EditCategoryUseCase;
   //   let findBrandByNameUseCase: FindBrandByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   //   let findBrandByIdUseCase: FindBrandByIdUseCase;
@@ -39,12 +40,12 @@ describe("CategoryController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: EditBrandUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: EditCategoryUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: FindBrandByNameUseCase,
         //   useValue: {
@@ -104,7 +105,7 @@ describe("CategoryController", () => {
     createCategoryUseCase = module.get<CreateCategoryUseCase>(
       CreateCategoryUseCase
     );
-    // editBrandUseCase = module.get<EditBrandUseCase>(EditBrandUseCase);
+    editCategoryUseCase = module.get<EditCategoryUseCase>(EditCategoryUseCase);
     // findBrandByNameUseCase = module.get<FindBrandByNameUseCase>(
     //   FindBrandByNameUseCase
     // );
@@ -154,48 +155,44 @@ describe("CategoryController", () => {
     }
   });
 
-  //   it("should edit a brand successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "UpdatedBrandName",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(editBrandUseCase, "execute").mockResolvedValue(mockResult);
+  it("should edit a category successfully", async () => {
+    const mockCategory = makeCategory({ name: "CategoryName" });
 
-  //     const result = await categoryController.editBrand("brand-1", {
-  //       name: "UpdatedBrandName",
-  //     });
+    const mockResult = right({ category: mockCategory }) as Either<
+      ResourceNotFoundError,
+      { category: Category }
+    >;
+    vi.spyOn(editCategoryUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(editBrandUseCase.execute).toHaveBeenCalledWith({
-  //       brandId: "brand-1",
-  //       name: "UpdatedBrandName",
-  //     });
-  //   });
+    const result = await categoryController.editCategory("category-1", {
+      name: "UpdatedCategoryName",
+    });
 
-  //   it("should handle errors thrown by EditBrandUseCase", async () => {
-  //     vi.spyOn(editBrandUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("EditBrandUseCase error");
-  //     });
+    expect(result).toEqual(mockResult.value);
+    expect(editCategoryUseCase.execute).toHaveBeenCalledWith({
+      categoryId: "category-1",
+      name: "UpdatedCategoryName",
+    });
+  });
 
-  //     try {
-  //       await categoryController.editBrand("brand-1", {
-  //         name: "UpdatedBrandWithError",
-  //       });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to update brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+  it("should handle errors thrown by EditCategoryUseCase", async () => {
+    vi.spyOn(editCategoryUseCase, "execute").mockImplementation(() => {
+      throw new Error("EditCategoryUseCase error");
+    });
+
+    try {
+      await categoryController.editCategory("category-1", {
+        name: "UpdatedCategoryWithError",
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to update category");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   //   it("should find a brand by name successfully", async () => {
   //     const mockBrand = Brand.create(
