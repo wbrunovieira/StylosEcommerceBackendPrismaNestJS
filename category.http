@@ -19,7 +19,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "category 3"
+  "name": "category 8"
   
 }
 

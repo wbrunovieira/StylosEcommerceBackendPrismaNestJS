@@ -105,15 +105,19 @@ export class PrismaCategoryRepository implements ICategoryRepository {
 
   async findAll(params: PaginationParams): Promise<Either<Error, Category[]>> {
     try {
-      const categories = await this.prisma.category.findMany({
+      console.log("entrou no prisma repositorio");
+      const category = await this.prisma.category.findMany({
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
-      const convertedCategory = categories.map((b) =>
+      console.log("result do repositorio", category);
+      const convertedCategory = category.map((b) =>
         Category.create({ name: b.name }, new UniqueEntityID(b.id))
       );
+      console.log("repositorio convertido", convertedCategory);
       return right(convertedCategory);
     } catch (error) {
+      console.log("repositorio de left");
       return left(new Error("Failed to find categories"));
     }
   }
