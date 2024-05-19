@@ -18,12 +18,13 @@ import { CategoryController } from "./create-category.controller";
 import { Category } from "@/domain/catalog/enterprise/entities/category";
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";
+import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
 
 describe("CategoryController", () => {
   let categoryController: CategoryController;
   let createCategoryUseCase: CreateCategoryUseCase;
   let editCategoryUseCase: EditCategoryUseCase;
-  // let findCategoryByNameUseCase: FindCategoryByNameUseCase;
+  let findCategoryByNameUseCase: FindCategoryByNameUseCase;
   //   let getAllBrandsUseCase: GetAllBrandsUseCase;
   let findCategoryByIdUseCase: FindCategoryByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
@@ -47,12 +48,12 @@ describe("CategoryController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: FindCategoryByNameUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: FindCategoryByNameUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         // {
         //   provide: GetAllBrandsUseCase,
         //   useValue: {
@@ -106,10 +107,12 @@ describe("CategoryController", () => {
     createCategoryUseCase = module.get<CreateCategoryUseCase>(
       CreateCategoryUseCase
     );
+
     editCategoryUseCase = module.get<EditCategoryUseCase>(EditCategoryUseCase);
-    // findCategory§ByNameUseCase = module.get<FindCategoryByNameUseCase>(
-    //   FindCategoryByNameUseCase
-    // );
+
+    findCategoryByNameUseCase = module.get<FindCategoryByNameUseCase>(
+      FindCategoryByNameUseCase
+    );
     // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
     findCategoryByIdUseCase = module.get<FindCategoryByIdUseCase>(
       FindCategoryByIdUseCase
@@ -230,43 +233,46 @@ describe("CategoryController", () => {
     }
   });
 
-  //   it("should find a brand by name successfully", async () => {
-  //     const mockBrand = Brand.create(
-  //       {
-  //         name: "CategoryName",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
-  //     const mockResult = right({ brand: mockBrand }) as Either<
-  //       ResourceNotFoundError,
-  //       { brand: Brand }
-  //     >;
-  //     vi.spyOn(findCategoryByNameUseCase, "execute").mockResolvedValue(mockResult);
+  it("should find a brand by name successfully", async () => {
+    const mockCategory = makeCategory({ name: "CategoryName" });
 
-  //     const result = await categoryController.findBrandByName("CategoryName");
+    const mockResult = right({ category: mockCategory }) as Either<
+      ResourceNotFoundError,
+      { category: Category }
+    >;
 
-  //     expect(result).toEqual(mockResult.value);
-  //     expect(findCategoryByNameUseCase.execute).toHaveBeenCalledWith({
-  //       name: "CategoryName",
-  //     });
-  //   });
+    vi.spyOn(findCategoryByNameUseCase, "execute").mockResolvedValue(
+      mockResult
+    );
+    const result = await findCategoryByNameUseCase.execute({
+      name: "CategoryName",
+    });
 
-  //   it("should handle errors thrown by FindCategoryByNameUseCase", async () => {
-  //     vi.spyOn(findCategoryByNameUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("FindCategoryByNameUseCase error");
-  //     });
+    expect(result.value).toEqual(mockResult.value);
+    expect(findCategoryByNameUseCase.execute).toHaveBeenCalledWith({
+      name: "CategoryName",
+    });
+  });
 
-  //     try {
-  //       await categoryController.findBrandByName("CategoryWithError");
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to find brand");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+  it("should handle errors thrown by FindCategoryByNameUseCase", async () => {
+    vi.spyOn(findCategoryByNameUseCase, "execute").mockImplementation(() => {
+      throw new HttpException(
+        "Failed to find category",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+    try {
+      await categoryController.findCategoryByName("CategoryWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error instanceof HttpException).toBeTruthy();
+        expect(error.message).toBe("Failed to find category");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
+      }
+    }
+  });
 
   //   it("should get all brands successfully", async () => {
   //     const mockBrand1 = Brand.create(

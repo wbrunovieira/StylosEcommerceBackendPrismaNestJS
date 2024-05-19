@@ -23,6 +23,7 @@ import { z } from "zod";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";
+import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
 
 const createCategorySchema = z.object({
   name: z
@@ -49,7 +50,8 @@ export class CategoryController {
   constructor(
     private readonly createCategoryUseCase: CreateCategoryUseCase,
     private readonly editCategoryUseCase: EditCategoryUseCase,
-    private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase
+    private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
+    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase
   ) {}
 
   @Post()
@@ -110,6 +112,30 @@ export class CategoryController {
   async findCategoryById(@Param("id") id: string) {
     try {
       const result = await this.findCategoryByIdUseCase.execute({ id });
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        }
+      } else {
+        return { category: result.value.category };
+      }
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        "Failed to find category",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+
+  @Get()
+  async findCategoryByName(@Query("name") name: string) {
+    try {
+      const result = await this.findCategoryByNameUseCase.execute({ name });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
