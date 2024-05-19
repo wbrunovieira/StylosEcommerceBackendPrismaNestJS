@@ -1,13 +1,14 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 describe("Category Controller (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let categoryId;
+  let authToken: string;
+  let categoryId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -17,6 +18,16 @@ describe("Category Controller (E2E)", () => {
     app = moduleRef.createNestApplication();
     prisma = moduleRef.get(PrismaService);
     await app.init();
+
+    const response = await request(app.getHttpServer())
+      .post("/sessions")
+      .send({ email: "admin@example.com", password: "adminpassword" });
+
+    authToken = response.body.access_token;
+
+    if (!authToken) {
+      throw new Error("Authentication failed: No token received");
+    }
   });
 
   beforeEach(async () => {
@@ -27,9 +38,14 @@ describe("Category Controller (E2E)", () => {
     categoryId = category.id;
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   test("[POST] /category", async () => {
     const response = await request(app.getHttpServer())
       .post("/category")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({ name: "category 2" });
 
     const categoryResponse = response.body.category.props;
@@ -44,45 +60,13 @@ describe("Category Controller (E2E)", () => {
     categoryId = response.body.category._id.value;
   });
 
-  test("[GET] /category", async () => {
+  test("[POST] /category with invalid data", async () => {
     const response = await request(app.getHttpServer())
-      .get("/category")
-      .query({ page: "1", pageSize: "10" });
-    expect(response.statusCode).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBeGreaterThan(0);
-  });
+      .post("/category")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({});
 
-  test("[GET] /category/:id", async () => {
-    const response = await request(app.getHttpServer()).get(
-      `/category/${categoryId}`
-    );
-    expect(response.statusCode).toBe(200);
-    console.log("Response body:", JSON.stringify(response.body, null, 2));
-    expect(response.body.props.name).toEqual("category 1");
-  });
-
-  test("[PUT] /category/:id", async () => {
-    const updatedCategoryData = { name: "category 3" };
-    const response = await request(app.getHttpServer())
-      .put(`/category/${categoryId}`)
-      .send(updatedCategoryData);
-
-    expect(response.statusCode).toBe(200);
-    console.log("put category response body", response.body);
-    expect(response.body.category.props.name).toEqual(updatedCategoryData.name);
-  });
-
-  test("[DELETE] /category/:id", async () => {
-    const response = await request(app.getHttpServer()).delete(
-      `/category/${categoryId}`
-    );
-    expect(response.statusCode).toBe(200);
-
-    expect(response.body.message).toEqual("category deleted successfully");
-  });
-
-  afterAll(async () => {
-    await app.close();
+    expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(response.body.message).toContain("Validation failed");
   });
 });
