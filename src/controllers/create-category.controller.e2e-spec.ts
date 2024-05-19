@@ -116,4 +116,13 @@ describe("Category Controller (E2E)", () => {
     expect(response.body).toHaveProperty("category");
     expect(response.body.category.props.name).toEqual("category 1");
   });
+
+  test("[DELETE] /category/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .delete(`/category/${categoryId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body.message).toEqual("Category deleted successfully");
+  });
 });
