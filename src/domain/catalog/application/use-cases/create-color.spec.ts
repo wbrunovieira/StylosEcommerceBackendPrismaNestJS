@@ -16,7 +16,7 @@ describe("CreateColorUseCase", () => {
     const result = await sut.execute({
       name: "red",
     });
-    console.log("color in test create", result.value);
+    
 
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {

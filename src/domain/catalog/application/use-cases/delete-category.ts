@@ -19,11 +19,13 @@ export class DeleteCategoryUseCase {
   async execute({
     categoryId,
   }: DeleteCategoryUseCaseRequest): Promise<DeleteCategoryUseCaseResponse> {
-    const category = await this.categoryRepository.findById(categoryId);
+    const categoryResult = await this.categoryRepository.findById(categoryId);
 
-    if (!category) {
-      return left(new ResourceNotFoundError());
+    if (categoryResult.isLeft()) {
+      return left(new ResourceNotFoundError("Category not found"));
     }
+
+    const category = categoryResult.value;
 
     await this.categoryRepository.delete(category);
 
