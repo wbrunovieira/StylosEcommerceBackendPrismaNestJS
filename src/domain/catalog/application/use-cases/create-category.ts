@@ -11,7 +11,7 @@ interface CreateCategoryUseCaseRequest {
 }
 
 type CreateCategoryUseCaseResponse = Either<
-ResourceNotFoundError | null,
+  ResourceNotFoundError | null,
   {
     category: Category;
   }
@@ -23,8 +23,7 @@ export class CreateCategoryUseCase {
   async execute({
     name,
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
-
-   try {
+    try {
       const trimmedName = name.trim();
       if (!trimmedName || trimmedName.length === 0) {
         return left(new ResourceNotFoundError("Category name is required"));
@@ -38,7 +37,7 @@ export class CreateCategoryUseCase {
         );
       }
 
-      if (trimmedName.length > 50) {
+      if (trimmedName.length > 20) {
         return left(
           new ResourceNotFoundError(
             "Category name must be less than 20 characters long"
@@ -46,7 +45,8 @@ export class CreateCategoryUseCase {
         );
       }
 
-      const existingCAtegory = await this.categoryRepository.findByName(trimmedName);
+      const existingCAtegory =
+        await this.categoryRepository.findByName(trimmedName);
       if (existingCAtegory.isRight()) {
         return left(
           new ResourceNotFoundError("Category with this name already exists")
@@ -65,5 +65,4 @@ export class CreateCategoryUseCase {
       return left(error as Error);
     }
   }
-  }
-
+}
