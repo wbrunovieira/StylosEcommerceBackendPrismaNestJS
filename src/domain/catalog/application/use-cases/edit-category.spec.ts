@@ -35,4 +35,26 @@ describe("Edit Category", () => {
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
   });
+
+  it("should not change the category if the name is the same", async () => {
+    const categoryId = new UniqueEntityID("category-3");
+    const newCategory = makeCategory(
+      { name: "Same Category Name" },
+      categoryId
+    );
+
+    await inMemoryCategoryRepository.create(newCategory);
+
+    const result = await sut.execute({
+      categoryId: categoryId.toValue(),
+      name: "Same Category Name",
+    });
+
+    expect(result.isRight()).toBe(true);
+    if (result.isRight()) {
+      const updatedCategory = result.value.category;
+      expect(updatedCategory.id.toValue()).toBe("category-3");
+      expect(updatedCategory.name).toBe("Same Category Name");
+    }
+  });
 });
