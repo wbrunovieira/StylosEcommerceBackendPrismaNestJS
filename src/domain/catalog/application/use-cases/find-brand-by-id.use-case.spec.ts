@@ -3,7 +3,7 @@ import { FindBrandByIdUseCase } from "./find-brand-by-id.use-case";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Brand } from "../../enterprise/entities/brand";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { left, right } from "@/core/either";
+
 
 let inMemoryBrandRepository: InMemoryBrandRepository;
 let sut: FindBrandByIdUseCase;
