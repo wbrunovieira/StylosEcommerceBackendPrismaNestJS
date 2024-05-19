@@ -19,13 +19,14 @@ import { Category } from "@/domain/catalog/enterprise/entities/category";
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";
 import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
+import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/get-all-categories";
 
 describe("CategoryController", () => {
   let categoryController: CategoryController;
   let createCategoryUseCase: CreateCategoryUseCase;
   let editCategoryUseCase: EditCategoryUseCase;
   let findCategoryByNameUseCase: FindCategoryByNameUseCase;
-  //   let getAllBrandsUseCase: GetAllBrandsUseCase;
+  let getAllCategoriesUseCase: GetAllCategoriesUseCase;
   let findCategoryByIdUseCase: FindCategoryByIdUseCase;
   //   let deleteBrandUseCase: DeleteBrandUseCase;
   let consoleErrorSpy: any;
@@ -54,12 +55,12 @@ describe("CategoryController", () => {
             execute: vi.fn(),
           },
         },
-        // {
-        //   provide: GetAllBrandsUseCase,
-        //   useValue: {
-        //     execute: vi.fn(),
-        //   },
-        // },
+        {
+          provide: GetAllCategoriesUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
         {
           provide: FindCategoryByIdUseCase,
           useValue: {
@@ -113,7 +114,9 @@ describe("CategoryController", () => {
     findCategoryByNameUseCase = module.get<FindCategoryByNameUseCase>(
       FindCategoryByNameUseCase
     );
-    // getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
+    getAllCategoriesUseCase = module.get<GetAllCategoriesUseCase>(
+      GetAllCategoriesUseCase
+    );
     findCategoryByIdUseCase = module.get<FindCategoryByIdUseCase>(
       FindCategoryByIdUseCase
     );
@@ -233,7 +236,7 @@ describe("CategoryController", () => {
     }
   });
 
-  it("should find a brand by name successfully", async () => {
+  it("should find a category by name successfully", async () => {
     const mockCategory = makeCategory({ name: "CategoryName" });
 
     const mockResult = right({ category: mockCategory }) as Either<
@@ -274,56 +277,44 @@ describe("CategoryController", () => {
     }
   });
 
-  //   it("should get all brands successfully", async () => {
-  //     const mockBrand1 = Brand.create(
-  //       {
-  //         name: "Brand1",
-  //       },
-  //       new UniqueEntityID("brand-1")
-  //     );
+  it("should get all categories successfully", async () => {
+    const mockCategories = Array.from({ length: 5 }, () => makeCategory());
 
-  //     const mockBrand2 = Brand.create(
-  //       {
-  //         name: "Brand2",
-  //       },
-  //       new UniqueEntityID("brand-2")
-  //     );
+    const mockResult = right(mockCategories) as Either<
+      ResourceNotFoundError,
+      Category[]
+    >;
 
-  //     const mockResult = right([mockBrand1, mockBrand2]) as Either<
-  //       ResourceNotFoundError,
-  //       Brand[]
-  //     >;
+    vi.spyOn(getAllCategoriesUseCase, "execute").mockResolvedValue(mockResult);
 
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockResolvedValue(mockResult);
+    const result = await categoryController.getAllCategories({
+      page: 1,
+      pageSize: 10,
+    });
 
-  //     const result = await categoryController.getAllBrands({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
+    expect(result).toEqual({ categories: mockResult.value });
+    expect(getAllCategoriesUseCase.execute).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 10,
+    });
+  });
 
-  //     expect(result).toEqual({ brands: mockResult.value });
-  //     expect(getAllBrandsUseCase.execute).toHaveBeenCalledWith({
-  //       page: 1,
-  //       pageSize: 10,
-  //     });
-  //   });
+    it("should handle errors thrown by GetAllCategoriesUseCase", async () => {
+      vi.spyOn(getAllCategoriesUseCase, "execute").mockImplementation(() => {
+        throw new Error("GetAllCategoriesUseCase error");
+      });
 
-  //   it("should handle errors thrown by GetAllBrandsUseCase", async () => {
-  //     vi.spyOn(getAllBrandsUseCase, "execute").mockImplementation(() => {
-  //       throw new Error("GetAllBrandsUseCase error");
-  //     });
-
-  //     try {
-  //       await categoryController.getAllBrands({ page: 1, pageSize: 10 });
-  //     } catch (error) {
-  //       if (error instanceof HttpException) {
-  //         expect(error.message).toBe("Failed to retrieve brands");
-  //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-  //       } else {
-  //         throw new Error("Expected HttpException");
-  //       }
-  //     }
-  //   });
+      try {
+        await categoryController.getAllCategories({ page: 1, pageSize: 10 });
+      } catch (error) {
+        if (error instanceof HttpException) {
+          expect(error.message).toBe("Failed to retrieve categories");
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+          throw new Error("Expected HttpException");
+        }
+      }
+    });
 
   //   it("should delete a brand successfully", async () => {
   //     const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
