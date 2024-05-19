@@ -69,4 +69,16 @@ describe("Category Controller (E2E)", () => {
     expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(response.body.message).toContain("Validation failed");
   });
+
+  test("[PUT] /category/:id", async () => {
+    const updatedCategoryData = { name: "category 3" };
+    const response = await request(app.getHttpServer())
+      .put(`/category/${categoryId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .send(updatedCategoryData);
+
+    expect(response.statusCode).toBe(200);
+
+    expect(response.body.category.props.name).toEqual(updatedCategoryData.name);
+  });
 });
