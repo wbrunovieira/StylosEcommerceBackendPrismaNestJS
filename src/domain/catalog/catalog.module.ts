@@ -44,6 +44,7 @@ import { GetAllColorsUseCase } from "./application/use-cases/get-all-colors";
 import { FindColorByNameUseCase } from "./application/use-cases/find-color-by-name";
 import { FindSizeByIdUseCase } from "./application/use-cases/find-size-by-id";
 import { GetAllSizesUseCase } from "./application/use-cases/get-all-sizes";
+import { FindCategoryByIdUseCase } from "./application/use-cases/find-category-by-id";
 
 @Module({
   controllers: [
@@ -70,6 +71,7 @@ import { GetAllSizesUseCase } from "./application/use-cases/get-all-sizes";
     CreateCategoryUseCase,
     EditCategoryUseCase,
     DeleteCategoryUseCase,
+    FindCategoryByIdUseCase,
     GetAllBrandsUseCase,
     FindBrandByIdUseCase,
     FindMaterialByNameUseCase,

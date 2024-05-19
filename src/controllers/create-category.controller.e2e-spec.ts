@@ -81,4 +81,14 @@ describe("Category Controller (E2E)", () => {
 
     expect(response.body.category.props.name).toEqual(updatedCategoryData.name);
   });
+
+  test("[GET] /category/:id", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/category/${categoryId}`)
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body).toHaveProperty("category");
+    expect(response.body.category.props.name).toEqual("category 1");
+  });
 });
