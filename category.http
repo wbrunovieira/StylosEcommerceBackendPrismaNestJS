@@ -25,9 +25,10 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
-# @name get-category
-GET  {{BASE_URL}}/category
+# @name get-category-by-name
+GET  {{BASE_URL}}/category?name=category 2
 Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
