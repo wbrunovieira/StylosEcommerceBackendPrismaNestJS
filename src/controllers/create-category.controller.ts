@@ -24,6 +24,8 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";
 import { FindCategoryByNameUseCase } from "@/domain/catalog/application/use-cases/find-category-by-name";
+import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/get-all-categories";
+import { left } from "@/core/either";
 
 const createCategorySchema = z.object({
   name: z
@@ -43,6 +45,16 @@ const editCategorySchema = z.object({
 const editBodyValidationPipe = new ZodValidationsPipe(editCategorySchema);
 type EditCategoryBodySchema = z.infer<typeof editCategorySchema>;
 
+const paginationParamsSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)),
+  pageSize: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).max(100).default(10)
+  ),
+});
+const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
+type PaginationParams = z.infer<typeof paginationParamsSchema>;
+
 @Controller("category")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
@@ -51,7 +63,8 @@ export class CategoryController {
     private readonly createCategoryUseCase: CreateCategoryUseCase,
     private readonly editCategoryUseCase: EditCategoryUseCase,
     private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
-    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase
+    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase,
+    private readonly getAllCategoriesUseCase: GetAllCategoriesUseCase
   ) {}
 
   @Post()
@@ -131,7 +144,6 @@ export class CategoryController {
     }
   }
 
-
   @Get()
   async findCategoryByName(@Query("name") name: string) {
     try {
@@ -152,6 +164,23 @@ export class CategoryController {
         "Failed to find category",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  @Get("all")
+  async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      const result = await this.getAllCategoriesUseCase.execute(params);
+      if (result.isLeft()) {
+        throw new HttpException(
+          "Failed to find categories",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { categories: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
     }
   }
 }
