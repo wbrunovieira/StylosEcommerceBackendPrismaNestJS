@@ -12,10 +12,15 @@ describe("CreateCategorydUseCase", () => {
 
   it("should be able to create a category", async () => {
     const result = await sut.execute({
-      name: "red",
+      name: "calcinha",
     });
+    console.log("category in test create", result.value);
 
-    expect(result.isRight).toBeTruthy();
-    expect(inMemoryCategoryRepository.items[0]).toEqual(result.value?.category);
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      expect(inMemoryCategoryRepository.items[0]).toEqual(
+        result.value.category
+      );
+    }
   });
 });

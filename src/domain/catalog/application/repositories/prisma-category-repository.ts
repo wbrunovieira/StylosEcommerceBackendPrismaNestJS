@@ -9,6 +9,10 @@ import { Category } from "../../enterprise/entities/category";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
   constructor(private prisma: PrismaService) {}
@@ -18,7 +22,8 @@ export class PrismaCategoryRepository implements ICategoryRepository {
       const categoryData = await this.prisma.category.findUnique({
         where: { id },
       });
-      if (!categoryData) return left(new ResourceNotFoundError("Category not found"));
+      if (!categoryData)
+        return left(new ResourceNotFoundError("Category not found"));
 
       const category = Category.create(
         { name: categoryData.name },
@@ -48,7 +53,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     }
   }
 
-  async create(category: Category): Promise<Either<Error, void>>  {
+  async create(category: Category): Promise<Either<Error, void>> {
     try {
       await this.prisma.category.create({
         data: {
@@ -77,7 +82,28 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     }
   }
 
-  async findAll(params: PaginationParams): Promise<Either<Error, Category[]>>{
+  async findByName(name: string): Promise<Either<Error, Category>> {
+    const normalizedName = normalizeName(name);
+    try {
+      const categoryData = await this.prisma.category.findFirst({
+        where: { name: normalizedName },
+      });
+
+      if (!categoryData)
+        return left(new ResourceNotFoundError("Category not found"));
+
+      const category = Category.create(
+        { name: categoryData.name },
+        new UniqueEntityID(categoryData.id)
+      );
+
+      return right(category);
+    } catch (error) {
+      return left(new Error("Database error"));
+    }
+  }
+
+  async findAll(params: PaginationParams): Promise<Either<Error, Category[]>> {
     try {
       const category = await this.prisma.category.findMany({
         skip: (params.page - 1) * params.pageSize,

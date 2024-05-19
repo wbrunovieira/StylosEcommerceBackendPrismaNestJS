@@ -26,15 +26,19 @@ export class EditCategoryUseCase {
     categoryId,
     name,
   }: EditCategoryUseCaseRequest): Promise<EditCategoryUseCaseResponse> {
-    const category = await this.categoryRepository.findById(categoryId);
+    const categoryResult = await this.categoryRepository.findById(categoryId);
 
-    if (!category) {
-      return left(new ResourceNotFoundError());
+    if (categoryResult.isLeft()) {
+      return left(new ResourceNotFoundError("Category not found"));
     }
 
+    const category = categoryResult.value;
     category.name = name;
+    const saveResult = await this.categoryRepository.save(category);
 
-    await this.categoryRepository.save(category);
+    if (saveResult.isLeft()) {
+      return left(new ResourceNotFoundError("Failed to update category"));
+    }
 
     return right({
       category,

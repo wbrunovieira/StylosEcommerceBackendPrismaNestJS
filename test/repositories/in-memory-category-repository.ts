@@ -5,6 +5,10 @@ import { ICategoryRepository } from "@/domain/catalog/application/repositories/i
 
 import { Category } from "@/domain/catalog/enterprise/entities/category";
 
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 export class InMemoryCategoryRepository implements ICategoryRepository {
   public items: Category[] = [];
 
@@ -20,6 +24,17 @@ export class InMemoryCategoryRepository implements ICategoryRepository {
     } catch (error) {
       return left(new Error("Failed to find category"));
     }
+  }
+
+  async findByName(name: string): Promise<Either<Error, Category>> {
+    const normalizedName = normalizeName(name);
+    const category = this.items.find(
+      (item) => normalizeName(item.name) === normalizedName
+    );
+    if (!category) {
+      return left(new Error("Category not found"));
+    }
+    return right(category);
   }
 
   async save(category: Category): Promise<Either<Error, void>> {
