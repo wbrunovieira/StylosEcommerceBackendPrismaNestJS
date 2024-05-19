@@ -1,11 +1,25 @@
 @BASE_URL = http://localhost:3333
 
-# @name create-category
-POST {{BASE_URL}}/category
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
+
+# @name authenticate
+POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "name": "category 1"
+  "email": "admin@example.com",
+  "password": "adminpassword"
+}
+
+###
+
+# @name create-category
+POST {{BASE_URL}}/category
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "name": "category 3"
   
 }
 
@@ -30,7 +44,8 @@ Content-Type: application/json
 ###
 
 # @name edit-brand
-PUT  {{BASE_URL}}/category/ef33c049-93d0-4ee7-915e-909abfa2e2d7
+PUT  {{BASE_URL}}/category/84f4d873-5af4-453d-85d3-a1f26a01ee65
+Authorization: Bearer {{AUTH_TOKEN}}
 Content-Type: application/json
 
 {
