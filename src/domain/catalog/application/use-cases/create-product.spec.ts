@@ -18,6 +18,7 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { left, right } from "@/core/either";
 import { InMemoryColorRepository } from "@test/repositories/in-memory-color-repository";
 import { IColorRepository } from "../repositories/i-color-repository";
+import { fail } from "assert";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
@@ -228,33 +229,33 @@ describe("CreateProductUseCase", () => {
   //   }
   // });
 
-  // it("should not allow negative stock values", async () => {
-  //   const request = {
-  //     name: "Test Product",
-  //     description: "A test product description",
-  //     productColors: [],
-  //     productSizes: [],
-  //     productCategories: [],
-  //     materialId: "1",
-  //     brandId: "1",
-  //     price: 100,
-  //     stock: -1,
-  //     onSale: false,
-  //     discount: 0,
-  //     isFeatured: false,
-  //     isNew: false,
-  //     images: [],
-  //   };
-  //   const result = await useCase.execute(request);
+  it("should not allow negative stock values", async () => {
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "1",
+      brandId: "1",
+      price: 100,
+      stock: -1,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+    const result = await useCase.execute(request);
 
-  //   if (result.isLeft()) {
-  //     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 
-  //     expect(result.value.message).toEqual("Stock cannot be negative");
-  //   } else {
-  //     fail("Expected a Left with an error but got Right");
-  //   }
-  // });
+      expect(result.value.message).toEqual("Stock cannot be negative");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
 
   // it("should handle errors when fetching brand data", async () => {
   //   const request = {
