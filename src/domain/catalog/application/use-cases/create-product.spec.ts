@@ -150,6 +150,56 @@ describe("CreateProductUseCase", () => {
     expect(result.isRight()).toBeTruthy();
   });
 
+  it("should return an error if brandId is invalid", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: "invalid_brand_id",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toBe("Brand not found");
+    }
+  });
+
+  it("should return an error if materialId is invalid", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "invalid_material_id",
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toBe("Material not found");
+    }
+  });
+
   // it("should fail if required name fields are missing", async () => {
   //   const request = {
   //     name: "",
