@@ -9,14 +9,22 @@ export class InMemoryProductSizeRepository implements IProductSizeRepository {
 
   async create(productId: string, sizeId: string): Promise<void> {
     const productIdUnique = new UniqueEntityID(productId);
-    const colorIdUnique = new UniqueEntityID(sizeId);
+    const sizeIdUnique = new UniqueEntityID(sizeId);
 
-    const productColor = new ProductSize({
+    const productSize = new ProductSize({
       productId: productIdUnique,
-      sizeId: colorIdUnique,
+      sizeId: sizeIdUnique,
     });
 
-    this.items.push(productColor);
+    this.items.push(productSize);
+  }
+
+  async findByProductId(productId: string): Promise<ProductSize[]> {
+    return this.items.filter(item => item.productId.toString() === productId);
+  }
+
+  async findBySizeId(sizeId: string): Promise<ProductSize[]> {
+    return this.items.filter(item => item.sizeId.toString() === sizeId);
   }
   // findByProductId(productId: string): Promise<ProductSize[]> {
   //   throw new Error('Method not implemented.');

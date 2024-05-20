@@ -19,6 +19,9 @@ import { left, right } from "@/core/either";
 import { InMemoryColorRepository } from "@test/repositories/in-memory-color-repository";
 import { IColorRepository } from "../repositories/i-color-repository";
 import { fail } from "assert";
+import { ISizeRepository } from "../repositories/i-size-repository";
+import { makeSize } from "@test/factories/make-size";
+import { InMemorySizeRepository } from "@test/repositories/in-memory-size-repository";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
@@ -29,19 +32,23 @@ describe("CreateProductUseCase", () => {
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
   let mockColorRepository: IColorRepository;
+  let mockSizeRepository: ISizeRepository;
 
   let brandId: UniqueEntityID;
   let materialId: UniqueEntityID;
+  let sizeId: UniqueEntityID;
 
   beforeEach(() => {
     brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
     materialId = new UniqueEntityID("f056524a-85bf-45a9-bf40-ebade896343c");
+    sizeId = new UniqueEntityID("size_id_as_string");
 
     const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
     const consistentMaterial = makeMaterial(
       { name: "Test Material Name" },
       materialId
     );
+    const consistentSize = makeSize({ name: "Test Size Name" }, sizeId);
 
     mockProductRepository = new InMemoryProductRepository();
     mockProductColorRepository = new InMemoryProductColorRepository();
@@ -50,17 +57,18 @@ describe("CreateProductUseCase", () => {
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
     mockColorRepository = new InMemoryColorRepository();
+    mockSizeRepository = new InMemorySizeRepository();
 
     mockBrandRepository.create(consistentBrand);
     mockMaterialRepository.create(consistentMaterial);
-
-    console.log("mock Brand", mockBrandRepository);
+    mockSizeRepository.create(consistentSize);
 
     useCase = new CreateProductUseCase(
       mockProductRepository,
-
       mockBrandRepository,
-      mockMaterialRepository
+      mockMaterialRepository,
+      mockSizeRepository,
+      mockProductSizeRepository
     );
 
     mockProductColorRepository.create = vi.fn(() =>
@@ -468,6 +476,44 @@ describe("CreateProductUseCase", () => {
       expect(result.value.message).toMatch(
         /Brand not found|Material not found/
       );
+    }
+  });
+
+  it("should create a product with a valid sizeId", async () => {
+    const result = await useCase.execute({
+      name: "Test Product with Size",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 200,
+      stock: 20,
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
+      onSale: true,
+      discount: 10,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+    console.log("result in create product size repo", result.value);
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      console.log('createdProduct', createdProduct)
+      const sizes = await mockProductSizeRepository.findByProductId(
+       
+        createdProduct.id.toString()
+      );
+      console.log('sizes', sizes)
+      expect(sizes).toHaveLength(1);
+      expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
+    } else {
+      fail("Expected a Right with the created product but got Left");
     }
   });
 });

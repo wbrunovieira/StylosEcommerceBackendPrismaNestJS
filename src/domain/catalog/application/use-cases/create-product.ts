@@ -12,6 +12,8 @@ import { IMaterialRepository } from "../repositories/i-material-repository";
 import { Injectable } from "@nestjs/common";
 
 import { Material } from "../../enterprise/entities/material";
+import { ISizeRepository } from "../repositories/i-size-repository";
+import { IProductSizeRepository } from "../repositories/i-product-size-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -47,7 +49,9 @@ export class CreateProductUseCase {
     private productRepository: IProductRepository,
 
     private brandRepository: IBrandRepository,
-    private materialRepository: IMaterialRepository
+    private materialRepository: IMaterialRepository,
+    private sizeRepository: ISizeRepository,
+    private productSizeRepository: IProductSizeRepository
   ) {}
 
   async execute({
@@ -70,9 +74,7 @@ export class CreateProductUseCase {
     isNew = false,
     images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    console.log(
-      `Execute called with materialId: ${materialId}, brandId: ${brandId}`
-    );
+  
     if (!name.trim()) {
       return left(new ResourceNotFoundError("Product name is required"));
     }
@@ -87,7 +89,7 @@ export class CreateProductUseCase {
 
     const brandOrError = await this.brandRepository.findById(brandId);
     if (brandOrError.isLeft()) {
-      console.error(`Brand not found: ${brandId}`);
+      
       return left(new ResourceNotFoundError("Brand not found"));
     }
 
@@ -95,12 +97,21 @@ export class CreateProductUseCase {
     if (materialId) {
       materialOrError = await this.materialRepository.findById(materialId);
       if (materialOrError.isLeft()) {
-        console.error(`Material not found: ${materialId}`);
+       
         return left(new ResourceNotFoundError("Material not found"));
       }
     }
 
     const material = materialOrError.isRight() ? materialOrError.value : null;
+    console.log("sizes no sizes repo", productSizes);
+    if (productSizes) {
+      for (const sizeId of productSizes) {
+        const sizeExists = await this.sizeRepository.findById(sizeId);
+        if (sizeExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Size not found: ${sizeId}`));
+        }
+      }
+    }
 
     // if (productColors) {
     //   console.log(
@@ -134,6 +145,14 @@ export class CreateProductUseCase {
       isNew,
       images,
     });
+    await this.productRepository.create(product);
+
+    if (productSizes) {
+      console.log("productSize no useCase", productSizes);
+      for (const sizeId of productSizes) {
+        await this.productSizeRepository.create(product.id.toString(), sizeId);
+      }
+    }
 
     // if (productColors) {
     //   console.log(
@@ -152,20 +171,12 @@ export class CreateProductUseCase {
     //   }
     // }
 
-    // if (productSizes) {
-    //   for (const sizeId of productSizes) {
-    //     const idAsString = product.id.toString();
-    //     await this.productSizeRepository.create(idAsString, sizeId);
-    //   }
-    // }
     // if (productCategories) {
     //   for (const categoryId of productCategories) {
     //     const idAsString = product.id.toString();
     //     await this.productCategoryRepository.create(idAsString, categoryId);
     //   }
     // }
-
-    await this.productRepository.create(product);
 
     return right({
       product,
