@@ -1,7 +1,6 @@
 import { Either, left, right } from "@/core/either";
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { IBrandRepository } from "@/domain/catalog/application/repositories/i-brand-repository";
-
 import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 
 function normalizeName(name: string): string {
@@ -37,9 +36,7 @@ export class InMemoryBrandRepository implements IBrandRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Brand>> {
-   
     const brand = this.items.find((item) => item.id.toString() === id);
-    
     if (!brand) {
       return left(new Error("Brand not found"));
     }
@@ -77,5 +74,9 @@ export class InMemoryBrandRepository implements IBrandRepository {
     }
     this.items.splice(index, 1);
     return right(undefined);
+  }
+
+  async addItems(...brand: Brand[]): Promise<void> {
+    this.items.push(...brand);
   }
 }

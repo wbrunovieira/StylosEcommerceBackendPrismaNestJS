@@ -89,8 +89,8 @@ describe("Category Controller (E2E)", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .expect(HttpStatus.OK);
 
-    console.log("all categories", response.body);
-    console.log("respose all categories", response);
+    
+    
 
     expect(response.body.categories).toHaveLength(1);
     expect(response.body.categories[0].props.name).toEqual("category 1");

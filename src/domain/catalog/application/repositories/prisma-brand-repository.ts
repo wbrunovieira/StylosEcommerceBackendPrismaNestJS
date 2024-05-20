@@ -8,16 +8,13 @@ import { Brand } from "../../enterprise/entities/brand";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
-
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 @Injectable()
 export class PrismaBrandRepository implements IBrandRepository {
   constructor(private prisma: PrismaService) {}
-
-  
 
   async create(brand: Brand): Promise<Either<Error, void>> {
     try {
@@ -36,7 +33,6 @@ export class PrismaBrandRepository implements IBrandRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Brand>> {
-    
     try {
       const brandData = await this.prisma.brand.findUnique({
         where: { id },
@@ -54,12 +50,11 @@ export class PrismaBrandRepository implements IBrandRepository {
     }
   }
 
-
   async findByName(name: string): Promise<Either<Error, Brand>> {
     const normalizedName = normalizeName(name);
     try {
       const brandData = await this.prisma.brand.findFirst({
-        where: {  name: normalizedName },
+        where: { name: normalizedName },
       });
 
       if (!brandData) return left(new ResourceNotFoundError("Brand not found"));
@@ -118,5 +113,9 @@ export class PrismaBrandRepository implements IBrandRepository {
     } catch (error) {
       return left(new Error("Failed to find brands"));
     }
+  }
+
+  async addItems(brand: Brand) {
+    console.log(brand);
   }
 }
