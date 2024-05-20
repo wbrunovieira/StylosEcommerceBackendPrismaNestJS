@@ -64,8 +64,8 @@ export class CategoryController {
     private readonly createCategoryUseCase: CreateCategoryUseCase,
     private readonly editCategoryUseCase: EditCategoryUseCase,
     private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
-    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase,
     private readonly getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase,
     private readonly deleteCategoryUseCase: DeleteCategoryUseCase
   ) {}
 
@@ -123,6 +123,26 @@ export class CategoryController {
     }
   }
 
+  @Get("all")
+  async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
+    try {
+      console.log("entrou no controller");
+      const result = await this.getAllCategoriesUseCase.execute(params);
+      console.log("result no controller", result);
+      if (result.isLeft()) {
+        console.log("controller deu left");
+        throw new HttpException(
+          "Failed to find categories",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        return { categories: result.value };
+      }
+    } catch (error) {
+      return left(new Error("Repository error"));
+    }
+  }
+  
   @Get(":id")
   async findCategoryById(@Param("id") id: string) {
     try {
@@ -143,26 +163,6 @@ export class CategoryController {
         "Failed to find category",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
-    }
-  }
-
-  @Get("all")
-  async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
-    try {
-      console.log("entrou no controller");
-      const result = await this.getAllCategoriesUseCase.execute(params);
-      console.log("result no controller", result);
-      if (result.isLeft()) {
-        console.log("controller deu left");
-        throw new HttpException(
-          "Failed to find categories",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      } else {
-        return { category: result.value };
-      }
-    } catch (error) {
-      return left(new Error("Repository error"));
     }
   }
 
