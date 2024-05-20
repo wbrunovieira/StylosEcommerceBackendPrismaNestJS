@@ -201,33 +201,33 @@ describe("CreateProductUseCase", () => {
     }
   });
 
-  // it("should fail if required name fields are missing", async () => {
-  //   const request = {
-  //     name: "",
-  //     description: "A test product description",
-  //     productColors: [],
-  //     productSizes: [],
-  //     productCategories: [],
-  //     materialId: "1",
-  //     brandId: "1",
-  //     price: 100,
-  //     stock: 10,
-  //     onSale: false,
-  //     discount: 0,
-  //     isFeatured: false,
-  //     isNew: false,
-  //     images: [],
-  //   };
-  //   const result = await useCase.execute(request);
-  //   expect(result.isLeft()).toBeTruthy();
-  //   if (result.isLeft()) {
-  //     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+  it("should fail if required name fields are missing", async () => {
+    const request = {
+      name: "",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "1",
+      brandId: "1",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
+    const result = await useCase.execute(request);
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 
-  //     expect(result.value.message).toEqual("Product name is required");
-  //   } else {
-  //     fail("Expected a Left with an error but got Right");
-  //   }
-  // });
+      expect(result.value.message).toEqual("Product name is required");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
 
   it("should not allow negative stock values", async () => {
     const request = {
@@ -252,6 +252,33 @@ describe("CreateProductUseCase", () => {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 
       expect(result.value.message).toEqual("Stock cannot be negative");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
+
+  it("should return an error if price is negative", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: -100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+
+      expect(result.value.message).toEqual("Price cannot be negative");
     } else {
       fail("Expected a Left with an error but got Right");
     }
@@ -312,6 +339,135 @@ describe("CreateProductUseCase", () => {
       expect(result.value.message).toEqual("Material not found");
     } else {
       fail("Expected a Left with an error but got Right");
+    }
+  });
+
+  it("should create a product without a materialId", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      expect(createdProduct.materialId).toBeUndefined();
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should create a product with a valid brandId but no materialId", async () => {
+    const result = await useCase.execute({
+      name: "Test Product with valid Brand",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      expect(createdProduct.brandId.toString()).toBe(brandId.toString());
+      expect(createdProduct.materialId).toBeUndefined();
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should create a product with all fields provided", async () => {
+    const result = await useCase.execute({
+      name: "Complete Test Product",
+      description: "A complete test product description",
+      productColors: [new UniqueEntityID("color_id_as_string").toString()],
+      productSizes: [new UniqueEntityID("size_id_as_string").toString()],
+      productCategories: [
+        new UniqueEntityID("category_id_as_string").toString(),
+      ],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 250,
+      stock: 50,
+      height: 10,
+      width: 5,
+      length: 15,
+      weight: 20,
+      onSale: true,
+      discount: 20,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      expect(createdProduct.name).toBe("Complete Test Product");
+      expect(createdProduct.description).toBe(
+        "A complete test product description"
+      );
+      expect(createdProduct.price).toBe(250);
+      expect(createdProduct.stock).toBe(50);
+      expect(createdProduct.height).toBe(10);
+      expect(createdProduct.width).toBe(5);
+      expect(createdProduct.length).toBe(15);
+      expect(createdProduct.weight).toBe(20);
+      expect(createdProduct.onSale).toBe(true);
+      expect(createdProduct.discount).toBe(20);
+      expect(createdProduct.isFeatured).toBe(true);
+      expect(createdProduct.isNew).toBe(true);
+      expect(createdProduct.images).toEqual(["image1.jpg", "image2.jpg"]);
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should return an error if both brandId and materialId are invalid", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: "invalid_material_id",
+      brandId: "invalid_brand_id",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toMatch(
+        /Brand not found|Material not found/
+      );
     }
   });
 });
