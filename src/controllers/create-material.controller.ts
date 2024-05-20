@@ -14,7 +14,6 @@ import {
 
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 
-// import { DeleteMaterialUseCase } from "@/domain/catalog/application/use-cases/delete-material";
 import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { z } from "zod";
@@ -176,7 +175,6 @@ export class MaterialController {
   @Get("all")
   async getAllMaterials(@Query(paginationPipe) params: PaginationParams) {
     try {
-      console.log("Pagination Params:", params);
       const result = await this.getAllMaterialUseCase.execute(params);
       if (result.isLeft()) {
         throw new HttpException(
@@ -184,11 +182,9 @@ export class MaterialController {
           HttpStatus.INTERNAL_SERVER_ERROR
         );
       } else {
-        console.log("Materials found:", result.value);
         return { materials: result.value };
       }
     } catch (error) {
-      console.error("Error in getAllMaterials:", error);
       return left(new Error("Repository error"));
     }
   }

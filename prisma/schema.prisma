@@ -116,7 +116,7 @@ model ProductSize {
 }
 
 model Category {
-  id       String            @id @default(uuid())
+  id       String  @id @default(uuid())
   name     String
   productCategories ProductCategory[]
 

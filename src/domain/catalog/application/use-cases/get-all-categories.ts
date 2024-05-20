@@ -1,6 +1,5 @@
 import { Either, left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
-
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { Category } from "../../enterprise/entities/category";
 import { ICategoryRepository } from "../repositories/i-category-repository";
