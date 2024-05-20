@@ -257,114 +257,61 @@ describe("CreateProductUseCase", () => {
     }
   });
 
-  // it("should handle errors when fetching brand data", async () => {
-  //   const request = {
-  //     name: "Test Product",
-  //     description: "A test product description",
-  //     productColors: [],
-  //     productSizes: [],
-  //     productCategories: [],
-  //     materialId: materialId.toString(),
-  //     brandId: "wrong id",
-  //     price: 100,
-  //     stock: 10,
-  //     onSale: false,
-  //     discount: 0,
-  //     isFeatured: false,
-  //     isNew: false,
-  //     images: [],
-  //   };
+  it("should handle errors when fetching brand data", async () => {
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: "wrong id",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
 
-  //   const result = await useCase.execute(request);
+    const result = await useCase.execute(request);
 
-  //   expect(result.isLeft()).toBeTruthy();
-  //   if (result.isLeft()) {
-  //     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  //     expect(result.value.message).toEqual("Brand not found");
-  //   } else {
-  //     fail("Expected a Left with an error but got Right");
-  //   }
-  // });
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toEqual("Brand not found");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
 
-  // it("should handle errors when fetching material data", async () => {
-  //   const request = {
-  //     name: "Test Product",
-  //     description: "A test product description",
-  //     productColors: [],
-  //     productSizes: [],
-  //     productCategories: [],
-  //     brandId: brandId.toString(),
-  //     materialId: "definitely wrong id",
-  //     price: 100,
-  //     stock: 10,
-  //     onSale: false,
-  //     discount: 0,
-  //     isFeatured: false,
-  //     isNew: false,
-  //     images: [],
-  //   };
+  it("should handle errors when fetching material data", async () => {
+    const request = {
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [],
+      productCategories: [],
+      brandId: brandId.toString(),
+      materialId: "definitely wrong id",
+      price: 100,
+      stock: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    };
 
-  //   const result = await useCase.execute(request);
+    const result = await useCase.execute(request);
 
-  //   expect(result.isLeft()).toBeTruthy();
-  //   if (result.isLeft()) {
-  //     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  //     expect(result.value.message).toEqual("Material not found");
-  //   } else {
-  //     fail("Expected a Left with an error but got Right");
-  //   }
-  // });
-
-  // it("should handle errors when fetching product-color data non-existent color ID", async () => {
-  //   const nonExistentColorId = new UniqueEntityID("any-color").toString();
-
-  //   const request = {
-  //     name: "Test Product",
-  //     description: "A test product description",
-  //     productColors: [nonExistentColorId],
-  //     productSizes: [],
-  //     productCategories: [],
-  //     brandId: brandId.toString(),
-  //     materialId: materialId.toString(),
-  //     price: 100,
-  //     stock: 10,
-  //     onSale: false,
-  //     discount: 0,
-  //     isFeatured: false,
-  //     isNew: false,
-  //     images: [],
-  //   };
-
-  //   const result = await useCase.execute(request);
-
-  //   expect(mockProductColorRepository.create).toHaveBeenCalled();
-  //   expect(result.isLeft()).toBeTruthy();
-  //   if (result.isLeft()) {
-  //     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  //     expect(result.value.message);
-  //   } else {
-  //     fail("Expected a Left with an error but got Right");
-  //   }
-  // });
-
-  // it("should integrate well with repositories and create a product successfully", async () => {
-  //   const fullRequest = {
-  //     name: "Full Test Product",
-  //     description: "Complete product creation flow",
-  //     productColors: [colorId.toString()],
-  //     productSizes: [new UniqueEntityID("size_id").toString()],
-  //     productCategories: [categoryId.toString()],
-  //     materialId: materialId.toString(),
-  //     brandId: brandId.toString(),
-  //     price: 300,
-  //     stock: 15,
-  //     onSale: true,
-  //     discount: 25,
-  //     isFeatured: true,
-  //     isNew: true,
-  //     images: ["complete1.jpg", "complete2.jpg"],
-  //   };
-  //   const result = await useCase.execute(fullRequest);
-  //   expect(result.isRight()).toBeTruthy();
-  // });
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      expect(result.value.message).toEqual("Material not found");
+    } else {
+      fail("Expected a Left with an error but got Right");
+    }
+  });
 });
