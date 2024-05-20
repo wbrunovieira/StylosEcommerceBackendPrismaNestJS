@@ -71,4 +71,8 @@ export class InMemoryMaterialRepository implements IMaterialRepository {
     this.items.splice(index, 1);
     return right(undefined);
   }
+
+  public addItems(...materials: Material[]): void {
+    this.items.push(...materials);
+  }
 }

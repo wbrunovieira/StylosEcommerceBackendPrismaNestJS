@@ -10,4 +10,5 @@ export abstract class IMaterialRepository {
   abstract findAll(params: PaginationParams): Promise<Either<Error, Material[]>>;
   abstract save(material: Material): Promise<Either<Error, void>>;
   abstract delete(material: Material): Promise<Either<Error, void>>;
+  abstract addItems(...materials: Material[]): void;
 }

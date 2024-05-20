@@ -9,4 +9,5 @@ export abstract class IBrandRepository {
   abstract findAll(params: PaginationParams): Promise<Either<Error, Brand[]>>;
   abstract save(brand: Brand): Promise<Either<Error, void>>;
   abstract delete(brand: Brand): Promise<Either<Error, void>>;
+  abstract addItems(brand: Brand): void;
 }

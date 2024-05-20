@@ -1,7 +1,7 @@
-import { faker } from '@faker-js/faker';
+import { faker } from "@faker-js/faker";
 
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Brand, BrandProps } from '@/domain/catalog/enterprise/entities/brand';
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Brand, BrandProps } from "@/domain/catalog/enterprise/entities/brand";
 
 export function makeBrand(
   override: Partial<BrandProps> = {},

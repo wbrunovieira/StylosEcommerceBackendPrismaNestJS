@@ -120,4 +120,8 @@ export class PrismaMaterialRepository implements IMaterialRepository {
       return left(new Error("Database error"));
     }
   }
+
+  async addItems(...materials: Material[]) {
+    console.log(materials);
+  }
 }
