@@ -532,11 +532,14 @@ describe("CreateProductUseCase", () => {
       isNew: true,
       images: ["image1.jpg", "image2.jpg"],
     });
-    console.log("result in create product size repo", result.value);
+  
+
     expect(result.isRight()).toBeTruthy();
+
     if (result.isRight()) {
       const createdProduct = result.value.product;
       console.log("createdProduct", createdProduct);
+
       const sizes = await mockProductSizeRepository.findByProductId(
         createdProduct.id.toString()
       );

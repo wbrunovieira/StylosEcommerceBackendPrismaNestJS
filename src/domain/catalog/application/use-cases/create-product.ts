@@ -104,8 +104,6 @@ export class CreateProductUseCase {
 
     const material = materialOrError.isRight() ? materialOrError.value : null;
 
-    console.log("sizes no sizes repo", productSizes);
-
     if (productSizes) {
       const uniqueSizes = new Set<string>();
 
@@ -126,6 +124,7 @@ export class CreateProductUseCase {
     }
 
     if (productColors) {
+      console.log("entrou no productColor do Usecase", productColors);
       const uniqueColors = new Set<string>();
 
       for (const colorId of productColors) {
@@ -137,8 +136,11 @@ export class CreateProductUseCase {
           return left(new ResourceNotFoundError(`Duplicate color: ${colorId}`));
         }
         uniqueColors.add(colorId);
-        const sizeExists = await this.colorRepository.findById(colorId);
-        if (sizeExists.isLeft()) {
+        console.log("uniqueColors", uniqueColors);
+        const colorExists = await this.colorRepository.findById(colorId);
+        console.log("color exist", colorExists);
+
+        if (colorExists.isLeft()) {
           return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
         }
       }
