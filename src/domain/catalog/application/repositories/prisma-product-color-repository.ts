@@ -2,10 +2,23 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductColorRepository } from "./i-product-color-repository";
 import { Either, left, right } from "@/core/either";
+import { ProductColor } from "../../enterprise/entities/product-color";
 
 @Injectable()
 export class PrismaProductColorRepository implements IProductColorRepository {
   constructor(private prisma: PrismaService) {}
+  findByProductId(productId: string): Promise<ProductColor[]> {
+    throw new Error("Method not implemented.");
+  }
+  findByColorId(ColorId: string): Promise<ProductColor[]> {
+    throw new Error("Method not implemented.");
+  }
+  addItem(ProductColor: any): void {
+    throw new Error("Method not implemented.");
+  }
+  delete(productColor: ProductColor): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
   async create(productId: string, colorId: string): Promise<Either<Error, void>>  {
    

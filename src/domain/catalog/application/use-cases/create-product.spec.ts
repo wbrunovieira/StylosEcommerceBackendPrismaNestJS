@@ -23,28 +23,34 @@ import { ISizeRepository } from "../repositories/i-size-repository";
 import { makeSize } from "@test/factories/make-size";
 import { InMemorySizeRepository } from "@test/repositories/in-memory-size-repository";
 import { ProductSize } from "../../enterprise/entities/product-size";
+import { makeColor } from "@test/factories/make-color";
+import { ProductColor } from "../../enterprise/entities/product-color";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
   let mockProductRepository: IProductRepository;
-  let mockProductColorRepository: IProductColorRepository;
 
   let mockProductCategoryRepository: IProductCategoryRepository;
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
-  let mockColorRepository: IColorRepository;
+
   let mockSizeRepository: ISizeRepository;
   let mockProductSizeRepository: InMemoryProductSizeRepository;
+
+  let mockColorRepository: IColorRepository;
+  let mockProductColorRepository: InMemoryProductColorRepository;
 
   let brandId: UniqueEntityID;
   let materialId: UniqueEntityID;
   let sizeId: UniqueEntityID;
+  let colorId: UniqueEntityID;
   let productId: UniqueEntityID;
 
   beforeEach(() => {
     brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
     materialId = new UniqueEntityID("f056524a-85bf-45a9-bf40-ebade896343c");
     sizeId = new UniqueEntityID("size_id_as_string");
+    colorId = new UniqueEntityID("color_id_as_string");
 
     const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
     const consistentMaterial = makeMaterial(
@@ -52,30 +58,33 @@ describe("CreateProductUseCase", () => {
       materialId
     );
     const consistentSize = makeSize({ name: "Test Size Name" }, sizeId);
+    const consistentColor = makeColor({ name: "Test Color Name" }, colorId);
 
     mockProductRepository = new InMemoryProductRepository();
-    mockProductColorRepository = new InMemoryProductColorRepository();
+
     mockProductSizeRepository = new InMemoryProductSizeRepository();
+
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
+    mockProductColorRepository = new InMemoryProductColorRepository();
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
-    mockColorRepository = new InMemoryColorRepository();
+
     mockSizeRepository = new InMemorySizeRepository();
+    mockColorRepository = new InMemoryColorRepository();
 
     mockBrandRepository.create(consistentBrand);
     mockMaterialRepository.create(consistentMaterial);
     mockSizeRepository.create(consistentSize);
+    mockColorRepository.create(consistentColor);
 
     useCase = new CreateProductUseCase(
       mockProductRepository,
+      mockColorRepository,
       mockBrandRepository,
       mockMaterialRepository,
       mockSizeRepository,
-      mockProductSizeRepository
-    );
-
-    mockProductColorRepository.create = vi.fn(() =>
-      Promise.resolve(left(new Error("Color not found")))
+      mockProductSizeRepository,
+      mockProductColorRepository
     );
 
     mockBrandRepository.findById = vi.fn((id) => {
@@ -108,13 +117,24 @@ describe("CreateProductUseCase", () => {
       );
     });
 
- 
+    mockProductColorRepository.addItem(
+      new ProductColor({
+        productId: new UniqueEntityID("existing_product_id"),
+        colorId: colorId,
+      })
+    );
+
+    mockProductColorRepository.findByProductId = vi.fn((colorId) => {
+      console.log(`FindById ProductColor called with: ${colorId}`);
+      return Promise.resolve(
+        mockProductColorRepository.items.filter(
+          (item) => item.colorId.toString() === colorId
+        )
+      );
+    });
   });
 
   it("should create a product", async () => {
-    console.log(
-      `Creating product with materialId: ${materialId.toString()} and brandId: ${brandId.toString()}`
-    );
     const result = await useCase.execute({
       name: "Test Product",
       description: "A test product description",
@@ -160,9 +180,6 @@ describe("CreateProductUseCase", () => {
       images: ["image1.jpg", "image2.jpg"],
     };
 
-    console.log(
-      `Creating product with materialId: ${materialId.toString()} and brandId: ${brandId.toString()}`
-    );
     const result = await useCase.execute(request);
     if (result.isLeft()) {
       console.error("Test Failed:", result.value);
@@ -667,7 +684,4 @@ describe("CreateProductUseCase", () => {
     expect(sizes).toHaveLength(1);
     expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
   });
-
-   
-  
 });

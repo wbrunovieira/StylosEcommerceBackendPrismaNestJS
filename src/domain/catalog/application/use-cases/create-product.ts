@@ -14,6 +14,8 @@ import { Injectable } from "@nestjs/common";
 import { Material } from "../../enterprise/entities/material";
 import { ISizeRepository } from "../repositories/i-size-repository";
 import { IProductSizeRepository } from "../repositories/i-product-size-repository";
+import { IColorRepository } from "../repositories/i-color-repository";
+import { IProductColorRepository } from "../repositories/i-product-color-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -47,11 +49,12 @@ type CreateProductUseCaseResponse = Either<
 export class CreateProductUseCase {
   constructor(
     private productRepository: IProductRepository,
-
+    private colorRepository: IColorRepository,
     private brandRepository: IBrandRepository,
     private materialRepository: IMaterialRepository,
     private sizeRepository: ISizeRepository,
-    private productSizeRepository: IProductSizeRepository
+    private productSizeRepository: IProductSizeRepository,
+    private productColorRepository: IProductColorRepository
   ) {}
 
   async execute({
@@ -102,6 +105,7 @@ export class CreateProductUseCase {
     const material = materialOrError.isRight() ? materialOrError.value : null;
 
     console.log("sizes no sizes repo", productSizes);
+
     if (productSizes) {
       const uniqueSizes = new Set<string>();
 
@@ -121,20 +125,24 @@ export class CreateProductUseCase {
       }
     }
 
-    // if (productColors) {
-    //   console.log(
-    //     "chamou o productcolor no usecase create product",
-    //     productColors
-    //   );
+    if (productColors) {
+      const uniqueColors = new Set<string>();
 
-    //   for (const colorId of productColors) {
-    //     console.log("no log do for no create product usecase", colorId);
-    //     const colorExists = await this.colorRepository.findById(colorId);
-    //     if (colorExists.isLeft()) {
-    //       return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
-    //     }
-    //   }
-    // }
+      for (const colorId of productColors) {
+        if (!colorId) {
+          return left(new Error("InvalidColorError"));
+        }
+
+        if (uniqueColors.has(colorId)) {
+          return left(new ResourceNotFoundError(`Duplicate color: ${colorId}`));
+        }
+        uniqueColors.add(colorId);
+        const sizeExists = await this.colorRepository.findById(colorId);
+        if (sizeExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
+        }
+      }
+    }
 
     const product = Product.create({
       name,
@@ -163,29 +171,16 @@ export class CreateProductUseCase {
       }
     }
 
-    // if (productColors) {
-    //   console.log(
-    //     "chamou o productcolor no usecase create product",
-    //     productColors
-    //   );
-    //   for (const colorId of productColors) {
-    //     console.log("no log do for no create product usecase", colorId);
-    //     const idAsString = product.id.toString();
-    //     console.log(
-    //       "no log do for quase no repo productid e colorid",
-    //       idAsString,
-    //       colorId
-    //     );
-    //     await this.productColorRepository.create(idAsString, colorId);
-    //   }
-    // }
+    if (productColors) {
+      const uniqueColor = new Set();
 
-    // if (productCategories) {
-    //   for (const categoryId of productCategories) {
-    //     const idAsString = product.id.toString();
-    //     await this.productCategoryRepository.create(idAsString, categoryId);
-    //   }
-    // }
+      for (const colorId of productColors) {
+        await this.productColorRepository.create(
+          product.id.toString(),
+          colorId
+        );
+      }
+    }
 
     return right({
       product,
