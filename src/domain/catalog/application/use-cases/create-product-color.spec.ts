@@ -28,9 +28,9 @@ import { ProductColor } from "../../enterprise/entities/product-color";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
-
   let mockProductRepository: IProductRepository;
 
+  let mockProductCategoryRepository: IProductCategoryRepository;
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
 
@@ -51,25 +51,26 @@ describe("CreateProductUseCase", () => {
     materialId = new UniqueEntityID("f056524a-85bf-45a9-bf40-ebade896343c");
     sizeId = new UniqueEntityID("size_id_as_string");
     colorId = new UniqueEntityID("color_id_as_string");
-    productId = new UniqueEntityID("product_id_as_string");
 
     const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
-
     const consistentMaterial = makeMaterial(
       { name: "Test Material Name" },
       materialId
     );
-
     const consistentSize = makeSize({ name: "Test Size Name" }, sizeId);
-
     const consistentColor = makeColor({ name: "Test Color Name" }, colorId);
 
     mockProductRepository = new InMemoryProductRepository();
-    mockSizeRepository = new InMemorySizeRepository();
+
     mockProductSizeRepository = new InMemoryProductSizeRepository();
+
+    mockProductCategoryRepository = new InMemoryProductCategoryRepository();
+    mockProductColorRepository = new InMemoryProductColorRepository();
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
-    mockProductColorRepository = new InMemoryProductColorRepository();
+
+    mockSizeRepository = new InMemorySizeRepository();
+    mockColorRepository = new InMemoryColorRepository();
 
     mockBrandRepository.create(consistentBrand);
     mockMaterialRepository.create(consistentMaterial);
@@ -116,20 +117,199 @@ describe("CreateProductUseCase", () => {
       );
     });
 
-    mockProductColorRepository.addItem(
-      new ProductColor({
-        productId: new UniqueEntityID("existing_product_id"),
-        colorId: colorId,
-      })
+    mockProductColorRepository.create = vi.fn(
+      (productId: string, colorId: string) => {
+        console.log(`Saving color ${colorId} for product ${productId}`);
+        mockProductColorRepository.addItem(
+          new ProductColor({
+            productId: new UniqueEntityID(productId),
+            colorId: new UniqueEntityID(colorId),
+          })
+        );
+        return Promise.resolve(right(undefined));
+      }
     );
+  });
 
-    mockProductColorRepository.findByProductId = vi.fn((colorId) => {
-      console.log(`FindById ProductColor called with: ${colorId}`);
-      return Promise.resolve(
-        mockProductColorRepository.items.filter(
-          (item) => item.colorId.toString() === colorId
-        )
-      );
+  it("should create a product with a valid colorId", async () => {
+    const result = await useCase.execute({
+      name: "Test Product with Color",
+      description: "A test product description",
+      productColors: [colorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 200,
+      stock: 20,
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
+      onSale: true,
+      discount: 10,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
     });
+    console.log("result in create product color repo", result.value);
+
+    expect(result.isRight()).toBeTruthy();
+
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+
+      console.log("createdProduct", createdProduct);
+
+      const colors = await mockProductColorRepository.findByProductId(
+        createdProduct.id.toString()
+      );
+      console.log("colors", colors);
+
+      expect(colors).toHaveLength(1);
+      expect(colors[0].colorId.toString()).toBe(colorId.toString());
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should create a product with multiple valid colorId", async () => {
+    const anotherColorId = new UniqueEntityID("another_color_id_as_string");
+    const anotherConsistentSize = makeColor(
+      { name: "Another Test Color Name" },
+      anotherColorId
+    );
+    mockColorRepository.create(anotherConsistentSize);
+
+    const result = await useCase.execute({
+      name: "Test Product with Multiple Colors",
+      description: "A test product description",
+      productColors: [colorId.toString(), anotherColorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 250,
+      stock: 25,
+      height: 3,
+      width: 3,
+      length: 3,
+      weight: 3,
+      onSale: true,
+      discount: 15,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      const colors = mockProductColorRepository.items.filter(
+        (item) => item.productId.toString() === createdProduct.id.toString()
+      );
+      expect(colors).toHaveLength(2);
+      expect(colors.map((color) => color.colorId.toString())).toEqual(
+        expect.arrayContaining([colorId.toString(), anotherColorId.toString()])
+      );
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should not allow creating a ProductColor with invalid colorId", async () => {
+    const invalidColorId = "invalid_color_id";
+
+    const result = await useCase.execute({
+      name: "Test Product with inalid color id",
+      description: "A test product description",
+      productSizes: [],
+      productColors: [invalidColorId],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 250,
+      stock: 25,
+      height: 3,
+      width: 3,
+      length: 3,
+      weight: 3,
+      onSale: true,
+      discount: 15,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value.message).toBe(`Color not found: ${invalidColorId}`);
+    }
+  });
+
+  it("should not allow duplicate colors for the same product", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [colorId.toString(), colorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value.message).toBe(
+        `Duplicate color: ${colorId.toString()}`
+      );
+    }
+  });
+
+  it("should list all colors for a given product", async () => {
+    const createResult = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [colorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    if (createResult.isLeft()) {
+      throw new Error("Expected product to be created successfully");
+    }
+
+    const product = createResult.value.product;
+    productId = product.id;
+
+    const colors = await mockProductColorRepository.findByProductId(
+      productId.toString()
+    );
+    expect(colors).toHaveLength(1);
+    expect(colors[0].colorId.toString()).toBe(colorId.toString());
   });
 });
