@@ -28,6 +28,7 @@ import { ProductColor } from "../../enterprise/entities/product-color";
 import { ICategoryRepository } from "../repositories/i-category-repository";
 import { makeCategory } from "@test/factories/make-category";
 import { InMemoryCategoryRepository } from "@test/repositories/in-memory-category-repository";
+import { ProductCategory } from "../../enterprise/entities/product-category";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
@@ -149,9 +150,9 @@ describe("CreateProductUseCase", () => {
       (productId: string, categoryId: string) => {
         console.log(`Saving category ${categoryId} for product ${productId}`);
         mockProductCategoryRepository.addItem(
-          new ProductColor({
+          new ProductCategory({
             productId: new UniqueEntityID(productId),
-            colorId: new UniqueEntityID(categoryId),
+            categoryId: new UniqueEntityID(categoryId),
           })
         );
         return Promise.resolve(right(undefined));

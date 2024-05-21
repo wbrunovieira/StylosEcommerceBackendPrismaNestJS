@@ -44,7 +44,7 @@ describe("CreateProductUseCase", () => {
   let mockProductColorRepository: InMemoryProductColorRepository;
 
   let mockCategoryRepository: ICategoryRepository;
-  let mockProductCategoryRepository: IProductCategoryRepository;
+  let mockProductCategoryRepository: InMemoryProductCategoryRepository;
 
   let brandId: UniqueEntityID;
   let materialId: UniqueEntityID;
@@ -161,13 +161,13 @@ describe("CreateProductUseCase", () => {
     );
   });
 
-  it("should create a product with a valid colorId", async () => {
+  it("should create a product with a valid categoryId", async () => {
     const result = await useCase.execute({
       name: "Test Product with Color",
       description: "A test product description",
       productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
-      productCategories: [],
+      productCategories: [categoryId.toString()],
       materialId: materialId.toString(),
       brandId: brandId.toString(),
       price: 200,
@@ -182,7 +182,7 @@ describe("CreateProductUseCase", () => {
       isNew: true,
       images: ["image1.jpg", "image2.jpg"],
     });
-    console.log("result in create product color repo", result.value);
+    console.log("result in create product categoryId repo", result.value);
 
     expect(result.isRight()).toBeTruthy();
 
@@ -191,32 +191,34 @@ describe("CreateProductUseCase", () => {
 
       console.log("createdProduct", createdProduct);
 
-      const colors = await mockProductColorRepository.findByProductId(
+      const categories = await mockProductCategoryRepository.findByProductId(
         createdProduct.id.toString()
       );
-      console.log("colors", colors);
+      console.log("categories", categories);
 
-      expect(colors).toHaveLength(1);
-      expect(colors[0].colorId.toString()).toBe(colorId.toString());
+      expect(categories).toHaveLength(1);
+      expect(categories[0].categoryId.toString()).toBe(categoryId.toString());
     } else {
       fail("Expected a Right with the created product but got Left");
     }
   });
 
-  it("should create a product with multiple valid colorId", async () => {
-    const anotherColorId = new UniqueEntityID("another_color_id_as_string");
-    const anotherConsistentSize = makeColor(
-      { name: "Another Test Color Name" },
-      anotherColorId
+  it("should create a product with multiple valid categoryId", async () => {
+    const anotherCategoryId = new UniqueEntityID(
+      "another_category_Id_as_string"
     );
-    mockColorRepository.create(anotherConsistentSize);
+    const anotherConsistentCategory = makeCategory(
+      { name: "Another Test Category Name" },
+      anotherCategoryId
+    );
+    mockCategoryRepository.create(anotherConsistentCategory);
 
     const result = await useCase.execute({
-      name: "Test Product with Multiple Colors",
+      name: "Test Product with Multiple Category ",
       description: "A test product description",
-      productColors: [colorId.toString(), anotherColorId.toString()],
+      productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
-      productCategories: [],
+      productCategories: [categoryId.toString(), anotherCategoryId.toString()],
       materialId: materialId.toString(),
       brandId: brandId.toString(),
       price: 250,
@@ -235,26 +237,31 @@ describe("CreateProductUseCase", () => {
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {
       const createdProduct = result.value.product;
-      const colors = mockProductColorRepository.items.filter(
+      const categories = mockProductCategoryRepository.items.filter(
         (item) => item.productId.toString() === createdProduct.id.toString()
       );
-      expect(colors).toHaveLength(2);
-      expect(colors.map((color) => color.colorId.toString())).toEqual(
-        expect.arrayContaining([colorId.toString(), anotherColorId.toString()])
+      expect(categories).toHaveLength(2);
+      expect(
+        categories.map((category) => category.categoryId.toString())
+      ).toEqual(
+        expect.arrayContaining([
+          categoryId.toString(),
+          anotherCategoryId.toString(),
+        ])
       );
     } else {
       fail("Expected a Right with the created product but got Left");
     }
   });
 
-  it("should not allow creating a ProductColor with invalid colorId", async () => {
-    const invalidColorId = "invalid_color_id";
+  it("should not allow creating a ProductCategory with invalid categoryId", async () => {
+    const invalidCategoryId = "Inalid_categoryId";
 
     const result = await useCase.execute({
-      name: "Test Product with inalid color id",
+      name: "Test Product with inalid category id",
       description: "A test product description",
       productSizes: [],
-      productColors: [invalidColorId],
+      productColors: [invalidCategoryId],
       productCategories: [],
       materialId: materialId.toString(),
       brandId: brandId.toString(),
@@ -273,17 +280,19 @@ describe("CreateProductUseCase", () => {
 
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
-      expect(result.value.message).toBe(`Color not found: ${invalidColorId}`);
+      expect(result.value.message).toBe(
+        `Color not found: ${invalidCategoryId}`
+      );
     }
   });
 
-  it("should not allow duplicate colors for the same product", async () => {
+  it("should not allow duplicate categoryId for the same product", async () => {
     const result = await useCase.execute({
       name: "Test Product",
       description: "A test product description",
-      productColors: [colorId.toString(), colorId.toString()],
+      productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
-      productCategories: [],
+      productCategories: [categoryId.toString(), categoryId.toString()],
       materialId: null,
       brandId: brandId.toString(),
       price: 100,
@@ -302,18 +311,18 @@ describe("CreateProductUseCase", () => {
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
       expect(result.value.message).toBe(
-        `Duplicate color: ${colorId.toString()}`
+        `Duplicate category: ${categoryId.toString()}`
       );
     }
   });
 
-  it("should list all colors for a given product", async () => {
+  it("should list all categoryId for a given product", async () => {
     const createResult = await useCase.execute({
       name: "Test Product",
       description: "A test product description",
       productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
-      productCategories: [],
+      productCategories: [categoryId.toString()],
       materialId: null,
       brandId: brandId.toString(),
       price: 100,
@@ -336,10 +345,10 @@ describe("CreateProductUseCase", () => {
     const product = createResult.value.product;
     productId = product.id;
 
-    const colors = await mockProductColorRepository.findByProductId(
+    const categories = await mockProductCategoryRepository.findByProductId(
       productId.toString()
     );
-    expect(colors).toHaveLength(1);
-    expect(colors[0].colorId.toString()).toBe(colorId.toString());
+    expect(categories).toHaveLength(1);
+    expect(categories[0].categoryId.toString()).toBe(categoryId.toString());
   });
 });
