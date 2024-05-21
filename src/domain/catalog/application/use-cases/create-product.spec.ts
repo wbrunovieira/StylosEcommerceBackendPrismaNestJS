@@ -39,6 +39,7 @@ describe("CreateProductUseCase", () => {
   let brandId: UniqueEntityID;
   let materialId: UniqueEntityID;
   let sizeId: UniqueEntityID;
+  let productId: UniqueEntityID;
 
   beforeEach(() => {
     brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
@@ -106,6 +107,8 @@ describe("CreateProductUseCase", () => {
         )
       );
     });
+
+ 
   });
 
   it("should create a product", async () => {
@@ -527,4 +530,144 @@ describe("CreateProductUseCase", () => {
       fail("Expected a Right with the created product but got Left");
     }
   });
+
+  it("should create a product with multiple valid sizeIds", async () => {
+    const anotherSizeId = new UniqueEntityID("another_size_id_as_string");
+    const anotherConsistentSize = makeSize(
+      { name: "Another Test Size Name" },
+      anotherSizeId
+    );
+    mockSizeRepository.create(anotherConsistentSize);
+
+    const result = await useCase.execute({
+      name: "Test Product with Multiple Sizes",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [sizeId.toString(), anotherSizeId.toString()],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 250,
+      stock: 25,
+      height: 3,
+      width: 3,
+      length: 3,
+      weight: 3,
+      onSale: true,
+      discount: 15,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      const sizes = mockProductSizeRepository.items.filter(
+        (item) => item.productId.toString() === createdProduct.id.toString()
+      );
+      expect(sizes).toHaveLength(2);
+      expect(sizes.map((size) => size.sizeId.toString())).toEqual(
+        expect.arrayContaining([sizeId.toString(), anotherSizeId.toString()])
+      );
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
+
+  it("should not allow creating a ProductSize with invalid sizeId", async () => {
+    const invalidSizeId = "invalid_size_id";
+    const result = await useCase.execute({
+      name: "Test Product with Multiple Sizes",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [invalidSizeId],
+      productCategories: [],
+      materialId: materialId.toString(),
+      brandId: brandId.toString(),
+      price: 250,
+      stock: 25,
+      height: 3,
+      width: 3,
+      length: 3,
+      weight: 3,
+      onSale: true,
+      discount: 15,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value.message).toBe(`Size not found: ${invalidSizeId}`);
+    }
+  });
+
+  it("should not allow duplicate sizes for the same product", async () => {
+    const result = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [sizeId.toString(), sizeId.toString()],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value.message).toBe(`Duplicate size: ${sizeId.toString()}`);
+    }
+  });
+
+  it("should list all sizes for a given product", async () => {
+    const createResult = await useCase.execute({
+      name: "Test Product",
+      description: "A test product description",
+      productColors: [],
+      productSizes: [sizeId.toString()],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    if (createResult.isLeft()) {
+      throw new Error("Expected product to be created successfully");
+    }
+
+    const product = createResult.value.product;
+    productId = product.id;
+
+    const sizes = await mockProductSizeRepository.findByProductId(
+      productId.toString()
+    );
+    expect(sizes).toHaveLength(1);
+    expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
+  });
+
+   
+  
 });

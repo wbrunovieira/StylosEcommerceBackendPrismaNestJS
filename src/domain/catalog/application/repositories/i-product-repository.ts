@@ -3,5 +3,5 @@ import { Product } from "../../enterprise/entities/product";
 
 export abstract class IProductRepository {
   abstract create(product: Product): Promise<Either<Error, void>>;
-
+  abstract delete(product: Product): Promise<void>;
 }
