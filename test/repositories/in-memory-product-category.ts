@@ -7,17 +7,14 @@ import { Either, right } from "@/core/either";
 export class InMemoryProductCategoryRepository
   implements IProductCategoryRepository
 {
- 
   public items: ProductCategory[] = [];
 
   async create(
     productId: string,
-    colorId: string
+    categoryId: string
   ): Promise<Either<Error, void>> {
-  
-
     const productIdUnique = new UniqueEntityID(productId);
-    const categoryIdUnique = new UniqueEntityID(colorId);
+    const categoryIdUnique = new UniqueEntityID(categoryId);
 
     const productCategory = new ProductCategory({
       productId: productIdUnique,
@@ -33,7 +30,9 @@ export class InMemoryProductCategoryRepository
   }
 
   async findByCategoyId(categoryId: string): Promise<ProductCategory[]> {
-    return this.items.filter((item) => item.categoryId.toString() === categoryId);
+    return this.items.filter(
+      (item) => item.categoryId.toString() === categoryId
+    );
   }
 
   async addItem(productCategory: ProductCategory): Promise<void> {
@@ -51,6 +50,4 @@ export class InMemoryProductCategoryRepository
       (item) => item.productId.toString() !== productId
     );
   }
-
-
 }

@@ -128,7 +128,6 @@ export class CreateProductUseCase {
     }
 
     if (productColors) {
-      
       const uniqueColors = new Set<string>();
 
       for (const colorId of productColors) {
@@ -142,7 +141,6 @@ export class CreateProductUseCase {
         uniqueColors.add(colorId);
 
         const colorExists = await this.colorRepository.findById(colorId);
-     
 
         if (colorExists.isLeft()) {
           return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
@@ -151,7 +149,6 @@ export class CreateProductUseCase {
     }
 
     if (productCategories) {
-
       console.log("entrou no productCategories do Usecase", productCategories);
 
       const uniqueCategory = new Set<string>();
@@ -162,17 +159,22 @@ export class CreateProductUseCase {
         }
 
         if (uniqueCategory.has(categoryId)) {
-          return left(new ResourceNotFoundError(`Duplicate category: ${categoryId}`));
+          return left(
+            new ResourceNotFoundError(`Duplicate category: ${categoryId}`)
+          );
         }
         uniqueCategory.add(categoryId);
 
         console.log("uniqueColors", uniqueCategory);
 
-        const categoryExists = await this.colorRepository.findById(categoryId);
+        const categoryExists =
+          await this.categoryRepository.findById(categoryId);
         console.log("category exist", categoryExists);
 
         if (categoryExists.isLeft()) {
-          return left(new ResourceNotFoundError(`Category not found: ${categoryId}`));
+          return left(
+            new ResourceNotFoundError(`Category not found: ${categoryId}`)
+          );
         }
       }
     }
@@ -205,8 +207,6 @@ export class CreateProductUseCase {
     }
 
     if (productColors) {
-    
-
       for (const colorId of productColors) {
         await this.productColorRepository.create(
           product.id.toString(),
@@ -216,7 +216,6 @@ export class CreateProductUseCase {
     }
 
     if (productCategories) {
-     
       for (const categoryId of productCategories) {
         await this.productCategoryRepository.create(
           product.id.toString(),

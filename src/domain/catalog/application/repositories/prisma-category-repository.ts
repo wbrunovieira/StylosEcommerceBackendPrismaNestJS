@@ -16,6 +16,9 @@ function normalizeName(name: string): string {
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
   constructor(private prisma: PrismaService) {}
+  addItems(...categories: Category[]): void {
+    throw new Error("Method not implemented.");
+  }
 
   async findById(id: string): Promise<Either<Error, Category>> {
     try {
