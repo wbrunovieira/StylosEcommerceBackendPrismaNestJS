@@ -10,6 +10,10 @@ function normalizeName(name: string): string {
 }
 
 export class InMemoryCategoryRepository implements ICategoryRepository {
+  addItems(...categories: Category[]): void {
+    throw new Error("Method not implemented.");
+  }
+  
   public items: Category[] = [];
 
   async findAll(params: PaginationParams): Promise<Either<Error, Category[]>> {

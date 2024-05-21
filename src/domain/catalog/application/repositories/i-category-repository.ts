@@ -9,4 +9,5 @@ export abstract class ICategoryRepository {
   abstract findAll(params: PaginationParams): Promise<Either<Error, Category[]>>;
   abstract delete(category: Category): Promise<Either<Error, void>>;
   abstract save(category: Category): Promise<Either<Error, void>>;
+  abstract addItems(...categories: Category[]): void;
 }

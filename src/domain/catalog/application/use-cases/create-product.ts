@@ -16,6 +16,8 @@ import { ISizeRepository } from "../repositories/i-size-repository";
 import { IProductSizeRepository } from "../repositories/i-product-size-repository";
 import { IColorRepository } from "../repositories/i-color-repository";
 import { IProductColorRepository } from "../repositories/i-product-color-repository";
+import { ICategoryRepository } from "../repositories/i-category-repository";
+import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -53,8 +55,10 @@ export class CreateProductUseCase {
     private brandRepository: IBrandRepository,
     private materialRepository: IMaterialRepository,
     private sizeRepository: ISizeRepository,
+    private categoryRepository: ICategoryRepository,
     private productSizeRepository: IProductSizeRepository,
-    private productColorRepository: IProductColorRepository
+    private productColorRepository: IProductColorRepository,
+    private productCategoryRepository: IProductCategoryRepository
   ) {}
 
   async execute({
@@ -124,7 +128,7 @@ export class CreateProductUseCase {
     }
 
     if (productColors) {
-      console.log("entrou no productColor do Usecase", productColors);
+      
       const uniqueColors = new Set<string>();
 
       for (const colorId of productColors) {
@@ -136,12 +140,39 @@ export class CreateProductUseCase {
           return left(new ResourceNotFoundError(`Duplicate color: ${colorId}`));
         }
         uniqueColors.add(colorId);
-        console.log("uniqueColors", uniqueColors);
+
         const colorExists = await this.colorRepository.findById(colorId);
-        console.log("color exist", colorExists);
+     
 
         if (colorExists.isLeft()) {
           return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
+        }
+      }
+    }
+
+    if (productCategories) {
+
+      console.log("entrou no productCategories do Usecase", productCategories);
+
+      const uniqueCategory = new Set<string>();
+
+      for (const categoryId of productCategories) {
+        if (!categoryId) {
+          return left(new Error("InvalidCategoryError"));
+        }
+
+        if (uniqueCategory.has(categoryId)) {
+          return left(new ResourceNotFoundError(`Duplicate category: ${categoryId}`));
+        }
+        uniqueCategory.add(categoryId);
+
+        console.log("uniqueColors", uniqueCategory);
+
+        const categoryExists = await this.colorRepository.findById(categoryId);
+        console.log("category exist", categoryExists);
+
+        if (categoryExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Category not found: ${categoryId}`));
         }
       }
     }
@@ -174,12 +205,22 @@ export class CreateProductUseCase {
     }
 
     if (productColors) {
-      const uniqueColor = new Set();
+    
 
       for (const colorId of productColors) {
         await this.productColorRepository.create(
           product.id.toString(),
           colorId
+        );
+      }
+    }
+
+    if (productCategories) {
+     
+      for (const categoryId of productCategories) {
+        await this.productCategoryRepository.create(
+          product.id.toString(),
+          categoryId
         );
       }
     }
