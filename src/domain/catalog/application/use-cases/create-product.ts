@@ -74,7 +74,6 @@ export class CreateProductUseCase {
     isNew = false,
     images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-  
     if (!name.trim()) {
       return left(new ResourceNotFoundError("Product name is required"));
     }
@@ -89,7 +88,6 @@ export class CreateProductUseCase {
 
     const brandOrError = await this.brandRepository.findById(brandId);
     if (brandOrError.isLeft()) {
-      
       return left(new ResourceNotFoundError("Brand not found"));
     }
 
@@ -97,15 +95,25 @@ export class CreateProductUseCase {
     if (materialId) {
       materialOrError = await this.materialRepository.findById(materialId);
       if (materialOrError.isLeft()) {
-       
         return left(new ResourceNotFoundError("Material not found"));
       }
     }
 
     const material = materialOrError.isRight() ? materialOrError.value : null;
+
     console.log("sizes no sizes repo", productSizes);
     if (productSizes) {
+      const uniqueSizes = new Set<string>();
+
       for (const sizeId of productSizes) {
+        if (!sizeId) {
+          return left(new Error("InvalidSizeError"));
+        }
+
+        if (uniqueSizes.has(sizeId)) {
+          return left(new ResourceNotFoundError(`Duplicate size: ${sizeId}`));
+        }
+        uniqueSizes.add(sizeId);
         const sizeExists = await this.sizeRepository.findById(sizeId);
         if (sizeExists.isLeft()) {
           return left(new ResourceNotFoundError(`Size not found: ${sizeId}`));
@@ -148,6 +156,7 @@ export class CreateProductUseCase {
     await this.productRepository.create(product);
 
     if (productSizes) {
+      const uniqueSizes = new Set();
       console.log("productSize no useCase", productSizes);
       for (const sizeId of productSizes) {
         await this.productSizeRepository.create(product.id.toString(), sizeId);

@@ -67,4 +67,11 @@ export class InMemoryProductRepository implements IProductRepository {
     }
     return right(undefined);
   }
+
+  async delete(product: Product): Promise<void> {
+    this.items = this.items.filter(
+      (item) => item.id.toString() !== product.id.toString()
+    );
+    await this.productSizeRepository.deleteAllByProductId(product.id.toString());
+  }
 }
