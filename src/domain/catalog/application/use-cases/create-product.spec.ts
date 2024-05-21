@@ -22,17 +22,19 @@ import { fail } from "assert";
 import { ISizeRepository } from "../repositories/i-size-repository";
 import { makeSize } from "@test/factories/make-size";
 import { InMemorySizeRepository } from "@test/repositories/in-memory-size-repository";
+import { ProductSize } from "../../enterprise/entities/product-size";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
   let mockProductRepository: IProductRepository;
   let mockProductColorRepository: IProductColorRepository;
-  let mockProductSizeRepository: IProductSizeRepository;
+
   let mockProductCategoryRepository: IProductCategoryRepository;
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
   let mockColorRepository: IColorRepository;
   let mockSizeRepository: ISizeRepository;
+  let mockProductSizeRepository: InMemoryProductSizeRepository;
 
   let brandId: UniqueEntityID;
   let materialId: UniqueEntityID;
@@ -76,23 +78,33 @@ describe("CreateProductUseCase", () => {
     );
 
     mockBrandRepository.findById = vi.fn((id) => {
-      console.log(
-        `FindById Brand called with: ${id}, expected: ${brandId.toString()}`
-      );
       return id === brandId.toString()
         ? Promise.resolve(right(consistentBrand))
         : Promise.resolve(left(new ResourceNotFoundError("Brand not found")));
     });
 
     mockMaterialRepository.findById = vi.fn((id) => {
-      console.log(
-        `FindById Material called with: ${id}, expected: ${materialId.toString()}`
-      );
       return id === materialId.toString()
         ? Promise.resolve(right(consistentMaterial))
         : Promise.resolve(
             left(new ResourceNotFoundError("Material not found"))
           );
+    });
+
+    mockProductSizeRepository.addItem(
+      new ProductSize({
+        productId: new UniqueEntityID("existing_product_id"),
+        sizeId: sizeId,
+      })
+    );
+
+    mockProductSizeRepository.findByProductId = vi.fn((productId) => {
+      console.log(`FindById ProductSize called with: ${productId}`);
+      return Promise.resolve(
+        mockProductSizeRepository.items.filter(
+          (item) => item.productId.toString() === productId
+        )
+      );
     });
   });
 
@@ -504,12 +516,11 @@ describe("CreateProductUseCase", () => {
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {
       const createdProduct = result.value.product;
-      console.log('createdProduct', createdProduct)
+      console.log("createdProduct", createdProduct);
       const sizes = await mockProductSizeRepository.findByProductId(
-       
         createdProduct.id.toString()
       );
-      console.log('sizes', sizes)
+      console.log("sizes", sizes);
       expect(sizes).toHaveLength(1);
       expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
     } else {

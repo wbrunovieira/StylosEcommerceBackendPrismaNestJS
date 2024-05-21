@@ -20,21 +20,16 @@ export class InMemoryProductSizeRepository implements IProductSizeRepository {
   }
 
   async findByProductId(productId: string): Promise<ProductSize[]> {
-    return this.items.filter(item => item.productId.toString() === productId);
+    return this.items.filter((item) => item.productId.toString() === productId);
   }
 
   async findBySizeId(sizeId: string): Promise<ProductSize[]> {
-    return this.items.filter(item => item.sizeId.toString() === sizeId);
+    return this.items.filter((item) => item.sizeId.toString() === sizeId);
   }
-  // findByProductId(productId: string): Promise<ProductSize[]> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // findBySizeId(
-  //   sizeId: string,
-  //   params: PaginationParams
-  // ): Promise<ProductSize[]> {
-  //   throw new Error('Method not implemented.');
-  // }
+
+  async addItem(productSize: ProductSize): Promise<void> {
+    this.items.push(productSize);
+  }
 
   // delete(productSize: ProductSize): Promise<void> {
   //   throw new Error('Method not implemented.');
