@@ -9,6 +9,10 @@ function normalizeName(name: string): string {
 }
 
 export class InMemoryColorRepository implements IColorRepository {
+  addItems(...colors: Color[]): void {
+    throw new Error("Method not implemented.");
+  }
+
   public items: Color[] = [];
 
   async create(color: Color): Promise<Either<Error, void>> {
@@ -52,9 +56,9 @@ export class InMemoryColorRepository implements IColorRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Color>> {
-    console.log("entrou no findby id do inmmemoryrepo color", id);
+  
     const color = this.items.find((item) => item.id.toString() === id);
-    console.log("color no repo inmmemoryrepo ", color);
+  
     if (!color) {
       return left(new Error("Color not found"));
     }

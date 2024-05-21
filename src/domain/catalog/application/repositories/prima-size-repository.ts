@@ -7,14 +7,17 @@ import { Size } from "../../enterprise/entities/size";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
-
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 @Injectable()
 export class PrismaSizeRepository implements ISizeRepository {
   constructor(private prisma: PrismaService) {}
+
+  addItems(...sizes: Size[]): void {
+    throw new Error("Method not implemented.");
+  }
 
   async create(size: Size): Promise<Either<Error, void>> {
     try {
@@ -26,7 +29,7 @@ export class PrismaSizeRepository implements ISizeRepository {
           updatedAt: size.updatedAt,
         },
       });
-          return right(undefined);
+      return right(undefined);
     } catch (error) {
       return left(new Error("Failed to create size"));
     }
@@ -54,7 +57,7 @@ export class PrismaSizeRepository implements ISizeRepository {
     const normalizedName = normalizeName(name);
     try {
       const sizeData = await this.prisma.size.findFirst({
-        where: {  name: normalizedName },
+        where: { name: normalizedName },
       });
 
       if (!sizeData) return left(new ResourceNotFoundError("Size not found"));

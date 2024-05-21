@@ -9,6 +9,9 @@ function normalizeName(name: string): string {
 }
 
 export class InMemorySizeRepository implements ISizeRepository {
+  addItems(...sizes: Size[]): void {
+    throw new Error("Method not implemented.");
+  }
   public items: Size[] = [];
 
   async create(size: Size): Promise<Either<Error, void>> {

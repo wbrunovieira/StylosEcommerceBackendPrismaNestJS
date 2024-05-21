@@ -9,4 +9,5 @@ export abstract class ISizeRepository {
   abstract delete(size: Size): Promise<Either<Error, void>>;
   abstract save(size: Size): Promise<Either<Error, void>>;
   abstract findAll(params: PaginationParams): Promise<Either<Error, Size[]>>;
+  abstract addItems(...sizes: Size[]): void;
 }

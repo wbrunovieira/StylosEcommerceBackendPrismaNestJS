@@ -5,7 +5,7 @@ import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
 
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
-import { InMemoryProductCategoryRepository } from "./in-memory-product-category";
+
 import { Either, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
 
@@ -13,7 +13,7 @@ import { Injectable } from "@nestjs/common";
 export class InMemoryProductRepository implements IProductRepository {
   private productColorRepository: InMemoryProductColorRepository;
   private productSizeRepository: InMemoryProductSizeRepository;
-  private productCategoryRepository: InMemoryProductCategoryRepository;
+
   public items: Product[] = [];
   public colors: { productId: string; colorId: string }[] = [];
   public sizes: { productId: string; sizeId: string }[] = [];
@@ -24,17 +24,14 @@ export class InMemoryProductRepository implements IProductRepository {
   constructor() {
     this.productColorRepository = new InMemoryProductColorRepository();
     this.productSizeRepository = new InMemoryProductSizeRepository();
-    this.productCategoryRepository = new InMemoryProductCategoryRepository();
   }
 
   async create(product: Product): Promise<Either<Error, void>> {
-
     const slug = generateSlug(product.name, "brand");
     product.slug = slug;
 
     this.items.push(product);
 
-   
     if (product.productColors) {
       product.productColors.forEach(async (colorId) => {
         await this.productColorRepository.create(
@@ -42,11 +39,8 @@ export class InMemoryProductRepository implements IProductRepository {
           colorId.toString()
         );
       });
-
-
     }
 
-    
     if (product.productSizes) {
       product.productSizes.forEach(async (sizeId) => {
         await this.productSizeRepository.create(
@@ -56,15 +50,6 @@ export class InMemoryProductRepository implements IProductRepository {
       });
     }
 
-   
-    if (product.productCategories) {
-      product.productCategories.forEach(async (categoryId) => {
-        await this.productCategoryRepository.create(
-          product.id.toString(),
-          categoryId.toString()
-        );
-      });
-    }
     return right(undefined);
   }
 
@@ -72,6 +57,11 @@ export class InMemoryProductRepository implements IProductRepository {
     this.items = this.items.filter(
       (item) => item.id.toString() !== product.id.toString()
     );
-    await this.productSizeRepository.deleteAllByProductId(product.id.toString());
+    await this.productSizeRepository.deleteAllByProductId(
+      product.id.toString()
+    );
+    // await this.productColors.deleteAllByProductId(
+    //   product.id.toString()
+    // );
   }
 }

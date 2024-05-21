@@ -15,6 +15,10 @@ function normalizeName(name: string): string {
 export class PrismaColorRepository implements IColorRepository {
   constructor(private prisma: PrismaService) {}
 
+  addItems(...colors: Color[]): void {
+    throw new Error("Method not implemented.");
+  }
+
   async findById(id: string): Promise<Either<Error, Color>> {
     try {
       const colorData = await this.prisma.color.findUnique({

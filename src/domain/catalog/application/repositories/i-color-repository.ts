@@ -9,4 +9,5 @@ export abstract class IColorRepository {
   abstract findAll(params: PaginationParams): Promise<Either<Error, Color[]>>;
   abstract save(color: Color): Promise<Either<Error, void>>;
   abstract delete(color: Color): Promise<Either<Error, void>>;
+  abstract addItems(...colors: Color[]): void;
 }
