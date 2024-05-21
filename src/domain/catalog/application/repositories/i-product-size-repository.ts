@@ -7,6 +7,7 @@ export interface IProductSizeRepository {
     sizeId: string,
    
   ): Promise<ProductSize[]>;
+  addItem(ProductSize):void;
   // delete(productSize: ProductSize): Promise<void>;
   // deleteAllByProductId(productId: string): Promise<void>;
 }
