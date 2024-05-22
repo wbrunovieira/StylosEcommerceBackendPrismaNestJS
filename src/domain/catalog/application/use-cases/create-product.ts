@@ -21,7 +21,6 @@ import { IProductCategoryRepository } from "../repositories/i-product-category-r
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
 import { ProductVariant } from "../../enterprise/entities/product-variant";
 
-
 interface CreateProductUseCaseRequest {
   name: string;
   description: string;
@@ -63,7 +62,6 @@ export class CreateProductUseCase {
     private productColorRepository: IProductColorRepository,
     private productCategoryRepository: IProductCategoryRepository,
     private productVariantRepository: IProductVariantRepository
-
   ) {}
 
   async execute({
@@ -154,8 +152,6 @@ export class CreateProductUseCase {
     }
 
     if (productCategories) {
-    
-
       const uniqueCategory = new Set<string>();
 
       for (const categoryId of productCategories) {
@@ -170,11 +166,8 @@ export class CreateProductUseCase {
         }
         uniqueCategory.add(categoryId);
 
-       
-
         const categoryExists =
           await this.categoryRepository.findById(categoryId);
-       
 
         if (categoryExists.isLeft()) {
           return left(
@@ -218,11 +211,35 @@ export class CreateProductUseCase {
           await this.productVariantRepository.create(variant);
         }
       }
+    } else if (productSizes) {
+      for (const sizeId of productSizes) {
+        const variant = ProductVariant.create({
+          productId: product.id,
+          sizeId: new UniqueEntityID(sizeId),
+          stock,
+          price,
+          status: "ACTIVE",
+          images,
+        });
+        await this.productVariantRepository.create(variant);
+      }
+    } else if (productColors) {
+      for (const colorId of productColors) {
+        const variant = ProductVariant.create({
+          productId: product.id,
+          colorId: new UniqueEntityID(colorId),
+          stock,
+          price,
+          status: "ACTIVE",
+          images,
+        });
+        await this.productVariantRepository.create(variant);
+      }
     }
 
     if (productSizes) {
       const uniqueSizes = new Set();
-    
+
       for (const sizeId of productSizes) {
         await this.productSizeRepository.create(product.id.toString(), sizeId);
       }

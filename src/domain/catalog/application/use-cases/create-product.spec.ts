@@ -29,10 +29,13 @@ import { ICategoryRepository } from "../repositories/i-category-repository";
 import { makeCategory } from "@test/factories/make-category";
 import { InMemoryCategoryRepository } from "@test/repositories/in-memory-category-repository";
 import { ProductCategory } from "../../enterprise/entities/product-category";
+import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
+import { InMemoryProductVariantRepository } from "@test/repositories/in-memory-product-variant-repository";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
   let mockProductRepository: IProductRepository;
+  let mockProductVariantRepository: IProductVariantRepository;
 
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
@@ -73,6 +76,7 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductRepository = new InMemoryProductRepository();
+    mockProductVariantRepository = new InMemoryProductVariantRepository();
 
     mockProductSizeRepository = new InMemoryProductSizeRepository();
 
@@ -100,7 +104,8 @@ describe("CreateProductUseCase", () => {
       mockCategoryRepository,
       mockProductSizeRepository,
       mockProductColorRepository,
-      mockProductCategoryRepository
+      mockProductCategoryRepository,
+      mockProductVariantRepository
     );
 
     mockBrandRepository.findById = vi.fn((id) => {
@@ -125,7 +130,6 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductSizeRepository.findByProductId = vi.fn((productId) => {
-     
       return Promise.resolve(
         mockProductSizeRepository.items.filter(
           (item) => item.productId.toString() === productId
@@ -135,7 +139,6 @@ describe("CreateProductUseCase", () => {
 
     mockProductColorRepository.create = vi.fn(
       (productId: string, colorId: string) => {
-      
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
@@ -148,7 +151,6 @@ describe("CreateProductUseCase", () => {
 
     mockProductCategoryRepository.create = vi.fn(
       (productId: string, categoryId: string) => {
-      
         mockProductCategoryRepository.addItem(
           new ProductCategory({
             productId: new UniqueEntityID(productId),
@@ -559,12 +561,24 @@ describe("CreateProductUseCase", () => {
 
     if (result.isRight()) {
       const createdProduct = result.value.product;
-    
+
+      const variants = await mockProductVariantRepository.findByProductId(
+        createdProduct.id.toString()
+      );
 
       const sizes = await mockProductSizeRepository.findByProductId(
         createdProduct.id.toString()
       );
-    
+      expect(variants).toHaveLength(1);
+      if (variants && variants[0]) {
+        const variant = variants[0];
+        if (variant.sizeId) {
+          expect(variant.sizeId.toString()).toBe(sizeId.toString());
+        } else {
+          fail("Expected variant to have valid sizeId");
+        }
+      }
+
       expect(sizes).toHaveLength(1);
       expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
     } else {
