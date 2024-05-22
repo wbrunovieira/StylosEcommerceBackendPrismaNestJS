@@ -11,7 +11,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ExecutionContext } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
-import { SizeController } from "./create-size.controller";
+import { SizeController } from "./size.controller";
 import { CreateSizeUseCase } from "@/domain/catalog/application/use-cases/create-size";
 import { EditSizeUseCase } from "@/domain/catalog/application/use-cases/edit-size";
 import { Size } from "@/domain/catalog/enterprise/entities/size";

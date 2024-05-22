@@ -12,7 +12,7 @@ import { ExecutionContext } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
 
-import { MaterialController } from "./create-material.controller";
+import { MaterialController } from "./material.controller";
 import { CreateMaterialUseCase } from "@/domain/catalog/application/use-cases/create-material";
 import { Material } from "@/domain/catalog/enterprise/entities/material";
 import { EditMaterialUseCase } from "@/domain/catalog/application/use-cases/edit-material";
@@ -119,7 +119,9 @@ describe("MaterialController", () => {
     findMaterialByIdUseCase = module.get<FindMaterialByIdUseCase>(
       FindMaterialByIdUseCase
     );
-       deleteMaterialUseCase = module.get<DeleteMaterialUseCase>(DeleteMaterialUseCase);
+    deleteMaterialUseCase = module.get<DeleteMaterialUseCase>(
+      DeleteMaterialUseCase
+    );
   });
 
   afterEach(() => {
@@ -338,32 +340,32 @@ describe("MaterialController", () => {
     }
   });
 
-    it("should delete a material successfully", async () => {
-      const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
-      vi.spyOn(deleteMaterialUseCase, "execute").mockResolvedValue(mockResult);
+  it("should delete a material successfully", async () => {
+    const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
+    vi.spyOn(deleteMaterialUseCase, "execute").mockResolvedValue(mockResult);
 
-      const result = await materialController.deleteMaterial("material-1");
+    const result = await materialController.deleteMaterial("material-1");
 
-      expect(result).toEqual({ message: "Material deleted successfully" });
-      expect(deleteMaterialUseCase.execute).toHaveBeenCalledWith({
-        materialId: "material-1",
-      });
+    expect(result).toEqual({ message: "Material deleted successfully" });
+    expect(deleteMaterialUseCase.execute).toHaveBeenCalledWith({
+      materialId: "material-1",
+    });
+  });
+
+  it("should handle errors thrown by DeleteMaterialUseCase", async () => {
+    vi.spyOn(deleteMaterialUseCase, "execute").mockImplementation(() => {
+      throw new Error("DeleteMaterialUseCase error");
     });
 
-    it("should handle errors thrown by DeleteMaterialUseCase", async () => {
-      vi.spyOn(deleteMaterialUseCase, "execute").mockImplementation(() => {
-        throw new Error("DeleteMaterialUseCase error");
-      });
-
-      try {
-        await materialController.deleteMaterial("MaterialWithError");
-      } catch (error) {
-        if (error instanceof HttpException) {
-          expect(error.message).toBe("Failed to delete material");
-          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-          throw new Error("Expected HttpException");
-        }
+    try {
+      await materialController.deleteMaterial("MaterialWithError");
+    } catch (error) {
+      if (error instanceof HttpException) {
+        expect(error.message).toBe("Failed to delete material");
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+        throw new Error("Expected HttpException");
       }
-    });
+    }
+  });
 });

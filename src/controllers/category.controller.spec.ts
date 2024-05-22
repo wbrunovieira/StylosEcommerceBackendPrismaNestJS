@@ -14,7 +14,7 @@ import { vi } from "vitest";
 
 import { makeCategory } from "@test/factories/make-category";
 import { CreateCategoryUseCase } from "@/domain/catalog/application/use-cases/create-category";
-import { CategoryController } from "./create-category.controller";
+import { CategoryController } from "./category.controller";
 import { Category } from "@/domain/catalog/enterprise/entities/category";
 import { EditCategoryUseCase } from "@/domain/catalog/application/use-cases/edit-category";
 import { FindCategoryByIdUseCase } from "@/domain/catalog/application/use-cases/find-category-by-id";

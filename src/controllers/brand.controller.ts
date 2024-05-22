@@ -21,9 +21,9 @@ import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
-import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
+import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands";
 import { left } from "@/core/either";
-import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id.use-case";
+import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id";
 import { DeleteBrandUseCase } from "@/domain/catalog/application/use-cases/delete-brand";
 
 const createBrandSchema = z.object({

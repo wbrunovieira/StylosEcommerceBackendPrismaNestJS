@@ -1,9 +1,8 @@
 import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
-import { FindBrandByIdUseCase } from "./find-brand-by-id.use-case";
+import { FindBrandByIdUseCase } from "./find-brand-by-id";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Brand } from "../../enterprise/entities/brand";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-
 
 let inMemoryBrandRepository: InMemoryBrandRepository;
 let sut: FindBrandByIdUseCase;

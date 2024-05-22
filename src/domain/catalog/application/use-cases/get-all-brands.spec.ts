@@ -1,5 +1,5 @@
 import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
-import { GetAllBrandsUseCase } from "./get-all-brands.use-case";
+import { GetAllBrandsUseCase } from "./get-all-brands";
 import { Brand } from "../../enterprise/entities/brand";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { describe, it, beforeEach, expect, vi } from "vitest";
