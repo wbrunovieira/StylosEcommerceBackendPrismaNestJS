@@ -44,7 +44,16 @@ model Product {
   width       Float?
   length      Float?
   weight      Float?
-  
+  sku         String?
+  upc         String?
+  tags        String[]
+  seoTitle          String?
+  seoDescription    String?
+  seoKeywords       String?
+  visibility        Boolean             @default(true)
+  status      ProductStatus   @default(ACTIVE)
+  productVariants   ProductVariant[]
+
   onSale      Boolean   @default(false)
   isNew       Boolean   @default(false)
   isFeatured  Boolean   @default(false)
@@ -55,6 +64,34 @@ model Product {
 
   @@map("products")
 }
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+model ProductVariant {
+  id          String          @id @default(uuid())
+  productId   String
+  product     Product         @relation(fields: [productId], references: [id])
+  colorId     String?
+  color       Color?          @relation(fields: [colorId], references: [id])
+  sizeId      String?
+  size        Size?           @relation(fields: [sizeId], references: [id])
+  sku         String          @unique
+  upc         String?
+  stock       Int
+  price       Float
+  images      String[]
+  status      ProductStatus   @default(ACTIVE)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime?       @updatedAt
+
+  @@map("product_variants")
+}
+
+
 
 model Address {
   id         String    @id @default(uuid())
@@ -77,6 +114,7 @@ model Color {
   id   String @id @default(uuid())
   name String
   productColors ProductColor[]
+  productVariants ProductVariant[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   
@@ -99,6 +137,7 @@ model Size {
   id       String        @id @default(uuid())
   name     String
   productSizes ProductSize[]
+  productVariants ProductVariant[] 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
