@@ -52,9 +52,9 @@ export class InMemoryMaterialRepository implements IMaterialRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Material>> {
-    console.log("entrou no findby id do inmmemoryrepo material", id);
+   
     const material = this.items.find((item) => item.id.toString() === id);
-    console.log("material no repo inmmemoryrepo ", material);
+   
     if (!material) {
       return left(new Error("Material not found"));
     }

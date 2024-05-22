@@ -116,6 +116,6 @@ export class PrismaBrandRepository implements IBrandRepository {
   }
 
   async addItems(brand: Brand) {
-    console.log(brand);
+    console.log(brand)
   }
 }

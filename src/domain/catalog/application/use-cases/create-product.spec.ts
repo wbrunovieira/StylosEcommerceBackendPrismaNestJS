@@ -125,7 +125,7 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductSizeRepository.findByProductId = vi.fn((productId) => {
-      console.log(`FindById ProductSize called with: ${productId}`);
+     
       return Promise.resolve(
         mockProductSizeRepository.items.filter(
           (item) => item.productId.toString() === productId
@@ -135,7 +135,7 @@ describe("CreateProductUseCase", () => {
 
     mockProductColorRepository.create = vi.fn(
       (productId: string, colorId: string) => {
-        console.log(`Saving color ${colorId} for product ${productId}`);
+      
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
@@ -148,7 +148,7 @@ describe("CreateProductUseCase", () => {
 
     mockProductCategoryRepository.create = vi.fn(
       (productId: string, categoryId: string) => {
-        console.log(`Saving category ${categoryId} for product ${productId}`);
+      
         mockProductCategoryRepository.addItem(
           new ProductCategory({
             productId: new UniqueEntityID(productId),
@@ -559,12 +559,12 @@ describe("CreateProductUseCase", () => {
 
     if (result.isRight()) {
       const createdProduct = result.value.product;
-      console.log("createdProduct", createdProduct);
+    
 
       const sizes = await mockProductSizeRepository.findByProductId(
         createdProduct.id.toString()
       );
-      console.log("sizes", sizes);
+    
       expect(sizes).toHaveLength(1);
       expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
     } else {

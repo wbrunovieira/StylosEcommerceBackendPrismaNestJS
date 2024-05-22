@@ -126,11 +126,11 @@ export class CategoryController {
   @Get("all")
   async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
     try {
-      console.log("entrou no controller");
+      
       const result = await this.getAllCategoriesUseCase.execute(params);
-      console.log("result no controller", result);
+      
       if (result.isLeft()) {
-        console.log("controller deu left");
+      
         throw new HttpException(
           "Failed to find categories",
           HttpStatus.INTERNAL_SERVER_ERROR

@@ -36,7 +36,7 @@ describe("Colors Controller (E2E)", () => {
       data: { name: "blue" },
     });
     colorId = color.id;
-    console.log("Setup colorId:", colorId);
+    
   });
 
   test("[POST] /colors", async () => {
@@ -55,8 +55,8 @@ describe("Colors Controller (E2E)", () => {
     expect(colorResponse).toHaveProperty("updatedAt");
 
     colorId = response.body.color._id.value;
-    console.log("colorId dentro do post", colorId);
-    console.log("post response body", response.body);
+    
+    
   });
 
   test("[POST] /colors with invalid data", async () => {
@@ -74,7 +74,7 @@ describe("Colors Controller (E2E)", () => {
       .get("/colors")
       .query({ name: "blue" })
       .set("Authorization", `Bearer ${authToken}`);
-    console.log("color by name", response.body);
+    
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toHaveProperty("color");

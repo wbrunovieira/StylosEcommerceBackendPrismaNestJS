@@ -14,11 +14,11 @@ export class GetAllCategoriesUseCase {
     params: PaginationParams
   ): Promise<GetAllCategoriesUseCaseResponse> {
     try {
-      console.log("entrou no get all usecase");
+    
       const categoryResult = await this.categoryRepository.findAll(params);
-      console.log("result do usecase", categoryResult);
+    
       if (categoryResult.isLeft()) {
-        console.log("use case deu left", categoryResult);
+    
         return left(new Error("Failed to find categories"));
       }
       return right(categoryResult.value);

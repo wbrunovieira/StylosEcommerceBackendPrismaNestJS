@@ -149,7 +149,7 @@ export class CreateProductUseCase {
     }
 
     if (productCategories) {
-      console.log("entrou no productCategories do Usecase", productCategories);
+    
 
       const uniqueCategory = new Set<string>();
 
@@ -165,11 +165,11 @@ export class CreateProductUseCase {
         }
         uniqueCategory.add(categoryId);
 
-        console.log("uniqueColors", uniqueCategory);
+       
 
         const categoryExists =
           await this.categoryRepository.findById(categoryId);
-        console.log("category exist", categoryExists);
+       
 
         if (categoryExists.isLeft()) {
           return left(
@@ -200,7 +200,7 @@ export class CreateProductUseCase {
 
     if (productSizes) {
       const uniqueSizes = new Set();
-      console.log("productSize no useCase", productSizes);
+    
       for (const sizeId of productSizes) {
         await this.productSizeRepository.create(product.id.toString(), sizeId);
       }

@@ -64,7 +64,7 @@ describe("Materials Controller (E2E)", () => {
       .set("Authorization", `Bearer ${authToken}`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
-    console.log("material response", response.body);
+    
     expect(response.body).toHaveProperty("material");
     expect(response.body.material.props.name).toEqual("material 1");
   });
@@ -97,7 +97,7 @@ describe("Materials Controller (E2E)", () => {
       .query({ page: 1, pageSize: 10 })
       .set("Authorization", `Bearer ${authToken}`)
       .expect(HttpStatus.OK);
-    console.log("get all materials response", response.body);
+    
     expect(response.body.materials).toHaveLength(1);
     expect(response.body.materials[0].props.name).toEqual("material 1");
   });

@@ -15,7 +15,7 @@ describe("CreateCategorydUseCase", () => {
     const result = await sut.execute({
       name: "calcinha",
     });
-    console.log("category in test create", result.value);
+    
 
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {

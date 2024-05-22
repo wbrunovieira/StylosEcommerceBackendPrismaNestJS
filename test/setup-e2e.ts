@@ -42,7 +42,7 @@ beforeAll(async () => {
   });
 
   const { stdout: seedStdout, stderr: seedStderr } = seedResult;
-  console.log(seedStdout?.toString());
+ 
   console.error(seedStderr?.toString());
 });
 

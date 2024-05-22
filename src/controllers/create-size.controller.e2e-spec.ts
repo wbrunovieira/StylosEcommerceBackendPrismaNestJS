@@ -36,7 +36,7 @@ describe("Size Controller (E2E)", () => {
       data: { name: "m" },
     });
     sizeId = size.id;
-    console.log("Setup sizeId:", sizeId);
+    
   });
 
   test("[POST] /size", async () => {
@@ -75,7 +75,7 @@ describe("Size Controller (E2E)", () => {
       .query({ page: 1, pageSize: 10 })
       .set("Authorization", `Bearer ${authToken}`)
       .expect(HttpStatus.OK);
-    console.log("size all", response.body);
+    
     expect(response.body.size).toHaveLength(1);
     expect(response.body.size[0].props.name).toEqual("m");
   });
