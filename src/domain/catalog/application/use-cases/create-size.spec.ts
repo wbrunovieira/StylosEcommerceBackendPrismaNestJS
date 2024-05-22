@@ -16,7 +16,7 @@ describe("CreateSizeUseCase", () => {
     const result = await sut.execute({
       name: "m",
     });
-    console.log("size", result.value);
+   
 
     expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {

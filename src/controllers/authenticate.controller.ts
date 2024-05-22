@@ -69,7 +69,7 @@ export class AuthenticateController {
     const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
 
     const { password: _, ...userWithoutPassword } = user;
-    console.log(userWithoutPassword);
+    
 
     return {
       access_token: accessToken,
@@ -112,7 +112,7 @@ export class AuthenticateController {
     });
 
     const accessToken = this.jwt.sign({ sub: admin.id, role: admin.role });
-    console.log("criando conta de admin", admin, accessToken);
+    
     return { admin, accessToken };
   }
 }

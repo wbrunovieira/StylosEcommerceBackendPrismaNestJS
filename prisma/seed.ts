@@ -22,9 +22,9 @@ async function main() {
         role: 'admin',
       },
     });
-    console.log('Admin user created');
+   
   } else {
-    console.log('Admin user already exists');
+   
   }
 }
 

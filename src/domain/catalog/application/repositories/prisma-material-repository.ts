@@ -84,18 +84,18 @@ export class PrismaMaterialRepository implements IMaterialRepository {
 
   async findAll(params: PaginationParams): Promise<Either<Error, Material[]>> {
     try {
-      console.log("Finding materials with params:", params);
+      
       const materials = await this.prisma.material.findMany({
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
-      console.log("Materials from database:", materials);
+      
       const convertedMaterials = materials.map((b) =>
         Material.create({ name: b.name }, new UniqueEntityID(b.id))
       );
       return right(convertedMaterials);
     } catch (error) {
-      console.error("Error in findAll:", error);
+      
       return left(new Error("Failed to find materials"));
     }
   }

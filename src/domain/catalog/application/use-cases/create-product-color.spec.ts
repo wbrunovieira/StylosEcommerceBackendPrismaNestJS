@@ -126,7 +126,7 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductSizeRepository.findByProductId = vi.fn((productId) => {
-      console.log(`FindById ProductSize called with: ${productId}`);
+     
       return Promise.resolve(
         mockProductSizeRepository.items.filter(
           (item) => item.productId.toString() === productId
@@ -136,7 +136,7 @@ describe("CreateProductUseCase", () => {
 
     mockProductColorRepository.create = vi.fn(
       (productId: string, colorId: string) => {
-        console.log(`Saving color ${colorId} for product ${productId}`);
+       
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
@@ -149,7 +149,7 @@ describe("CreateProductUseCase", () => {
 
     mockProductCategoryRepository.create = vi.fn(
       (productId: string, categoryId: string) => {
-        console.log(`Saving category ${categoryId} for product ${productId}`);
+        
         mockProductCategoryRepository.addItem(
           new ProductCategory({
             productId: new UniqueEntityID(productId),
@@ -182,19 +182,19 @@ describe("CreateProductUseCase", () => {
       isNew: true,
       images: ["image1.jpg", "image2.jpg"],
     });
-    console.log("result in create product color repo", result.value);
+   
 
     expect(result.isRight()).toBeTruthy();
 
     if (result.isRight()) {
       const createdProduct = result.value.product;
 
-      console.log("createdProduct", createdProduct);
+    
 
       const colors = await mockProductColorRepository.findByProductId(
         createdProduct.id.toString()
       );
-      console.log("colors", colors);
+     
 
       expect(colors).toHaveLength(1);
       expect(colors[0].colorId.toString()).toBe(colorId.toString());

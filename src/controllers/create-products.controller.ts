@@ -57,7 +57,7 @@
 //     @CurrentUser() user: UserPayload
 //   ) {
 //     try {
-//       console.log("body brunao", body);
+//       
 //       const result = await this.createProductUseCase.execute({
 //         name: body.name,
 //         description: body.description,
@@ -75,7 +75,7 @@
 //         length: body.length,
 //         weight: body.weight,
 //       });
-//       console.log("result brunao", result.value);
+//       
 
 //       return result.value;
 //     } catch (error) {

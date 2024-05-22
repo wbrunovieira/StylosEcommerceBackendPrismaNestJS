@@ -38,7 +38,7 @@ export class ListAllProductsController {
         createdAt: 'desc',
       },
     });
-    console.log('products', products);
+    
     return { products };
   }
 
