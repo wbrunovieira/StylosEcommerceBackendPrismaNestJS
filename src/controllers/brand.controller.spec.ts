@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { BrandController } from "./create-brand.controller";
+import { BrandController } from "./brand.controller";
 import { CreateBrandUseCase } from "@/domain/catalog/application/use-cases/create-brand";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
@@ -14,8 +14,8 @@ import { JwtService } from "@nestjs/jwt";
 import { vi } from "vitest";
 import { EditBrandUseCase } from "@/domain/catalog/application/use-cases/edit-brand";
 import { FindBrandByNameUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-name";
-import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands.use-case";
-import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id.use-case";
+import { GetAllBrandsUseCase } from "@/domain/catalog/application/use-cases/get-all-brands";
+import { FindBrandByIdUseCase } from "@/domain/catalog/application/use-cases/find-brand-by-id";
 import { DeleteBrandUseCase } from "@/domain/catalog/application/use-cases/delete-brand";
 
 describe("BrandController", () => {
@@ -110,7 +110,7 @@ describe("BrandController", () => {
     getAllBrandsUseCase = module.get<GetAllBrandsUseCase>(GetAllBrandsUseCase);
     findBrandByIdUseCase =
       module.get<FindBrandByIdUseCase>(FindBrandByIdUseCase);
-      deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
+    deleteBrandUseCase = module.get<DeleteBrandUseCase>(DeleteBrandUseCase);
   });
 
   afterEach(() => {
@@ -326,10 +326,7 @@ describe("BrandController", () => {
   });
 
   it("should delete a brand successfully", async () => {
-    const mockResult = right({}) as Either<
-      ResourceNotFoundError,
-      {}
-    >;
+    const mockResult = right({}) as Either<ResourceNotFoundError, {}>;
     vi.spyOn(deleteBrandUseCase, "execute").mockResolvedValue(mockResult);
 
     const result = await brandController.deleteBrand("brand-1");

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { ColorsController } from "./create-colors.controller";
+import { ColorsController } from "./color.controller";
 
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
