@@ -18,6 +18,9 @@ import { IColorRepository } from "../repositories/i-color-repository";
 import { IProductColorRepository } from "../repositories/i-product-color-repository";
 import { ICategoryRepository } from "../repositories/i-category-repository";
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
+import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
+import { ProductVariant } from "../../enterprise/entities/product-variant";
+
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -58,7 +61,9 @@ export class CreateProductUseCase {
     private categoryRepository: ICategoryRepository,
     private productSizeRepository: IProductSizeRepository,
     private productColorRepository: IProductColorRepository,
-    private productCategoryRepository: IProductCategoryRepository
+    private productCategoryRepository: IProductCategoryRepository,
+    private productVariantRepository: IProductVariantRepository
+
   ) {}
 
   async execute({
@@ -197,6 +202,23 @@ export class CreateProductUseCase {
       images,
     });
     await this.productRepository.create(product);
+
+    if (productSizes && productColors) {
+      for (const sizeId of productSizes) {
+        for (const colorId of productColors) {
+          const variant = ProductVariant.create({
+            productId: product.id,
+            sizeId: new UniqueEntityID(sizeId),
+            colorId: new UniqueEntityID(colorId),
+            stock,
+            price,
+            status: "ACTIVE",
+            images,
+          });
+          await this.productVariantRepository.create(variant);
+        }
+      }
+    }
 
     if (productSizes) {
       const uniqueSizes = new Set();
