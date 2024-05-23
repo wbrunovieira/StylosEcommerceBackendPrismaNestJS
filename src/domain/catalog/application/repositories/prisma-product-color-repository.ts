@@ -8,7 +8,43 @@ import { ProductColor } from "../../enterprise/entities/product-color";
 export class PrismaProductColorRepository implements IProductColorRepository {
   constructor(private prisma: PrismaService) {}
 
-  
+  // async create(
+  //   productId: string,
+  //   colorId: string
+  // ): Promise<Either<Error, void>> {
+  //   try {
+  //     const colorExists = await this.prisma.color.findUnique({
+  //       where: { id: colorId },
+  //     });
+  //     if (!colorExists) {
+  //       throw new Error("Color not found");
+  //     }
+
+  //     const productExists = await this.prisma.product.findUnique({
+  //       where: { id: productId },
+  //     });
+  //     if (!productExists) {
+  //       throw new Error("Product not found");
+  //     }
+  //     await this.prisma.productColor.create({
+  //       data: {
+  //         productId,
+  //         colorId,
+  //       },
+  //     });
+  //     await this.prisma.productColor.create({
+  //       data: { productId, colorId },
+  //     });
+
+  //     return right(undefined);
+  //   } catch (error) {
+  //     return left(new Error("Failed to create product color"));
+  //   }
+  // }
+  create(productId: string, ColorId: string): Promise<Either<Error, void>> {
+    throw new Error("Method not implemented.");
+  }
+
   findByProductId(productId: string): Promise<ProductColor[]> {
     throw new Error("Method not implemented.");
   }
@@ -21,43 +57,4 @@ export class PrismaProductColorRepository implements IProductColorRepository {
   delete(productColor: ProductColor): Promise<void> {
     throw new Error("Method not implemented.");
   }
-
-  async create(productId: string, colorId: string): Promise<Either<Error, void>>  {
-   
-    try {
-
-     const colorExists = await this.prisma.color.findUnique({
-        where: { id: colorId },
-      });
-      if (!colorExists) {
-        throw new Error("Color not found");
-      }
-  
-      const productExists = await this.prisma.product.findUnique({
-        where: { id: productId} 
-      })
-      if (!productExists) {
-        throw new Error("Product not found");
-      }
-      await this.prisma.productColor.create({
-        data: {
-          productId,
-          colorId
-         
-        },
-      });
-      await this.prisma.productColor.create({
-        data: { productId, colorId },
-      });
-      
-      return right(undefined);
-    } catch (error) {
-      return left(new Error("Failed to create product color"));
-    }
-
-     
-   
-  }
-
-  
 }

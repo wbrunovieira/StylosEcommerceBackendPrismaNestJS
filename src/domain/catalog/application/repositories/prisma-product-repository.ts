@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductRepository } from "./i-product-repository";
 import { Product } from "../../enterprise/entities/product";
@@ -15,10 +15,20 @@ import { Either, right } from "@/core/either";
 export class PrismaProductRepository implements IProductRepository {
   constructor(
     private prisma: PrismaService,
+    @Inject(PrismaProductColorRepository)
     private productColorRepository: PrismaProductColorRepository,
+    @Inject(PrismaProductSizeRepository)
     private productSizeRepository: PrismaProductSizeRepository,
+    @Inject(PrismaProductCategoryRepository)
     private productCategoryRepository: PrismaProductCategoryRepository
-  ) {}
+  ) {
+    console.log("PrismaProductRepository dependencies:", {
+      prisma,
+      productColorRepository,
+      productSizeRepository,
+      productCategoryRepository,
+    });
+  }
 
   async create(product: Product): Promise<Either<Error, void>> {
     const {
