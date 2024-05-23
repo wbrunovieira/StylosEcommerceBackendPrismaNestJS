@@ -47,6 +47,18 @@ import { GetAllSizesUseCase } from "./application/use-cases/get-all-sizes";
 import { GetAllCategoriesUseCase } from "./application/use-cases/get-all-categories";
 import { FindCategoryByIdUseCase } from "./application/use-cases/find-category-by-id";
 import { FindCategoryByNameUseCase } from "./application/use-cases/find-category-by-name";
+import { ProductController } from "@/controllers/product.controller";
+import { CreateProductUseCase } from "./application/use-cases/create-product";
+import { IProductRepository } from "./application/repositories/i-product-repository";
+import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
+import { IProductVariantRepository } from "./application/repositories/i-product-variant-repository";
+import { PrismaProductVariantRepository } from "./application/repositories/prisma-product-variant-repository";
+import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
+import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
+import { IProductSizeRepository } from "./application/repositories/i-product-size-repository";
+import { IProductColorRepository } from "./application/repositories/i-product-color-repository";
+import { IProductCategoryRepository } from "./application/repositories/i-product-category-repository";
+import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
 
 @Module({
   controllers: [
@@ -55,6 +67,7 @@ import { FindCategoryByNameUseCase } from "./application/use-cases/find-category
     SizeController,
     MaterialController,
     CategoryController,
+    ProductController,
   ],
   providers: [
     CreateBrandUseCase,
@@ -87,6 +100,7 @@ import { FindCategoryByNameUseCase } from "./application/use-cases/find-category
     FindSizeByIdUseCase,
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
+    CreateProductUseCase,
 
     PrismaService,
     {
@@ -109,6 +123,27 @@ import { FindCategoryByNameUseCase } from "./application/use-cases/find-category
       provide: ICategoryRepository,
       useClass: PrismaCategoryRepository,
     },
+    {
+      provide: IProductRepository,
+      useClass: PrismaProductRepository,
+    },
+    {
+      provide: IProductVariantRepository,
+      useClass: PrismaProductVariantRepository,
+    },
+
+    {
+      provide: IProductColorRepository,
+      useClass: PrismaProductColorRepository,
+    },
+    {
+      provide: IProductSizeRepository,
+      useClass: PrismaProductSizeRepository,
+    },
+    {
+      provide: IProductCategoryRepository,
+      useClass: PrismaProductCategoryRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -117,6 +152,12 @@ import { FindCategoryByNameUseCase } from "./application/use-cases/find-category
     ISizeRepository,
     IMaterialRepository,
     ICategoryRepository,
+    IProductRepository,
+    IProductVariantRepository,
+
+    IProductSizeRepository,
+    IProductColorRepository,
+    IProductCategoryRepository,
   ],
 })
 export class CatalogModule {}

@@ -7,6 +7,8 @@ import { ProductColor } from "../../enterprise/entities/product-color";
 @Injectable()
 export class PrismaProductColorRepository implements IProductColorRepository {
   constructor(private prisma: PrismaService) {}
+
+  
   findByProductId(productId: string): Promise<ProductColor[]> {
     throw new Error("Method not implemented.");
   }

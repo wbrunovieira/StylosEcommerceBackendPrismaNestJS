@@ -38,17 +38,17 @@ export class PrismaProductRepository implements IProductRepository {
     const validSizes: { id: string }[] = [];
     const validCategories: { id: string }[] = [];
 
-    // if (productColors) {
-    //   for (const colorId of productColors) {
-    //     const idAsString = colorId.toString();
-    //     const colorExists = await this.prisma.color.findUnique({
-    //       where: { id: idAsString },
-    //     });
-    //     if (colorExists) {
-    //       validColors.push({ id: idAsString });
-    //     }
-    //   }
-    // }
+    if (productColors) {
+      for (const colorId of productColors) {
+        const idAsString = colorId.toString();
+        const colorExists = await this.prisma.color.findUnique({
+          where: { id: idAsString },
+        });
+        if (colorExists) {
+          validColors.push({ id: idAsString });
+        }
+      }
+    }
 
     if (productSizes) {
       for (const sizeId of productSizes) {
@@ -61,17 +61,17 @@ export class PrismaProductRepository implements IProductRepository {
         }
       }
     }
-    // if (productCategories) {
-    //   for (const categoryId of productCategories) {
-    //     const idAsString = categoryId.toString();
-    //     const categoryExist = await this.prisma.category.findUnique({
-    //       where: { id: idAsString },
-    //     });
-    //     if (categoryExist) {
-    //       validCategories.push({ id: idAsString });
-    //     }
-    //   }
-    // }
+    if (productCategories) {
+      for (const categoryId of productCategories) {
+        const idAsString = categoryId.toString();
+        const categoryExist = await this.prisma.category.findUnique({
+          where: { id: idAsString },
+        });
+        if (categoryExist) {
+          validCategories.push({ id: idAsString });
+        }
+      }
+    }
 
     let materialExist;
     if (materialId) {
@@ -113,12 +113,12 @@ export class PrismaProductRepository implements IProductRepository {
       },
     });
 
-    // for (const validColor of validColors) {
-    //   await this.productColorRepository.create(
-    //     createdProduct.id,
-    //     validColor.id
-    //   );
-    // }
+    for (const validColor of validColors) {
+      await this.productColorRepository.create(
+        createdProduct.id,
+        validColor.id
+      );
+    }
 
     for (const validSize of validSizes) {
       await this.productSizeRepository.create(createdProduct.id, validSize.id);
@@ -198,11 +198,11 @@ export class PrismaProductRepository implements IProductRepository {
   //     return record ? new Product(record, new UniqueEntityID(record.id)) : null;
   //   }
 
-    async delete(product: Product): Promise<void> {
-      await this.prisma.product.delete({
-        where: { id: product.id.toString() },
-      });
-    }
+  async delete(product: Product): Promise<void> {
+    await this.prisma.product.delete({
+      where: { id: product.id.toString() },
+    });
+  }
 
   //   async save(product: Product): Promise<void> {
   //     // Save (or update) logic including handling relations as discussed earlier
