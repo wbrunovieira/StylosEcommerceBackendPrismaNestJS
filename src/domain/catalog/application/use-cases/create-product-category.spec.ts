@@ -29,10 +29,13 @@ import { ICategoryRepository } from "../repositories/i-category-repository";
 import { makeCategory } from "@test/factories/make-category";
 import { InMemoryCategoryRepository } from "@test/repositories/in-memory-category-repository";
 import { ProductCategory } from "../../enterprise/entities/product-category";
+import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
+import { InMemoryProductVariantRepository } from "@test/repositories/in-memory-product-variant-repository";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
   let mockProductRepository: IProductRepository;
+  let mockProductVariantRepository: IProductVariantRepository;
 
   let mockBrandRepository: IBrandRepository;
   let mockMaterialRepository: IMaterialRepository;
@@ -73,6 +76,7 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductRepository = new InMemoryProductRepository();
+    mockProductVariantRepository = new InMemoryProductVariantRepository();
 
     mockProductSizeRepository = new InMemoryProductSizeRepository();
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
@@ -101,7 +105,8 @@ describe("CreateProductUseCase", () => {
       mockCategoryRepository,
       mockProductSizeRepository,
       mockProductColorRepository,
-      mockProductCategoryRepository
+      mockProductCategoryRepository,
+      mockProductVariantRepository
     );
 
     mockBrandRepository.findById = vi.fn((id) => {
@@ -126,7 +131,6 @@ describe("CreateProductUseCase", () => {
     );
 
     mockProductSizeRepository.findByProductId = vi.fn((productId) => {
-      
       return Promise.resolve(
         mockProductSizeRepository.items.filter(
           (item) => item.productId.toString() === productId
@@ -136,7 +140,6 @@ describe("CreateProductUseCase", () => {
 
     mockProductColorRepository.create = vi.fn(
       (productId: string, colorId: string) => {
-      
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
@@ -149,7 +152,6 @@ describe("CreateProductUseCase", () => {
 
     mockProductCategoryRepository.create = vi.fn(
       (productId: string, categoryId: string) => {
-       
         mockProductCategoryRepository.addItem(
           new ProductCategory({
             productId: new UniqueEntityID(productId),
@@ -182,19 +184,22 @@ describe("CreateProductUseCase", () => {
       isNew: true,
       images: ["image1.jpg", "image2.jpg"],
     });
-    
 
     expect(result.isRight()).toBeTruthy();
 
     if (result.isRight()) {
       const createdProduct = result.value.product;
 
-    
-
       const categories = await mockProductCategoryRepository.findByProductId(
         createdProduct.id.toString()
       );
-    
+
+      const product = result.value.product;
+      const productId = product.id.toString();
+
+      const variants =
+        await mockProductVariantRepository.findByProductId(productId);
+      expect(variants).toHaveLength(1);
 
       expect(categories).toHaveLength(1);
       expect(categories[0].categoryId.toString()).toBe(categoryId.toString());
@@ -235,6 +240,17 @@ describe("CreateProductUseCase", () => {
     });
 
     expect(result.isRight()).toBeTruthy();
+    if (result.isLeft()) {
+      throw new Error("Expected product to be created successfully");
+    }
+
+    const product = result.value.product;
+    const productId = product.id.toString();
+
+    const variants =
+      await mockProductVariantRepository.findByProductId(productId);
+    expect(variants).toHaveLength(1);
+
     if (result.isRight()) {
       const createdProduct = result.value.product;
       const categories = mockProductCategoryRepository.items.filter(
@@ -350,5 +366,74 @@ describe("CreateProductUseCase", () => {
     );
     expect(categories).toHaveLength(1);
     expect(categories[0].categoryId.toString()).toBe(categoryId.toString());
+  });
+
+  it("should list all products for a given categoryId", async () => {
+    const categoryId = new UniqueEntityID("category_id_as_string").toString();
+
+    // Criando múltiplos produtos com a mesma categoria
+    const createResult1 = await useCase.execute({
+      name: "Test Product 1",
+      description: "A test product description 1",
+      productColors: [colorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [categoryId],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
+    });
+
+    const createResult2 = await useCase.execute({
+      name: "Test Product 2",
+      description: "A test product description 2",
+      productColors: [colorId.toString()],
+      productSizes: [sizeId.toString()],
+      productCategories: [categoryId],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 200,
+      stock: 20,
+      height: 20,
+      width: 20,
+      length: 20,
+      weight: 20,
+      onSale: true,
+      discount: 10,
+      isFeatured: true,
+      isNew: true,
+      images: ["image1.jpg", "image2.jpg"],
+    });
+
+    if (createResult1.isLeft() || createResult2.isLeft()) {
+      throw new Error("Expected products to be created successfully");
+    }
+
+    const productsInCategory =
+      await mockProductCategoryRepository.findByCategoyId(categoryId);
+    const productIds = productsInCategory.map((pc) => pc.productId.toString());
+
+    const variantsInCategory =
+      await mockProductVariantRepository.findByProductIds(productIds);
+
+    const variantProductIds = variantsInCategory.map((variant) =>
+      variant.productId.toString()
+    );
+
+    expect(variantProductIds).toContain(
+      createResult1.value.product.id.toString()
+    );
+    expect(variantProductIds).toContain(
+      createResult2.value.product.id.toString()
+    );
   });
 });

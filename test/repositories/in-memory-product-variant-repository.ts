@@ -21,4 +21,10 @@ export class InMemoryProductVariantRepository
   async findByProductId(productId: string): Promise<ProductVariant[]> {
     return this.items.filter((item) => item.productId.toString() === productId);
   }
+
+  async findByProductIds(productIds: string[]): Promise<ProductVariant[]> {
+    return this.items.filter(item => productIds.includes(item.productId.toString()));
+  }
+
+ 
 }
