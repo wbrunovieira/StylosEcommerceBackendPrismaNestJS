@@ -49,11 +49,7 @@ type CreateProductBodySchema = z.infer<typeof createProductBodySchema>;
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles("admin")
 export class ProductController {
-  constructor(
-    private prisma: PrismaService,
-    private createProductUseCase: CreateProductUseCase
-  ) {}
-
+  constructor(private createProductUseCase: CreateProductUseCase) {}
 
   @Post()
   async createProduct(@Body(bodyValidationPipe) body: CreateProductBodySchema) {
@@ -83,7 +79,7 @@ export class ProductController {
         throw new HttpException(result.value.message, HttpStatus.BAD_REQUEST);
       }
 
-      return result.value;
+      return { product: result.value };
     } catch (error) {
       throw new HttpException(
         "Failed to create product",
