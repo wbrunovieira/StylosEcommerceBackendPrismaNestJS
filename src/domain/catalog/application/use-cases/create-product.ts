@@ -196,45 +196,73 @@ export class CreateProductUseCase {
     });
     await this.productRepository.create(product);
 
+    const variants: ProductVariant[] = [];
+
     if (productSizes && productColors) {
       for (const sizeId of productSizes) {
         for (const colorId of productColors) {
-          const variant = ProductVariant.create({
+          variants.push(
+            ProductVariant.create({
+              productId: product.id,
+              sizeId: new UniqueEntityID(sizeId),
+              colorId: new UniqueEntityID(colorId),
+              stock,
+              price,
+              status: "ACTIVE",
+              images,
+            })
+          );
+        }
+      }
+    }
+
+    if (productSizes && (!productColors || productColors.length === 0)) {
+      for (const sizeId of productSizes) {
+        variants.push(
+          ProductVariant.create({
             productId: product.id,
             sizeId: new UniqueEntityID(sizeId),
+            stock,
+            price,
+            status: "ACTIVE",
+            images,
+          })
+        );
+      }
+    }
+
+    if (productColors && (!productSizes || productSizes.length === 0)) {
+      for (const colorId of productColors) {
+        variants.push(
+          ProductVariant.create({
+            productId: product.id,
             colorId: new UniqueEntityID(colorId),
             stock,
             price,
             status: "ACTIVE",
             images,
-          });
-          await this.productVariantRepository.create(variant);
-        }
+          })
+        );
       }
-    } else if (productSizes) {
-      for (const sizeId of productSizes) {
-        const variant = ProductVariant.create({
+    }
+
+    if (
+      (!productSizes || productSizes.length === 0) &&
+      (!productColors || productColors.length === 0)
+    ) {
+      variants.push(
+        ProductVariant.create({
           productId: product.id,
-          sizeId: new UniqueEntityID(sizeId),
           stock,
           price,
           status: "ACTIVE",
           images,
-        });
-        await this.productVariantRepository.create(variant);
-      }
-    } else if (productColors) {
-      for (const colorId of productColors) {
-        const variant = ProductVariant.create({
-          productId: product.id,
-          colorId: new UniqueEntityID(colorId),
-          stock,
-          price,
-          status: "ACTIVE",
-          images,
-        });
-        await this.productVariantRepository.create(variant);
-      }
+        })
+      );
+    }
+
+    for (const variant of variants) {
+      await this.productVariantRepository.create(variant);
     }
 
     if (productSizes) {
