@@ -20,6 +20,7 @@ import { ICategoryRepository } from "../repositories/i-category-repository";
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
 import { ProductVariant } from "../../enterprise/entities/product-variant";
+import { ProductStatus } from "../../enterprise/entities/product-status";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -208,7 +209,7 @@ export class CreateProductUseCase {
               colorId: new UniqueEntityID(colorId),
               stock,
               price,
-              status: "ACTIVE",
+              status: ProductStatus.ACTIVE,
               images,
             })
           );
@@ -224,7 +225,7 @@ export class CreateProductUseCase {
             sizeId: new UniqueEntityID(sizeId),
             stock,
             price,
-            status: "ACTIVE",
+            status: ProductStatus.ACTIVE,
             images,
           })
         );
@@ -239,7 +240,7 @@ export class CreateProductUseCase {
             colorId: new UniqueEntityID(colorId),
             stock,
             price,
-            status: "ACTIVE",
+            status: ProductStatus.ACTIVE,
             images,
           })
         );
@@ -255,7 +256,7 @@ export class CreateProductUseCase {
           productId: product.id,
           stock,
           price,
-          status: "ACTIVE",
+          status: ProductStatus.ACTIVE,
           images,
         })
       );

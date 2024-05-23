@@ -1,13 +1,13 @@
 import { Either } from "@/core/either";
 import { ProductColor } from "../../enterprise/entities/product-color";
 
-export interface IProductColorRepository {
-  create(productId: string, colorId: string): Promise<Either<Error, void>>;
-  findByProductId(productId: string): Promise<ProductColor[]>;
-  findByColorId(
-   ColorId: string,
-  
- ): Promise<ProductColor[]>;
- addItem(ProductColor):void;
- delete(productColor: ProductColor): Promise<void>;
+export abstract class IProductColorRepository {
+  abstract create(
+    productId: string,
+    colorId: string
+  ): Promise<Either<Error, void>>;
+  abstract findByProductId(productId: string): Promise<ProductColor[]>;
+  abstract findByColorId(ColorId: string): Promise<ProductColor[]>;
+  abstract addItem(ProductColor): void;
+  abstract delete(productColor: ProductColor): Promise<void>;
 }
