@@ -4,10 +4,10 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-import { ICategoryRepository } from "./i-category-repository";
-import { Category } from "../../enterprise/entities/category";
+import { ICategoryRepository } from "../../../../domain/catalog/application/repositories/i-category-repository";
+import { Category } from "../../../../domain/catalog/enterprise/entities/category";
 import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
+import { ResourceNotFoundError } from "../../../../domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 function normalizeName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
@@ -108,19 +108,17 @@ export class PrismaCategoryRepository implements ICategoryRepository {
 
   async findAll(params: PaginationParams): Promise<Either<Error, Category[]>> {
     try {
-      
       const category = await this.prisma.category.findMany({
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
-      
+
       const convertedCategory = category.map((b) =>
         Category.create({ name: b.name }, new UniqueEntityID(b.id))
       );
-      
+
       return right(convertedCategory);
     } catch (error) {
-      
       return left(new Error("Failed to find categories"));
     }
   }

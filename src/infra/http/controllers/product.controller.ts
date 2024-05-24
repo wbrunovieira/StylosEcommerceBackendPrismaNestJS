@@ -9,11 +9,11 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../../../auth/jwt-auth.guard";
 import { CurrentUser } from "src/auth/current-user-decorator";
 import { UserPayload } from "src/auth/jwt.strategy";
 
-import { ZodValidationsPipe } from "../pipes/zod-validations-pipe";
+import { ZodValidationsPipe } from "../../../pipes/zod-validations-pipe";
 import { PrismaService } from "src/prisma/prisma.service";
 import { z } from "zod";
 import { CreateProductUseCase } from "@/domain/catalog/application/use-cases/create-product";

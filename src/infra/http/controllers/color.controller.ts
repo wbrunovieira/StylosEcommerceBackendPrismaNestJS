@@ -12,7 +12,7 @@ import {
   Put,
   UseGuards,
 } from "@nestjs/common";
-import { CreateColorUseCase } from "../domain/catalog/application/use-cases/create-color";
+import { CreateColorUseCase } from "../../../domain/catalog/application/use-cases/create-color";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
