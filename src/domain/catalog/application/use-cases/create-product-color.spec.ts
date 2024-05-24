@@ -140,10 +140,13 @@ describe("CreateProductUseCase", () => {
 
     mockProductColorRepository.create = vi.fn(
       (productId: string, colorId: string) => {
+        const now = new Date();
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
             colorId: new UniqueEntityID(colorId),
+            createdAt: now,
+            updatedAt: now,
           })
         );
         return Promise.resolve(right(undefined));

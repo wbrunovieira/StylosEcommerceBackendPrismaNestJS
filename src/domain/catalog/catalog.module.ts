@@ -1,30 +1,30 @@
 import { Module } from "@nestjs/common";
-import { ColorsController } from "../../controllers/color.controller";
+import { ColorsController } from "../../infra/http/controllers/color.controller";
 
 import { IBrandRepository } from "./application/repositories/i-brand-repository";
 
-import { PrismaColorRepository } from "../../domain/catalog/application/repositories/prisma-color-repository";
+import { PrismaColorRepository } from "../../infra/database/prisma/repositories/prisma-color-repository";
 import { PrismaService } from "../../prisma/prisma.service";
 import { DeleteColorUseCase } from "./application/use-cases/delete-color";
 import { EditColorUseCase } from "./application/use-cases/edit-color";
-import { SizeController } from "@/controllers/size.controller";
+import { SizeController } from "@/infra/http/controllers/size.controller";
 import { CreateSizeUseCase } from "./application/use-cases/create-size";
-import { PrismaSizeRepository } from "./application/repositories/prima-size-repository";
+import { PrismaSizeRepository } from "../../infra/database/prisma/repositories/prima-size-repository";
 import { DeleteSizeUseCase } from "./application/use-cases/delete-size";
 import { EditSizeUseCase } from "./application/use-cases/edit-size";
-import { BrandController } from "@/controllers/brand.controller";
+import { BrandController } from "@/infra/http/controllers/brand.controller";
 import { CreateBrandUseCase } from "./application/use-cases/create-brand";
-import { PrismaBrandRepository } from "./application/repositories/prisma-brand-repository";
+import { PrismaBrandRepository } from "../../infra/database/prisma/repositories/prisma-brand-repository";
 import { DeleteBrandUseCase } from "./application/use-cases/delete-brand";
 import { EditBrandUseCase } from "./application/use-cases/edit-brand";
-import { MaterialController } from "@/controllers/material.controller";
+import { MaterialController } from "@/infra/http/controllers/material.controller";
 import { CreateMaterialUseCase } from "./application/use-cases/create-material";
-import { PrismaMaterialRepository } from "./application/repositories/prisma-material-repository";
+import { PrismaMaterialRepository } from "../../infra/database/prisma/repositories/prisma-material-repository";
 import { EditMaterialUseCase } from "./application/use-cases/edit-material";
 import { DeleteMaterialUseCase } from "./application/use-cases/delete-material";
-import { CategoryController } from "@/controllers/category.controller";
+import { CategoryController } from "@/infra/http/controllers/category.controller";
 import { CreateCategoryUseCase } from "./application/use-cases/create-category";
-import { PrismaCategoryRepository } from "./application/repositories/prisma-category-repository";
+import { PrismaCategoryRepository } from "../../infra/database/prisma/repositories/prisma-category-repository";
 import { EditCategoryUseCase } from "./application/use-cases/edit-category";
 import { DeleteCategoryUseCase } from "./application/use-cases/delete-category";
 
@@ -47,31 +47,29 @@ import { GetAllSizesUseCase } from "./application/use-cases/get-all-sizes";
 import { GetAllCategoriesUseCase } from "./application/use-cases/get-all-categories";
 import { FindCategoryByIdUseCase } from "./application/use-cases/find-category-by-id";
 import { FindCategoryByNameUseCase } from "./application/use-cases/find-category-by-name";
-import { ProductController } from "@/controllers/product.controller";
+import { ProductController } from "@/infra/http/controllers/product.controller";
 import { CreateProductUseCase } from "./application/use-cases/create-product";
 import { IProductRepository } from "./application/repositories/i-product-repository";
-import { PrismaProductRepository } from "./application/repositories/prisma-product-repository";
+import { PrismaProductRepository } from "../../infra/database/prisma/repositories/prisma-product-repository";
 import { IProductVariantRepository } from "./application/repositories/i-product-variant-repository";
-import { PrismaProductVariantRepository } from "./application/repositories/prisma-product-variant-repository";
+import { PrismaProductVariantRepository } from "../../infra/database/prisma/repositories/prisma-product-variant-repository";
 
-import { PrismaProductSizeRepository } from "./application/repositories/prisma-product-size-repository";
+import { PrismaProductSizeRepository } from "../../infra/database/prisma/repositories/prisma-product-size-repository";
 import { IProductSizeRepository } from "./application/repositories/i-product-size-repository";
 
 import { IProductCategoryRepository } from "./application/repositories/i-product-category-repository";
-import { PrismaProductCategoryRepository } from "./application/repositories/prisma-product-category-repository";
+import { PrismaProductCategoryRepository } from "../../infra/database/prisma/repositories/prisma-product-category-repository";
 import { IProductColorRepository } from "./application/repositories/i-product-color-repository";
-import { PrismaProductColorRepository } from "./application/repositories/prisma-product-color-repository";
-import { ProductRepositoryModule } from "./product-repository.module";
-import { ProductVariantRepositoryModule } from "./product-variant-repository.module";
+import { PrismaProductColorRepository } from "../../infra/database/prisma/repositories/prisma-product-color-repository";
 
 @Module({
-  imports: [ProductRepositoryModule, ProductVariantRepositoryModule],
   controllers: [
     BrandController,
     ColorsController,
     SizeController,
     MaterialController,
     CategoryController,
+    ProductController,
   ],
   providers: [
     CreateBrandUseCase,
@@ -104,30 +102,9 @@ import { ProductVariantRepositoryModule } from "./product-variant-repository.mod
     FindSizeByIdUseCase,
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
-    
+    CreateProductUseCase,
 
     PrismaService,
-
-    {
-      provide: IBrandRepository,
-      useClass: PrismaBrandRepository,
-    },
-    {
-      provide: IColorRepository,
-      useClass: PrismaColorRepository,
-    },
-    {
-      provide: ISizeRepository,
-      useClass: PrismaSizeRepository,
-    },
-    {
-      provide: IMaterialRepository,
-      useClass: PrismaMaterialRepository,
-    },
-    {
-      provide: ICategoryRepository,
-      useClass: PrismaCategoryRepository,
-    },
   ],
   exports: [
     PrismaService,
@@ -136,9 +113,6 @@ import { ProductVariantRepositoryModule } from "./product-variant-repository.mod
     ISizeRepository,
     IMaterialRepository,
     ICategoryRepository,
-
-    ProductRepositoryModule,
-    ProductVariantRepositoryModule,
   ],
 })
 export class CatalogModule {}

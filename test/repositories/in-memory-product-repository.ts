@@ -6,7 +6,7 @@ import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
 
-import { Either, right } from "@/core/either";
+import { Either, left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -25,6 +25,15 @@ export class InMemoryProductRepository implements IProductRepository {
     this.productColorRepository = new InMemoryProductColorRepository();
     this.productSizeRepository = new InMemoryProductSizeRepository();
   }
+  async findById(productId: string): Promise<Either<Error, Product>> {
+    const product = this.items.find((item) => item.id.toString() === productId);
+   
+    if (!product) {
+      return left(new Error("Product not found"));
+    }
+    return right(product);
+  }
+ 
 
   async create(product: Product): Promise<Either<Error, void>> {
     const slug = generateSlug(product.name, "brand");

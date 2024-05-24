@@ -10,8 +10,8 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { z } from "zod";
-import { ZodValidationsPipe } from "../pipes/zod-validations-pipe";
-import { PrismaService } from "../prisma/prisma.service";
+import { ZodValidationsPipe } from "../../../pipes/zod-validations-pipe";
+import { PrismaService } from "../../../prisma/prisma.service";
 import { emit } from "process";
 import { compare, hash } from "bcryptjs";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
@@ -69,7 +69,6 @@ export class AuthenticateController {
     const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
 
     const { password: _, ...userWithoutPassword } = user;
-    
 
     return {
       access_token: accessToken,
@@ -112,7 +111,7 @@ export class AuthenticateController {
     });
 
     const accessToken = this.jwt.sign({ sub: admin.id, role: admin.role });
-    
+
     return { admin, accessToken };
   }
 }

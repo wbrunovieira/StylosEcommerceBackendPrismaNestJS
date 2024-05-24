@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductRepository } from "./i-product-repository";
-import { Product } from "../../enterprise/entities/product";
+import { IProductRepository } from "../../../../domain/catalog/application/repositories/i-product-repository";
+import { Product } from "../../../../domain/catalog/enterprise/entities/product";
 
 import { PrismaProductColorRepository } from "./prisma-product-color-repository";
 
 import { PrismaProductSizeRepository } from "./prisma-product-size-repository";
 import { PrismaProductCategoryRepository } from "./prisma-product-category-repository";
-import { generateSlug } from "../utils/generate-slug";
-import { Slug } from "../../enterprise/entities/value-objects/slug";
+import { generateSlug } from "../../../../domain/catalog/application/utils/generate-slug";
+import { Slug } from "../../../../domain/catalog/enterprise/entities/value-objects/slug";
 import { Either, right } from "@/core/either";
 
 @Injectable()

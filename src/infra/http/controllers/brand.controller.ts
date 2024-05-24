@@ -12,7 +12,7 @@ import {
   Delete,
 } from "@nestjs/common";
 import { z } from "zod";
-import { ZodValidationsPipe } from "../pipes/zod-validations-pipe";
+import { ZodValidationsPipe } from "../../../pipes/zod-validations-pipe";
 import { CreateBrandUseCase } from "@/domain/catalog/application/use-cases/create-brand";
 
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";

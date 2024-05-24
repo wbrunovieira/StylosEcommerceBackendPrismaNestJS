@@ -4,10 +4,10 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-import { IMaterialRepository } from "./i-material-repository";
-import { Material } from "../../enterprise/entities/material";
+import { IMaterialRepository } from "../../../../domain/catalog/application/repositories/i-material-repository";
+import { Material } from "../../../../domain/catalog/enterprise/entities/material";
 import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
+import { ResourceNotFoundError } from "../../../../domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 function normalizeName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
@@ -84,18 +84,16 @@ export class PrismaMaterialRepository implements IMaterialRepository {
 
   async findAll(params: PaginationParams): Promise<Either<Error, Material[]>> {
     try {
-      
       const materials = await this.prisma.material.findMany({
         skip: (params.page - 1) * params.pageSize,
         take: params.pageSize,
       });
-      
+
       const convertedMaterials = materials.map((b) =>
         Material.create({ name: b.name }, new UniqueEntityID(b.id))
       );
       return right(convertedMaterials);
     } catch (error) {
-      
       return left(new Error("Failed to find materials"));
     }
   }

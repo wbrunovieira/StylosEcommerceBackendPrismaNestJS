@@ -1,9 +1,13 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
 
 interface ProductColorProps {
   productId: UniqueEntityID;
   colorId: UniqueEntityID;
+  createdAt: Date;
+  updatedAt: Date;
+
 }
 
 export class ProductColor extends Entity<ProductColorProps> {
@@ -17,5 +21,21 @@ export class ProductColor extends Entity<ProductColorProps> {
 
   get colorId(): UniqueEntityID {
     return this.props.colorId;
+  }
+
+  static create(
+    props: Optional<ProductColorProps, 'createdAt' | 'updatedAt'>,
+    id?: UniqueEntityID
+  ) {
+    const material = new ProductColor(
+      {
+        ...props,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      id
+    );
+
+    return material;
   }
 }

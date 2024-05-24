@@ -1,16 +1,16 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { PrismaService } from './prisma/prisma.service';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { AuthModule } from "./auth/auth.module";
+import { PrismaService } from "./prisma/prisma.service";
 
-import { CreateAccountController } from './controllers/account.controller';
-import { envSchema } from 'src/env';
-import { AuthenticateController } from './controllers/authenticate.controller';
+import { AccountController } from "./infra/http/controllers/account.controller";
+import { envSchema } from "src/env";
+import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 
-
-import { ListAllProductsController } from './controllers/list-all-products.controller';
-import { ListAllAccountsController } from './controllers/list-all-accounts.controller';
-import { CatalogModule } from './domain/catalog/catalog.module';
+import { ListAllProductsController } from "./infra/http/controllers/list-all-products.controller";
+import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";
+import { CatalogModule } from "./domain/catalog/catalog.module";
+import { DatabaseModule } from "./infra/database/database.module";
 
 @Module({
   imports: [
@@ -20,9 +20,10 @@ import { CatalogModule } from './domain/catalog/catalog.module';
     }),
     AuthModule,
     CatalogModule,
+    DatabaseModule,
   ],
   controllers: [
-    CreateAccountController,
+    AccountController,
     AuthenticateController,
     ListAllProductsController,
     ListAllAccountsController,

@@ -2,10 +2,10 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { PaginationParams } from "../../../../core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
-import { ISizeRepository } from "./i-size-repository";
-import { Size } from "../../enterprise/entities/size";
+import { ISizeRepository } from "../../../../domain/catalog/application/repositories/i-size-repository";
+import { Size } from "../../../../domain/catalog/enterprise/entities/size";
 import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
+import { ResourceNotFoundError } from "../../../../domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 function normalizeName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");

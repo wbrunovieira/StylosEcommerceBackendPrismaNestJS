@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductSizeRepository } from "./i-product-size-repository";
-import { ProductSize } from "../../enterprise/entities/product-size";
+import { IProductSizeRepository } from "../../../../domain/catalog/application/repositories/i-product-size-repository";
+import { ProductSize } from "../../../../domain/catalog/enterprise/entities/product-size";
 import { Either } from "@/core/either";
 
 @Injectable()
@@ -22,7 +22,6 @@ export class PrismaProductSizeRepository implements IProductSizeRepository {
   addItem(ProductSize: any): void {
     throw new Error("Method not implemented.");
   }
- 
 
   //   async findByProductId(productId: string): Promise<ProductSize[]> {
   //     const records = await this.prisma.productSize.findMany({

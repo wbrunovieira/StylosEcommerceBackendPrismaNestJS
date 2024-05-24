@@ -15,12 +15,16 @@ export class InMemoryProductColorRepository implements IProductColorRepository {
   ): Promise<Either<Error, void>> {
   
 
-    const productIdUnique = new UniqueEntityID(productId);
-    const colorIdUnique = new UniqueEntityID(colorId);
+    const productIdUnique = new UniqueEntityID(productId.toString());
+    const colorIdUnique = new UniqueEntityID(colorId.toString());
+
+    const now = new Date();
 
     const productColor = new ProductColor({
-      productId: productIdUnique,
+      productId: productIdUnique ,
       colorId: colorIdUnique,
+      createdAt: now,
+      updatedAt: now,
     });
 
     this.items.push(productColor);
