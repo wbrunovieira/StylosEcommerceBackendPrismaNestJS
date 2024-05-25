@@ -6,8 +6,10 @@ import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
 
+
 import { Either, left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
+import { InMemoryColorRepository } from "./in-memory-color-repository";
 
 @Injectable()
 export class InMemoryProductRepository implements IProductRepository {
@@ -22,18 +24,18 @@ export class InMemoryProductRepository implements IProductRepository {
   public brands: { id: string; name: string }[] = [];
 
   constructor() {
-    this.productColorRepository = new InMemoryProductColorRepository();
+    const colorRepository = new InMemoryColorRepository();
+    this.productColorRepository = new InMemoryProductColorRepository(colorRepository);
     this.productSizeRepository = new InMemoryProductSizeRepository();
   }
+
   async findById(productId: string): Promise<Either<Error, Product>> {
     const product = this.items.find((item) => item.id.toString() === productId);
-   
     if (!product) {
       return left(new Error("Product not found"));
     }
     return right(product);
   }
- 
 
   async create(product: Product): Promise<Either<Error, void>> {
     const slug = generateSlug(product.name, "brand");
@@ -69,7 +71,7 @@ export class InMemoryProductRepository implements IProductRepository {
     await this.productSizeRepository.deleteAllByProductId(
       product.id.toString()
     );
-    // await this.productColors.deleteAllByProductId(
+    // await this.productColorRepository.deleteAllByProductId(
     //   product.id.toString()
     // );
   }

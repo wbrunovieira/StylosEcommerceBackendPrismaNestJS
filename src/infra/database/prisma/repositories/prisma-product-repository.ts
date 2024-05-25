@@ -29,6 +29,9 @@ export class PrismaProductRepository implements IProductRepository {
       productCategoryRepository,
     });
   }
+  findById(productId: string): Promise<Either<Error, Product>> {
+    throw new Error("Method not implemented.");
+  }
 
   async create(product: Product): Promise<Either<Error, void>> {
     const {

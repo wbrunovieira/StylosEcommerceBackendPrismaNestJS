@@ -61,8 +61,10 @@ import { IProductCategoryRepository } from "./application/repositories/i-product
 import { PrismaProductCategoryRepository } from "../../infra/database/prisma/repositories/prisma-product-category-repository";
 import { IProductColorRepository } from "./application/repositories/i-product-color-repository";
 import { PrismaProductColorRepository } from "../../infra/database/prisma/repositories/prisma-product-color-repository";
+import { DatabaseModule } from "@/infra/database/database.module";
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [
     BrandController,
     ColorsController,
@@ -106,13 +108,6 @@ import { PrismaProductColorRepository } from "../../infra/database/prisma/reposi
 
     PrismaService,
   ],
-  exports: [
-    PrismaService,
-    IBrandRepository,
-    IColorRepository,
-    ISizeRepository,
-    IMaterialRepository,
-    ICategoryRepository,
-  ],
+  exports: [PrismaService],
 })
 export class CatalogModule {}

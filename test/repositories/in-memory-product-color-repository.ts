@@ -1,19 +1,26 @@
-
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Either, left, right } from "@/core/either";
 import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
 import { ProductColor } from "@/domain/catalog/enterprise/entities/product-color";
-
+import { InMemoryColorRepository } from "./in-memory-color-repository";
 
 export class InMemoryProductColorRepository implements IProductColorRepository {
-
   public items: ProductColor[] = [];
+  private colorRepository: InMemoryColorRepository;
+
+  constructor(colorRepository: InMemoryColorRepository) {
+    this.colorRepository = colorRepository;
+  }
 
   async create(
     productId: string,
     colorId: string
   ): Promise<Either<Error, void>> {
-  
+   
+    const colorExists = await this.colorRepository.findById(colorId);
+    if (colorExists.isLeft()) {
+      return left(new Error("Color not found"));
+    }
 
     const productIdUnique = new UniqueEntityID(productId.toString());
     const colorIdUnique = new UniqueEntityID(colorId.toString());
@@ -21,7 +28,7 @@ export class InMemoryProductColorRepository implements IProductColorRepository {
     const now = new Date();
 
     const productColor = new ProductColor({
-      productId: productIdUnique ,
+      productId: productIdUnique,
       colorId: colorIdUnique,
       createdAt: now,
       updatedAt: now,
@@ -50,6 +57,7 @@ export class InMemoryProductColorRepository implements IProductColorRepository {
         item.colorId.toString() !== productColor.colorId.toString()
     );
   }
+
   async deleteAllByProductId(productId: string): Promise<void> {
     this.items = this.items.filter(
       (item) => item.productId.toString() !== productId
