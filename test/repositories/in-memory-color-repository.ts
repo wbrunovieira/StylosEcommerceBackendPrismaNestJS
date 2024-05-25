@@ -56,9 +56,8 @@ export class InMemoryColorRepository implements IColorRepository {
   }
 
   async findById(id: string): Promise<Either<Error, Color>> {
-  
     const color = this.items.find((item) => item.id.toString() === id);
-  
+
     if (!color) {
       return left(new Error("Color not found"));
     }

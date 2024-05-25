@@ -43,7 +43,7 @@ describe("CreateProductUseCase", () => {
   let mockSizeRepository: ISizeRepository;
   let mockProductSizeRepository: InMemoryProductSizeRepository;
 
-  let mockColorRepository: IColorRepository;
+  let mockColorRepository: InMemoryColorRepository;
   let mockProductColorRepository: InMemoryProductColorRepository;
 
   let mockCategoryRepository: ICategoryRepository;
@@ -82,7 +82,7 @@ describe("CreateProductUseCase", () => {
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
 
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
-    mockProductColorRepository = new InMemoryProductColorRepository();
+
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
 
@@ -90,6 +90,9 @@ describe("CreateProductUseCase", () => {
     mockColorRepository = new InMemoryColorRepository();
     mockCategoryRepository = new InMemoryCategoryRepository();
 
+    mockProductColorRepository = new InMemoryProductColorRepository(
+      mockColorRepository
+    );
     mockBrandRepository.create(consistentBrand);
     mockMaterialRepository.create(consistentMaterial);
     mockSizeRepository.create(consistentSize);
@@ -401,68 +404,71 @@ describe("CreateProductUseCase", () => {
   });
 
   it("should create a product with two colors and two sizes and create four variants", async () => {
-  const anotherColorId = new UniqueEntityID("another_color_id_as_string");
-  const anotherSizeId = new UniqueEntityID("another_size_id_as_string");
-  
-  const anotherConsistentColor = makeColor(
-    { name: "Another Test Color Name" },
-    anotherColorId
-  );
-  const anotherConsistentSize = makeSize(
-    { name: "Another Test Size Name" },
-    anotherSizeId
-  );
-  
-  mockColorRepository.create(anotherConsistentColor);
-  mockSizeRepository.create(anotherConsistentSize);
+    const anotherColorId = new UniqueEntityID("another_color_id_as_string");
+    const anotherSizeId = new UniqueEntityID("another_size_id_as_string");
 
-  const result = await useCase.execute({
-    name: "Test Product with Multiple Colors and Sizes",
-    description: "A test product description",
-    productColors: [colorId.toString(), anotherColorId.toString()],
-    productSizes: [sizeId.toString(), anotherSizeId.toString()],
-    productCategories: [],
-    materialId: null,
-    brandId: brandId.toString(),
-    price: 100,
-    stock: 10,
-    height: 10,
-    width: 10,
-    length: 10,
-    weight: 10,
-    onSale: false,
-    discount: 0,
-    isFeatured: false,
-    isNew: false,
-    images: [],
-  });
+    const anotherConsistentColor = makeColor(
+      { name: "Another Test Color Name" },
+      anotherColorId
+    );
+    const anotherConsistentSize = makeSize(
+      { name: "Another Test Size Name" },
+      anotherSizeId
+    );
 
-  expect(result.isRight()).toBeTruthy();
-  if (result.isRight()) {
-    const createdProduct = result.value.product;
-    const productId = createdProduct.id.toString();
+    mockColorRepository.create(anotherConsistentColor);
+    mockSizeRepository.create(anotherConsistentSize);
 
-    
-    const variants = await mockProductVariantRepository.findByProductId(productId);
-    expect(variants).toHaveLength(4);
-    
-    const expectedVariants = [
-      { colorId: colorId.toString(), sizeId: sizeId.toString() },
-      { colorId: colorId.toString(), sizeId: anotherSizeId.toString() },
-      { colorId: anotherColorId.toString(), sizeId: sizeId.toString() },
-      { colorId: anotherColorId.toString(), sizeId: anotherSizeId.toString() },
-    ];
-
-    expectedVariants.forEach(expectedVariant => {
-      const variant = variants.find(v => 
-        v.colorId?.toString() === expectedVariant.colorId && 
-        v.sizeId?.toString() === expectedVariant.sizeId
-      );
-      expect(variant).toBeDefined();
+    const result = await useCase.execute({
+      name: "Test Product with Multiple Colors and Sizes",
+      description: "A test product description",
+      productColors: [colorId.toString(), anotherColorId.toString()],
+      productSizes: [sizeId.toString(), anotherSizeId.toString()],
+      productCategories: [],
+      materialId: null,
+      brandId: brandId.toString(),
+      price: 100,
+      stock: 10,
+      height: 10,
+      width: 10,
+      length: 10,
+      weight: 10,
+      onSale: false,
+      discount: 0,
+      isFeatured: false,
+      isNew: false,
+      images: [],
     });
-  } else {
-    fail("Expected a Right with the created product but got Left");
-  }
-});
 
+    expect(result.isRight()).toBeTruthy();
+    if (result.isRight()) {
+      const createdProduct = result.value.product;
+      const productId = createdProduct.id.toString();
+
+      const variants =
+        await mockProductVariantRepository.findByProductId(productId);
+      expect(variants).toHaveLength(4);
+
+      const expectedVariants = [
+        { colorId: colorId.toString(), sizeId: sizeId.toString() },
+        { colorId: colorId.toString(), sizeId: anotherSizeId.toString() },
+        { colorId: anotherColorId.toString(), sizeId: sizeId.toString() },
+        {
+          colorId: anotherColorId.toString(),
+          sizeId: anotherSizeId.toString(),
+        },
+      ];
+
+      expectedVariants.forEach((expectedVariant) => {
+        const variant = variants.find(
+          (v) =>
+            v.colorId?.toString() === expectedVariant.colorId &&
+            v.sizeId?.toString() === expectedVariant.sizeId
+        );
+        expect(variant).toBeDefined();
+      });
+    } else {
+      fail("Expected a Right with the created product but got Left");
+    }
+  });
 });
