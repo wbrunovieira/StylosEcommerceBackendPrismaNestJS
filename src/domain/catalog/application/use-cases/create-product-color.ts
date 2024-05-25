@@ -26,7 +26,7 @@ type ProductColorUseCaseResponse = Either<
 export class CreateProductColorUseCase {
   constructor(
     private productRepository: IProductRepository,
-    // private colorRepository: IColorRepository,
+    private colorRepository: IColorRepository,
     private productColorRepository: IProductColorRepository
   ) {}
 

@@ -79,7 +79,7 @@ export class ProductController {
         throw new HttpException(result.value.message, HttpStatus.BAD_REQUEST);
       }
 
-      return { product: result.value };
+      return { product: result.value.product };
     } catch (error) {
       throw new HttpException(
         "Failed to create product",

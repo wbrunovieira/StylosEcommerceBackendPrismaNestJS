@@ -9,8 +9,9 @@ import { AuthenticateController } from "./infra/http/controllers/authenticate.co
 
 import { ListAllProductsController } from "./infra/http/controllers/list-all-products.controller";
 import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";
-import { CatalogModule } from "./domain/catalog/catalog.module";
+
 import { DatabaseModule } from "./infra/database/database.module";
+import { HttpModule } from "./infra/http/http.module";
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { DatabaseModule } from "./infra/database/database.module";
       isGlobal: true,
     }),
     AuthModule,
-    CatalogModule,
+    HttpModule,
     DatabaseModule,
   ],
   controllers: [
