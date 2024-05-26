@@ -40,6 +40,8 @@ import { GetAllColorsUseCase } from "@/domain/catalog/application/use-cases/get-
 import { GetAllSizesUseCase } from "@/domain/catalog/application/use-cases/get-all-sizes";
 import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/get-all-categories";
 import { PrismaProductColorRepository } from "../database/prisma/repositories/prisma-product-color-repository";
+import { ApiController } from "./controllers/api.controller";
+import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
 
 @Module({
   imports: [DatabaseModule],
@@ -51,6 +53,7 @@ import { PrismaProductColorRepository } from "../database/prisma/repositories/pr
     MaterialController,
     ProductController,
     SizeController,
+    ApiController
   ],
   providers: [
     CreateBrandUseCase,
@@ -90,6 +93,8 @@ import { PrismaProductColorRepository } from "../database/prisma/repositories/pr
     GetAllColorsUseCase,
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
+
+    ApiGetAllProducts
   ],
 })
 export class HttpModule {}
