@@ -147,7 +147,7 @@ export class PrismaProductRepository implements IProductRepository {
           description: description,
           createdAt: createdAt,
           updatedAt: updatedAt,
-          slug: slugValue.toString(),
+          slug: slugValue.value,
           price: price,
           stock: stock,
           material: materialExist

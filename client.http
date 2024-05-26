@@ -97,7 +97,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "blusa 10",
+  "name": "blusa 11110",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
   "materialId": "508882db-4aef-4e62-a07d-5b6770efb36b",
