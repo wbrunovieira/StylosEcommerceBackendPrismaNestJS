@@ -1,6 +1,19 @@
 @BASE_URL = http://localhost:3333
 @AUTH_TOKEN = {{authenticate.response.body.access_token}}
 
+
+
+# @name authenticate-admin
+POST {{BASE_URL}}/sessions
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "adminpassword"
+}
+
+###
+
 # @name create-account
 POST {{BASE_URL}}/accounts
 Content-Type: application/json
@@ -57,18 +70,10 @@ Content-Type: application/json
 
 
 ### 
+
+
+
 # @name authenticate
-POST {{BASE_URL}}/sessions
-Content-Type: application/json
-
-{
-  "email": "bru@bruno.com",
-  "password": "123456"
-}
-### 
-
-
-# @name authenticate-admin
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
@@ -83,6 +88,7 @@ GET {{BASE_URL}}/accounts?page=1
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
+
 ###
 
 # @name create-products
@@ -91,17 +97,16 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "calcinha 6",
-  "description": "calcinha description 16 mais texto, legal, muiito legal" ,
+  "name": "blusa 10",
+  "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
-  "materialId": "8ff4869f-f57c-4346-99ed-085b9b16e0e6",
-  "brandId": "d5d1b4d6-3449-461a-8efd-a5179b43a6f4",
+  "materialId": "508882db-4aef-4e62-a07d-5b6770efb36b",
+  "brandId": "598979ce-a7f3-4bbe-93b9-e1abd2cfb964",
   "price": 100,
   "stock": 10,
-  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01e"]
+  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01ess"]
   
 }
-
 
 ###
 # @name get-all-products
@@ -126,6 +131,6 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/ca4ed536-5cb7-4df4-b04c-7b3ea3e8b914
+GET {{BASE_URL}}/products/d624bc75-4f96-468d-a0c8-3c144e1ec65c
 
 

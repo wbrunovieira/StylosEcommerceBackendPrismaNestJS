@@ -151,34 +151,7 @@ describe("ProductController", () => {
       productSizes: ["size1", "size2"],
     });
 
-    const { product } = mockResult.value;
-    const expectedProduct = {
-      name: product.props.name,
-      description: product.props.description,
-      brandId: product.props.brandId,
-      price: product.props.price,
-      stock: product.props.stock,
-      images: product.props.images,
-      onSale: product.props.onSale,
-      discount: product.props.discount,
-      isFeatured: product.props.isFeatured,
-      isNew: product.props.isNew,
-    };
-
-    const receivedProduct = {
-      name: result.product.props.name,
-      description: result.product.props.description,
-      brandId: result.product.props.brandId,
-      price: result.product.props.price,
-      stock: result.product.props.stock,
-      images: result.product.props.images,
-      onSale: result.product.props.onSale,
-      discount: result.product.props.discount,
-      isFeatured: result.product.props.isFeatured,
-      isNew: result.product.props.isNew,
-    };
-
-    expect(receivedProduct).toEqual(expectedProduct);
+    expect(result).toEqual({ product: mockProduct });
     expect(createProductUseCase.execute).toHaveBeenCalledWith({
       name: "ProductName",
       description: "ProductDescription",

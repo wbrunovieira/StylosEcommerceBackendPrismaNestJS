@@ -60,7 +60,7 @@ import { PrismaProductColorRepository } from "../database/prisma/repositories/pr
     CreateCategoryUseCase,
 
     CreateProductUseCase,
-    CreateProductColorUseCase,
+    // CreateProductColorUseCase,
 
     EditBrandUseCase,
     EditMaterialUseCase,
@@ -90,8 +90,6 @@ import { PrismaProductColorRepository } from "../database/prisma/repositories/pr
     GetAllColorsUseCase,
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
-
-    
   ],
 })
 export class HttpModule {}

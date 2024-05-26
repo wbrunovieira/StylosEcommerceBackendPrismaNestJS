@@ -1,6 +1,7 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
+
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
@@ -17,6 +18,7 @@ describe("Colors Controller (E2E)", () => {
 
     app = moduleRef.createNestApplication();
     prisma = moduleRef.get(PrismaService);
+
     await app.init();
 
     const response = await request(app.getHttpServer())
@@ -32,11 +34,11 @@ describe("Colors Controller (E2E)", () => {
 
   beforeEach(async () => {
     await prisma.color.deleteMany({});
+
     const color = await prisma.color.create({
       data: { name: "blue" },
     });
     colorId = color.id;
-    
   });
 
   test("[POST] /colors", async () => {
@@ -55,8 +57,6 @@ describe("Colors Controller (E2E)", () => {
     expect(colorResponse).toHaveProperty("updatedAt");
 
     colorId = response.body.color._id.value;
-    
-    
   });
 
   test("[POST] /colors with invalid data", async () => {
@@ -74,7 +74,6 @@ describe("Colors Controller (E2E)", () => {
       .get("/colors")
       .query({ name: "blue" })
       .set("Authorization", `Bearer ${authToken}`);
-    
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toHaveProperty("color");
@@ -122,10 +121,6 @@ describe("Colors Controller (E2E)", () => {
       .expect(HttpStatus.OK);
 
     expect(response.body.message).toEqual("Color deleted successfully");
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   afterAll(async () => {
