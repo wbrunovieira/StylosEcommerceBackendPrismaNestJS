@@ -7,7 +7,6 @@ import dayjs from "dayjs";
 import { Entity } from "@/core/entities/entity";
 
 export interface ProductProps {
-  id?: UniqueEntityID;
   name: string;
   description: string;
   productSizes?: UniqueEntityID[];
@@ -34,10 +33,10 @@ export interface ProductProps {
 }
 
 export class Product extends Entity<ProductProps> {
-  
   private touch() {
     this.props.updatedAt = new Date();
   }
+  
 
   get height() {
     return this.props.height;
@@ -60,6 +59,7 @@ export class Product extends Entity<ProductProps> {
   get length() {
     return this.props.length;
   }
+ 
   get weight() {
     return this.props.weight;
   }
@@ -214,20 +214,15 @@ export class Product extends Entity<ProductProps> {
     props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
     id?: UniqueEntityID
   ): Product {
-    const now = new Date();
     const product = new Product(
       {
         ...props,
-        createdAt: props.createdAt || now,
-        updatedAt: props.updatedAt || now,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         slug: props.slug ?? Slug.createFromText(props.name),
       },
       id
     );
     return product;
-  }
-
-  static fromPersistence(props: ProductProps, id?: UniqueEntityID): Product {
-    return new Product({ ...props, id });
   }
 }

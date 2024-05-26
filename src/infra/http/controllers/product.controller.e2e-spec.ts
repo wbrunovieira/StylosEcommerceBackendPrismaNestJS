@@ -1,17 +1,19 @@
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
 import { INestApplication } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 describe("Create products (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let jwt: JwtService;
+
   let authToken: string;
-  let colorId: string;
-  let sizeId: string;
+
+  let brandId: string;
+  let materialId: string;
+  let categoryId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -21,7 +23,6 @@ describe("Create products (E2E)", () => {
     app = moduleRef.createNestApplication();
 
     prisma = moduleRef.get(PrismaService);
-    jwt = moduleRef.get(JwtService);
 
     await app.init();
 
@@ -37,17 +38,29 @@ describe("Create products (E2E)", () => {
   });
 
   beforeEach(async () => {
-    await prisma.color.deleteMany({});
-    const color = await prisma.color.create({
-      data: { name: "blue" },
-    });
-    colorId = color.id;
+    await prisma.product.deleteMany({});
+    await prisma.brand.deleteMany({});
+    await prisma.material.deleteMany({});
+    await prisma.category.deleteMany({});
 
-    await prisma.size.deleteMany({});
-    const size = await prisma.size.create({
-      data: { name: "m" },
+    const brand = await prisma.brand.create({
+      data: { name: "brand" },
     });
-    sizeId = size.id;
+    brandId = brand.id;
+    console.log("brandid", brandId);
+
+    const material = await prisma.material.create({
+      data: { name: "cotton" },
+    });
+    materialId = material.id;
+    console.log("materialId", materialId);
+
+    const category = await prisma.category.create({
+      data: { name: "categoria teste" },
+    });
+
+    categoryId = category.id;
+    console.log("categoryId", categoryId);
   });
 
   test("[POST] /products", async () => {
@@ -56,23 +69,29 @@ describe("Create products (E2E)", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         name: "calcinha 1",
-        description: "calcinha 1 description",
-        color: "blue",
-        size: "M",
-        material: "cotton",
-        brand: "brand 1",
-        price: "100.00",
-        stock: "10",
+        description: "calcinha description 1 mais texto, legal, muiito legal",
+        images: ["/images/foto1.jpg"],
+        materialId: materialId,
+        brandId: brandId,
+        price: 100,
+        stock: 10,
+        productCategories: [categoryId],
       });
+
+    const productResponse = response.body.product.props;
+
+    console.log("response no test", productResponse);
 
     expect(response.statusCode).toBe(201);
 
-    const questionOnDatabase = await prisma.product.findFirst({
-      where: {
-        name: "calcinha 1",
-      },
-    });
+    expect(response.body).toHaveProperty("product");
+    expect(response.body.product).toHaveProperty("props");
+    expect(productResponse.name).toEqual("calcinha 1");
+    expect(productResponse).toHaveProperty("createdAt");
+    expect(productResponse).toHaveProperty("updatedAt");
+  });
 
-    expect(questionOnDatabase).toBeTruthy();
+  afterAll(async () => {
+    await app.close();
   });
 });

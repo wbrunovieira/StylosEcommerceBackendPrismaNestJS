@@ -19,6 +19,7 @@ import { z } from "zod";
 import { CreateProductUseCase } from "@/domain/catalog/application/use-cases/create-product";
 import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -74,17 +75,22 @@ export class ProductController {
         length: body.length || null,
         weight: body.weight || null,
       });
-
       if (result.isLeft()) {
-        throw new HttpException(result.value.message, HttpStatus.BAD_REQUEST);
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+        }
+      } else {
+        return { product: result.value.product };
       }
-
-      return { product: result.value.product };
-    } catch (error) {
-      throw new HttpException(
-        "Failed to create product",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+    } catch (error) { if (error instanceof ResourceNotFoundError) {
+      console.error("Error creating product:", error); 
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+    throw new HttpException(
+      "Failed to create product",
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
     }
   }
 }
