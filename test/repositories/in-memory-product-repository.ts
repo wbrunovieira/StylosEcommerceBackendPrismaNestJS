@@ -6,7 +6,6 @@ import { generateSlug } from "@/domain/catalog/application/utils/generate-slug";
 import { InMemoryProductColorRepository } from "./in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "./in-memory-product-size-repository";
 
-
 import { Either, left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
 import { InMemoryColorRepository } from "./in-memory-color-repository";
@@ -15,6 +14,7 @@ import { InMemoryColorRepository } from "./in-memory-color-repository";
 export class InMemoryProductRepository implements IProductRepository {
   private productColorRepository: InMemoryProductColorRepository;
   private productSizeRepository: InMemoryProductSizeRepository;
+  private productRepository: InMemoryProductRepository;
 
   public items: Product[] = [];
   public colors: { productId: string; colorId: string }[] = [];
@@ -25,12 +25,18 @@ export class InMemoryProductRepository implements IProductRepository {
 
   constructor() {
     const colorRepository = new InMemoryColorRepository();
-    this.productColorRepository = new InMemoryProductColorRepository(colorRepository);
+    const productRepository = new InMemoryProductRepository();
+    this.productColorRepository = new InMemoryProductColorRepository(
+      colorRepository,
+      productRepository
+    );
+    this.productRepository = new InMemoryProductRepository();
     this.productSizeRepository = new InMemoryProductSizeRepository();
   }
 
   async findById(productId: string): Promise<Either<Error, Product>> {
     const product = this.items.find((item) => item.id.toString() === productId);
+
     if (!product) {
       return left(new Error("Product not found"));
     }

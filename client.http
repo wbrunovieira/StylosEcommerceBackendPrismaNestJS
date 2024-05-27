@@ -97,13 +97,14 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "blusa 11110",
+  "name": "blusa 1515",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
   "materialId": "508882db-4aef-4e62-a07d-5b6770efb36b",
   "brandId": "598979ce-a7f3-4bbe-93b9-e1abd2cfb964",
   "price": 100,
   "stock": 10,
+  "productColors": ["ac161864-52f7-43d0-aca0-6a9282cd590e"],
   "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01ess"]
   
 }

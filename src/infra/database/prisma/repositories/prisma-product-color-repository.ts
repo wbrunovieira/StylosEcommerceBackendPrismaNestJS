@@ -17,7 +17,7 @@ export class PrismaProductColorRepository implements IProductColorRepository {
   findByColorId(ColorId: string): Promise<ProductColor[]> {
     throw new Error("Method not implemented.");
   }
-  addItem(ProductColor: any): void {
+  addItem(ProductColor: any): Promise<void> {
     throw new Error("Method not implemented.");
   }
   delete(productColor: ProductColor): Promise<void> {

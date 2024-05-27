@@ -56,14 +56,14 @@ type CreateProductUseCaseResponse = Either<
 export class CreateProductUseCase {
   constructor(
     private productRepository: IProductRepository,
-  
-    // private colorRepository: IColorRepository,
+
+    private colorRepository: IColorRepository,
     // private brandRepository: IBrandRepository,
     // private materialRepository: IMaterialRepository,
     // private sizeRepository: ISizeRepository,
     // private categoryRepository: ICategoryRepository,
     // private productSizeRepository: IProductSizeRepository,
-    // private productColorRepository: IProductColorRepository,
+    private productColorRepository: IProductColorRepository
     // private productCategoryRepository: IProductCategoryRepository,
     // private productVariantRepository: IProductVariantRepository
   ) {}
@@ -71,7 +71,7 @@ export class CreateProductUseCase {
   async execute({
     name,
     description,
-    // productColors,
+    productColors,
     // productSizes,
     // productCategories,
     materialId = null,
@@ -87,7 +87,6 @@ export class CreateProductUseCase {
     isFeatured = false,
     isNew = false,
     images = [],
-    
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     // const brandOrError = await this.brandRepository.findById(brandId);
     // if (brandOrError.isLeft()) {
@@ -123,26 +122,26 @@ export class CreateProductUseCase {
     //   }
     // }
 
-    // if (productColors) {
-    //   const uniqueColors = new Set<string>();
+    if (productColors) {
+      const uniqueColors = new Set<string>();
 
-    //   for (const colorId of productColors) {
-    //     if (!colorId) {
-    //       return left(new Error("InvalidColorError"));
-    //     }
+      for (const colorId of productColors) {
+        if (!colorId) {
+          return left(new Error("InvalidColorError"));
+        }
 
-    //     if (uniqueColors.has(colorId)) {
-    //       return left(new ResourceNotFoundError(`Duplicate color: ${colorId}`));
-    //     }
-    //     uniqueColors.add(colorId);
+        if (uniqueColors.has(colorId)) {
+          return left(new ResourceNotFoundError(`Duplicate color: ${colorId}`));
+        }
+        uniqueColors.add(colorId);
 
-    //     const colorExists = await this.colorRepository.findById(colorId);
+        const colorExists = await this.colorRepository.findById(colorId);
 
-    //     if (colorExists.isLeft()) {
-    //       return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
-    //     }
-    //   }
-    // }
+        if (colorExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Color not found: ${colorId}`));
+        }
+      }
+    }
 
     // if (productCategories) {
     //   const uniqueCategory = new Set<string>();
@@ -182,7 +181,7 @@ export class CreateProductUseCase {
       if (price < 0) {
         return left(new ResourceNotFoundError("Price cannot be negative"));
       }
-      
+
       const slug = generateSlug(name, "brand-name");
 
       const product = Product.create({
@@ -207,6 +206,15 @@ export class CreateProductUseCase {
       console.log("product use case ", product);
       const result = await this.productRepository.create(product);
       console.log("result use case ", result);
+
+      if (productColors) {
+        for (const colorId of productColors) {
+          await this.productColorRepository.create(
+            product.id.toString(),
+            colorId
+          );
+        }
+      }
 
       return right({
         product,
