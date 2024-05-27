@@ -12,11 +12,11 @@ import { IColorRepository } from "../repositories/i-color-repository";
 interface ProductColorUseCaseRequest {
   colorId: string;
   productId: string;
-  content: string;
+  
 }
 
 type ProductColorUseCaseResponse = Either<
-  ResourceNotFoundError,
+ResourceNotFoundError | null,
   {
     productColor: ProductColor;
   }
@@ -24,6 +24,7 @@ type ProductColorUseCaseResponse = Either<
 
 @Injectable()
 export class CreateProductColorUseCase {
+
   constructor(
     private productRepository: IProductRepository,
     private colorRepository: IColorRepository,
@@ -34,12 +35,13 @@ export class CreateProductColorUseCase {
     colorId,
     productId,
   }: ProductColorUseCaseRequest): Promise<ProductColorUseCaseResponse> {
+
     const product = await this.productRepository.findById(productId);
 
     if (!product) {
       return left(new ResourceNotFoundError());
     }
-    const color = await this.productRepository.findById(colorId);
+    const color = await this.colorRepository.findById(colorId);
 
     if (!color) {
       return left(new ResourceNotFoundError());

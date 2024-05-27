@@ -2,13 +2,39 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductSizeRepository } from "../../../../domain/catalog/application/repositories/i-product-size-repository";
 import { ProductSize } from "../../../../domain/catalog/enterprise/entities/product-size";
-import { Either } from "@/core/either";
+import { Either, left, right } from "@/core/either";
+import { PrismaSizeRepository } from "./prima-size-repository";
 
 @Injectable()
 export class PrismaProductSizeRepository implements IProductSizeRepository {
-  constructor(private prisma: PrismaService) {}
-  create(productId: string, sizeId: string): Promise<Either<Error, void>> {
-    throw new Error("Method not implemented.");
+  constructor(private prisma: PrismaService,
+    private sizeRepository: PrismaSizeRepository
+  ) {}
+  async create(
+    productId: string,
+    sizeId: string
+  ): Promise<Either<Error, void>> {
+    try {
+      const sizeExists = await this.sizeRepository.findById(sizeId);
+      if (sizeExists.isLeft()) {
+        return left(new Error("Size not found"));
+      }
+
+      const productExists = await this.prisma.product.findUnique({
+        where: { id: productId },
+      });
+      if (!productExists) {
+        return left(new Error("Product not found"));
+      }
+
+      await this.prisma.productSize.create({
+        data: { productId, sizeId },
+      });
+
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to create product color"));
+    }
   }
   delete(productSize: ProductSize): Promise<void> {
     throw new Error("Method not implemented.");

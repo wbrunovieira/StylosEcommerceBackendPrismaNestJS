@@ -1,9 +1,12 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
 
 interface ProductSizeProps {
   productId: UniqueEntityID;
   sizeId: UniqueEntityID;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export class ProductSize extends Entity<ProductSizeProps> {
@@ -17,5 +20,22 @@ export class ProductSize extends Entity<ProductSizeProps> {
 
   get sizeId(): UniqueEntityID {
     return this.props.sizeId;
+  }
+
+  static create(
+    props: Optional<ProductSizeProps, 'createdAt' | 'updatedAt'>,
+    id?: UniqueEntityID
+  ) {
+
+    const productSize = new ProductSize(
+      {
+        ...props,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      id
+    );
+
+    return productSize;
   }
 }

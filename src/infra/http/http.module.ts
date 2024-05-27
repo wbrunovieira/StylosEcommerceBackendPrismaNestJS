@@ -42,6 +42,7 @@ import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/
 
 import { ApiController } from "./controllers/api.controller";
 import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
+import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases/create-product-size";
 
 @Module({
   imports: [DatabaseModule],
@@ -64,6 +65,7 @@ import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-al
 
     CreateProductUseCase,
     CreateProductColorUseCase,
+    CreateProductSizeUseCase,
 
     EditBrandUseCase,
     EditMaterialUseCase,

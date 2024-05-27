@@ -60,9 +60,9 @@ export class CreateProductUseCase {
     private colorRepository: IColorRepository,
     // private brandRepository: IBrandRepository,
     // private materialRepository: IMaterialRepository,
-    // private sizeRepository: ISizeRepository,
+    private sizeRepository: ISizeRepository,
     // private categoryRepository: ICategoryRepository,
-    // private productSizeRepository: IProductSizeRepository,
+     private productSizeRepository: IProductSizeRepository,
     private productColorRepository: IProductColorRepository
     // private productCategoryRepository: IProductCategoryRepository,
     // private productVariantRepository: IProductVariantRepository
@@ -72,7 +72,7 @@ export class CreateProductUseCase {
     name,
     description,
     productColors,
-    // productSizes,
+    productSizes,
     // productCategories,
     materialId = null,
     brandId,
@@ -103,24 +103,24 @@ export class CreateProductUseCase {
 
     // const material = materialOrError.isRight() ? materialOrError.value : null;
 
-    // if (productSizes) {
-    //   const uniqueSizes = new Set<string>();
+    if (productSizes) {
+      const uniqueSizes = new Set<string>();
 
-    //   for (const sizeId of productSizes) {
-    //     if (!sizeId) {
-    //       return left(new Error("InvalidSizeError"));
-    //     }
+      for (const sizeId of productSizes) {
+        if (!sizeId) {
+          return left(new Error("InvalidSizeError"));
+        }
 
-    //     if (uniqueSizes.has(sizeId)) {
-    //       return left(new ResourceNotFoundError(`Duplicate size: ${sizeId}`));
-    //     }
-    //     uniqueSizes.add(sizeId);
-    //     const sizeExists = await this.sizeRepository.findById(sizeId);
-    //     if (sizeExists.isLeft()) {
-    //       return left(new ResourceNotFoundError(`Size not found: ${sizeId}`));
-    //     }
-    //   }
-    // }
+        if (uniqueSizes.has(sizeId)) {
+          return left(new ResourceNotFoundError(`Duplicate size: ${sizeId}`));
+        }
+        uniqueSizes.add(sizeId);
+        const sizeExists = await this.sizeRepository.findById(sizeId);
+        if (sizeExists.isLeft()) {
+          return left(new ResourceNotFoundError(`Size not found: ${sizeId}`));
+        }
+      }
+    }
 
     if (productColors) {
       const uniqueColors = new Set<string>();
@@ -215,10 +215,19 @@ export class CreateProductUseCase {
           );
         }
       }
+      if (productSizes) {
+        for (const sizeId of productSizes) {
+          await this.productSizeRepository.create(
+            product.id.toString(),
+            sizeId
+          );
+        }
+      }
 
       return right({
         product,
       });
+      
     } catch (error) {
       console.error("Error creating product:", error);
       return left(error as Error);
