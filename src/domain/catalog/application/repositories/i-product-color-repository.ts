@@ -8,6 +8,6 @@ export abstract class IProductColorRepository {
   ): Promise<Either<Error, void>>;
   abstract findByProductId(productId: string): Promise<ProductColor[]>;
   abstract findByColorId(ColorId: string): Promise<ProductColor[]>;
-  abstract addItem(ProductColor): void;
+  abstract addItem(productColor: ProductColor): Promise<void>;
   abstract delete(productColor: ProductColor): Promise<void>;
 }
