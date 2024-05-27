@@ -44,10 +44,10 @@ import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repositor
       provide: IMaterialRepository,
       useClass: PrismaMaterialRepository,
     },
-    // {
-    //   provide: IProductCategoryRepository,
-    //   useClass: PrismaProductCategoryRepository,
-    // },
+    {
+      provide: IProductCategoryRepository,
+      useClass: PrismaProductCategoryRepository,
+    },
     {
       provide: IProductSizeRepository,
       useClass: PrismaProductSizeRepository,
@@ -66,6 +66,7 @@ import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repositor
     },
     PrismaColorRepository,
     PrismaSizeRepository,
+    PrismaCategoryRepository,
     
   ],
   exports: [
@@ -76,7 +77,7 @@ import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repositor
     IColorRepository,
     ISizeRepository,
     IProductRepository,
-    // IProductCategoryRepository,
+    IProductCategoryRepository,
     IProductSizeRepository,
     IProductColorRepository,
     // IProductVariantRepository,

@@ -43,6 +43,7 @@ import { GetAllCategoriesUseCase } from "@/domain/catalog/application/use-cases/
 import { ApiController } from "./controllers/api.controller";
 import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
 import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases/create-product-size";
+import { CreateProductCategoryUseCase } from "@/domain/catalog/application/use-cases/create-product-category";
 
 @Module({
   imports: [DatabaseModule],
@@ -54,7 +55,7 @@ import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases
     MaterialController,
     ProductController,
     SizeController,
-    ApiController
+    ApiController,
   ],
   providers: [
     CreateBrandUseCase,
@@ -66,6 +67,7 @@ import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases
     CreateProductUseCase,
     CreateProductColorUseCase,
     CreateProductSizeUseCase,
+    CreateProductCategoryUseCase,
 
     EditBrandUseCase,
     EditMaterialUseCase,
@@ -96,7 +98,7 @@ import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
 
-    ApiGetAllProducts
+    ApiGetAllProducts,
   ],
 })
 export class HttpModule {}
