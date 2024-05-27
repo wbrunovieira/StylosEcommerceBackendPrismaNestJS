@@ -61,10 +61,10 @@ export class CreateProductUseCase {
     // private brandRepository: IBrandRepository,
     // private materialRepository: IMaterialRepository,
     private sizeRepository: ISizeRepository,
-    // private categoryRepository: ICategoryRepository,
+    private categoryRepository: ICategoryRepository,
      private productSizeRepository: IProductSizeRepository,
-    private productColorRepository: IProductColorRepository
-    // private productCategoryRepository: IProductCategoryRepository,
+    private productColorRepository: IProductColorRepository,
+     private productCategoryRepository: IProductCategoryRepository,
     // private productVariantRepository: IProductVariantRepository
   ) {}
 
@@ -73,7 +73,7 @@ export class CreateProductUseCase {
     description,
     productColors,
     productSizes,
-    // productCategories,
+    productCategories,
     materialId = null,
     brandId,
     price,
@@ -143,31 +143,31 @@ export class CreateProductUseCase {
       }
     }
 
-    // if (productCategories) {
-    //   const uniqueCategory = new Set<string>();
+    if (productCategories) {
+      const uniqueCategory = new Set<string>();
 
-    //   for (const categoryId of productCategories) {
-    //     if (!categoryId) {
-    //       return left(new Error("InvalidCategoryError"));
-    //     }
+      for (const categoryId of productCategories) {
+        if (!categoryId) {
+          return left(new Error("InvalidCategoryError"));
+        }
 
-    //     if (uniqueCategory.has(categoryId)) {
-    //       return left(
-    //         new ResourceNotFoundError(`Duplicate category: ${categoryId}`)
-    //       );
-    //     }
-    //     uniqueCategory.add(categoryId);
+        if (uniqueCategory.has(categoryId)) {
+          return left(
+            new ResourceNotFoundError(`Duplicate category: ${categoryId}`)
+          );
+        }
+        uniqueCategory.add(categoryId);
 
-    //     const categoryExists =
-    //       await this.categoryRepository.findById(categoryId);
+        const categoryExists =
+          await this.categoryRepository.findById(categoryId);
 
-    //     if (categoryExists.isLeft()) {
-    //       return left(
-    //         new ResourceNotFoundError(`Category not found: ${categoryId}`)
-    //       );
-    //     }
-    //   }
-    // }
+        if (categoryExists.isLeft()) {
+          return left(
+            new ResourceNotFoundError(`Category not found: ${categoryId}`)
+          );
+        }
+      }
+    }
 
     try {
       if (!name.trim()) {
@@ -215,6 +215,7 @@ export class CreateProductUseCase {
           );
         }
       }
+
       if (productSizes) {
         for (const sizeId of productSizes) {
           await this.productSizeRepository.create(
@@ -223,11 +224,19 @@ export class CreateProductUseCase {
           );
         }
       }
+      if (productCategories) {
+        for (const categoryId of productCategories) {
+          await this.productCategoryRepository.create(
+            product.id.toString(),
+            categoryId
+          );
+        }
+      }
 
       return right({
         product,
       });
-      
+
     } catch (error) {
       console.error("Error creating product:", error);
       return left(error as Error);
@@ -302,13 +311,7 @@ export class CreateProductUseCase {
     //   await this.productVariantRepository.create(variant);
     // }
 
-    // if (productSizes) {
-    //   const uniqueSizes = new Set();
-
-    //   for (const sizeId of productSizes) {
-    //     await this.productSizeRepository.create(product.id.toString(), sizeId);
-    //   }
-    // }
+ 
 
     // if (productColors) {
     //   for (const colorId of productColors) {

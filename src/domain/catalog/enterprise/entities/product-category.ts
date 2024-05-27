@@ -1,9 +1,12 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
 
 interface ProductCategoryProps {
   productId: UniqueEntityID;
   categoryId: UniqueEntityID;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export class ProductCategory extends Entity<ProductCategoryProps> {
@@ -17,5 +20,22 @@ export class ProductCategory extends Entity<ProductCategoryProps> {
 
   get categoryId(): UniqueEntityID {
     return this.props.categoryId;
+  }
+
+  static create(
+    props: Optional<ProductCategoryProps, 'createdAt' | 'updatedAt'>,
+    id?: UniqueEntityID
+  ) {
+
+    const productCategory = new ProductCategory(
+      {
+        ...props,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      id
+    );
+
+    return productCategory;
   }
 }
