@@ -27,7 +27,9 @@ export class ProductColor extends Entity<ProductColorProps> {
     props: Optional<ProductColorProps, 'createdAt' | 'updatedAt'>,
     id?: UniqueEntityID
   ) {
-    const material = new ProductColor(
+
+    
+    const productColor = new ProductColor(
       {
         ...props,
         createdAt: new Date(),
@@ -36,6 +38,6 @@ export class ProductColor extends Entity<ProductColorProps> {
       id
     );
 
-    return material;
+    return productColor;
   }
 }
