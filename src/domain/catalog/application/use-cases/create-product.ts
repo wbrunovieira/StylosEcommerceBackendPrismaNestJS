@@ -57,10 +57,9 @@ type CreateProductUseCaseResponse = Either<
 export class CreateProductUseCase {
   constructor(
     private productRepository: IProductRepository,
-
     private colorRepository: IColorRepository,
-    // private brandRepository: IBrandRepository,
-    // private materialRepository: IMaterialRepository,
+    private brandRepository: IBrandRepository,
+    private materialRepository: IMaterialRepository,
     private sizeRepository: ISizeRepository,
     private categoryRepository: ICategoryRepository,
     private productSizeRepository: IProductSizeRepository,
@@ -90,20 +89,32 @@ export class CreateProductUseCase {
     isNew = false,
     images = [],
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    // const brandOrError = await this.brandRepository.findById(brandId);
-    // if (brandOrError.isLeft()) {
-    //   return left(new ResourceNotFoundError("Brand not found"));
-    // }
+    if (!name.trim()) {
+      return left(new ResourceNotFoundError("Product name is required"));
+    }
 
-    // let materialOrError: Either<Error, Material | null> = right(null);
-    // if (materialId) {
-    //   materialOrError = await this.materialRepository.findById(materialId);
-    //   if (materialOrError.isLeft()) {
-    //     return left(new ResourceNotFoundError("Material not found"));
-    //   }
-    // }
+    if (stock < 0) {
+      return left(new ResourceNotFoundError("Stock cannot be negative"));
+    }
 
-    // const material = materialOrError.isRight() ? materialOrError.value : null;
+    if (price < 0) {
+      return left(new ResourceNotFoundError("Price cannot be negative"));
+    }
+
+    const brandOrError = await this.brandRepository.findById(brandId);
+    if (brandOrError.isLeft()) {
+      return left(new ResourceNotFoundError("Brand not found"));
+    }
+
+    let materialOrError: Either<Error, Material | null> = right(null);
+    if (materialId) {
+      materialOrError = await this.materialRepository.findById(materialId);
+      if (materialOrError.isLeft()) {
+        return left(new ResourceNotFoundError("Material not found"));
+      }
+    }
+
+    const material = materialOrError.isRight() ? materialOrError.value : null;
 
     if (productSizes) {
       const uniqueSizes = new Set<string>();
@@ -172,18 +183,6 @@ export class CreateProductUseCase {
     }
 
     try {
-      if (!name.trim()) {
-        return left(new ResourceNotFoundError("Product name is required"));
-      }
-
-      if (stock < 0) {
-        return left(new ResourceNotFoundError("Stock cannot be negative"));
-      }
-
-      if (price < 0) {
-        return left(new ResourceNotFoundError("Price cannot be negative"));
-      }
-
       const slug = generateSlug(name, "brand-name");
 
       const product = Product.create({
