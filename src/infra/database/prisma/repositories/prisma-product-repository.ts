@@ -3,10 +3,6 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductRepository } from "../../../../domain/catalog/application/repositories/i-product-repository";
 import { Product } from "../../../../domain/catalog/enterprise/entities/product";
 
-import { PrismaProductColorRepository } from "./prisma-product-color-repository";
-
-import { PrismaProductSizeRepository } from "./prisma-product-size-repository";
-import { PrismaProductCategoryRepository } from "./prisma-product-category-repository";
 import { generateSlug } from "../../../../domain/catalog/application/utils/generate-slug";
 
 import { Either, left, right } from "@/core/either";
@@ -15,18 +11,11 @@ import { Either, left, right } from "@/core/either";
 export class PrismaProductRepository implements IProductRepository {
   constructor(
     private prisma: PrismaService
-    // @Inject(PrismaProductColorRepository)
-    // private productColorRepository: PrismaProductColorRepository,
-    // @Inject(PrismaProductSizeRepository)
-    // private productSizeRepository: PrismaProductSizeRepository,
-    // @Inject(PrismaProductCategoryRepository)
-    // private productCategoryRepository: PrismaProductCategoryRepository
+    
   ) {
     console.log("PrismaProductRepository dependencies:", {
       prisma,
-      // productColorRepository,
-      // productSizeRepository,
-      // productCategoryRepository,
+    
     });
   }
   findById(productId: string): Promise<Either<Error, Product>> {
@@ -154,7 +143,7 @@ export class PrismaProductRepository implements IProductRepository {
             ? { connect: { id: materialExist.id } }
             : undefined,
           brand: { connect: { id: brandExist.id } },
-          // Spread otherProps excluding images, createdAt, updatedAt, and slug
+        
           ...otherProps,
         },
       });
@@ -164,89 +153,11 @@ export class PrismaProductRepository implements IProductRepository {
       return left(new Error("Failed to create material"));
     }
 
-    // for (const validColor of validColors) {
-    //   await this.productColorRepository.create(
-    //     createdProduct.id,
-    //     validColor.id
-    //   );
-    // }
-
-    // for (const validSize of validSizes) {
-    //   await this.productSizeRepository.create(createdProduct.id, validSize.id);
-    // }
-
-    // for (const validCategory of validCategories) {
-    //   await this.productCategoryRepository.create(
-    //     createdProduct.id,
-    //     validCategory.id
-    //   );
-    // }
+   
+  
   }
 
-  //   async findById(id: string): Promise<Product | null> {
-  //     const record = await this.prisma.product.findUnique({
-  //       where: { id },
-  //       include: {
-  //         colors: { include: { color: true } },
-  //         products: { include: { size: true } },
-  //         categories: { include: { category: true } },
-  //         material: true,
-  //         brand: true,
-  //       },
-  //     });
-  //     if (record) {
-  //       const productData = {
-  //         ...record,
-  //       };
-  //       return Product.fromPersistence(
-  //         {
-  //           ...record,
-  //           brandID: record.brandId,
-  //           materialId: record.materialId,
-  //           updatedAt: record.updatedAt ?? undefined,
-  //           createdAt: record.createdAt ?? undefined,
-  //         },
-  //         new UniqueEntityID(record.id)
-  //       );
-  //     }
-  //     return null;
-  //   }
-
-  //   async findManyRecent(params: PaginationParams): Promise<Product[]> {
-  //     const { page = 1, pageSize = 10 } = params;
-  //     const skip = (page - 1) * pageSize;
-  //     const take = pageSize;
-
-  //     const records = await this.prisma.product.findMany({
-  //       skip,
-  //       take,
-  //       orderBy: { createdAt: "desc" },
-  //       include: {
-  //         colors: { include: { color: true } },
-  //         products: { include: { size: true } },
-  //         categories: { include: { category: true } },
-  //         material: true,
-  //         brand: true,
-  //       },
-  //     });
-  //     return records.map(
-  //       (record) => new Product(record, new UniqueEntityID(record.id))
-  //     );
-  //   }
-
-  //   async findBySlug(slug: string): Promise<Product | null> {
-  //     const record = await this.prisma.product.findUnique({
-  //       where: { slug },
-  //       include: {
-  //         colors: { include: { color: true } },
-  //         products: { include: { size: true } },
-  //         categories: { include: { category: true } },
-  //         material: true,
-  //         brand: true,
-  //       },
-  //     });
-  //     return record ? new Product(record, new UniqueEntityID(record.id)) : null;
-  //   }
+ 
 
   async delete(product: Product): Promise<void> {
     await this.prisma.product.delete({
@@ -254,7 +165,5 @@ export class PrismaProductRepository implements IProductRepository {
     });
   }
 
-  //   async save(product: Product): Promise<void> {
-  //     // Save (or update) logic including handling relations as discussed earlier
-  //   }
+
 }

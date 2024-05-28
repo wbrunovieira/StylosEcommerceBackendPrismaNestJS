@@ -8,4 +8,19 @@ GET {{BASE_URL}}/fetch-and-save
 Accept: application/json
 Content-Type: application/json
 
+###
+
+# @name all-products-atributes
+GET https://connectplug.com.br/api/v2/product-attribute
+Accept: application/json
+Content-Type: application/json
+Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
+
+###
+
+# @name all-products-supliers
+GET https://connectplug.com.br/api/v2/product/1/supplier
+Accept: application/json
+Content-Type: application/json
+Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
