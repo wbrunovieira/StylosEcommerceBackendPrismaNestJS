@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import axios from "axios";
 import * as fs from "fs";
+import * as path from "path";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
@@ -26,17 +27,18 @@ export class ApiGetAllProducts {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `${this.token}`,
         },
       });
 
       console.log("API response received:", response.data);
 
       const products = response.data;
+      const filePath = path.resolve("/app/src", "products.json");
 
-      fs.writeFileSync("products.json", JSON.stringify(products, null, 2));
+      fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
 
-      console.log("Products saved to products.json");
+      console.log(`Products saved to ${filePath}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
