@@ -6,9 +6,7 @@ import { InMemoryProductColorRepository } from "@test/repositories/in-memory-pro
 import { InMemoryProductSizeRepository } from "@test/repositories/in-memory-product-size-repository";
 import { InMemoryProductCategoryRepository } from "@test/repositories/in-memory-product-category";
 import { IProductRepository } from "../repositories/i-product-repository";
-import { IProductColorRepository } from "../repositories/i-product-color-repository";
-import { IProductSizeRepository } from "../repositories/i-product-size-repository";
-import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
+
 import { IMaterialRepository } from "../repositories/i-material-repository";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { makeBrand } from "@test/factories/make-brand";
@@ -31,10 +29,13 @@ import { InMemoryCategoryRepository } from "@test/repositories/in-memory-categor
 import { ProductCategory } from "../../enterprise/entities/product-category";
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
 import { InMemoryProductVariantRepository } from "@test/repositories/in-memory-product-variant-repository";
+import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
+import { makeProduct } from "@test/factories/make-product";
+import { Slug } from "../../enterprise/entities/value-objects/slug";
 
 describe("CreateProductUseCase", () => {
   let useCase: CreateProductUseCase;
-  let mockProductRepository: IProductRepository;
+  let mockProductRepository: InMemoryProductRepository;
   let mockProductVariantRepository: IProductVariantRepository;
 
   let mockBrandRepository: IBrandRepository;
@@ -43,7 +44,7 @@ describe("CreateProductUseCase", () => {
   let mockSizeRepository: ISizeRepository;
   let mockProductSizeRepository: InMemoryProductSizeRepository;
 
-  let mockColorRepository: IColorRepository;
+  let mockColorRepository: InMemoryColorRepository;
   let mockProductColorRepository: InMemoryProductColorRepository;
 
   let mockCategoryRepository: ICategoryRepository;
@@ -82,19 +83,42 @@ describe("CreateProductUseCase", () => {
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
 
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
-    mockProductColorRepository = new InMemoryProductColorRepository();
+
     mockBrandRepository = new InMemoryBrandRepository();
     mockMaterialRepository = new InMemoryMaterialRepository();
 
     mockSizeRepository = new InMemorySizeRepository();
     mockColorRepository = new InMemoryColorRepository();
+    const productSlug = Slug.createFromText("Test Product");
+
     mockCategoryRepository = new InMemoryCategoryRepository();
+    const consistentProduct = makeProduct(
+      {
+        name: "Test Product",
+        description: "teste description",
+        height: 10,
+        onSale: false,
+        discount: 0,
+        brandId: brandId,
+        materialId,
+        price: 100.0,
+        stock: 20,
+        slug: productSlug,
+      },
+      productId
+    );
+
+    mockProductColorRepository = new InMemoryProductColorRepository(
+      mockColorRepository,
+      mockProductRepository
+    );
 
     mockBrandRepository.create(consistentBrand);
     mockMaterialRepository.create(consistentMaterial);
     mockSizeRepository.create(consistentSize);
     mockColorRepository.create(consistentColor);
     mockCategoryRepository.create(consistentCategory);
+    mockProductRepository.create(consistentProduct);
 
     useCase = new CreateProductUseCase(
       mockProductRepository,
@@ -127,6 +151,8 @@ describe("CreateProductUseCase", () => {
       new ProductSize({
         productId: new UniqueEntityID("existing_product_id"),
         sizeId: sizeId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
     );
 
@@ -139,27 +165,43 @@ describe("CreateProductUseCase", () => {
     });
 
     mockProductColorRepository.create = vi.fn(
-      (productId: string, colorId: string) => {
+      async (productId: string, colorId: string) => {
+        const productOrError = await mockProductRepository.findById(productId);
+        if (productOrError.isLeft()) {
+          return Promise.resolve(
+            left(new ResourceNotFoundError("Product not found"))
+          );
+        }
+
+        const colorOrError = await mockColorRepository.findById(colorId);
+        if (colorOrError.isLeft()) {
+          return Promise.resolve(
+            left(new ResourceNotFoundError("Color not found"))
+          );
+        }
+
+        const now = new Date();
         mockProductColorRepository.addItem(
           new ProductColor({
             productId: new UniqueEntityID(productId),
             colorId: new UniqueEntityID(colorId),
+            createdAt: now,
+            updatedAt: now,
           })
         );
         return Promise.resolve(right(undefined));
       }
     );
 
-    mockProductCategoryRepository.create = vi.fn(
-      (productId: string, categoryId: string) => {
-        mockProductCategoryRepository.addItem(
-          new ProductCategory({
-            productId: new UniqueEntityID(productId),
-            categoryId: new UniqueEntityID(categoryId),
-          })
-        );
-        return Promise.resolve(right(undefined));
-      }
+  
+
+    mockProductCategoryRepository.addItem(
+      new ProductCategory({
+        productId: new UniqueEntityID("existing_product_id"),
+        categoryId: categoryId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
     );
   });
 
@@ -296,9 +338,8 @@ describe("CreateProductUseCase", () => {
 
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
-      expect(result.value.message).toBe(
-        `Color not found: ${invalidCategoryId}`
-      );
+      const errorMessage = result.value?.message || "";
+      expect(errorMessage).toBe(`Color not found: ${invalidCategoryId}`);
     }
   });
 
@@ -326,9 +367,8 @@ describe("CreateProductUseCase", () => {
 
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
-      expect(result.value.message).toBe(
-        `Duplicate category: ${categoryId.toString()}`
-      );
+      const errorMessage = result.value?.message || "";
+      expect(errorMessage).toBe(`Duplicate category: ${categoryId.toString()}`);
     }
   });
 
@@ -371,7 +411,7 @@ describe("CreateProductUseCase", () => {
   it("should list all products for a given categoryId", async () => {
     const categoryId = new UniqueEntityID("category_id_as_string").toString();
 
-    // Criando múltiplos produtos com a mesma categoria
+  
     const createResult1 = await useCase.execute({
       name: "Test Product 1",
       description: "A test product description 1",

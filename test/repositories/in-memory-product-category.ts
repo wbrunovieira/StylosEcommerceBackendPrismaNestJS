@@ -15,10 +15,13 @@ export class InMemoryProductCategoryRepository
   ): Promise<Either<Error, void>> {
     const productIdUnique = new UniqueEntityID(productId);
     const categoryIdUnique = new UniqueEntityID(categoryId);
-
+    const now = new Date();
     const productCategory = new ProductCategory({
       productId: productIdUnique,
       categoryId: categoryIdUnique,
+      createdAt: now,
+      updatedAt: now,
+      
     });
 
     this.items.push(productCategory);
