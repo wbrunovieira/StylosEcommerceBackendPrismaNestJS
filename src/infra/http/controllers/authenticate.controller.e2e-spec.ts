@@ -22,11 +22,13 @@ describe('Authenticate (E2E)', () => {
   });
 
   test('[POST] /sessions', async () => {
+
     await prisma.user.create({
       data: {
         name: 'John Doe',
         email: 'johndoe@example.com',
         password: await hash('123456', 8),
+        role: 'admin'
       },
     });
 
@@ -38,6 +40,13 @@ describe('Authenticate (E2E)', () => {
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual({
       access_token: expect.any(String),
+      user: {
+        id: expect.any(String),
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        role: 'admin',
+        profileImageUrl: null,
+      },
     });
   });
 });
