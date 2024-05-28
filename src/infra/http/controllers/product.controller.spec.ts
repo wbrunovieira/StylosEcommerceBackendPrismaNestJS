@@ -113,6 +113,7 @@ describe("ProductController", () => {
   });
 
   it("should create a product successfully", async () => {
+
     const mockProduct = Product.create(
       {
         name: "ProductName",
@@ -125,6 +126,7 @@ describe("ProductController", () => {
         discount: 0,
         isFeatured: false,
         isNew: false,
+        sku: "sku-123",
       },
       new UniqueEntityID()
     );
@@ -149,6 +151,7 @@ describe("ProductController", () => {
       isNew: false,
       productColors: ["color1", "color2"],
       productSizes: ["size1", "size2"],
+      sku: "sku-123",
     });
 
     expect(result).toEqual({ product: mockProduct });
@@ -171,6 +174,7 @@ describe("ProductController", () => {
       width: null,
       length: null,
       weight: null,
+      sku: "sku-123",
     });
   });
 
@@ -195,6 +199,7 @@ describe("ProductController", () => {
         isNew: false,
         productColors: ["color1", "color2"],
         productSizes: ["size1", "size2"],
+        sku: "sku-123",
       });
     } catch (error) {
       if (error instanceof HttpException) {
