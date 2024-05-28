@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import axios from "axios";
-import * as fs from "fs";
+
+import * as fs from "fs/promises";
 import * as path from "path";
 import { ConfigService } from "@nestjs/config";
 
@@ -32,11 +33,30 @@ export class ApiGetAllProducts {
       });
 
       console.log("API response received:", response.data);
+      console.log("Response Data Structure:", JSON.stringify(response.data, null, 2));
 
-      const products = response.data;
+
+      const products = response.data.data; 
+      if (!Array.isArray(products)) {
+        throw new Error("Expected an array of products");
+      }
+
+      const extractedProducts = products.map(product => ({
+        id: product.id,
+        name: product.properties.name,
+        description: product.properties.description,
+        unitary_value: product.properties.unitary_value,
+        image: product.properties.image,
+        additionals_photos: product.properties.additionals_photos,
+      }));
+      
+      const productCount = extractedProducts.length;
+
+      console.log(`Total number of products: ${productCount}`);
+
       const filePath = path.resolve("/app/src", "products.json");
 
-      fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
+      await fs.writeFile(filePath, JSON.stringify({ products: extractedProducts, count: productCount }, null, 2));
 
       console.log(`Products saved to ${filePath}`);
     } catch (error) {
