@@ -56,10 +56,10 @@ import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repositor
       provide: IProductColorRepository,
       useClass: PrismaProductColorRepository,
     },
-    // {
-    //   provide: IProductVariantRepository,
-    //   useClass: PrismaProductVariantRepository,
-    // },
+    {
+      provide: IProductVariantRepository,
+      useClass: PrismaProductVariantRepository,
+    },
     {
       provide: ISizeRepository,
       useClass: PrismaSizeRepository,
@@ -80,7 +80,7 @@ import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repositor
     IProductCategoryRepository,
     IProductSizeRepository,
     IProductColorRepository,
-    // IProductVariantRepository,
+    IProductVariantRepository,
   ],
 })
 export class DatabaseModule {}

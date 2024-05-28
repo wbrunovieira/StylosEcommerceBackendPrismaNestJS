@@ -79,7 +79,7 @@ model ProductVariant {
   color       Color?          @relation(fields: [colorId], references: [id])
   sizeId      String?
   size        Size?           @relation(fields: [sizeId], references: [id])
-  sku         String          @unique
+  sku         String          
   upc         String?
   stock       Int
   price       Float

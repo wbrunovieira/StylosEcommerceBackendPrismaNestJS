@@ -1,0 +1,65 @@
+@BASE_URL = http://localhost:3333
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
+
+
+
+# @name authenticate
+POST {{BASE_URL}}/sessions
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "adminpassword"
+}
+
+###
+
+
+###
+
+# @name create-products
+POST {{BASE_URL}}/products
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "name": "blusa 12",
+  "description": "calcinha description 1 mais texto, legal, muiito legal" ,
+  "images": ["/images/foto1.jpg"],
+  "materialId": "2a6ce4f5-f370-49d7-a421-787eae2b8b2f",
+  "brandId": "0de49c4d-46fc-4dfb-9baf-b2c26118ce52",
+  "sku":"12121212aa",
+  "price": 100,
+  "stock": 10,
+  "productColors": ["b961efaf-2bfe-48f6-bdc4-d02bc804f936","43a0ca11-9cad-4f3a-acde-3b417ba601b3"],
+  "productCategories": ["846a7238-4aab-4cc7-b9cd-6891c88fb8c3"],
+  "productSizes": ["76da465e-4f17-4e53-b864-26a27ae2efeb", "ffe3fe0a-713b-4b57-aae8-4389f2e67e18"]
+  
+}
+
+###
+# @name get-all-products
+GET {{BASE_URL}}/products
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+###
+
+# @name get-product-featured
+GET {{BASE_URL}}/products/featured-products
+Content-Type: application/json
+
+
+###
+
+# @name delete-product
+DELETE {{BASE_URL}}/products/06e0dcdb-2843-4412-b1e9-950dc2a1b98f
+Authorization: Bearer {{AUTH_TOKEN}}
+
+###
+
+# @name get-product-by-id
+GET {{BASE_URL}}/products/d624bc75-4f96-468d-a0c8-3c144e1ec65c
+
+

@@ -10,7 +10,7 @@ Content-Type: application/json
   "password": "adminpassword"
 }
 
-###
+### 
 
 # @name create-color
 POST {{BASE_URL}}/colors
