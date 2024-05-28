@@ -2,40 +2,34 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Either, left, right } from "@/core/either";
 import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
 import { ProductColor } from "@/domain/catalog/enterprise/entities/product-color";
-import { InMemoryColorRepository } from "./in-memory-color-repository";
-import { InMemoryProductRepository } from "./in-memory-product-repository";
+
+import { IColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
+import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 export class InMemoryProductColorRepository implements IProductColorRepository {
   public items: ProductColor[] = [];
-  private colorRepository: InMemoryColorRepository;
-  private productRepository: InMemoryProductRepository;
 
   constructor(
-    colorRepository: InMemoryColorRepository,
-    productRepository: InMemoryProductRepository
-  ) {
-    this.colorRepository = colorRepository;
-    this.productRepository = productRepository;
-  }
+    private colorRepository: IColorRepository,
+    private productRepository: IProductRepository
+  ) {}
 
   async create(
     productId: string,
     colorId: string
   ): Promise<Either<Error, void>> {
-    console.log("entrou no inmemory product color");
-    const colorExists = await this.colorRepository.findById(colorId);
-    console.log("colorExists", colorExists);
+    const productOrError = await this.productRepository.findById(productId);
+    console.log("productOrError", productOrError);
 
-    if (!colorExists.isLeft()) {
-      return left(new Error("Color not found"));
+    if (productOrError.isLeft()) {
+      return left(new ResourceNotFoundError("Product not found"));
     }
 
-    const productExists = await this.productRepository.findById(productId);
+    const colorOrError = await this.colorRepository.findById(colorId);
 
-    console.log("productExists", productExists);
-
-    if (!productExists.isLeft()) {
-      return left(new Error("Product not found"));
+    if (colorOrError.isLeft()) {
+      return left(new ResourceNotFoundError("Color not found"));
     }
 
     const productIdUnique = new UniqueEntityID(productId.toString());
