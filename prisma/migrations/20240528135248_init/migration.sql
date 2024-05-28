@@ -166,9 +166,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
--- CreateIndex
-CREATE UNIQUE INDEX "product_variants_sku_key" ON "product_variants"("sku");
-
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

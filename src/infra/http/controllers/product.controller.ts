@@ -29,6 +29,7 @@ const createProductBodySchema = z.object({
   productCategories: z.array(z.string()),
   materialId: z.string(),
   brandId: z.string(),
+  sku: z.string().optional(),
   price: z.number(),
   stock: z.number(),
   discount: z.number().optional(),
@@ -65,6 +66,7 @@ export class ProductController {
         brandId: body.brandId,
         price: body.price,
         stock: body.stock,
+        sku: body.sku || 'sku text',
         discount: body.discount || 0,
         onSale: body.onSale || false,
         isNew: body.isNew || false,
@@ -83,14 +85,15 @@ export class ProductController {
       } else {
         return { product: result.value.product };
       }
-    } catch (error) { if (error instanceof ResourceNotFoundError) {
-      console.error("Error creating product:", error); 
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-    throw new HttpException(
-      "Failed to create product",
-      HttpStatus.INTERNAL_SERVER_ERROR
-    );
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        console.error("Error creating product:", error);
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        "Failed to create product",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

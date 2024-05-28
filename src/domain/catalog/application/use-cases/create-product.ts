@@ -34,6 +34,7 @@ interface CreateProductUseCaseRequest {
   brandId: string;
   price: number;
   stock: number;
+  sku?: string | null;
   height?: number | null;
   width?: number | null;
   length?: number | null;
@@ -62,10 +63,10 @@ export class CreateProductUseCase {
     // private materialRepository: IMaterialRepository,
     private sizeRepository: ISizeRepository,
     private categoryRepository: ICategoryRepository,
-     private productSizeRepository: IProductSizeRepository,
+    private productSizeRepository: IProductSizeRepository,
     private productColorRepository: IProductColorRepository,
-     private productCategoryRepository: IProductCategoryRepository,
-    // private productVariantRepository: IProductVariantRepository
+    private productCategoryRepository: IProductCategoryRepository,
+    private productVariantRepository: IProductVariantRepository
   ) {}
 
   async execute({
@@ -76,6 +77,7 @@ export class CreateProductUseCase {
     productCategories,
     materialId = null,
     brandId,
+    sku = null,
     price,
     stock,
     height = null,
@@ -191,6 +193,7 @@ export class CreateProductUseCase {
         brandId: new UniqueEntityID(brandId),
         price,
         stock,
+        sku: sku || "",
         height,
         width,
         length,
@@ -233,102 +236,85 @@ export class CreateProductUseCase {
         }
       }
 
+      const variants: ProductVariant[] = [];
+
+      if (productSizes && productColors) {
+        for (const sizeId of productSizes) {
+          for (const colorId of productColors) {
+            variants.push(
+              ProductVariant.create({
+                productId: product.id,
+                sizeId: new UniqueEntityID(sizeId),
+                colorId: new UniqueEntityID(colorId),
+                stock,
+                sku: sku || "",
+                price,
+                status: ProductStatus.ACTIVE,
+                images,
+              })
+            );
+          }
+        }
+      }
+
+      if (productSizes && (!productColors || productColors.length === 0)) {
+        for (const sizeId of productSizes) {
+          variants.push(
+            ProductVariant.create({
+              productId: product.id,
+              sizeId: new UniqueEntityID(sizeId),
+              stock,
+              sku: sku || "",
+              price,
+              status: ProductStatus.ACTIVE,
+              images,
+            })
+          );
+        }
+      }
+
+      if (productColors && (!productSizes || productSizes.length === 0)) {
+        for (const colorId of productColors) {
+          variants.push(
+            ProductVariant.create({
+              productId: product.id,
+              colorId: new UniqueEntityID(colorId),
+              sku: sku || "",
+              stock,
+              price,
+              status: ProductStatus.ACTIVE,
+              images,
+            })
+          );
+        }
+      }
+
+      if (
+        (!productSizes || productSizes.length === 0) &&
+        (!productColors || productColors.length === 0)
+      ) {
+        variants.push(
+          ProductVariant.create({
+            productId: product.id,
+            sku: sku || "",
+            stock,
+            price,
+            status: ProductStatus.ACTIVE,
+            images,
+          })
+        );
+      }
+
+      for (const variant of variants) {
+        await this.productVariantRepository.create(variant);
+      }
+
       return right({
         product,
       });
-
     } catch (error) {
       console.error("Error creating product:", error);
       return left(error as Error);
     }
-
-    // const variants: ProductVariant[] = [];
-
-    // if (productSizes && productColors) {
-    //   for (const sizeId of productSizes) {
-    //     for (const colorId of productColors) {
-    //       variants.push(
-    //         ProductVariant.create({
-    //           productId: product.id,
-    //           sizeId: new UniqueEntityID(sizeId),
-    //           colorId: new UniqueEntityID(colorId),
-    //           stock,
-    //           price,
-    //           status: ProductStatus.ACTIVE,
-    //           images,
-    //         })
-    //       );
-    //     }
-    //   }
-    // }
-
-    // if (productSizes && (!productColors || productColors.length === 0)) {
-    //   for (const sizeId of productSizes) {
-    //     variants.push(
-    //       ProductVariant.create({
-    //         productId: product.id,
-    //         sizeId: new UniqueEntityID(sizeId),
-    //         stock,
-    //         price,
-    //         status: ProductStatus.ACTIVE,
-    //         images,
-    //       })
-    //     );
-    //   }
-    // }
-
-    // if (productColors && (!productSizes || productSizes.length === 0)) {
-    //   for (const colorId of productColors) {
-    //     variants.push(
-    //       ProductVariant.create({
-    //         productId: product.id,
-    //         colorId: new UniqueEntityID(colorId),
-    //         stock,
-    //         price,
-    //         status: ProductStatus.ACTIVE,
-    //         images,
-    //       })
-    //     );
-    //   }
-    // }
-
-    // if (
-    //   (!productSizes || productSizes.length === 0) &&
-    //   (!productColors || productColors.length === 0)
-    // ) {
-    //   variants.push(
-    //     ProductVariant.create({
-    //       productId: product.id,
-    //       stock,
-    //       price,
-    //       status: ProductStatus.ACTIVE,
-    //       images,
-    //     })
-    //   );
-    // }
-
-    // for (const variant of variants) {
-    //   await this.productVariantRepository.create(variant);
-    // }
-
- 
-
-    // if (productColors) {
-    //   for (const colorId of productColors) {
-    //     await this.productColorRepository.create(
-    //       product.id.toString(),
-    //       colorId
-    //     );
-    //   }
-    // }
-
-    // if (productCategories) {
-    //   for (const categoryId of productCategories) {
-    //     await this.productCategoryRepository.create(
-    //       product.id.toString(),
-    //       categoryId
-    //     );
-    //   }
-    // }
   }
 }

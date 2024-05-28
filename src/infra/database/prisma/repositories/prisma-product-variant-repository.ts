@@ -53,6 +53,7 @@ export class PrismaProductVariantRepository
           price: variant.price,
           status: variant.status as ProductStatus,
           images: variant.images,
+         
           createdAt: variant.createdAt,
         },
         new UniqueEntityID(variant.id)

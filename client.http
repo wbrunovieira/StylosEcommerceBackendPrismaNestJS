@@ -3,7 +3,7 @@
 
 
 
-# @name authenticate-admin
+# @name authenticate
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
@@ -87,52 +87,4 @@ Content-Type: application/json
 GET {{BASE_URL}}/accounts?page=1
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
-
-
-###
-
-# @name create-products
-POST {{BASE_URL}}/products
-Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
-
-{
-  "name": "blusa 1515",
-  "description": "calcinha description 1 mais texto, legal, muiito legal" ,
-  "images": ["/images/foto1.jpg"],
-  "materialId": "508882db-4aef-4e62-a07d-5b6770efb36b",
-  "brandId": "598979ce-a7f3-4bbe-93b9-e1abd2cfb964",
-  "price": 100,
-  "stock": 10,
-  "productColors": ["ac161864-52f7-43d0-aca0-6a9282cd590e"],
-  "productCategories": ["8a970a05-db91-47c7-9d84-4fc544aff01ess"],
-  "productSizes": ["033ec480-a68b-44fb-8767-ccd7a7bcf3bd"],
-  "productCategories": ["0d4c5955-6c3f-4817-9565-05df26c1d0fb"]
-}
-
-###
-# @name get-all-products
-GET {{BASE_URL}}/products
-Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
-
-
-###
-
-# @name get-product-featured
-GET {{BASE_URL}}/products/featured-products
-Content-Type: application/json
-
-
-###
-
-# @name delete-product
-DELETE {{BASE_URL}}/products/06e0dcdb-2843-4412-b1e9-950dc2a1b98f
-Authorization: Bearer {{AUTH_TOKEN}}
-
-###
-
-# @name get-product-by-id
-GET {{BASE_URL}}/products/d624bc75-4f96-468d-a0c8-3c144e1ec65c
-
 

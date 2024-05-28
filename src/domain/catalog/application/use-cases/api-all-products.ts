@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import axios from "axios";
 import * as fs from "fs";
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class ApiGetAllProducts {
@@ -9,18 +9,19 @@ export class ApiGetAllProducts {
   private readonly token: string;
 
   constructor(private configService: ConfigService) {
-    const token = this.configService.get<string>('TOKEN_CONNECTPLUG');
+    const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
     if (!token) {
-      throw new InternalServerErrorException('TOKEN_CONNECTPLUG is not defined');
+      throw new InternalServerErrorException(
+        "TOKEN_CONNECTPLUG is not defined"
+      );
     }
 
     this.token = token;
-    console.log('TOKEN_CONNECTPLUG:', this.token);
+    console.log("TOKEN_CONNECTPLUG:", this.token);
   }
-  
+
   async fetchAndSaveProducts() {
-      try {
-    
+    try {
       const response = await axios.get(this.apiUrl, {
         headers: {
           Accept: "application/json",
@@ -37,7 +38,14 @@ export class ApiGetAllProducts {
 
       console.log("Products saved to products.json");
     } catch (error) {
-      console.error("Error fetching products:", error);
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error fetching products:",
+          error.response ? error.response.data : error.message
+        );
+      } else {
+        console.error("Unexpected error:", error);
+      }
     }
   }
 }

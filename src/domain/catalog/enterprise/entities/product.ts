@@ -19,6 +19,7 @@ export interface ProductProps {
   discount?: number;
   price: number;
   stock: number;
+  sku: string;
   slug: Slug;
   height?: number | null;
   width?: number | null;
@@ -36,10 +37,12 @@ export class Product extends Entity<ProductProps> {
   private touch() {
     this.props.updatedAt = new Date();
   }
-  
 
   get height() {
     return this.props.height;
+  }
+  get sku() {
+    return this.props.sku;
   }
   get onSale() {
     return this.props.onSale;
@@ -59,7 +62,7 @@ export class Product extends Entity<ProductProps> {
   get length() {
     return this.props.length;
   }
- 
+
   get weight() {
     return this.props.weight;
   }
