@@ -109,13 +109,17 @@ export class AccountController {
     });
 
     if (result.isLeft()) {
+
       const error = result.value;
-      if (error instanceof ResourceNotFoundError) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+
+     if (error) {
+        throw new ConflictException(error.message);
       }
-      } else {
-      return { user: result.value.user };
+      throw new ConflictException("An unexpected error occurred");
     }
+     
+      return { user: result.value.user };
+    
 
  
   }

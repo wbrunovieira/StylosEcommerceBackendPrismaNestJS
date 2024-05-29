@@ -48,6 +48,7 @@ import { AccountController } from "./controllers/account.controller";
 import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create-account";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "@/prisma/prisma.service";
+import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/create-account-with-google";
 
 @Module({
   imports: [DatabaseModule],
@@ -109,6 +110,7 @@ import { PrismaService } from "@/prisma/prisma.service";
     ApiGetAllProducts,
 
     CreateAccountUseCase,
+    CreateGoogleAccountUseCase,
   ],
 })
 export class HttpModule {}
