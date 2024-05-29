@@ -49,6 +49,8 @@ import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "@/prisma/prisma.service";
 import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/create-account-with-google";
+import { AddressController } from "./controllers/address.controller";
+import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create-address";
 
 @Module({
   imports: [DatabaseModule],
@@ -62,7 +64,7 @@ import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/
     SizeController,
     ApiController,
     AccountController,
-   
+    AddressController
   ],
   providers: [
     JwtService,
@@ -111,6 +113,8 @@ import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/
 
     CreateAccountUseCase,
     CreateGoogleAccountUseCase,
+
+    CreateAddressUseCase
   ],
 })
 export class HttpModule {}

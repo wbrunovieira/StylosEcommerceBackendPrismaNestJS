@@ -22,6 +22,8 @@ import { ISizeRepository } from "@/domain/catalog/application/repositories/i-siz
 import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repository";
 import { IAccountRepository } from "@/domain/auth/application/repositories/i-account-repository";
 import { PrismaAccountRepository } from "./prisma/repositories/prisma-account-repository";
+import { IAddressRepository } from "@/domain/auth/application/repositories/i-address-repository";
+import { PrismaAddressRepository } from "./prisma/repositories/prisma-address-repository";
 
 @Module({
   providers: [
@@ -70,6 +72,10 @@ import { PrismaAccountRepository } from "./prisma/repositories/prisma-account-re
       provide: IAccountRepository,
       useClass: PrismaAccountRepository,
     },
+    {
+      provide: IAddressRepository,
+      useClass: PrismaAddressRepository,
+    },
     PrismaColorRepository,
     PrismaSizeRepository,
     PrismaCategoryRepository,
@@ -88,6 +94,7 @@ import { PrismaAccountRepository } from "./prisma/repositories/prisma-account-re
     IProductColorRepository,
     IProductVariantRepository,
     IAccountRepository,
+    IAddressRepository,
   ],
 })
 export class DatabaseModule {}
