@@ -44,6 +44,10 @@ import { ApiController } from "./controllers/api.controller";
 import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
 import { CreateProductSizeUseCase } from "@/domain/catalog/application/use-cases/create-product-size";
 import { CreateProductCategoryUseCase } from "@/domain/catalog/application/use-cases/create-product-category";
+import { AccountController } from "./controllers/account.controller";
+import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create-account";
+import { JwtService } from "@nestjs/jwt";
+import { PrismaService } from "@/prisma/prisma.service";
 
 @Module({
   imports: [DatabaseModule],
@@ -56,8 +60,12 @@ import { CreateProductCategoryUseCase } from "@/domain/catalog/application/use-c
     ProductController,
     SizeController,
     ApiController,
+    AccountController,
+   
   ],
   providers: [
+    JwtService,
+    PrismaService,
     CreateBrandUseCase,
     CreateMaterialUseCase,
     CreateColorUseCase,
@@ -99,6 +107,8 @@ import { CreateProductCategoryUseCase } from "@/domain/catalog/application/use-c
     GetAllCategoriesUseCase,
 
     ApiGetAllProducts,
+
+    CreateAccountUseCase,
   ],
 })
 export class HttpModule {}
