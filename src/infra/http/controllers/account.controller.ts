@@ -17,6 +17,8 @@ import { ZodValidationsPipe } from "src/pipes/zod-validations-pipe";
 import { JwtService } from "@nestjs/jwt";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create-account";
+import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/create-account-with-google";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 const passwordSchema = z
   .string()
@@ -61,7 +63,8 @@ type CreateAccountBodyBodySchema = z.infer<typeof createAccountBodySchema>;
 @Controller("/accounts")
 export class AccountController {
   constructor(
-    private createAccountUseCase: CreateAccountUseCase
+    private createAccountUseCase: CreateAccountUseCase,
+    private createGoogleAccountUseCase: CreateGoogleAccountUseCase
     // private jwt: JwtService
   ) {}
 
@@ -91,46 +94,32 @@ export class AccountController {
     return { user };
   }
 
-  // @Post("/google")
-  // @HttpCode(201)
-  // @UsePipes(new ZodValidationsPipe(createGoogleAccountBodySchema))
-  // async handleGoogleAccountCreation(
-  //   @Body() body: CreateGoogleAccountBodySchema
-  // ) {
-  //   const { name, email, googleUserId, profileImageUrl, role } = body;
+  @Post("/google")
+  @HttpCode(201)
+  @UsePipes(new ZodValidationsPipe(createGoogleAccountBodySchema))
+  async handleGoogleAccountCreation(@Body() body: CreateGoogleAccountBodySchema) {
+    const { name, email, googleUserId, profileImageUrl, role } = body;
 
-  //   const userAlreadyExists = await this.prisma.user.findUnique({
-  //     where: {
-  //       email,
-  //     },
-  //   });
+    const result = await this.createGoogleAccountUseCase.execute({
+      name,
+      email,
+      googleUserId,
+      profileImageUrl,
+      role,
+    });
 
-  //   if (userAlreadyExists) {
-  //     throw new ConflictException("User already exists");
-  //   }
+    if (result.isLeft()) {
+      const error = result.value;
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      } else {
+      return { user: result.value.user };
+    }
 
-  //   const hashPassword = await hash("senha_padrao_qualquer", 8);
+ 
+  }
 
-  //   const newUser = await this.prisma.user.create({
-  //     data: {
-  //       name,
-  //       email,
-  //       password: hashPassword,
-  //       googleUserId,
-  //       isGoogleUser: true,
-  //       profileImageUrl,
-  //       role,
-  //     },
-  //     select: {
-  //       id: true,
-
-  //       email: true,
-  //       role: true,
-  //     },
-  //   });
-
-  //   return newUser;
-  // }
 
   // @Delete("/:id")
   // @HttpCode(204)
