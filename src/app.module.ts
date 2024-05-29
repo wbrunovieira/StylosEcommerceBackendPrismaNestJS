@@ -24,7 +24,6 @@ import { HttpModule } from "./infra/http/http.module";
     DatabaseModule,
   ],
   controllers: [
-    AccountController,
     AuthenticateController,
     ListAllProductsController,
     ListAllAccountsController,
