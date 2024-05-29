@@ -14,7 +14,7 @@ interface CreateGoogleAccountUseCaseRequest {
 }
 
 type CreateGoogleAccountUseCaseResponse = Either<
-  ResourceNotFoundError | ConflictException,
+  ResourceNotFoundError | null,
   {
     user: User;
   }
