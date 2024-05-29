@@ -24,7 +24,7 @@ describe("Create Account (E2E)", () => {
     await prisma.user.deleteMany({
       where: {
         email: {
-          in: ["bruno@example.com", "duplicate@example.com"],
+          in: ["googleuser@example.com","bruno@example.com", "duplicate@example.com"],
         },
       },
     });
@@ -133,6 +133,85 @@ describe("Create Account (E2E)", () => {
       name: "Duplicate User",
       email: "duplicate@example.com",
       password: "12345@aA",
+    });
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body.message).toContain("User already exists");
+  });
+
+  test("[POST] /accounts/google - Success", async () => {
+    const response = await request(app.getHttpServer()).post("/accounts/google").send({
+      name: "Google User",
+      email: "googleuser@example.com",
+      googleUserId: "google-id-123",
+      profileImageUrl: "http://example.com/profile.jpg",
+      role: "user",
+    });
+
+    expect(response.statusCode).toBe(201);
+
+    const userOnDatabase = await prisma.user.findUnique({
+      where: {
+        email: "googleuser@example.com",
+      },
+    });
+
+    expect(userOnDatabase).toBeTruthy();
+  });
+
+  test("[POST] /accounts/google - Missing Name", async () => {
+    const response = await request(app.getHttpServer()).post("/accounts/google").send({
+      email: "missingname@example.com",
+      googleUserId: "google-id-123",
+      profileImageUrl: "http://example.com/profile.jpg",
+      role: "user",
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toContain("Validation failed");
+    expect(response.body.errors.details).toContainEqual({
+      code: "invalid_type",
+      expected: "string",
+      message: "Required",
+      path: ["name"],
+      received: "undefined",
+    });
+  });
+
+  test("[POST] /accounts/google - Invalid Email", async () => {
+    const response = await request(app.getHttpServer()).post("/accounts/google").send({
+      name: "Invalid Email",
+      email: "invalid-email",
+      googleUserId: "google-id-123",
+      profileImageUrl: "http://example.com/profile.jpg",
+      role: "user",
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toContain("Validation failed");
+    expect(response.body.errors.details).toContainEqual({
+      code: "invalid_string",
+      validation: "email",
+      message: "Invalid email",
+      path: ["email"],
+    });
+  });
+
+  test("[POST] /accounts/google - Email Conflict", async () => {
+    await request(app.getHttpServer()).post("/accounts/google").send({
+      name: "Duplicate Google User",
+      email: "duplicategoogle@example.com",
+      googleUserId: "google-id-123",
+      profileImageUrl: "http://example.com/profile.jpg",
+      role: "user",
+    });
+
+    const response = await request(app.getHttpServer()).post("/accounts/google").send({
+      name: "Duplicate Google User",
+      email: "duplicategoogle@example.com",
+      googleUserId: "google-id-124",
+      profileImageUrl: "http://example.com/profile.jpg",
+      role: "user",
     });
 
     expect(response.statusCode).toBe(409);

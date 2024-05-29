@@ -1,16 +1,16 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { IAccountRepository } from '../repositories/i-account-repository';
-import { hash } from 'bcryptjs';
-import { User } from '../../enterprise/entities/user';
-import { Either, left, right } from '@/core/either';
-import { ResourceNotFoundError } from '@/domain/catalog/application/use-cases/errors/resource-not-found-error';
+import { Injectable, ConflictException } from "@nestjs/common";
+import { IAccountRepository } from "../repositories/i-account-repository";
+import { hash } from "bcryptjs";
+import { User } from "../../enterprise/entities/user";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 interface CreateGoogleAccountUseCaseRequest {
   name: string;
   email: string;
   googleUserId: string;
   profileImageUrl: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
 }
 
 type CreateGoogleAccountUseCaseResponse = Either<
@@ -35,10 +35,10 @@ export class CreateGoogleAccountUseCase {
       const userAlreadyExists = await this.accountRepository.findByEmail(email);
 
       if (userAlreadyExists.isRight()) {
-        return left(new ConflictException('User already exists'));
+        return left(new ConflictException("User already exists"));
       }
 
-      const hashPassword = await hash('senha_padrao_qualquer', 8);
+      const hashPassword = await hash("senha_padrao_qualquer", 8);
 
       const user = User.create({
         name,
@@ -51,14 +51,13 @@ export class CreateGoogleAccountUseCase {
       });
 
       const createResult = await this.accountRepository.create(user);
-
-      return right({
-        user,
-      });
+      if (createResult.isLeft()) {
+        return left(new ResourceNotFoundError("Failed to create user"));
+      }
 
       return right({ user });
     } catch (error) {
-     return left(error as Error);
+      return left(new ResourceNotFoundError("Unexpected error"));
     }
   }
 }
