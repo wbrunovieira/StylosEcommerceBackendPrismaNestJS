@@ -6,6 +6,9 @@ interface UserProps {
   name: string;
   email: string;
   password: string;
+  googleUserId?: string;
+  isGoogleUser?: boolean;
+  profileImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
   role: "user" | "admin";
@@ -43,6 +46,18 @@ export class User extends Entity<UserProps> {
   set name(value: string) {
     this.props.name = value;
     this.touch();
+  }
+
+  get googleUserId() {
+    return this.props.googleUserId;
+  }
+
+  get isGoogleUser() {
+    return this.props.isGoogleUser;
+  }
+
+  get profileImageUrl() {
+    return this.props.profileImageUrl;
   }
 
   public static create(
