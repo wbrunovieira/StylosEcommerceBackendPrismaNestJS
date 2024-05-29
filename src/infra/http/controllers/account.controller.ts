@@ -64,7 +64,8 @@ type CreateAccountBodyBodySchema = z.infer<typeof createAccountBodySchema>;
 export class AccountController {
   constructor(
     private createAccountUseCase: CreateAccountUseCase,
-    private createGoogleAccountUseCase: CreateGoogleAccountUseCase
+    private createGoogleAccountUseCase: CreateGoogleAccountUseCase,
+    private prisma: PrismaService
     // private jwt: JwtService
   ) {}
 
@@ -97,7 +98,9 @@ export class AccountController {
   @Post("/google")
   @HttpCode(201)
   @UsePipes(new ZodValidationsPipe(createGoogleAccountBodySchema))
-  async handleGoogleAccountCreation(@Body() body: CreateGoogleAccountBodySchema) {
+  async handleGoogleAccountCreation(
+    @Body() body: CreateGoogleAccountBodySchema
+  ) {
     const { name, email, googleUserId, profileImageUrl, role } = body;
 
     const result = await this.createGoogleAccountUseCase.execute({
@@ -109,21 +112,16 @@ export class AccountController {
     });
 
     if (result.isLeft()) {
-
       const error = result.value;
 
-     if (error) {
+      if (error) {
         throw new ConflictException(error.message);
       }
       throw new ConflictException("An unexpected error occurred");
     }
-     
-      return { user: result.value.user };
-    
 
- 
+    return { user: result.value.user };
   }
-
 
   // @Delete("/:id")
   // @HttpCode(204)
@@ -143,27 +141,27 @@ export class AccountController {
   //   });
   // }
 
-  // @Post("/check")
-  // async checkUserByEmail(@Body("email") email: string) {
-  //   if (!email) {
-  //     throw new HttpException(
-  //       "Email is required in request body",
-  //       HttpStatus.BAD_REQUEST
-  //     );
-  //   }
+  @Post("/check")
+  async checkUserByEmail(@Body("email") email: string) {
+    if (!email) {
+      throw new HttpException(
+        "Email is required in request body",
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
-  //   const user = await this.prisma.user.findUnique({
-  //     where: {
-  //       email,
-  //     },
-  //   });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
-  //   if (user) {
-  //     return true;
-  //   }
+    if (user) {
+      return true;
+    }
 
-  //   return false;
-  // }
+    return false;
+  }
 
   // @Put("/:id")
   // @UseGuards(JwtAuthGuard)

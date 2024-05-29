@@ -24,7 +24,12 @@ describe("Create Account (E2E)", () => {
     await prisma.user.deleteMany({
       where: {
         email: {
-          in: ["googleuser@example.com","bruno@example.com", "duplicate@example.com"],
+          in: [
+            "checkuser@example.com",
+            "googleuser@example.com",
+            "bruno@example.com",
+            "duplicate@example.com",
+          ],
         },
       },
     });
@@ -97,7 +102,7 @@ describe("Create Account (E2E)", () => {
       code: "too_small",
       minimum: 6,
       inclusive: true,
-      exact: false, 
+      exact: false,
       message: "Password must be at least 6 characters long",
       path: ["password"],
       type: "string",
@@ -140,13 +145,15 @@ describe("Create Account (E2E)", () => {
   });
 
   test("[POST] /accounts/google - Success", async () => {
-    const response = await request(app.getHttpServer()).post("/accounts/google").send({
-      name: "Google User",
-      email: "googleuser@example.com",
-      googleUserId: "google-id-123",
-      profileImageUrl: "http://example.com/profile.jpg",
-      role: "user",
-    });
+    const response = await request(app.getHttpServer())
+      .post("/accounts/google")
+      .send({
+        name: "Google User",
+        email: "googleuser@example.com",
+        googleUserId: "google-id-123",
+        profileImageUrl: "http://example.com/profile.jpg",
+        role: "user",
+      });
 
     expect(response.statusCode).toBe(201);
 
@@ -160,12 +167,14 @@ describe("Create Account (E2E)", () => {
   });
 
   test("[POST] /accounts/google - Missing Name", async () => {
-    const response = await request(app.getHttpServer()).post("/accounts/google").send({
-      email: "missingname@example.com",
-      googleUserId: "google-id-123",
-      profileImageUrl: "http://example.com/profile.jpg",
-      role: "user",
-    });
+    const response = await request(app.getHttpServer())
+      .post("/accounts/google")
+      .send({
+        email: "missingname@example.com",
+        googleUserId: "google-id-123",
+        profileImageUrl: "http://example.com/profile.jpg",
+        role: "user",
+      });
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toContain("Validation failed");
@@ -179,13 +188,15 @@ describe("Create Account (E2E)", () => {
   });
 
   test("[POST] /accounts/google - Invalid Email", async () => {
-    const response = await request(app.getHttpServer()).post("/accounts/google").send({
-      name: "Invalid Email",
-      email: "invalid-email",
-      googleUserId: "google-id-123",
-      profileImageUrl: "http://example.com/profile.jpg",
-      role: "user",
-    });
+    const response = await request(app.getHttpServer())
+      .post("/accounts/google")
+      .send({
+        name: "Invalid Email",
+        email: "invalid-email",
+        googleUserId: "google-id-123",
+        profileImageUrl: "http://example.com/profile.jpg",
+        role: "user",
+      });
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toContain("Validation failed");
@@ -206,15 +217,63 @@ describe("Create Account (E2E)", () => {
       role: "user",
     });
 
-    const response = await request(app.getHttpServer()).post("/accounts/google").send({
-      name: "Duplicate Google User",
-      email: "duplicategoogle@example.com",
-      googleUserId: "google-id-124",
-      profileImageUrl: "http://example.com/profile.jpg",
-      role: "user",
-    });
+    const response = await request(app.getHttpServer())
+      .post("/accounts/google")
+      .send({
+        name: "Duplicate Google User",
+        email: "duplicategoogle@example.com",
+        googleUserId: "google-id-124",
+        profileImageUrl: "http://example.com/profile.jpg",
+        role: "user",
+      });
 
     expect(response.statusCode).toBe(409);
     expect(response.body.message).toContain("User already exists");
+  });
+
+  test("[POST] /accounts/check - User Exists", async () => {
+    await prisma.user.create({
+      data: {
+        name: "Check User",
+        email: "checkuser@example.com",
+        password: "12345@aA",
+        role: "user",
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .post("/accounts/check")
+      .send({
+        email: "checkuser@example.com",
+      });
+
+    console.log("response body:", response.text);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.text).toBe("true");
+  });
+
+  test("[POST] /accounts/check - User Does Not Exist", async () => {
+    const response = await request(app.getHttpServer())
+      .post("/accounts/check")
+      .send({
+        email: "nonexistent@example.com",
+      });
+
+    console.log("response body:", response.text);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.text).toBe("false");
+  });
+
+  test("[POST] /accounts/check - Missing Email", async () => {
+    const response = await request(app.getHttpServer())
+      .post("/accounts/check")
+      .send({});
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toContain(
+      "Email is required in request body"
+    );
   });
 });
