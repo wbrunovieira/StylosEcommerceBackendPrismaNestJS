@@ -2,12 +2,12 @@
 @AUTH_TOKEN = {{authenticate.response.body.access_token}}
 
 # @name authenticate
-POST {{BASE_URL}}/sessions
+POST {{BASE_URL}}/sessions/
 Content-Type: application/json
 
 {
   "email": "admin@example.com",
-  "password": "adminpassword"
+  "password": "Adminpassword@8"
 }
 
 ### 

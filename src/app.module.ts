@@ -3,7 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaService } from "./prisma/prisma.service";
 
-import { AccountController } from "./infra/http/controllers/account.controller";
+
 import { envSchema } from "src/env";
 import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 
@@ -25,6 +25,7 @@ import { HttpModule } from "./infra/http/http.module";
   ],
   controllers: [
     AuthenticateController,
+   
     ListAllProductsController,
     ListAllAccountsController,
   ],

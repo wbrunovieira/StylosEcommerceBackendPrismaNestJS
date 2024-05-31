@@ -9,15 +9,7 @@ import { Either, left, right } from "@/core/either";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
-  constructor(
-    private prisma: PrismaService
-    
-  ) {
-    console.log("PrismaProductRepository dependencies:", {
-      prisma,
-    
-    });
-  }
+  constructor(private prisma: PrismaService) {}
   findById(productId: string): Promise<Either<Error, Product>> {
     throw new Error("Method not implemented.");
   }
@@ -143,7 +135,7 @@ export class PrismaProductRepository implements IProductRepository {
             ? { connect: { id: materialExist.id } }
             : undefined,
           brand: { connect: { id: brandExist.id } },
-        
+
           ...otherProps,
         },
       });
@@ -152,18 +144,11 @@ export class PrismaProductRepository implements IProductRepository {
     } catch (error) {
       return left(new Error("Failed to create material"));
     }
-
-   
-  
   }
-
- 
 
   async delete(product: Product): Promise<void> {
     await this.prisma.product.delete({
       where: { id: product.id.toString() },
     });
   }
-
-
 }
