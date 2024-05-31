@@ -8,7 +8,6 @@ import { z } from "zod";
 const tokenPayloadSchema = z.object({
   sub: z.string().uuid(),
   role: z.string(),
-  username: z.string(),
 });
 
 export type UserPayload = z.infer<typeof tokenPayloadSchema>;
@@ -20,20 +19,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: Buffer.from(
-        config.get<string>("JWT_PUBLIC_KEY", { infer: true }),
-        "base64"
-      ).toString(),
+
+      secretOrKey: Buffer.from(publicKey, "base64"),
       algorithms: ["RS256"],
     });
   }
 
   async validate(payload: UserPayload) {
-    return {
-      userId: payload.sub,
-      username: payload.username,
-      role: payload.role,
-    };
+    return tokenPayloadSchema.parse(payload);
   }
 }
