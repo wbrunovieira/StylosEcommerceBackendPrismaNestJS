@@ -8,8 +8,8 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "admin@example.com",
-  "password": "adminpassword"
+  "email": "brunao@bruno.com",
+  "password": "123456aA@"
 }
 
 ###
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
   "name": "bruno",
-  "email": "bru@bruno.com",
+  "email": "brunao@bruno.com",
   "password":"123456aA@"
 }
 
@@ -70,22 +70,27 @@ Content-Type: application/json
 
 
 
-### 
-
-
-
-# @name authenticate
-POST {{BASE_URL}}/sessions
-Content-Type: application/json
-
-{
-  "email": "admin@example.com",
-  "password": "adminpassword"
-}
-
 ###
 # @name get-all-accounts
 GET {{BASE_URL}}/accounts?page=1
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
+
+
+###
+# @name create-address
+POST {{BASE_URL}}/users/840ea410-0e5a-493e-80c9-857a021f0044/addresses
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "street": "Av. Paulista",
+  "number": 1234,
+  "complement": "Apto 56",
+  "city": "São Paulo",
+  "state": "SP",
+  "country": "Brasil",
+  "zipCode": "01311-200"
+}

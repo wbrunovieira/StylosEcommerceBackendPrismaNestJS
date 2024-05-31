@@ -66,5 +66,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.9.6"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
