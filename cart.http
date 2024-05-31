@@ -1,0 +1,48 @@
+@BASE_URL = http://localhost:3333
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
+
+
+# @name authenticate
+POST {{BASE_URL}}/sessions
+Content-Type: application/json
+
+{
+  "email": "brunao@bruno.com",
+  "password": "123456aA@"
+}
+
+
+###
+# @name get-all-products
+GET {{BASE_URL}}/products
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+###
+# @name create-cart
+GET {{BASE_URL}}//cart
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+    "userid": "ba95f5080-f6bb-4bd9-95ca-1c0a98072ff9"
+    "items": [
+        {
+            "productId": "product-1",
+            "quantity": 2,
+            "price": 50.00
+        },
+        {
+            "productId": "product-2",
+            "quantity": 1,
+            "price": 100.00
+        }
+    ]
+}
+
+}
+
+
+###
+

@@ -5,12 +5,15 @@ import {
   HttpStatus,
   HttpException,
   ConflictException,
+  UseGuards,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { z } from "zod";
 import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-cart";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
+
 
 const createCartSchema = z.object({
   userId: z.string(),
@@ -25,6 +28,7 @@ const createCartSchema = z.object({
 const bodyValidationPipe = new ZodValidationsPipe(createCartSchema);
 type CreateCartBodySchema = z.infer<typeof createCartSchema>;
 
+@UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
   constructor(private readonly createcartUseCase: CreateCartUseCase) {}

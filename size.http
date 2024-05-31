@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
   "email": "admin@example.com",
-  "password": "adminpassword"
+  "password": "Adminpassword@8"
 }
 
 ###
@@ -20,7 +20,7 @@ Content-Type: application/json
 Authorization: {{AUTH_TOKEN}}
 
 {
-  "name": "G"
+  "name": "GG"
   
 }
 
