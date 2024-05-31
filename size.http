@@ -17,11 +17,10 @@ Content-Type: application/json
 # @name create-size
 POST {{BASE_URL}}/size
 Content-Type: application/json
-Authorization: {{AUTH_TOKEN}}
+Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "GG"
-  
+  "name": "MM"
 }
 
 ###

@@ -21,26 +21,20 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 # @name create-cart
-GET {{BASE_URL}}//cart
+POST {{BASE_URL}}/cart
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-    "userid": "ba95f5080-f6bb-4bd9-95ca-1c0a98072ff9"
+    "userId": "ba95f5080-f6bb-4bd9-95ca-1c0a98072ff9",
     "items": [
         {
-            "productId": "product-1",
-            "quantity": 2,
-            "price": 50.00
-        },
-        {
-            "productId": "product-2",
+            "productId": "dbbcf550-e8aa-4862-9c66-d40279c22680",
             "quantity": 1,
-            "price": 100.00
+            "price": 50.00
         }
+      
     ]
-}
-
 }
 
 

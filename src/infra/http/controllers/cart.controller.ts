@@ -37,6 +37,7 @@ export class CartController {
   async createOrder(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
     try {
       const result = await this.createcartUseCase.execute(body);
+      console.log('result', result.value)
 
       if (result.isLeft()) {
         const error = result.value;
