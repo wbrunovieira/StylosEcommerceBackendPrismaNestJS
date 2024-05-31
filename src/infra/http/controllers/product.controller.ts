@@ -10,11 +10,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/jwt-auth.guard";
-import { CurrentUser } from "src/auth/current-user-decorator";
-import { UserPayload } from "src/auth/jwt.strategy";
+
 
 import { ZodValidationsPipe } from "../../../pipes/zod-validations-pipe";
-import { PrismaService } from "src/prisma/prisma.service";
+
 import { z } from "zod";
 import { CreateProductUseCase } from "@/domain/catalog/application/use-cases/create-product";
 import { RolesGuard } from "@/auth/roles.guard";
@@ -77,6 +76,8 @@ export class ProductController {
         length: body.length || null,
         weight: body.weight || null,
       });
+      console.log('created product result', result)
+      
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {

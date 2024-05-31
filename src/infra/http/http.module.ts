@@ -53,9 +53,10 @@ import { AddressController } from "./controllers/address.controller";
 import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create-address";
 import { CartController } from "./controllers/cart.controller";
 import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-cart";
+import { AuthModule } from "@/auth/auth.module";
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, AuthModule],
   controllers: [
     BrandController,
     CategoryController,

@@ -35,6 +35,7 @@ export class CreateCartUseCase {
       const cartItemsMap: { [productId: string]: CartItem } = {};
 
       for (const item of items) {
+        console.log('item', item)
         if (item.quantity < 0) {
           return left(
             new ResourceNotFoundError("Quantity must be greater than zero")

@@ -13,8 +13,6 @@ Content-Type: application/json
 }
 
 
-
-
 ###
 
 # @name create-products
@@ -26,18 +24,19 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "name": "blusa 12",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
-  "materialId": "2a6ce4f5-f370-49d7-a421-787eae2b8b2f",
-  "brandId": "0de49c4d-46fc-4dfb-9baf-b2c26118ce52",
+  "materialId": "fa4c1be1-e130-4d9b-afb1-29f9b7cfaed7",
+  "brandId": "bac943e7-e787-4994-a329-2555c94d10eb",
   "sku":"12121212aa",
   "price": 100,
   "stock": 10,
-  "productColors": ["b961efaf-2bfe-48f6-bdc4-d02bc804f936","43a0ca11-9cad-4f3a-acde-3b417ba601b3"],
-  "productCategories": ["846a7238-4aab-4cc7-b9cd-6891c88fb8c3"],
-  "productSizes": ["76da465e-4f17-4e53-b864-26a27ae2efeb", "ffe3fe0a-713b-4b57-aae8-4389f2e67e18"]
+  "productColors": ["28c3ce8f-a6e3-4cd1-b78e-8cf9408d0636","ac8c7ffb-7ede-4891-86e7-149c2c04ab0f"],
+  "productCategories": ["68b26463-67c1-4db2-a506-42e5262c2ba9"],
+  "productSizes": ["3786cfb9-d200-4f37-9144-4b94d79d713c", "dec68532-0b4e-4395-ac7a-0163be08f796"]
   
 }
 
 ###
+
 # @name get-all-products
 GET {{BASE_URL}}/products
 Content-Type: application/json

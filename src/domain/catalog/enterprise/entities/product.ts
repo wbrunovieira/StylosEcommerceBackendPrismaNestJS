@@ -33,7 +33,8 @@ export interface ProductProps {
   updatedAt: Date;
 }
 
-export class Product extends Entity<ProductProps> {
+export class Product extends Entity<ProductProps> { 
+
   private touch() {
     this.props.updatedAt = new Date();
   }

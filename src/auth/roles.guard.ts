@@ -1,36 +1,28 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { ROLES_KEY } from './roles.decorator';
-import { Request } from 'express';
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtAuthGuard } from "./jwt-auth.guard";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector, private jwtService: JwtService) {}
+  constructor(
+    private reflector: Reflector,
+    private jwtAuthGuard: JwtAuthGuard
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (!requiredRoles) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const roles = this.reflector.get<string[]>("roles", context.getHandler());
+    if (!roles) {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
-    const authHeader = request.headers.authorization;
-
-    if (!authHeader) {
-      throw new ForbiddenException('No token provided');
+    const canActivate = await this.jwtAuthGuard.canActivate(context);
+    if (!canActivate) {
+      return false;
     }
 
-    const token = authHeader.split(' ')[1];
-    const decodedToken = this.jwtService.verify(token);
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
 
-    if (!requiredRoles.includes(decodedToken.role)) {
-      throw new ForbiddenException('Insufficient permissions');
-    }
-
-    return true;
+    return roles.some((role) => user.roles?.includes(role));
   }
 }
