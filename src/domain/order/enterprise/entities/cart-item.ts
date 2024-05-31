@@ -1,5 +1,5 @@
-import { Entity } from '@/core/entities/entity';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { Entity } from "@/core/entities/entity";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface CartItemProps {
   productId: UniqueEntityID;
@@ -20,7 +20,13 @@ export class CartItem extends Entity<CartItemProps> {
     return this.props.quantity;
   }
 
+  get price(): number {
+    return this.props.price;
+  }
+
   setQuantity(quantity: number): void {
     this.props.quantity = quantity;
   }
+
+
 }

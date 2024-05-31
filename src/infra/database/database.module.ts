@@ -19,7 +19,7 @@ import { PrismaProductSizeRepository } from "./prisma/repositories/prisma-produc
 import { IProductVariantRepository } from "@/domain/catalog/application/repositories/i-product-variant-repository";
 import { PrismaProductVariantRepository } from "./prisma/repositories/prisma-product-variant-repository";
 import { ISizeRepository } from "@/domain/catalog/application/repositories/i-size-repository";
-import { PrismaSizeRepository } from "./prisma/repositories/prima-size-repository";
+import { PrismaSizeRepository } from "./prisma/repositories/prisma-size-repository";
 import { IAccountRepository } from "@/domain/auth/application/repositories/i-account-repository";
 import { PrismaAccountRepository } from "./prisma/repositories/prisma-account-repository";
 import { IAddressRepository } from "@/domain/auth/application/repositories/i-address-repository";

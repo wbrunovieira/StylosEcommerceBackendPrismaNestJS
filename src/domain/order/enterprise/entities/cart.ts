@@ -3,6 +3,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { CartItem } from './cart-item';
 
 interface CartProps {
+  userId: string;
   items: CartItem[];
 }
 
@@ -13,6 +14,10 @@ export class Cart extends Entity<CartProps> {
 
   static create(props: CartProps, id?: UniqueEntityID): Cart {
     return new Cart(props, id);
+  }
+
+  get userId(): string {
+    return this.props.userId;
   }
 
   get items(): CartItem[] {

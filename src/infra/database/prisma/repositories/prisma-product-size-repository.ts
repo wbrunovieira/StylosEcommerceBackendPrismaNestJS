@@ -3,11 +3,12 @@ import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductSizeRepository } from "../../../../domain/catalog/application/repositories/i-product-size-repository";
 import { ProductSize } from "../../../../domain/catalog/enterprise/entities/product-size";
 import { Either, left, right } from "@/core/either";
-import { PrismaSizeRepository } from "./prima-size-repository";
+import { PrismaSizeRepository } from "./prisma-size-repository";
 
 @Injectable()
 export class PrismaProductSizeRepository implements IProductSizeRepository {
-  constructor(private prisma: PrismaService,
+  constructor(
+    private prisma: PrismaService,
     private sizeRepository: PrismaSizeRepository
   ) {}
   async create(
