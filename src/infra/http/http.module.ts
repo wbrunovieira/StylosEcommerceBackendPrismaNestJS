@@ -51,6 +51,8 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/create-account-with-google";
 import { AddressController } from "./controllers/address.controller";
 import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create-address";
+import { CartController } from "./controllers/cart.controller";
+import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-cart";
 
 @Module({
   imports: [DatabaseModule],
@@ -64,7 +66,8 @@ import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create
     SizeController,
     ApiController,
     AccountController,
-    AddressController
+    AddressController,
+    CartController,
   ],
   providers: [
     JwtService,
@@ -114,7 +117,9 @@ import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create
     CreateAccountUseCase,
     CreateGoogleAccountUseCase,
 
-    CreateAddressUseCase
+    CreateAddressUseCase,
+
+    CreateCartUseCase,
   ],
 })
 export class HttpModule {}

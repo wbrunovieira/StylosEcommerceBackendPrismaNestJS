@@ -24,6 +24,8 @@ import { IAccountRepository } from "@/domain/auth/application/repositories/i-acc
 import { PrismaAccountRepository } from "./prisma/repositories/prisma-account-repository";
 import { IAddressRepository } from "@/domain/auth/application/repositories/i-address-repository";
 import { PrismaAddressRepository } from "./prisma/repositories/prisma-address-repository";
+import { ICartRepository } from "@/domain/order/application/repositories/i-cart-repository";
+import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-repository";
 
 @Module({
   providers: [
@@ -76,6 +78,10 @@ import { PrismaAddressRepository } from "./prisma/repositories/prisma-address-re
       provide: IAddressRepository,
       useClass: PrismaAddressRepository,
     },
+    {
+      provide: ICartRepository,
+      useClass: PrismaCartRepository,
+    },
     PrismaColorRepository,
     PrismaSizeRepository,
     PrismaCategoryRepository,
@@ -95,6 +101,7 @@ import { PrismaAddressRepository } from "./prisma/repositories/prisma-address-re
     IProductVariantRepository,
     IAccountRepository,
     IAddressRepository,
+    ICartRepository
   ],
 })
 export class DatabaseModule {}

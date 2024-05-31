@@ -32,10 +32,10 @@ export class CreateCartUseCase {
     items,
   }: CreateCartUseCaseRequest): Promise<CreateCartUseCaseResponse> {
     try {
-        const cartItemsMap: { [productId: string]: CartItem } = {};
+      const cartItemsMap: { [productId: string]: CartItem } = {};
 
       for (const item of items) {
-        if (item.quantity <= 0) {
+        if (item.quantity < 0) {
           return left(
             new ResourceNotFoundError("Quantity must be greater than zero")
           );
@@ -60,21 +60,21 @@ export class CreateCartUseCase {
         }
 
         if (cartItemsMap[item.productId]) {
-            const existingItem = cartItemsMap[item.productId];
-            existingItem.setQuantity(existingItem.quantity + item.quantity);
-          } else {
-            cartItemsMap[item.productId] = new CartItem({
-              productId: new UniqueEntityID(item.productId),
-              quantity: item.quantity,
-              price: item.price,
-            });
-          }
+          const existingItem = cartItemsMap[item.productId];
+          existingItem.setQuantity(existingItem.quantity + item.quantity);
+        } else {
+          cartItemsMap[item.productId] = new CartItem({
+            productId: new UniqueEntityID(item.productId),
+            quantity: item.quantity,
+            price: item.price,
+          });
         }
-  
-        const cartItems = Object.values(cartItemsMap);
-    
-        const cart = Cart.create({ userId, items: cartItems });
-        await this.cartRepository.create(cart);
+      }
+
+      const cartItems = Object.values(cartItemsMap);
+
+      const cart = Cart.create({ userId, items: cartItems });
+      await this.cartRepository.create(cart);
 
       return right({ cart });
     } catch (error) {
