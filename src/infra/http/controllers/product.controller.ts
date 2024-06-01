@@ -36,10 +36,10 @@ const createProductBodySchema = z.object({
   isNew: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   images: z.array(z.string()).max(5).optional(),
-  height: z.number().optional(),
-  width: z.number().optional(),
-  length: z.number().optional(),
-  weight: z.number().optional(),
+  height: z.number(),
+  width: z.number(),
+  length: z.number(),
+  weight: z.number(),
 });
 
 const bodyValidationPipe = new ZodValidationsPipe(createProductBodySchema);
@@ -71,10 +71,10 @@ export class ProductController {
         isNew: body.isNew || false,
         isFeatured: body.isFeatured || false,
         images: body.images || [],
-        height: body.height || null,
-        width: body.width || null,
-        length: body.length || null,
-        weight: body.weight || null,
+        height: body.height,
+        width: body.width,
+        length: body.length,
+        weight: body.weight,
       });
      
       

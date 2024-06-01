@@ -10,7 +10,15 @@ import { IProductRepository } from "@/domain/catalog/application/repositories/i-
 
 interface CreateCartUseCaseRequest {
   userId: string;
-  items: { productId: string; quantity: number; price: number }[];
+  items: {
+    productId: string;
+    quantity: number;
+    price: number;
+    height: number;
+    width: number;
+    length: number;
+    weight: number;
+  }[];
 }
 
 type CreateCartUseCaseResponse = Either<
@@ -35,7 +43,6 @@ export class CreateCartUseCase {
       const cartItemsMap: { [productId: string]: CartItem } = {};
 
       for (const item of items) {
-      
         if (item.quantity <= 0) {
           return left(
             new ResourceNotFoundError("Quantity must be greater than zero")
@@ -68,15 +75,19 @@ export class CreateCartUseCase {
             productId: new UniqueEntityID(item.productId),
             quantity: item.quantity,
             price: item.price,
+            height: item.height,
+            width: item.width,
+            length: item.length,
+            weight: item.weight,
           });
         }
       }
 
       const cartItems = Object.values(cartItemsMap);
-      console.log('cartItems', cartItems)
+      console.log("cartItems", cartItems);
 
       const cart = Cart.create({ userId, items: cartItems });
-      console.log('cart in usecase', cart)
+      console.log("cart in usecase", cart);
       await this.cartRepository.create(cart);
 
       return right({ cart });

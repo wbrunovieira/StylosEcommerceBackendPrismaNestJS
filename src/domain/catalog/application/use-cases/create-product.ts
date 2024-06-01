@@ -35,10 +35,10 @@ interface CreateProductUseCaseRequest {
   price: number;
   stock: number;
   sku?: string | null;
-  height?: number | null;
-  width?: number | null;
-  length?: number | null;
-  weight?: number | null;
+  height: number;
+  width: number;
+  length: number;
+  weight: number;
   onSale?: boolean;
   discount?: number;
   isFeatured?: boolean;
@@ -79,10 +79,10 @@ export class CreateProductUseCase {
     sku = null,
     price,
     stock,
-    height = null,
-    width = null,
-    length = null,
-    weight = null,
+    height,
+    width,
+    length,
+    weight,
     onSale = false,
     discount = 0,
     isFeatured = false,
@@ -205,9 +205,7 @@ export class CreateProductUseCase {
         slug,
       });
 
-     
       const result = await this.productRepository.create(product);
-   
 
       if (productColors) {
         for (const colorId of productColors) {

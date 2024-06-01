@@ -29,6 +29,11 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "sku":"12121212aa",
   "price": 100,
   "stock": 10,
+  "height":11,
+  "width":17,
+  "length":11,
+  "weight":0.3,
+  
   "productColors": ["28c3ce8f-a6e3-4cd1-b78e-8cf9408d0636","ac8c7ffb-7ede-4891-86e7-149c2c04ab0f"],
   "productCategories": ["68b26463-67c1-4db2-a506-42e5262c2ba9"],
   "productSizes": ["3786cfb9-d200-4f37-9144-4b94d79d713c", "dec68532-0b4e-4395-ac7a-0163be08f796"]

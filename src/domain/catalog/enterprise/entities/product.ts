@@ -21,10 +21,10 @@ export interface ProductProps {
   stock: number;
   sku: string;
   slug: Slug;
-  height?: number | null;
-  width?: number | null;
-  length?: number | null;
-  weight?: number | null;
+  height: number;
+  width: number;
+  length: number;
+  weight: number;
   onSale?: boolean;
   isFeatured?: boolean;
   isNew?: boolean;

@@ -21,6 +21,11 @@ const createCartSchema = z.object({
       productId: z.string(),
       quantity: z.number().min(0),
       price: z.number().min(0),
+      height: z.number(),
+      width: z.number(),
+      length: z.number(),
+      weight: z.number(),
+      
     })
   ),
 });
