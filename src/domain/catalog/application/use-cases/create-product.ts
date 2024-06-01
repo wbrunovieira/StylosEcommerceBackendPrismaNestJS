@@ -205,9 +205,9 @@ export class CreateProductUseCase {
         slug,
       });
 
-      console.log("product use case ", product);
+     
       const result = await this.productRepository.create(product);
-      console.log("result use case ", result);
+   
 
       if (productColors) {
         for (const colorId of productColors) {

@@ -76,7 +76,7 @@ export class ProductController {
         length: body.length || null,
         weight: body.weight || null,
       });
-      console.log('created product result', result)
+     
       
       if (result.isLeft()) {
         const error = result.value;

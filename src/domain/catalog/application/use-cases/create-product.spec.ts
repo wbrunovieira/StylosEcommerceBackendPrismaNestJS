@@ -653,7 +653,7 @@ describe("CreateProductUseCase", () => {
       const variants =
         await mockProductVariantRepository.findByProductId(productId);
       expect(variants).toHaveLength(1);
-      console.log("variants", variants);
+    
       expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
     } else {
       fail("Expected a Right with the created product but got Left");

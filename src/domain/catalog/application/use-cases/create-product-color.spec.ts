@@ -245,7 +245,7 @@ describe("CreateProductUseCase", () => {
       colorId.toString()
     );
 
-    console.log("result", result);
+   
 
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {

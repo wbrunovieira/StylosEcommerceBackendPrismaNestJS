@@ -247,8 +247,7 @@ describe("Create Account (E2E)", () => {
         email: "checkuser@example.com",
       });
 
-    console.log("response body:", response.text);
-
+   
     expect(response.statusCode).toBe(201);
     expect(response.text).toBe("true");
   });
@@ -260,7 +259,6 @@ describe("Create Account (E2E)", () => {
         email: "nonexistent@example.com",
       });
 
-    console.log("response body:", response.text);
 
     expect(response.statusCode).toBe(201);
     expect(response.text).toBe("false");
