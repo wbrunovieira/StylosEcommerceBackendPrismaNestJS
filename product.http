@@ -24,8 +24,8 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "name": "saia 12",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
-  "materialId": "fa4c1be1-e130-4d9b-afb1-29f9b7cfaed7",
-  "brandId": "bac943e7-e787-4994-a329-2555c94d10eb",
+  "materialId": "54ce261d-8f43-49e0-a610-658d75c9a211",
+  "brandId": "bdc60ff1-29fb-460e-b9ba-e340c694c463",
   "sku":"12121212aa",
   "price": 100,
   "stock": 10,
@@ -34,9 +34,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "length":11,
   "weight":0.3,
   
-  "productColors": ["28c3ce8f-a6e3-4cd1-b78e-8cf9408d0636","ac8c7ffb-7ede-4891-86e7-149c2c04ab0f"],
-  "productCategories": ["68b26463-67c1-4db2-a506-42e5262c2ba9"],
-  "productSizes": ["3786cfb9-d200-4f37-9144-4b94d79d713c", "dec68532-0b4e-4395-ac7a-0163be08f796"]
+  "productColors": ["247b00b5-0b96-4713-a17c-8d05cf89fead"],
+  "productCategories": ["b745e76b-4cbb-48ee-b3db-a6f1610dd572"],
+  "productSizes": [ "f4051ddb-e807-4f8f-8f50-6f3f06d7795d"]
   
 }
 
