@@ -80,12 +80,12 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 # @name create-address
-POST {{BASE_URL}}/users/840ea410-0e5a-493e-80c9-857a021f0044/addresses
+POST {{BASE_URL}}/users/97c1a315-85c2-43e8-98fe-432600797bec/addresses
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "userId": "97c1a315-85c2-43e8-98fe-432600797bec",
   "street": "Av. Paulista",
   "number": 1234,
   "complement": "Apto 56",
