@@ -73,8 +73,10 @@ export class CreateCartUseCase {
       }
 
       const cartItems = Object.values(cartItemsMap);
+      console.log('cartItems', cartItems)
 
       const cart = Cart.create({ userId, items: cartItems });
+      console.log('cart in usecase', cart)
       await this.cartRepository.create(cart);
 
       return right({ cart });
