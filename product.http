@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "blusa 12",
+  "name": "saia 12",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
   "materialId": "fa4c1be1-e130-4d9b-afb1-29f9b7cfaed7",

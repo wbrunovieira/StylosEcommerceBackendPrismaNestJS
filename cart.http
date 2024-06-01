@@ -32,6 +32,11 @@ Authorization: Bearer {{AUTH_TOKEN}}
             "productId": "dbbcf550-e8aa-4862-9c66-d40279c22680",
             "quantity": 1,
             "price": 50.00
+        },
+        {
+            "productId": "797c85ca-933c-4d34-80e9-e5da06ca6acf",
+            "quantity": 2,
+            "price":150.00
         }
       
     ]

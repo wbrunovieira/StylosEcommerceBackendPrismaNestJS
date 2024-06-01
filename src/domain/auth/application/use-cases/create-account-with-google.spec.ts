@@ -49,8 +49,8 @@ describe('CreateGoogleAccountUseCase', () => {
 
     expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ConflictException);
-      if (result.value instanceof ConflictException) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+      if (result.value instanceof ResourceNotFoundError) {
         expect(result.value.message).toBe('User already exists');
       }
     }
