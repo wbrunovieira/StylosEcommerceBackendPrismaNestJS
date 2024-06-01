@@ -21,7 +21,7 @@ describe("Size Controller (E2E)", () => {
 
     const response = await request(app.getHttpServer())
       .post("/sessions")
-      .send({ email: "admin@example.com", password: "adminpassword" });
+      .send({ email: "admin@example.com", password: "Adminpassword@8" });
 
     authToken = response.body.access_token;
 

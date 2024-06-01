@@ -14,7 +14,6 @@ import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-c
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 
-
 const createCartSchema = z.object({
   userId: z.string(),
   items: z.array(
@@ -34,10 +33,11 @@ export class CartController {
   constructor(private readonly createcartUseCase: CreateCartUseCase) {}
 
   @Post()
-  async createOrder(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
+  async createCart(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
+    console.log("Received request body:", body);
     try {
       const result = await this.createcartUseCase.execute(body);
-    
+      console.log("CreateCartUseCase result:", result);
 
       if (result.isLeft()) {
         const error = result.value;
