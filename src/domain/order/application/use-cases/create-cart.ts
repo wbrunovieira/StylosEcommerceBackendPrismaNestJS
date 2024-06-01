@@ -14,10 +14,6 @@ interface CreateCartUseCaseRequest {
     productId: string;
     quantity: number;
     price: number;
-    height: number;
-    width: number;
-    length: number;
-    weight: number;
   }[];
 }
 
@@ -48,6 +44,7 @@ export class CreateCartUseCase {
             new ResourceNotFoundError("Quantity must be greater than zero")
           );
         }
+
         const productResult = await this.productRepository.findById(
           item.productId
         );
@@ -75,10 +72,10 @@ export class CreateCartUseCase {
             productId: new UniqueEntityID(item.productId),
             quantity: item.quantity,
             price: item.price,
-            height: item.height,
-            width: item.width,
-            length: item.length,
-            weight: item.weight,
+            height: product.height,
+            width: product.width,
+            length: product.length,
+            weight: product.weight,
           });
         }
       }
