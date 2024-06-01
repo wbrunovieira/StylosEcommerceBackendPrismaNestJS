@@ -47,20 +47,20 @@ describe("Create products (E2E)", () => {
       data: { name: "brand" },
     });
     brandId = brand.id;
-    console.log("brandid", brandId);
+    
 
     const material = await prisma.material.create({
       data: { name: "cotton" },
     });
     materialId = material.id;
-    console.log("materialId", materialId);
+   
 
     const category = await prisma.category.create({
       data: { name: "categoria teste" },
     });
 
     categoryId = category.id;
-    console.log("categoryId", categoryId);
+    
   });
 
   test("[POST] /products", async () => {
@@ -80,7 +80,7 @@ describe("Create products (E2E)", () => {
 
     const productResponse = response.body.product.props;
 
-    console.log("response no test", productResponse);
+   
 
     expect(response.statusCode).toBe(201);
 

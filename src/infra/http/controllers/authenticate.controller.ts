@@ -67,7 +67,7 @@ export class AuthenticateController {
       throw new UnauthorizedException("Invalid credentials");
     }
     const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
-    console.log('accessToken', accessToken)
+    
 
     const { password: _, ...userWithoutPassword } = user;
 

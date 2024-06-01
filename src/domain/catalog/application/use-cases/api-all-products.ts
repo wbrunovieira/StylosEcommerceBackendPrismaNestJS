@@ -19,7 +19,7 @@ export class ApiGetAllProducts {
     }
 
     this.token = token;
-    console.log("TOKEN_CONNECTPLUG:", this.token);
+   
   }
 
   async fetchAndSaveProducts() {
@@ -32,8 +32,8 @@ export class ApiGetAllProducts {
         },
       });
 
-      console.log("API response received:", response.data);
-      console.log("Response Data Structure:", JSON.stringify(response.data, null, 2));
+    
+      
 
 
       const products = response.data.data; 
@@ -52,13 +52,13 @@ export class ApiGetAllProducts {
       
       const productCount = extractedProducts.length;
 
-      console.log(`Total number of products: ${productCount}`);
+      
 
       const filePath = path.resolve("/app/src", "products.json");
 
       await fs.writeFile(filePath, JSON.stringify({ products: extractedProducts, count: productCount }, null, 2));
 
-      console.log(`Products saved to ${filePath}`);
+     
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(

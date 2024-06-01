@@ -7,7 +7,7 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { CreateCartUseCase } from "./create-cart";
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 
-describe("CreateOrderUseCase", () => {
+describe("CreateCartUseCase", () => {
   let useCase: CreateCartUseCase;
   let mockCartRepository: InMemoryCartRepository;
   let mockProductRepository: InMemoryProductRepository;
@@ -58,7 +58,7 @@ describe("CreateOrderUseCase", () => {
     ];
 
     const result = await useCase.execute({ userId, items });
-    console.log("result", result.value);
+
 
     if (result.isLeft()) {
       throw new Error("Expected right but got left");

@@ -20,7 +20,7 @@ export class InMemoryProductColorRepository implements IProductColorRepository {
     colorId: string
   ): Promise<Either<Error, void>> {
     const productOrError = await this.productRepository.findById(productId);
-    console.log("productOrError", productOrError);
+  
 
     if (productOrError.isLeft()) {
       return left(new ResourceNotFoundError("Product not found"));

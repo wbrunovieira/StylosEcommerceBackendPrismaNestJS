@@ -115,7 +115,7 @@ export class PrismaProductRepository implements IProductRepository {
       const validColors: { id: string }[] = [];
       const validSizes: { id: string }[] = [];
       const validCategories: { id: string }[] = [];
-      console.log("product in prisma repo", product);
+      
 
       if (productColors) {
         for (const colorId of productColors) {
@@ -182,8 +182,6 @@ export class PrismaProductRepository implements IProductRepository {
         throw new Error("Brand ID is not valid");
       }
 
-      console.log("slug Value", slugValue);
-      console.log("brandExist", brandExist);
 
       const createdProduct = await this.prisma.product.create({
         data: {
@@ -204,7 +202,7 @@ export class PrismaProductRepository implements IProductRepository {
           ...otherProps,
         },
       });
-      console.log("createdProduct", createdProduct);
+      
       return right(undefined);
     } catch (error) {
       return left(new Error("Failed to create material"));
