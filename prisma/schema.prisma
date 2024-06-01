@@ -41,10 +41,10 @@ model Product {
   discount    Float?
   price       Float
   FinalPrice  Float?
-  height      Float?
-  width       Float?
-  length      Float?
-  weight      Float?
+  height      Float
+  width       Float
+  length      Float
+  weight      Float
   sku         String?
   upc         String?
   tags        String[]
@@ -210,15 +210,19 @@ model Cart {
 }
 
 model CartItem {
-  id        String    @id @default(uuid())
-  cartId    String
-  cart      Cart      @relation(fields: [cartId], references: [id])
-  productId String
-  product   Product   @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id          String  @id @default(uuid())
+  cartId      String
+  cart        Cart    @relation(fields: [cartId], references: [id])
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Float
+  height      Float
+  width       Float
+  length      Float
+  weight      Float
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
 
   @@map("cart_items")
 }

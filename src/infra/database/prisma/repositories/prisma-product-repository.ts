@@ -194,6 +194,10 @@ export class PrismaProductRepository implements IProductRepository {
           slug: slugValue.value,
           price: price,
           stock: stock,
+          height: product.height, 
+          width: product.width,   
+          length: product.length, 
+          weight: product.weight,
           material: materialExist
             ? { connect: { id: materialExist.id } }
             : undefined,
