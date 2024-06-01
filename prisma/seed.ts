@@ -1,6 +1,9 @@
-// prisma/seed.ts
+
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { v4 as uuidv4 } from 'uuid'; // Para gerar slugs únicos
+
+
 
 const prisma = new PrismaClient();
 
@@ -26,6 +29,99 @@ async function main() {
   } else {
     console.log("Admin user already exists");
   }
+
+  // Criar materiais
+  const materials = ["algodao", "lycra"];
+  for (const material of materials) {
+    await prisma.material.create({
+      data: {
+        name: material,
+      },
+    });
+  }
+  console.log("Materials created");
+
+  // Criar marcas
+  const brands = ["Liz", "Nayane"];
+  for (const brand of brands) {
+    await prisma.brand.create({
+      data: {
+        name: brand,
+      },
+    });
+  }
+  console.log("Brands created");
+
+  // Criar categorias
+  const categories = ["lingerie", "masculino", "pijamas"];
+  for (const category of categories) {
+    await prisma.category.create({
+      data: {
+        name: category,
+      },
+    });
+  }
+  console.log("Categories created");
+
+  // Criar cores
+  const colors = ["preto", "branco", "vermelho"];
+  for (const color of colors) {
+    await prisma.color.create({
+      data: {
+        name: color,
+      },
+    });
+  }
+  console.log("Colors created");
+
+  // Criar tamanhos
+  const sizes = ["pequena", "media", "grande"];
+  for (const size of sizes) {
+    await prisma.size.create({
+      data: {
+        name: size,
+      },
+    });
+  }
+  console.log("Sizes created");
+
+  // Obter IDs de materiais, marcas, categorias, cores e tamanhos
+  const materialsData = await prisma.material.findMany();
+  const brandsData = await prisma.brand.findMany();
+  const categoriesData = await prisma.category.findMany();
+  const colorsData = await prisma.color.findMany();
+  const sizesData = await prisma.size.findMany();
+
+  // Criar produtos
+  for (let i = 1; i <= 12; i++) {
+    await prisma.product.create({
+      data: {
+        name: `produto ${i}`,
+        description: `Descrição do produto ${i}`,
+        images: ["/images/foto1.jpg"],
+        materialId: materialsData[Math.floor(Math.random() * materialsData.length)].id,
+        brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
+        sku: `sku${i}`,
+        price: 100 + i,
+        stock: 10 + i,
+        height: 10 + i,
+        width: 15 + i,
+        length: 20 + i,
+        weight: 0.5 + i,
+        slug: uuidv4(), // Gerar um slug único
+        productColors: {
+          create: colorsData.map(color => ({ color: { connect: { id: color.id } } })),
+        },
+        productCategories: {
+          create: categoriesData.map(category => ({ category: { connect: { id: category.id } } })),
+        },
+        productSizes: {
+          create: sizesData.map(size => ({ size: { connect: { id: size.id } } })),
+        },
+      },
+    });
+  }
+  console.log("Products created");
 }
 
 main()
