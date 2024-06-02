@@ -43,9 +43,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-all-products
-GET {{BASE_URL}}/products
+GET {{BASE_URL}}/products/all
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 ###
