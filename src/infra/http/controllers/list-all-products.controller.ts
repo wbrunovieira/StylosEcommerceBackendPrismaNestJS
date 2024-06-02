@@ -65,4 +65,13 @@ export class ListAllProductsController {
     }
     return { product };
   }
+
+  @Get("slug/:slug")
+  async getProductbySlug(@Param("slug") slug: string) {
+    const product = await this.prisma.product.findUnique({ where: { slug } });
+    if (!product) {
+      throw new HttpException("Produto não encontrado", HttpStatus.NOT_FOUND);
+    }
+    return { product };
+  }
 }
