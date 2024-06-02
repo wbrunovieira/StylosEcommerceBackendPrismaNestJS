@@ -11,7 +11,75 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
+
   constructor(private prisma: PrismaService) {}
+  
+ async findBySlug(slug: string): Promise<Either<Error, Product>> {
+  
+    try {
+      const productData = await this.prisma.product.findUnique({
+        where: { slug: slug },
+        include: {
+          productColors: true,
+          productSizes: true,
+          productCategories: true,
+          brand: true,
+          material: true,
+        },
+      });
+
+      if (!productData) {
+        return left(
+          new ResourceNotFoundError(`Product not found: ${slug}`)
+        );
+      }
+      const product = Product.create(
+        {
+          name: productData.name,
+          description: productData.description,
+          productSizes: productData.productSizes.map(
+            (size) => new UniqueEntityID(size.sizeId)
+          ),
+          productColors: productData.productColors.map(
+            (color) => new UniqueEntityID(color.colorId)
+          ),
+          productCategories: productData.productCategories.map(
+            (category) => new UniqueEntityID(category.categoryId)
+          ),
+          materialId: productData.materialId
+            ? new UniqueEntityID(productData.materialId)
+            : undefined,
+          sizeId: productData.productSizes.map(
+            (size) => new UniqueEntityID(size.sizeId)
+          ),
+          finalPrice: productData.FinalPrice ?? undefined,
+          brandId: new UniqueEntityID(productData.brandId),
+          discount: productData.discount ?? undefined,
+          price: productData.price,
+          stock: productData.stock,
+          sku: productData.sku ?? "ntt",
+          height: productData.height ?? undefined,
+          width: productData.width ?? undefined,
+          length: productData.length ?? undefined,
+          weight: productData.weight ?? undefined,
+          onSale: productData.onSale ?? undefined,
+          isFeatured: productData.isFeatured ?? undefined,
+          isNew: productData.isNew ?? undefined,
+          images: productData.images ?? undefined,
+          createdAt: new Date(productData.createdAt),
+          updatedAt: productData.updatedAt
+            ? new Date(productData.updatedAt)
+            : undefined,
+        },
+        new UniqueEntityID(productData.id)
+      );
+      return right(product);
+    } catch (error) {
+      return left(
+        new ResourceNotFoundError(`Failed to retrieve product: ${slug}`)
+      );
+    }
+  }
 
 
   async findById(productId: string): Promise<Either<Error, Product>> {

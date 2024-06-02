@@ -67,3 +67,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 GET {{BASE_URL}}/products/76fa1262-c5b2-4f81-9ed1-bf9708d22412
 
 
+###
+
+# @name get-product-by-slug
+GET {{BASE_URL}}/products/slug/produto-1-22520347-2f45-4657-a5a7-e368be7e4d82-5cb9a996-6180-4604-841f-0fabd70fd147
+
+
