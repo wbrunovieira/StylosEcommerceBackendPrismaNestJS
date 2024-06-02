@@ -13,6 +13,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
+
   async findById(productId: string): Promise<Either<Error, Product>> {
     try {
       const productData = await this.prisma.product.findUnique({
@@ -176,7 +177,7 @@ export class PrismaProductRepository implements IProductRepository {
         }
       }
 
-      const slugValue = generateSlug(name, brandExist.name);
+      
 
       if (!brandExist || !brandExist.id) {
         throw new Error("Brand ID is not valid");
@@ -191,7 +192,7 @@ export class PrismaProductRepository implements IProductRepository {
           description: description,
           createdAt: createdAt,
           updatedAt: updatedAt,
-          slug: slugValue.value,
+          slug: slug,
           price: price,
           stock: stock,
           height: product.height, 
@@ -210,6 +211,56 @@ export class PrismaProductRepository implements IProductRepository {
       return right(undefined);
     } catch (error) {
       return left(new Error("Failed to create material"));
+    }
+  }
+
+  async save(product: Product): Promise<Either<Error, void>> {
+    try {
+      const {
+        name,
+        description,
+        price,
+        stock,
+        materialId,
+        brandId,
+        images,
+        createdAt,
+        updatedAt,
+        slug,
+        ...otherProps
+      } = {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        materialId: product.materialId ? product.materialId.toString() : undefined,
+        brandId: product.brandId.toString(),
+        images: product.images,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        slug: product.slug.toString(),
+      };
+
+      await this.prisma.product.update({
+        where: { id: product.id.toString() },
+        data: {
+          name,
+          description,
+          price,
+          stock,
+          materialId: materialId ?? undefined,
+          brandId,
+          images,
+          createdAt,
+          updatedAt,
+          slug,
+          ...otherProps,
+        },
+      });
+
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to update product"));
     }
   }
 

@@ -42,8 +42,7 @@ export class ListAllProductsController {
     return { products };
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
+  @Get("all")
   async handle(@Query("page", queryValidationPipe) page: PageQueryParamSchema) {
     const perPage = 10;
 

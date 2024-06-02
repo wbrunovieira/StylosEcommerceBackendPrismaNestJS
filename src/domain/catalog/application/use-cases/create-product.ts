@@ -106,6 +106,8 @@ export class CreateProductUseCase {
       return left(new ResourceNotFoundError("Brand not found"));
     }
 
+    const brand = brandOrError.value;
+
     let materialOrError: Either<Error, Material | null> = right(null);
     if (materialId) {
       materialOrError = await this.materialRepository.findById(materialId);
@@ -183,9 +185,12 @@ export class CreateProductUseCase {
     }
 
     try {
-      const slug = generateSlug(name, "brand-name");
+      const provisionalSlug = generateSlug(name, brand.name, Date.now().toString());
+
+     
 
       const product = Product.create({
+        
         name,
         description,
         materialId: materialId ? new UniqueEntityID(materialId) : undefined,
@@ -202,10 +207,14 @@ export class CreateProductUseCase {
         isFeatured,
         isNew,
         images,
-        slug,
+        slug: provisionalSlug,
       });
 
       const result = await this.productRepository.create(product);
+
+      const finalSlug = generateSlug(name, brand.name, product.id.toString());
+      product.slug = finalSlug;
+      await this.productRepository.save(product);
 
       if (productColors) {
         for (const colorId of productColors) {
