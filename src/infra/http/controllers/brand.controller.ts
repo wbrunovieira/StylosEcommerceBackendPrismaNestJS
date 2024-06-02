@@ -55,8 +55,6 @@ const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
 type PaginationParams = z.infer<typeof paginationParamsSchema>;
 
 @Controller("brands")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles("admin")
 export class BrandController {
   constructor(
     private readonly createBrandUseCase: CreateBrandUseCase,
@@ -68,6 +66,8 @@ export class BrandController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async createBrand(@Body(bodyValidationPipe) body: CreateBrandBodySchema) {
     try {
       const result = await this.createBrandUseCase.execute({ name: body.name });
@@ -91,6 +91,8 @@ export class BrandController {
   }
 
   @Put(":brandId")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async editBrand(
     @Param("brandId") brandId: string,
     @Body(editBodyValidationPipe) body: EditBrandBodySchema
@@ -183,6 +185,8 @@ export class BrandController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async deleteBrand(@Param("id") id: string) {
     try {
       const result = await this.deleteBrandUseCase.execute({ brandId: id });

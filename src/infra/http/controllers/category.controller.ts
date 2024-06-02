@@ -57,8 +57,6 @@ const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
 type PaginationParams = z.infer<typeof paginationParamsSchema>;
 
 @Controller("category")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles("admin")
 export class CategoryController {
   constructor(
     private readonly createCategoryUseCase: CreateCategoryUseCase,
@@ -70,6 +68,8 @@ export class CategoryController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async createCategory(
     @Body(bodyValidationPipe) body: CreateCategoryBodySchema
   ) {
@@ -95,6 +95,8 @@ export class CategoryController {
   }
 
   @Put(":categoryId")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async editCategory(
     @Param("categoryId") categoryId: string,
     @Body(editBodyValidationPipe) body: EditCategoryBodySchema
@@ -190,6 +192,8 @@ export class CategoryController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async deleteCategory(@Param("id") id: string) {
     try {
       const result = await this.deleteCategoryUseCase.execute({

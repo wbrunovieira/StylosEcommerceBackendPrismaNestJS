@@ -55,8 +55,6 @@ const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
 type PaginationParams = z.infer<typeof paginationParamsSchema>;
 
 @Controller("size")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles("admin")
 export class SizeController {
   constructor(
     private readonly createSizeUseCase: CreateSizeUseCase,
@@ -67,6 +65,8 @@ export class SizeController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async createSize(@Body(bodyValidationPipe) body: CreateSizeBodySchema) {
     try {
       const result = await this.createSizeUseCase.execute({ name: body.name });
@@ -81,6 +81,8 @@ export class SizeController {
   }
 
   @Put(":sizeId")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async editSize(
     @Param("sizeId") sizeId: string,
     @Body(editBodyValidationPipe) body: EditSizeBodySchema
@@ -125,6 +127,7 @@ export class SizeController {
       return left(new Error("Repository error"));
     }
   }
+
   @Get(":id")
   async findSizeById(@Param("id") id: string) {
     try {
@@ -149,6 +152,8 @@ export class SizeController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async deleteSize(@Param("id") id: string) {
     try {
       const result = await this.deleteSizeUseCase.execute({ sizeId: id });

@@ -27,7 +27,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 # @name get-materials-by-name
 GET  {{BASE_URL}}/materials/?name=material 5
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 ###
@@ -35,7 +35,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 # @name get-all-materials
 GET  {{BASE_URL}}/materials/all?page=1&pageSize=10
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 ###
 
@@ -47,9 +47,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name find-material-by-id
-GET  {{BASE_URL}}/materials/a6859f6b-bf57-48dd-a598-7d2b3a6f6b65
+GET  {{BASE_URL}}/materials/119f32ef-5ecd-4f41-87cd-7d967ef38f67
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 ###
 

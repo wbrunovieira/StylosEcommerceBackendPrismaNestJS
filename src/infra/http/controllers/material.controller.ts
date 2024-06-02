@@ -56,8 +56,6 @@ const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
 type PaginationParams = z.infer<typeof paginationParamsSchema>;
 
 @Controller("materials")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles("admin")
 export class MaterialController {
   constructor(
     private readonly createMaterialUseCase: CreateMaterialUseCase,
@@ -70,6 +68,8 @@ export class MaterialController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async createMaterial(
     @Body(bodyValidationPipe) body: CreateMaterialBodySchema
   ) {
@@ -97,6 +97,8 @@ export class MaterialController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async deleteMaterial(@Param("id") id: string) {
     try {
       const result = await this.deleteMaterialdUseCase.execute({
@@ -121,6 +123,8 @@ export class MaterialController {
   }
 
   @Put(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async editMaterial(
     @Param("id") id: string,
     @Body(editBodyValidationPipe) body: EditMaterialBodySchema
@@ -188,6 +192,7 @@ export class MaterialController {
       return left(new Error("Repository error"));
     }
   }
+
   @Get(":id")
   async findMaterialById(@Param("id") id: string) {
     try {
