@@ -55,8 +55,6 @@ const paginationPipe = new ZodValidationsPipe(paginationParamsSchema);
 type PaginationParams = z.infer<typeof paginationParamsSchema>;
 
 @Controller("colors")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles("admin")
 export class ColorsController {
   constructor(
     private readonly createColorUseCase: CreateColorUseCase,
@@ -68,6 +66,8 @@ export class ColorsController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async createColor(@Body(bodyValidationPipe) body: CreateColorBodySchema) {
     try {
       const result = await this.createColorUseCase.execute({ name: body.name });
@@ -91,6 +91,8 @@ export class ColorsController {
   }
 
   @Put(":colorId")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async editColor(
     @Param("colorId") colorId: string,
     @Body(editBodyValidationPipe) body: EditColorBodySchema
@@ -183,6 +185,8 @@ export class ColorsController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   async deleteColor(@Param("id") id: string) {
     try {
       const result = await this.deleteColorUseCase.execute({ colorId: id });
