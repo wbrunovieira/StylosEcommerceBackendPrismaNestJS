@@ -3,6 +3,17 @@ import { hash } from "bcryptjs";
 import { v4 as uuidv4 } from "uuid"; // Para gerar slugs únicos
 
 const prisma = new PrismaClient();
+function generateSlug(
+  name: string,
+  brandName: string,
+  productId: string
+): string {
+  const slug = `${name}-${brandName}-${productId}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return slug;
+}
 
 async function main() {
   const adminEmail = "admin@example.com";
@@ -91,7 +102,7 @@ async function main() {
 
   // Criar produtos
   for (let i = 1; i <= 12; i++) {
-    await prisma.product.create({
+    const product = await prisma.product.create({
       data: {
         name: `produto ${i}`,
         description: `Descrição do produto ${i}`,
@@ -124,6 +135,12 @@ async function main() {
           })),
         },
       },
+    });
+
+    const newSlug = generateSlug(product.name, product.brandId, product.id);
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { slug: String(newSlug) },
     });
   }
   console.log("Products created");
