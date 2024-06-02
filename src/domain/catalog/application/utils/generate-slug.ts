@@ -1,6 +1,6 @@
 import { Slug } from "../../enterprise/entities/value-objects/slug";
 
-export function generateSlug(name: string, brandName: string): Slug {
+export function generateSlug(name: string, brandName: string, productId: string): Slug {
   const baseSlug = `${name}-${brandName}`
     .toLowerCase()
     .normalize("NFKD")
@@ -9,6 +9,5 @@ export function generateSlug(name: string, brandName: string): Slug {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
 
-  const uniqueSuffix = Date.now().toString(36);
-  return Slug.createFromText(`${baseSlug}-${uniqueSuffix}`);
+    return Slug.createFromText(`${baseSlug}-${productId}`);
 }

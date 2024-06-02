@@ -47,7 +47,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name find-material-by-id
-GET  {{BASE_URL}}/materials/b2d81494-7b62-478d-8983-45cbfa1d4cd1
+GET  {{BASE_URL}}/materials/a6859f6b-bf57-48dd-a598-7d2b3a6f6b65
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 

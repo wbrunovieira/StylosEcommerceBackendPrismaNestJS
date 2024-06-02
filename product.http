@@ -64,6 +64,6 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/d624bc75-4f96-468d-a0c8-3c144e1ec65c
+GET {{BASE_URL}}/products/76fa1262-c5b2-4f81-9ed1-bf9708d22412
 
 

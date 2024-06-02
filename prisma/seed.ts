@@ -1,9 +1,6 @@
-
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
-import { v4 as uuidv4 } from 'uuid'; // Para gerar slugs únicos
-
-
+import { v4 as uuidv4 } from "uuid"; // Para gerar slugs únicos
 
 const prisma = new PrismaClient();
 
@@ -99,7 +96,8 @@ async function main() {
         name: `produto ${i}`,
         description: `Descrição do produto ${i}`,
         images: ["/images/foto1.jpg"],
-        materialId: materialsData[Math.floor(Math.random() * materialsData.length)].id,
+        materialId:
+          materialsData[Math.floor(Math.random() * materialsData.length)].id,
         brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
         sku: `sku${i}`,
         price: 100 + i,
@@ -108,15 +106,22 @@ async function main() {
         width: 15 + i,
         length: 20 + i,
         weight: 0.5 + i,
+        isFeatured: true,
         slug: uuidv4(), // Gerar um slug único
         productColors: {
-          create: colorsData.map(color => ({ color: { connect: { id: color.id } } })),
+          create: colorsData.map((color) => ({
+            color: { connect: { id: color.id } },
+          })),
         },
         productCategories: {
-          create: categoriesData.map(category => ({ category: { connect: { id: category.id } } })),
+          create: categoriesData.map((category) => ({
+            category: { connect: { id: category.id } },
+          })),
         },
         productSizes: {
-          create: sizesData.map(size => ({ size: { connect: { id: size.id } } })),
+          create: sizesData.map((size) => ({
+            size: { connect: { id: size.id } },
+          })),
         },
       },
     });
