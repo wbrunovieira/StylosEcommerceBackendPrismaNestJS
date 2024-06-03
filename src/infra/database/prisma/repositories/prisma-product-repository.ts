@@ -11,25 +11,6 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
-  private async generateUniqueSlug(baseSlug: string, productId?: string): Promise<string> {
-    let slug = baseSlug;
-    let count = 0;
-    let existingProduct;
-
-    do {
-      existingProduct = await this.prisma.product.findUnique({
-        where: { slug: slug },
-      });
-
-      if (existingProduct && existingProduct.id !== productId) {
-        count++;
-        slug = `${baseSlug}-${count}`;
-      }
-    } while (existingProduct && existingProduct.id !== productId);
-
-    return slug;
-  }
-
   async findBySlug(slug: string): Promise<Either<Error, Product>> {
     try {
       const productData = await this.prisma.product.findUnique({
@@ -40,7 +21,6 @@ export class PrismaProductRepository implements IProductRepository {
           productCategories: true,
           brand: true,
           material: true,
-        
         },
       });
 
@@ -68,6 +48,7 @@ export class PrismaProductRepository implements IProductRepository {
           ),
           finalPrice: productData.finalPrice ?? undefined,
           brandId: new UniqueEntityID(productData.brandId),
+
           discount: productData.discount ?? undefined,
           price: productData.price,
           stock: productData.stock,
@@ -302,6 +283,7 @@ export class PrismaProductRepository implements IProductRepository {
         stock,
         materialId,
         brandId,
+        width,
         images,
         createdAt,
         updatedAt,
@@ -317,14 +299,12 @@ export class PrismaProductRepository implements IProductRepository {
           : undefined,
         brandId: product.brandId.toString(),
         images: product.images,
+        width: product.width,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         slug: product.slug.toString(),
         finalPrice: product.finalPrice,
       };
-
-      const uniqueSlug = await this.generateUniqueSlug(slug, product.id.toString());
-
 
       await this.prisma.product.update({
         where: { id: product.id.toString() },
@@ -338,7 +318,7 @@ export class PrismaProductRepository implements IProductRepository {
           images,
           createdAt,
           updatedAt,
-          slug: uniqueSlug,
+          slug,
           ...otherProps,
         },
       });
@@ -354,6 +334,4 @@ export class PrismaProductRepository implements IProductRepository {
       where: { id: product.id.toString() },
     });
   }
-
-  
 }

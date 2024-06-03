@@ -5,22 +5,31 @@ import { makeProduct } from "@test/factories/make-product";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { left } from "@/core/either";
 import { ProductProps } from "../../enterprise/entities/product";
-
-type Override = Partial<ProductProps>;
+import { IBrandRepository } from "../repositories/i-brand-repository";
+import { makeBrand } from "@test/factories/make-brand";
 
 describe("EditProductUseCase", () => {
   let useCase: EditProductUseCase;
   let mockProductRepository: InMemoryProductRepository;
+  let mockBrandRepository: IBrandRepository;
   let productId: UniqueEntityID;
+  let brandId: UniqueEntityID;
 
   beforeEach(() => {
     mockProductRepository = new InMemoryProductRepository();
-    useCase = new EditProductUseCase(mockProductRepository);
-
+    useCase = new EditProductUseCase(
+      mockProductRepository,
+      mockBrandRepository
+    );
+    brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
     productId = new UniqueEntityID("test_product_id");
+
+    const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
+
     const existingProduct = makeProduct(
       {
         name: "Existing Product",
+        brandId: brandId,
         description: "Existing product description",
         price: 100,
         discount: 10,
@@ -33,6 +42,7 @@ describe("EditProductUseCase", () => {
   });
 
   it("should edit a product successfully", async () => {
+
     const result = await useCase.execute({
       productId: productId.toString(),
       name: "Updated Product",
@@ -55,6 +65,7 @@ describe("EditProductUseCase", () => {
       productId: "non_existing_product_id",
       name: "Updated Product",
       description: "Updated product description",
+      
       price: 100,
       discount: 10,
       finalPrice: 90,
@@ -181,6 +192,7 @@ describe("EditProductUseCase", () => {
         price: 150,
         discount: 10,
         finalPrice: 135,
+        brandId,
       },
       anotherProductId
     );
