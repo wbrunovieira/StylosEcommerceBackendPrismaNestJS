@@ -4,6 +4,8 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 import { IProductRepository } from "../repositories/i-product-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { generateSlug } from "../utils/generate-slug";
+import { IBrandRepository } from "../repositories/i-brand-repository";
 
 interface EditProductUseCaseRequest {
   productId: string;
@@ -39,9 +41,13 @@ type EditProductUseCaseResponse = Either<
 
 @Injectable()
 export class EditProductUseCase {
-  constructor(private productRepository: IProductRepository) {}
+  constructor(
+    private productRepository: IProductRepository,
+    private brandRepository: IBrandRepository
+  ) {}
 
   private calculateFinalPrice(price: number, discount?: number): number {
+    
     if (discount && discount > 0) {
       return price - price * (discount / 100);
     }
@@ -71,8 +77,6 @@ export class EditProductUseCase {
     isFeatured,
     isNew,
     images,
-    createdAt,
-    updatedAt,
   }: EditProductUseCaseRequest): Promise<EditProductUseCaseResponse> {
     const productResult = await this.productRepository.findById(productId);
 
@@ -83,9 +87,14 @@ export class EditProductUseCase {
     const product = productResult.value;
     let priceChanged = false;
     let discountChanged = false;
+    let nameChanged = false;
 
-    if (name !== undefined) product.name = name;
+    if (name !== undefined && name !== product.name) {
+      product.name = name;
+      nameChanged = true;
+    }
     if (description !== undefined) product.description = description;
+
     if (productSizes !== undefined)
       product.productSizes = productSizes.map((id) => new UniqueEntityID(id));
     if (productColors !== undefined)
@@ -126,6 +135,34 @@ export class EditProductUseCase {
 
       product.setFinalPrice(finalPrice);
     }
+
+    const brandOrError = await this.brandRepository.findById(
+      product.brandId.toString()
+    );
+    if (brandOrError.isLeft()) {
+      return left(new ResourceNotFoundError("Brand not found"));
+    }
+
+    const brand = brandOrError.value;
+    console.log("slug antes do slug ", product.slug);
+
+    if (nameChanged) {
+      const newSlug = generateSlug(
+        product.name,
+        brand.name,
+        product.id.toString()
+      );
+
+      const slugExists = await this.productRepository.findBySlug(
+        String(newSlug)
+      );
+      if (slugExists.isRight()) {
+        return left(new ResourceNotFoundError("Slug already exists"));
+      }
+      product.slug = newSlug;
+    }
+
+    console.log("final slug ", product.slug);
 
     const saveResult = await this.productRepository.save(product);
 

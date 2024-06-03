@@ -49,11 +49,11 @@ Content-Type: application/json
 ###
 
 # @name edit-products
-PUT {{BASE_URL}}/products/save/37567094-b13c-47aa-bed4-fa5667dc1e4f
+PUT {{BASE_URL}}/products/save/5f97594f-4f67-4e4c-94ad-3dcb941c0d87
 Content-Type: application/json
 
 {
- "name": "novo If-None-Match: "
+  "price": 10030
 }
 
 
@@ -74,12 +74,10 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/04b8066d-51b2-4cc9-8e93-5cbb6f1bbe17
+GET {{BASE_URL}}/products/3ed82646-943c-43ec-a87d-a1b6884c8a9d
 
 
 ###
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/produto-1-22520347-2f45-4657-a5a7-e368be7e4d82-5cb9a996-6180-4604-841f-0fabd70fd147
-
-
+GET {{BASE_URL}}/products/slug/nome-verdadeiro-liz-3ed82646-943c-43ec-a87d-a1b6884c8a9d
