@@ -68,6 +68,13 @@ export class CreateProductUseCase {
     private productVariantRepository: IProductVariantRepository
   ) {}
 
+  private calculateFinalPrice(price: number, discount?: number): number {
+    if (discount && discount > 0) {
+      return price - price * (discount / 100);
+    }
+    return price;
+  }
+
   async execute({
     name,
     description,
@@ -185,17 +192,20 @@ export class CreateProductUseCase {
     }
 
     try {
-      const provisionalSlug = generateSlug(name, brand.name, Date.now().toString());
-
-     
+      const provisionalSlug = generateSlug(
+        name,
+        brand.name,
+        Date.now().toString()
+      );
+      const finalPrice = this.calculateFinalPrice(price, discount);
 
       const product = Product.create({
-        
         name,
         description,
         materialId: materialId ? new UniqueEntityID(materialId) : undefined,
         brandId: new UniqueEntityID(brandId),
         price,
+        finalPrice,
         stock,
         sku: sku || "",
         height,

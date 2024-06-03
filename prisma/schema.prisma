@@ -38,9 +38,9 @@ model Product {
   slug        String        @unique 
   brandId     String
   brand       Brand?        @relation(fields: [brandId], references: [id])
-  discount    Float?
+  discount    Float?        @default(0)
   price       Float
-  FinalPrice  Float?
+  finalPrice  Float?
   height      Float
   width       Float
   length      Float

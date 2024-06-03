@@ -15,6 +15,13 @@ function generateSlug(
   return slug;
 }
 
+function calculateFinalPrice(price: number, discount?: number): number {
+  if (discount && discount > 0) {
+    return price - price * (discount / 100);
+  }
+  return price;
+}
+
 async function main() {
   const adminEmail = "admin@example.com";
   const adminPassword = "Adminpassword@8";
@@ -102,6 +109,9 @@ async function main() {
 
   // Criar produtos
   for (let i = 1; i <= 12; i++) {
+    const price = 100 + i;
+    const discount = Math.floor(Math.random() * 30);
+    const finalPrice = calculateFinalPrice(price, discount);
     const product = await prisma.product.create({
       data: {
         name: `produto ${i}`,
@@ -111,14 +121,16 @@ async function main() {
           materialsData[Math.floor(Math.random() * materialsData.length)].id,
         brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
         sku: `sku${i}`,
-        price: 100 + i,
+        price: price,
+        discount: discount,
+        finalPrice: finalPrice,
         stock: 10 + i,
         height: 10 + i,
         width: 15 + i,
         length: 20 + i,
         weight: 0.5 + i,
         isFeatured: true,
-        slug: uuidv4(), // Gerar um slug único
+        slug: uuidv4(), 
         productColors: {
           create: colorsData.map((color) => ({
             color: { connect: { id: color.id } },

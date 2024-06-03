@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Put,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -74,4 +75,15 @@ export class ListAllProductsController {
     }
     return { product };
   }
+
+  @Put("save/:id")
+  async saveProduct(@Param("id") id: string) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+
+    if (!product) {
+      throw new HttpException("Produto não encontrado", HttpStatus.NOT_FOUND);
+    }
+    
+    return { product };
+}
 }

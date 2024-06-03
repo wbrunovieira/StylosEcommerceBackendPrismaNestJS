@@ -33,29 +33,71 @@ export interface ProductProps {
   updatedAt: Date;
 }
 
-export class Product extends Entity<ProductProps> { 
+export class Product extends Entity<ProductProps> {
+
 
   private touch() {
-    this.props.updatedAt = new Date();
+      this.props.updatedAt = new Date();
+   
   }
 
   get height() {
     return this.props.height;
   }
+
+  set height(height:number) {
+    this.props.height = height
+    this.touch();
+  }
+
+  set width(width:number) {
+    this.props.width = width
+    this.touch();
+  }
+  set length(length:number) {
+    this.props.length = length
+    this.touch();
+  }
+
+  set weight(weight:number) {
+    this.props.weight = weight
+    this.touch();
+  }
+  set onSale(onSale:boolean) {
+    this.props.onSale = onSale
+    this.touch();
+  }
+  set isFeatured(isFeatured:boolean) {
+    this.props.isFeatured = isFeatured
+    this.touch();
+  }
+  set isNew(isNew:boolean) {
+    this.props.isNew = isNew
+    this.touch();
+  }
+  set images(images:string[]) {
+    this.props.images = images
+    this.touch();
+  }
+
+
+
+
   get sku() {
     return this.props.sku;
   }
+
   get onSale() {
-    return this.props.onSale;
+    return this.props.onSale ?? false;
   }
   get discount() {
     return this.props.discount;
   }
   get isFeatured() {
-    return this.props.isFeatured;
+    return this.props.isFeatured ?? false;
   }
   get images() {
-    return this.props.images;
+    return this.props.images ?? []
   }
   get width() {
     return this.props.width;
@@ -69,6 +111,10 @@ export class Product extends Entity<ProductProps> {
   }
   get name() {
     return this.props.name;
+  }
+
+  get finalPrice() {
+    return this.props.finalPrice;
   }
 
   get description() {
@@ -145,6 +191,11 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
+  set sku(sku: string) {
+    this.props.sku = sku;
+    this.touch();
+  }
+
   set price(price: number) {
     this.props.price = price;
 
@@ -214,6 +265,17 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
+  set discount(discount: number | undefined) {
+    this.props.discount = discount;
+    this.touch();
+  }
+
+
+  setFinalPrice(finalPrice: number) {
+    this.props.finalPrice = finalPrice;
+    this.touch();
+  }
+
   static create(
     props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
     id?: UniqueEntityID
@@ -221,12 +283,14 @@ export class Product extends Entity<ProductProps> {
     const product = new Product(
       {
         ...props,
+
         createdAt: new Date(),
         updatedAt: new Date(),
         slug: props.slug ?? Slug.createFromText(props.name),
       },
       id
     );
+  
     return product;
   }
 }
