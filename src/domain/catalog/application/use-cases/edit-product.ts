@@ -1,4 +1,4 @@
-import { Product } from "../../enterprise/entities/product";   
+import { Product } from "../../enterprise/entities/product";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
@@ -32,7 +32,10 @@ interface EditProductUseCaseRequest {
   updatedAt?: Date;
 }
 
-type EditProductUseCaseResponse = Either<ResourceNotFoundError, { product: Product }>;
+type EditProductUseCaseResponse = Either<
+  ResourceNotFoundError,
+  { product: Product }
+>;
 
 @Injectable()
 export class EditProductUseCase {
@@ -40,7 +43,7 @@ export class EditProductUseCase {
 
   private calculateFinalPrice(price: number, discount?: number): number {
     if (discount && discount > 0) {
-      return price - (price * (discount / 100));
+      return price - price * (discount / 100);
     }
     return price;
   }
@@ -54,7 +57,7 @@ export class EditProductUseCase {
     productCategories,
     materialId,
     sizeId,
-    
+
     brandId,
     discount,
     price,
@@ -71,7 +74,6 @@ export class EditProductUseCase {
     createdAt,
     updatedAt,
   }: EditProductUseCaseRequest): Promise<EditProductUseCaseResponse> {
-
     const productResult = await this.productRepository.findById(productId);
 
     if (productResult.isLeft()) {
@@ -79,17 +81,32 @@ export class EditProductUseCase {
     }
 
     const product = productResult.value;
+    let priceChanged = false;
+    let discountChanged = false;
 
     if (name !== undefined) product.name = name;
     if (description !== undefined) product.description = description;
-    if (productSizes !== undefined) product.productSizes = productSizes.map(id => new UniqueEntityID(id));
-    if (productColors !== undefined) product.productColors = productColors.map(id => new UniqueEntityID(id));
-    if (productCategories !== undefined) product.productCategories = productCategories.map(id => new UniqueEntityID(id));
-    if (materialId !== undefined) product.materialId = new UniqueEntityID(materialId);
-    if (sizeId !== undefined) product.sizeId = sizeId.map(id => new UniqueEntityID(id));
+    if (productSizes !== undefined)
+      product.productSizes = productSizes.map((id) => new UniqueEntityID(id));
+    if (productColors !== undefined)
+      product.productColors = productColors.map((id) => new UniqueEntityID(id));
+    if (productCategories !== undefined)
+      product.productCategories = productCategories.map(
+        (id) => new UniqueEntityID(id)
+      );
+    if (materialId !== undefined)
+      product.materialId = new UniqueEntityID(materialId);
+    if (sizeId !== undefined)
+      product.sizeId = sizeId.map((id) => new UniqueEntityID(id));
     if (brandId !== undefined) product.brandId = new UniqueEntityID(brandId);
-    if (discount !== undefined) product.discount = discount;
-    if (price !== undefined) product.price = price;
+    if (discount !== undefined) {
+      product.discount = discount;
+      discountChanged = true;
+    }
+    if (price !== undefined) {
+      product.price = price;
+      priceChanged = true;
+    }
     if (stock !== undefined) product.stock = stock;
     if (sku !== undefined) product.sku = sku;
     if (height !== undefined) product.height = height;
@@ -101,13 +118,17 @@ export class EditProductUseCase {
     if (isNew !== undefined) product.isNew = isNew;
     if (images !== undefined) product.images = images;
 
-    if (price !== undefined) {
-        const finalPrice = this.calculateFinalPrice(price, discount);
-        product.setFinalPrice(finalPrice);
-      }
+    if (priceChanged || discountChanged) {
+      const finalPrice = this.calculateFinalPrice(
+        product.price,
+        product.discount
+      );
+
+      product.setFinalPrice(finalPrice);
+    }
 
     const saveResult = await this.productRepository.save(product);
-    
+
     if (saveResult.isLeft()) {
       return left(new ResourceNotFoundError("Failed to update product"));
     }

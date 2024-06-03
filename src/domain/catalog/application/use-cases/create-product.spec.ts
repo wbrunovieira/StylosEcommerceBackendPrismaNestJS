@@ -186,6 +186,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height:100,
+      width:100,
+      length:100,
+      weight: 100
     });
     if (result.isLeft()) {
       throw new Error("Expected product to be created successfully");
@@ -261,6 +265,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     expect(result.isLeft()).toBeTruthy();
@@ -292,6 +300,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     expect(result.isLeft()).toBeTruthy();
@@ -318,6 +330,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     };
     const result = await useCase.execute(request);
     expect(result.isLeft()).toBeTruthy();
@@ -343,6 +359,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     };
 
     const result = await useCase.execute(request);
@@ -371,6 +391,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     expect(result.isLeft()).toBeTruthy();
@@ -397,6 +421,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     };
 
     const result = await useCase.execute(request);
@@ -424,6 +452,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     };
 
     const result = await useCase.execute(request);
@@ -453,6 +485,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     expect(result.isRight()).toBeTruthy();
@@ -491,6 +527,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     if (result.isLeft()) {
@@ -600,6 +640,10 @@ describe("CreateProductUseCase", () => {
       isFeatured: false,
       isNew: false,
       images: [],
+      height: 2,
+      width: 2,
+      length: 2,
+      weight: 2,
     });
 
     expect(result.isLeft()).toBeTruthy();
