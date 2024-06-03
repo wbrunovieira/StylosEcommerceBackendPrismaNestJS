@@ -1,9 +1,7 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { IProductRepository } from "../../../../domain/catalog/application/repositories/i-product-repository";
 import { Product } from "../../../../domain/catalog/enterprise/entities/product";
-
-import { generateSlug } from "../../../../domain/catalog/application/utils/generate-slug";
 
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
@@ -11,11 +9,9 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
-
   constructor(private prisma: PrismaService) {}
-  
- async findBySlug(slug: string): Promise<Either<Error, Product>> {
-  
+
+  async findBySlug(slug: string): Promise<Either<Error, Product>> {
     try {
       const productData = await this.prisma.product.findUnique({
         where: { slug: slug },
@@ -25,13 +21,12 @@ export class PrismaProductRepository implements IProductRepository {
           productCategories: true,
           brand: true,
           material: true,
+        
         },
       });
 
       if (!productData) {
-        return left(
-          new ResourceNotFoundError(`Product not found: ${slug}`)
-        );
+        return left(new ResourceNotFoundError(`Product not found: ${slug}`));
       }
       const product = Product.create(
         {
@@ -52,7 +47,7 @@ export class PrismaProductRepository implements IProductRepository {
           sizeId: productData.productSizes.map(
             (size) => new UniqueEntityID(size.sizeId)
           ),
-          finalPrice: productData.FinalPrice ?? undefined,
+          finalPrice: productData.finalPrice ?? undefined,
           brandId: new UniqueEntityID(productData.brandId),
           discount: productData.discount ?? undefined,
           price: productData.price,
@@ -80,7 +75,6 @@ export class PrismaProductRepository implements IProductRepository {
       );
     }
   }
-
 
   async findById(productId: string): Promise<Either<Error, Product>> {
     try {
@@ -119,7 +113,7 @@ export class PrismaProductRepository implements IProductRepository {
           sizeId: productData.productSizes.map(
             (size) => new UniqueEntityID(size.sizeId)
           ),
-          finalPrice: productData.FinalPrice ?? undefined,
+          finalPrice: productData.finalPrice ?? undefined,
           brandId: new UniqueEntityID(productData.brandId),
           discount: productData.discount ?? undefined,
           price: productData.price,
@@ -164,6 +158,7 @@ export class PrismaProductRepository implements IProductRepository {
         createdAt,
         updatedAt,
         slug,
+        finalPrice,
         ...otherProps
       } = {
         productColors: product.productColors,
@@ -179,12 +174,12 @@ export class PrismaProductRepository implements IProductRepository {
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         slug: product.slug.toString(),
+        finalPrice: product.finalPrice,
       };
 
       const validColors: { id: string }[] = [];
       const validSizes: { id: string }[] = [];
       const validCategories: { id: string }[] = [];
-      
 
       if (productColors) {
         for (const colorId of productColors) {
@@ -245,12 +240,9 @@ export class PrismaProductRepository implements IProductRepository {
         }
       }
 
-      
-
       if (!brandExist || !brandExist.id) {
         throw new Error("Brand ID is not valid");
       }
-
 
       const createdProduct = await this.prisma.product.create({
         data: {
@@ -263,19 +255,19 @@ export class PrismaProductRepository implements IProductRepository {
           slug: slug,
           price: price,
           stock: stock,
-          height: product.height, 
-          width: product.width,   
-          length: product.length, 
+          height: product.height,
+          width: product.width,
+          length: product.length,
           weight: product.weight,
           material: materialExist
             ? { connect: { id: materialExist.id } }
             : undefined,
           brand: { connect: { id: brandExist.id } },
-
+          finalPrice: finalPrice ?? undefined,
           ...otherProps,
         },
       });
-      
+
       return right(undefined);
     } catch (error) {
       return left(new Error("Failed to create material"));
@@ -295,18 +287,22 @@ export class PrismaProductRepository implements IProductRepository {
         createdAt,
         updatedAt,
         slug,
+        finalPrice,
         ...otherProps
       } = {
         name: product.name,
         description: product.description,
         price: product.price,
         stock: product.stock,
-        materialId: product.materialId ? product.materialId.toString() : undefined,
+        materialId: product.materialId
+          ? product.materialId.toString()
+          : undefined,
         brandId: product.brandId.toString(),
         images: product.images,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         slug: product.slug.toString(),
+        finalPrice: product.finalPrice,
       };
 
       await this.prisma.product.update({
@@ -337,4 +333,6 @@ export class PrismaProductRepository implements IProductRepository {
       where: { id: product.id.toString() },
     });
   }
+
+  
 }

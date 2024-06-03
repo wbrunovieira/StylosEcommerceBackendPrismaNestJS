@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "saia 12",
+  "name": "saia 15",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
   "materialId": "54ce261d-8f43-49e0-a610-658d75c9a211",
@@ -64,7 +64,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/76fa1262-c5b2-4f81-9ed1-bf9708d22412
+GET {{BASE_URL}}/products/04b8066d-51b2-4cc9-8e93-5cbb6f1bbe17
 
 
 ###
