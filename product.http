@@ -46,6 +46,16 @@ Authorization: Bearer {{AUTH_TOKEN}}
 GET {{BASE_URL}}/products/all
 Content-Type: application/json
 
+###
+
+# @name edit-products
+PUT {{BASE_URL}}/products/save/37567094-b13c-47aa-bed4-fa5667dc1e4f
+Content-Type: application/json
+
+{
+ "name": "novo If-None-Match: "
+}
+
 
 
 ###
