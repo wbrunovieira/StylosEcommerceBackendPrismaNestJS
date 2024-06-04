@@ -183,23 +183,37 @@ export class ProductController {
 
   @Get("slug/:slug")
   async getProductbySlug(@Param("slug") slug: string) {
-
     try {
       console.log(`Fetching product with slug: ${slug}`);
       const result = await this.getProductBySlug.execute({ slug });
-      
+
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
           console.error(`Product not found: ${error.message}`);
           throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
         }
       } else {
-        return { slug: result.value.product };
+        const { product, materialName, brandName } = result.value;
+
+        if (!product) {
+          throw new HttpException("Product not found", HttpStatus.NOT_FOUND);
+        }
+        return {
+          product: product,
+          slug: product.slug,
+          materialName,
+          brandName,
+        };
       }
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
-        console.error(`Failed to find slug: ${error.message}`); 
+        console.error(`Failed to find slug: ${error.message}`);
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
       throw new HttpException(
@@ -207,8 +221,6 @@ export class ProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
-
-
   }
 
   @Put("save/:id")
