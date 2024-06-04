@@ -22,9 +22,12 @@ export class PrismaProductRepository implements IProductRepository {
           productCategories: true,
           brand: true,
           material: true,
+          productVariants: true,
         },
       });
 
+    console.log('PRODUCT IN PRISMA PRODUCT', productData)
+    
       if (!productData) {
         console.error(`Product not found: ${slug}`); // Log de erro
         return left(new ResourceNotFoundError(`Product not found: ${slug}`));
