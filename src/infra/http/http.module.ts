@@ -54,8 +54,9 @@ import { CreateAddressUseCase } from "@/domain/auth/application/use-cases/create
 import { CartController } from "./controllers/cart.controller";
 import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-cart";
 import { AuthModule } from "@/auth/auth.module";
-import { ListAllProductsController } from "./controllers/list-all-products.controller";
+
 import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
+import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -71,7 +72,6 @@ import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-
     AccountController,
     AddressController,
     CartController,
-    ListAllProductsController
   ],
   providers: [
     JwtService,
@@ -110,6 +110,8 @@ import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-
     FindMaterialByNameUseCase,
     FindColorByNameUseCase,
     FindCategoryByNameUseCase,
+
+    GetProductBySlugUseCase,
 
     GetAllBrandsUseCase,
     GetAllMaterialsUseCase,

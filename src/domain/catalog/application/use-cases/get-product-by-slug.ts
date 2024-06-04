@@ -1,33 +1,35 @@
-// import { ProductRepository } from '../repositories/product-repository';
-// import { Product } from '../../enterprise/entities/product';
-// import { Either, left, right } from '@/core/either';
-// import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { Product } from "../../enterprise/entities/product";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { IProductRepository } from "../repositories/i-product-repository";
+import { Injectable } from "@nestjs/common";
 
-// interface GetProductBySlugUseCaseRequest {
-//   slug: string;
-// }
+interface GetProductBySlugUseCaseRequest {
+  slug: string;
+}
 
-// type GetProductBySlugUseCaseResponse = Either<
-//   ResourceNotFoundError,
-//   {
-//     product: Product;
-//   }
-// >;
+type GetProductBySlugUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    product: Product;
+  }
+>;
 
-// export class GetProductBySlugUseCase {
-//   constructor(private productRepository: ProductRepository) {}
+@Injectable()
+export class GetProductBySlugUseCase {
+  constructor(private productRepository: IProductRepository) {}
 
-//   async execute({
-//     slug,
-//   }: GetProductBySlugUseCaseRequest): Promise<GetProductBySlugUseCaseResponse> {
-//     const product = await this.productRepository.findBySlug(slug);
+  async execute({
+    slug,
+  }: GetProductBySlugUseCaseRequest): Promise<GetProductBySlugUseCaseResponse> {
+    const productResult = await this.productRepository.findBySlug(slug);
 
-//     if (!product) {
-//       return left(new ResourceNotFoundError());
-//     }
+    if (productResult.isLeft()) {
+      return left(new ResourceNotFoundError("Product not found"));
+    }
 
-//     return right({
-//       product,
-//     });
-//   }
-// }
+    return right({
+      product: productResult.value,
+    });
+  }
+}

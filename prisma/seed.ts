@@ -3,6 +3,7 @@ import { hash } from "bcryptjs";
 import { v4 as uuidv4 } from "uuid"; // Para gerar slugs únicos
 
 const prisma = new PrismaClient();
+
 function generateSlug(
   name: string,
   brandName: string,
@@ -130,7 +131,7 @@ async function main() {
         length: 20 + i,
         weight: 0.5 + i,
         isFeatured: true,
-        slug: uuidv4(), 
+        slug: uuidv4(),
         productColors: {
           create: colorsData.map((color) => ({
             color: { connect: { id: color.id } },
@@ -145,6 +146,19 @@ async function main() {
           create: sizesData.map((size) => ({
             size: { connect: { id: size.id } },
           })),
+        },
+        productVariants: {
+          create: colorsData.flatMap((color) =>
+            sizesData.map((size) => ({
+              color: { connect: { id: color.id } },
+              size: { connect: { id: size.id } },
+              sku: `sku-${color.name}-${size.name}-${i}`,
+              price: price,
+              stock: 10 + i,
+              images: ["/images/foto1.jpg"],
+              status: "ACTIVE",
+            }))
+          ),
         },
       },
     });

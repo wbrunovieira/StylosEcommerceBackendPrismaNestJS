@@ -13,6 +13,7 @@ export class PrismaProductRepository implements IProductRepository {
 
   async findBySlug(slug: string): Promise<Either<Error, Product>> {
     try {
+      console.log(`Querying database for product with slug: ${slug}`);
       const productData = await this.prisma.product.findUnique({
         where: { slug: slug },
         include: {
@@ -25,6 +26,7 @@ export class PrismaProductRepository implements IProductRepository {
       });
 
       if (!productData) {
+        console.error(`Product not found: ${slug}`); // Log de erro
         return left(new ResourceNotFoundError(`Product not found: ${slug}`));
       }
       const product = Product.create(
@@ -70,6 +72,7 @@ export class PrismaProductRepository implements IProductRepository {
       );
       return right(product);
     } catch (error) {
+      console.error(`Failed to retrieve product: ${slug}, Error: ${error}`);
       return left(
         new ResourceNotFoundError(`Failed to retrieve product: ${slug}`)
       );

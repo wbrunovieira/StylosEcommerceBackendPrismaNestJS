@@ -49,7 +49,7 @@ Content-Type: application/json
 ###
 
 # @name edit-products
-PUT {{BASE_URL}}/products/save/5f97594f-4f67-4e4c-94ad-3dcb941c0d87
+PUT {{BASE_URL}}/products/save/37567094-b13c-47aa-bed4-fa5667dc1e4f
 Content-Type: application/json
 
 {
@@ -74,10 +74,10 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/3ed82646-943c-43ec-a87d-a1b6884c8a9d
+GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
 
 
 ###
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/nome-verdadeiro-liz-3ed82646-943c-43ec-a87d-a1b6884c8a9d
+GET {{BASE_URL}}/products/slug/produto-1-28fb0838-4946-476f-8a67-d924f1d35715-f1d4a526-28b8-4c74-b113-fea0b2cc43d5
