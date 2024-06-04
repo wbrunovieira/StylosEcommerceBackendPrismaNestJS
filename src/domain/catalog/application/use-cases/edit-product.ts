@@ -47,7 +47,7 @@ export class EditProductUseCase {
   ) {}
 
   private calculateFinalPrice(price: number, discount?: number): number {
-    
+
     if (discount && discount > 0) {
       return price - price * (discount / 100);
     }
@@ -145,23 +145,20 @@ export class EditProductUseCase {
 
     const brand = brandOrError.value;
     console.log("slug antes do slug ", product.slug);
+    let newSlug
 
     if (nameChanged) {
-      const newSlug = generateSlug(
+      newSlug = generateSlug(
         product.name,
         brand.name,
         product.id.toString()
+                
       );
-
-      const slugExists = await this.productRepository.findBySlug(
-        String(newSlug)
-      );
-      if (slugExists.isRight()) {
-        return left(new ResourceNotFoundError("Slug already exists"));
-      }
       product.slug = newSlug;
+          
     }
-
+    product.slug = newSlug;
+    
     console.log("final slug ", product.slug);
 
     const saveResult = await this.productRepository.save(product);
