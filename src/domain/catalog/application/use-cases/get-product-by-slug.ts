@@ -50,85 +50,24 @@ export class GetProductBySlugUseCase {
     slug,
   }: GetProductBySlugUseCaseRequest): Promise<GetProductBySlugUseCaseResponse> {
     console.log("entrou no useCase find by slug");
-    const productResult = await this.productRepository.findBySlug(slug);
+    // const productResult  = await this.productRepository.findBySlug(slug);
+    const result = await this.productRepository.findBySlug(slug);
 
-    console.log("productresult", productResult.value);
-
-    if (productResult.isLeft()) {
+    if (result.isLeft()) {
       return left(new ResourceNotFoundError("Product not found"));
     }
 
-    const product = productResult.value;
+    const { product, materialName, brandName, colorNames, sizeNames, categoryName } = result.value;
 
-    let materialName;
-    if (product.materialId) {
-      const material = await this.materialRepository.findById(
-        product?.materialId?.toString()
-      );
-      console.log("material", material.value);
-      materialName = material?.value.name;
-    }
-    const brand = await this.brandRepository.findById(
-      product.brandId.toString()
-    );
-    console.log("brand", brand.value);
-    const brandName = brand?.value.name;
-
-    product.materialId = materialName;
-
-    // adcionar loop para pegar name das cores de todas os ids de cores para o product
-    //colorRepository
-
-    const colorNamesSet = new Set<string>();
-    if (product.productColors) {
-      for (const colorId of product.productColors) {
-        const colorResult = await this.colorRepository.findById(
-          colorId.toString()
-        );
-        if (colorResult.isRight()) {
-          colorNamesSet.add(colorResult.value.name);
-        }
-      }
-    }
-    const colorNames = Array.from(colorNamesSet);
-
-    const sizeNamesSet = new Set<string>();
-    if (product.productSizes) {
-      for (const sizeId of product.productSizes) {
-        const sizeResult = await this.sizeRepository.findById(
-          sizeId.toString()
-        );
-        if (sizeResult.isRight()) {
-          sizeNamesSet.add(sizeResult.value.name);
-        }
-      }
-    }
-    const sizeNames = Array.from(sizeNamesSet);
-
-    const categoryNameSet = new Set<string>();
-    if (product.productCategories) {
-      for (const categoryId of product.productCategories) {
-        const categoryResult = await this.categoryRepository.findById(
-          categoryId.toString()
-        );
-        if (categoryResult.isRight()) {
-          categoryNameSet.add(categoryResult.value.name);
-        }
-      }
-    }
-    const categoryName = Array.from(categoryNameSet);
-    // adcionar os resultados no return abaixo
+      
 
     return right({
-      product: productResult.value,
+      product,
       materialName,
       brandName,
       colorNames,
       sizeNames,
       categoryName,
-      //   sizeNames,
-      //   categoryName,
-      //   variantDetails,
     });
   }
 }
