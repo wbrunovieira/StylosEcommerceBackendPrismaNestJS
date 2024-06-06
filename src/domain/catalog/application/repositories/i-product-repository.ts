@@ -6,16 +6,14 @@ export abstract class IProductRepository {
 
   abstract delete(product: Product): Promise<void>;
   abstract findById(productId: string): Promise<Either<Error, Product>>;
-  abstract findBySlug(
-    slug: string
-  ): Promise<
+  abstract findBySlug(slug: string): Promise<
     Either<
       Error,
       {
         product: Product;
         materialName?: string;
         brandName?: string;
-        colorNames: string[];
+        colors: { name: string; hex: string }[];
         sizeNames: string[];
         categoryName: string[];
       }

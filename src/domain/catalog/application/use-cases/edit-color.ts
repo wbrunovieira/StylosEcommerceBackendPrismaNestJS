@@ -8,6 +8,7 @@ import { IColorRepository } from "../repositories/i-color-repository";
 interface EditColorUseCaseRequest {
   colorId: string;
   name: string;
+  hex: string
 }
 
 type EditColorUseCaseResponse = Either<
@@ -23,6 +24,7 @@ export class EditColorUseCase {
   async execute({
     colorId,
     name,
+    hex,
   }: EditColorUseCaseRequest): Promise<EditColorUseCaseResponse> {
     const colorResult = await this.colorsRepository.findById(colorId);
 
@@ -32,6 +34,7 @@ export class EditColorUseCase {
 
     const color = colorResult.value;
     color.name = name;
+    color.hex = hex;
     const saveResult = await this.colorsRepository.save(color);
 
     if (saveResult.isLeft()) {

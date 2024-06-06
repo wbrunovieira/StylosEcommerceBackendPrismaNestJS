@@ -80,11 +80,16 @@ async function main() {
   console.log("Categories created");
 
   // Criar cores
-  const colors = ["preto", "branco", "vermelho"];
+  const colors = [
+    { name: "preto", hex: "#000000" },
+    { name: "branco", hex: "#FFFFFF" },
+    { name: "vermelho", hex: "#FF0000" },
+  ];
   for (const color of colors) {
     await prisma.color.create({
       data: {
-        name: color,
+        name: color.name,
+        hex: color.hex,
       },
     });
   }
