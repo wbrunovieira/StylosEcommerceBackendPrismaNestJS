@@ -11,23 +11,47 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findBySlug(slug: string): Promise<Either<Error, Product>> {
+  async findBySlug(slug: string): Promise<
+    Either<
+      Error,
+      {
+        product: Product;
+        materialName?: string;
+        brandName?: string;
+        colorNames: string[];
+        sizeNames: string[];
+        categoryName: string[];
+      }
+    >
+  > {
     try {
       console.log(`Querying database for product with slug: ${slug}`);
       const productData = await this.prisma.product.findUnique({
         where: { slug: slug },
         include: {
-          productColors: true,
-          productSizes: true,
-          productCategories: true,
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
           brand: true,
           material: true,
           productVariants: true,
         },
       });
 
-    console.log('PRODUCT IN PRISMA PRODUCT', productData)
-    
+      console.log("PRODUCT IN PRISMA PRODUCT", productData);
+
       if (!productData) {
         console.error(`Product not found: ${slug}`); // Log de erro
         return left(new ResourceNotFoundError(`Product not found: ${slug}`));
@@ -73,7 +97,26 @@ export class PrismaProductRepository implements IProductRepository {
         },
         new UniqueEntityID(productData.id)
       );
-      return right(product);
+      const additionalInfo = {
+        materialName: productData.material?.name ?? undefined,
+        brandName: productData.brand?.name ?? undefined,
+        colorNames: [
+          ...new Set(
+            productData.productColors.map((color) => color.color.name)
+          ),
+        ],
+        sizeNames: [
+          ...new Set(productData.productSizes.map((size) => size.size.name)),
+        ],
+        categoryName: [
+          ...new Set(
+            productData.productCategories.map(
+              (category) => category.category.name
+            )
+          ),
+        ],
+      };
+      return right({ product, ...additionalInfo });
     } catch (error) {
       console.error(`Failed to retrieve product: ${slug}, Error: ${error}`);
       return left(
