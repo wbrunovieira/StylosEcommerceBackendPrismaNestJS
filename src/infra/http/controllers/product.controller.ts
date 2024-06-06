@@ -199,7 +199,8 @@ export class ProductController {
           );
         }
       } else {
-        const { product, materialName, brandName } = result.value;
+        const { product, materialName, brandName, colorNames, sizeNames , categoryName} =
+          result.value;
 
         if (!product) {
           throw new HttpException("Product not found", HttpStatus.NOT_FOUND);
@@ -209,6 +210,9 @@ export class ProductController {
           slug: product.slug,
           materialName,
           brandName,
+          colorNames,
+          sizeNames,
+          categoryName,
         };
       }
     } catch (error) {
