@@ -9,7 +9,7 @@ import { IProductRepository } from "../repositories/i-product-repository";
 
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {  Injectable } from "@nestjs/common";
 
 import { Material } from "../../enterprise/entities/material";
 import { ISizeRepository } from "../repositories/i-size-repository";
@@ -21,7 +21,7 @@ import { IProductCategoryRepository } from "../repositories/i-product-category-r
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
 import { ProductVariant } from "../../enterprise/entities/product-variant";
 import { ProductStatus } from "../../enterprise/entities/product-status";
-import { PrismaService } from "@/prisma/prisma.service";
+
 import { generateSlug } from "../utils/generate-slug";
 
 interface CreateProductUseCaseRequest {

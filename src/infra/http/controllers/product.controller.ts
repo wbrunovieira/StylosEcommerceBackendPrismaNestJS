@@ -206,6 +206,7 @@ export class ProductController {
           colors,
           sizeNames,
           categoryName,
+          variants,
         } = result.value;
 
         if (!product) {
@@ -219,6 +220,7 @@ export class ProductController {
           colors,
           sizeNames,
           categoryName,
+          variants,
         };
       }
     } catch (error) {
