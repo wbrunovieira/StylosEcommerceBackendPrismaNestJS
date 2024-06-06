@@ -27,7 +27,7 @@ export class PrismaColorRepository implements IColorRepository {
       if (!colorData) return left(new ResourceNotFoundError("Color not found"));
 
       const color = Color.create(
-        { name: colorData.name },
+        { name: colorData.name, hex: colorData.hex },
         new UniqueEntityID(colorData.id)
       );
 
@@ -46,7 +46,10 @@ export class PrismaColorRepository implements IColorRepository {
       if (!colorData) return left(new ResourceNotFoundError("Color not found"));
 
       const color = Color.create(
-        { name: colorData.name },
+        {
+          name: colorData.name,
+          hex: colorData.hex,
+        },
         new UniqueEntityID(colorData.id)
       );
 
@@ -62,6 +65,7 @@ export class PrismaColorRepository implements IColorRepository {
         data: {
           id: color.id.toString(),
           name: color.name,
+          hex: color.hex,
           createdAt: color.createdAt,
           updatedAt: color.updatedAt,
         },
@@ -92,7 +96,7 @@ export class PrismaColorRepository implements IColorRepository {
         take: params.pageSize,
       });
       const convertedColors = colors.map((b) =>
-        Color.create({ name: b.name }, new UniqueEntityID(b.id))
+        Color.create({ name: b.name, hex: b.hex }, new UniqueEntityID(b.id))
       );
       return right(convertedColors);
     } catch (error) {

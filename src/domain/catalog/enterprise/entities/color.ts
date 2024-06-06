@@ -1,9 +1,10 @@
-import { Entity } from '@/core/entities/entity';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Optional } from '@/core/types/optional';
+import { Entity } from "@/core/entities/entity";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Optional } from "@/core/types/optional";
 
 export interface ColorProps {
   name: string;
+  hex: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -11,6 +12,9 @@ export interface ColorProps {
 export class Color extends Entity<ColorProps> {
   get name(): string {
     return this.props.name;
+  }
+  get hex(): string {
+    return this.props.hex;
   }
 
   get createdAt(): Date {
@@ -24,9 +28,12 @@ export class Color extends Entity<ColorProps> {
   set name(name: string) {
     this.props.name = name;
   }
+  set hex(hex: string) {
+    this.props.hex = hex;
+  }
 
   static create(
-    props: Optional<ColorProps, 'createdAt' | 'updatedAt'>,
+    props: Optional<ColorProps, "createdAt" | "updatedAt">,
     id?: UniqueEntityID
   ): Color {
     const color = new Color(

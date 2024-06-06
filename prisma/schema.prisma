@@ -113,8 +113,9 @@ model Address {
 }
 
 model Color {
-  id   String @id @default(uuid())
-  name String
+  id    String @id @default(uuid())
+  name  String
+  hex   String
   productColors ProductColor[]
   productVariants ProductVariant[]
   createdAt DateTime @default(now()) @map("created_at")

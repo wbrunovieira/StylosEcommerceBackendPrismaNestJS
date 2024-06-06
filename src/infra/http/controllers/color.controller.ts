@@ -26,11 +26,14 @@ import { GetAllColorsUseCase } from "@/domain/catalog/application/use-cases/get-
 import { DeleteColorUseCase } from "@/domain/catalog/application/use-cases/delete-color";
 import { left } from "@/core/either";
 
+const hexColorRegex = /^#([0-9A-F]{3}){1,2}$/i;
+
 const createColorSchema = z.object({
   name: z
     .string()
     .min(1, "Color must not be empty")
     .max(50, "Color must not exceed 20 characters"),
+  hex: z.string().regex(hexColorRegex, "Invalid hex color format"),
 });
 const bodyValidationPipe = new ZodValidationsPipe(createColorSchema);
 type CreateColorBodySchema = z.infer<typeof createColorSchema>;
@@ -40,6 +43,7 @@ const editColorSchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(50, "Name must not exceed 20 characters"),
+  hex: z.string().regex(hexColorRegex, "Invalid hex color format"),
 });
 const editBodyValidationPipe = new ZodValidationsPipe(editColorSchema);
 type EditColorBodySchema = z.infer<typeof editColorSchema>;
@@ -70,7 +74,10 @@ export class ColorsController {
   @Roles("admin")
   async createColor(@Body(bodyValidationPipe) body: CreateColorBodySchema) {
     try {
-      const result = await this.createColorUseCase.execute({ name: body.name });
+      const result = await this.createColorUseCase.execute({
+        name: body.name,
+        hex: body.hex,
+      });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
@@ -101,6 +108,7 @@ export class ColorsController {
       const result = await this.editColorUseCase.execute({
         colorId,
         name: body.name,
+        hex: body.hex,
       });
       if (result.isLeft()) {
         const error = result.value;
