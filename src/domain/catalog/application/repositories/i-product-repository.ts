@@ -16,6 +16,15 @@ export abstract class IProductRepository {
         colors: { name: string; hex: string }[];
         sizeNames: string[];
         categoryName: string[];
+        variants: {
+          id: string;
+          sizeId?: string;
+          colorId?: string;
+          stock: number;
+          price: number;
+          images: string[];
+          sku: string;
+        }[];
       }
     >
   >;

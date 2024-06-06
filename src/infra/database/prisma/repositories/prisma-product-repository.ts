@@ -21,6 +21,15 @@ export class PrismaProductRepository implements IProductRepository {
         colors: { name: string; hex: string }[];
         sizeNames: string[];
         categoryName: string[];
+        variants: {
+          id: string;
+          sizeId?: string;
+          colorId?: string;
+          stock: number;
+          price: number;
+          images: string[];
+          sku: string;
+        }[];
       }
     >
   > {
@@ -100,9 +109,13 @@ export class PrismaProductRepository implements IProductRepository {
 
       const uniqueColors = Array.from(
         new Map(
-          productData.productColors.map((color) => [color.color.name, { name: color.color.name, hex: color.color.hex }])
+          productData.productColors.map((color) => [
+            color.color.name,
+            { name: color.color.name, hex: color.color.hex },
+          ])
         ).values()
       );
+
       const additionalInfo = {
         materialName: productData.material?.name ?? undefined,
         brandName: productData.brand?.name ?? undefined,
@@ -117,6 +130,15 @@ export class PrismaProductRepository implements IProductRepository {
             )
           ),
         ],
+        variants: productData.productVariants.map((variant) => ({
+          id: variant.id,
+          sizeId: variant.sizeId ?? undefined,
+          colorId: variant.colorId ?? undefined,
+          stock: variant.stock,
+          price: variant.price,
+          images: variant.images,
+          sku: variant.sku,
+        })),
       };
       return right({ product, ...additionalInfo });
     } catch (error) {
