@@ -204,7 +204,7 @@ export class ProductController {
           materialName,
           brandName,
           colors,
-          sizeNames,
+          sizes,
           categoryName,
           variants,
         } = result.value;
@@ -218,7 +218,7 @@ export class ProductController {
           materialName,
           brandName,
           colors,
-          sizeNames,
+          sizes,
           categoryName,
           variants,
         };

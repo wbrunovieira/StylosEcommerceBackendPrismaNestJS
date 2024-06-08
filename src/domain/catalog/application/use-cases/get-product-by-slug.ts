@@ -14,8 +14,8 @@ type GetProductBySlugUseCaseResponse = Either<
     product: Product;
     materialName?: string;
     brandName?: string;
-    colors: { name: string; hex: string }[];
-    sizeNames: string[];
+    colors: { id: string; name: string; hex: string }[];
+    sizes: { id: string; name: string }[];
     categoryName: string[];
     variants: {
       id: string;
@@ -49,9 +49,9 @@ export class GetProductBySlugUseCase {
       materialName,
       brandName,
       colors,
-      sizeNames,
+      sizes,
       categoryName,
-      variants
+      variants,
     } = result.value;
 
     return right({
@@ -59,9 +59,9 @@ export class GetProductBySlugUseCase {
       materialName,
       brandName,
       colors,
-      sizeNames,
+      sizes,
       categoryName,
-      variants
+      variants,
     });
   }
 }

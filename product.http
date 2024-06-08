@@ -80,4 +80,4 @@ GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
 ###
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/produto-1-c99cd780-ddef-499b-99bf-168608afd49c-bd966a11-275d-4838-b9e5-0a184972453b
+GET {{BASE_URL}}/products/slug/produto-11-065eb4a9-75a2-4eb1-ad0a-0c972bfc1a21-4812a198-c661-46fd-96bd-005090580e39
