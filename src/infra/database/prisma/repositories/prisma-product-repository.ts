@@ -18,8 +18,8 @@ export class PrismaProductRepository implements IProductRepository {
         product: Product;
         materialName?: string;
         brandName?: string;
-        colors: { name: string; hex: string }[];
-        sizeNames: string[];
+        colors: { id:string, name: string; hex: string }[];
+        sizes: { id:string, name: string; }[];
         categoryName: string[];
         variants: {
           id: string;
@@ -111,7 +111,16 @@ export class PrismaProductRepository implements IProductRepository {
         new Map(
           productData.productColors.map((color) => [
             color.color.name,
-            { name: color.color.name, hex: color.color.hex },
+            { id: color.color.id, name: color.color.name, hex: color.color.hex },
+          ])
+        ).values()
+      );
+
+      const uniqueSizes = Array.from(
+        new Map(
+          productData.productSizes.map((size) => [
+            size.size.name,
+            { id: size.size.id, name: size.size.name },
           ])
         ).values()
       );
@@ -120,9 +129,7 @@ export class PrismaProductRepository implements IProductRepository {
         materialName: productData.material?.name ?? undefined,
         brandName: productData.brand?.name ?? undefined,
         colors: uniqueColors,
-        sizeNames: [
-          ...new Set(productData.productSizes.map((size) => size.size.name)),
-        ],
+        sizes: uniqueSizes,
         categoryName: [
           ...new Set(
             productData.productCategories.map(
