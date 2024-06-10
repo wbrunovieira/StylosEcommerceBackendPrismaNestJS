@@ -167,6 +167,13 @@ export class ProductController {
       orderBy: {
         name: "asc",
       },
+      include: {
+        productCategories: {
+          include: {
+            category: true,
+          },
+        },
+      },
     });
 
     return { products };
@@ -205,7 +212,7 @@ export class ProductController {
           brandName,
           colors,
           sizes,
-          categoryName,
+          categories,
           variants,
         } = result.value;
 
@@ -219,7 +226,7 @@ export class ProductController {
           brandName,
           colors,
           sizes,
-          categoryName,
+          categories,
           variants,
         };
       }

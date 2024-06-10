@@ -15,7 +15,7 @@ export abstract class IProductRepository {
         brandName?: string;
         colors: { id: string; name: string; hex: string }[];
         sizes: { id: string; name: string }[];
-        categoryName: string[];
+        categories: { id:string, name: string; }[];
         variants: {
           id: string;
           sizeId?: string;

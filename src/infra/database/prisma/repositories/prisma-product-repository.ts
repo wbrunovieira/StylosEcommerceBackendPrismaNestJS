@@ -20,7 +20,8 @@ export class PrismaProductRepository implements IProductRepository {
         brandName?: string;
         colors: { id:string, name: string; hex: string }[];
         sizes: { id:string, name: string; }[];
-        categoryName: string[];
+        categories: { id:string, name: string; }[];
+        
         variants: {
           id: string;
           sizeId?: string;
@@ -59,7 +60,7 @@ export class PrismaProductRepository implements IProductRepository {
         },
       });
 
-      console.log("PRODUCT IN PRISMA PRODUCT", productData);
+    
 
       if (!productData) {
         console.error(`Product not found: ${slug}`); // Log de erro
@@ -124,19 +125,21 @@ export class PrismaProductRepository implements IProductRepository {
           ])
         ).values()
       );
+      const uniqueCategory = Array.from(
+        new Map(
+          productData.productCategories.map((category) => [
+            category.category.name,
+            { id: category.category.id, name: category.category.name },
+          ])
+        ).values()
+      );
 
       const additionalInfo = {
         materialName: productData.material?.name ?? undefined,
         brandName: productData.brand?.name ?? undefined,
         colors: uniqueColors,
         sizes: uniqueSizes,
-        categoryName: [
-          ...new Set(
-            productData.productCategories.map(
-              (category) => category.category.name
-            )
-          ),
-        ],
+        categories: uniqueCategory,
         variants: productData.productVariants.map((variant) => ({
           id: variant.id,
           sizeId: variant.sizeId ?? undefined,
