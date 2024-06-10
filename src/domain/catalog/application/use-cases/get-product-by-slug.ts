@@ -16,7 +16,7 @@ type GetProductBySlugUseCaseResponse = Either<
     brandName?: string;
     colors: { id: string; name: string; hex: string }[];
     sizes: { id: string; name: string }[];
-    categoryName: string[];
+    categories: { id: string; name: string }[];
     variants: {
       id: string;
       sizeId?: string;
@@ -50,7 +50,7 @@ export class GetProductBySlugUseCase {
       brandName,
       colors,
       sizes,
-      categoryName,
+      categories,
       variants,
     } = result.value;
 
@@ -60,7 +60,7 @@ export class GetProductBySlugUseCase {
       brandName,
       colors,
       sizes,
-      categoryName,
+      categories,
       variants,
     });
   }
