@@ -11,6 +11,93 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
+  async findByCategoryId(categoryId: string): Promise<Either<Error, Product[]>> {
+    try {
+      console.log(`Querying database for products with categoryId: ${categoryId}`);
+      const productsData = await this.prisma.product.findMany({
+        where: {
+          productCategories: {
+            some: {
+              categoryId: categoryId
+            }
+          }
+        },
+        include: {
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
+          brand: true,
+          material: true,
+          productVariants: true,
+        },
+      });
+
+      if (!productsData.length) {
+        return left(new ResourceNotFoundError(`No products found for categoryId: ${categoryId}`));
+      }
+
+      const products = productsData.map(productData => Product.create(
+        {
+          name: productData.name,
+          description: productData.description,
+          productSizes: productData.productSizes.map(
+            (size) => new UniqueEntityID(size.sizeId)
+          ),
+          productColors: productData.productColors.map(
+            (color) => new UniqueEntityID(color.colorId)
+          ),
+          productCategories: productData.productCategories.map(
+            (category) => new UniqueEntityID(category.categoryId)
+          ),
+          materialId: productData.materialId
+            ? new UniqueEntityID(productData.materialId)
+            : undefined,
+          sizeId: productData.productSizes.map(
+            (size) => new UniqueEntityID(size.sizeId)
+          ),
+          finalPrice: productData.finalPrice ?? undefined,
+          brandId: new UniqueEntityID(productData.brandId),
+          discount: productData.discount ?? undefined,
+          price: productData.price,
+          stock: productData.stock,
+          sku: productData.sku ?? "ntt",
+          height: productData.height ?? undefined,
+          width: productData.width ?? undefined,
+          length: productData.length ?? undefined,
+          weight: productData.weight ?? undefined,
+          onSale: productData.onSale ?? undefined,
+          isFeatured: productData.isFeatured ?? undefined,
+          isNew: productData.isNew ?? undefined,
+          images: productData.images ?? undefined,
+          createdAt: new Date(productData.createdAt),
+          updatedAt: productData.updatedAt
+            ? new Date(productData.updatedAt)
+            : undefined,
+        },
+        new UniqueEntityID(productData.id)
+      ));
+
+      return right(products);
+    } catch (error) {
+      console.error(`Failed to retrieve products for categoryId: ${categoryId}, Error: ${error}`);
+      return left(
+        new ResourceNotFoundError(`Failed to retrieve products for categoryId: ${categoryId}`)
+      );
+    }
+  }
+
   async findBySlug(slug: string): Promise<
     Either<
       Error,

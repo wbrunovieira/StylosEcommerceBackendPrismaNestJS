@@ -6,6 +6,7 @@ export abstract class IProductRepository {
 
   abstract delete(product: Product): Promise<void>;
   abstract findById(productId: string): Promise<Either<Error, Product>>;
+   abstract findByCategoryId(categoryId: string): Promise<Either<Error, Product[]>>
   abstract findBySlug(slug: string): Promise<
     Either<
       Error,

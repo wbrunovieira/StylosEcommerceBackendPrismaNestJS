@@ -23,6 +23,7 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
 import { PrismaService } from "@/prisma/prisma.service";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
+import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -92,7 +93,8 @@ export class ProductController {
     private createProductUseCase: CreateProductUseCase,
     private prisma: PrismaService,
     private editProductUseCase: EditProductUseCase,
-    private getProductBySlug: GetProductBySlugUseCase
+    private getProductBySlug: GetProductBySlugUseCase,
+    private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase
   ) {}
 
   @Post()
@@ -140,6 +142,30 @@ export class ProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Get("/category/:categoryId")
+  async allProductsByCategory(@Param("categoryId") categoryId: string) {
+    try {
+      const result = await this.getAllProductsByCategoryId.execute({
+        categoryId,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          console.error(`Products not found: ${error.message}`);
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+      } else {
+        return result.value;
+      }
+    } catch (error) {}
   }
 
   @Get("/featured-products")
