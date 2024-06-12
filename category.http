@@ -50,7 +50,7 @@ Content-Type: application/json
 # @name get-category-all
 GET {{BASE_URL}}/category/all?page=1&pageSize=10
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 ###
