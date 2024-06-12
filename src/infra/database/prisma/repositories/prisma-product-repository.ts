@@ -6,21 +6,21 @@ import { Product } from "../../../../domain/catalog/enterprise/entities/product"
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findByCategoryId(categoryId: string): Promise<Either<Error, Product[]>> {
+  async findByName(name: string): Promise<Either<Error, Product[]>> {
     try {
-      console.log(`Querying database for products with categoryId: ${categoryId}`);
+      console.log(`Querying database for products with name: ${name}`);
       const productsData = await this.prisma.product.findMany({
         where: {
-          productCategories: {
-            some: {
-              categoryId: categoryId
-            }
-          }
+          name: {
+            contains: name,
+            mode: "insensitive",
+          },
         },
         include: {
           productColors: {
@@ -45,55 +45,166 @@ export class PrismaProductRepository implements IProductRepository {
       });
 
       if (!productsData.length) {
-        return left(new ResourceNotFoundError(`No products found for categoryId: ${categoryId}`));
+        return left(
+          new ResourceNotFoundError(`No products found for name: ${name}`)
+        );
       }
 
-      const products = productsData.map(productData => Product.create(
-        {
-          name: productData.name,
-          description: productData.description,
-          productSizes: productData.productSizes.map(
-            (size) => new UniqueEntityID(size.sizeId)
-          ),
-          productColors: productData.productColors.map(
-            (color) => new UniqueEntityID(color.colorId)
-          ),
-          productCategories: productData.productCategories.map(
-            (category) => new UniqueEntityID(category.categoryId)
-          ),
-          materialId: productData.materialId
-            ? new UniqueEntityID(productData.materialId)
-            : undefined,
-          sizeId: productData.productSizes.map(
-            (size) => new UniqueEntityID(size.sizeId)
-          ),
-          finalPrice: productData.finalPrice ?? undefined,
-          brandId: new UniqueEntityID(productData.brandId),
-          discount: productData.discount ?? undefined,
-          price: productData.price,
-          stock: productData.stock,
-          sku: productData.sku ?? "ntt",
-          height: productData.height ?? undefined,
-          width: productData.width ?? undefined,
-          length: productData.length ?? undefined,
-          weight: productData.weight ?? undefined,
-          onSale: productData.onSale ?? undefined,
-          isFeatured: productData.isFeatured ?? undefined,
-          isNew: productData.isNew ?? undefined,
-          images: productData.images ?? undefined,
-          createdAt: new Date(productData.createdAt),
-          updatedAt: productData.updatedAt
-            ? new Date(productData.updatedAt)
-            : undefined,
-        },
-        new UniqueEntityID(productData.id)
-      ));
+      const products = productsData.map((productData) =>
+        Product.create(
+          {
+            name: productData.name,
+            description: productData.description,
+            productSizes: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            productColors: productData.productColors.map(
+              (color) => new UniqueEntityID(color.colorId)
+            ),
+            productCategories: productData.productCategories.map(
+              (category) => new UniqueEntityID(category.categoryId)
+            ),
+            materialId: productData.materialId
+              ? new UniqueEntityID(productData.materialId)
+              : undefined,
+            sizeId: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            finalPrice: productData.finalPrice ?? undefined,
+            brandId: new UniqueEntityID(productData.brandId),
+            discount: productData.discount ?? undefined,
+            price: productData.price,
+            stock: productData.stock,
+            sku: productData.sku ?? "ntt",
+            height: productData.height ?? undefined,
+            width: productData.width ?? undefined,
+            length: productData.length ?? undefined,
+            weight: productData.weight ?? undefined,
+            onSale: productData.onSale ?? undefined,
+            isFeatured: productData.isFeatured ?? undefined,
+            isNew: productData.isNew ?? undefined,
+            images: productData.images ?? undefined,
+            slug: Slug.createFromText(productData.slug),
+            createdAt: new Date(productData.createdAt),
+            updatedAt: productData.updatedAt
+              ? new Date(productData.updatedAt)
+              : undefined,
+          },
+          new UniqueEntityID(productData.id)
+        )
+      );
 
       return right(products);
     } catch (error) {
-      console.error(`Failed to retrieve products for categoryId: ${categoryId}, Error: ${error}`);
+      console.error(
+        `Failed to retrieve products for name: ${name}, Error: ${error}`
+      );
       return left(
-        new ResourceNotFoundError(`Failed to retrieve products for categoryId: ${categoryId}`)
+        new ResourceNotFoundError(
+          `Failed to retrieve products for name: ${name}`
+        )
+      );
+    }
+  }
+
+  async findByCategoryId(
+    categoryId: string
+  ): Promise<Either<Error, Product[]>> {
+    try {
+      console.log(
+        `Querying database for products with categoryId: ${categoryId}`
+      );
+      const productsData = await this.prisma.product.findMany({
+        where: {
+          productCategories: {
+            some: {
+              categoryId: categoryId,
+            },
+          },
+        },
+        include: {
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
+          brand: true,
+          material: true,
+          productVariants: true,
+        },
+      });
+
+      if (!productsData.length) {
+        return left(
+          new ResourceNotFoundError(
+            `No products found for categoryId: ${categoryId}`
+          )
+        );
+      }
+
+      const products = productsData.map((productData) =>
+        Product.create(
+          {
+            name: productData.name,
+            description: productData.description,
+            productSizes: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            productColors: productData.productColors.map(
+              (color) => new UniqueEntityID(color.colorId)
+            ),
+            productCategories: productData.productCategories.map(
+              (category) => new UniqueEntityID(category.categoryId)
+            ),
+            materialId: productData.materialId
+              ? new UniqueEntityID(productData.materialId)
+              : undefined,
+            sizeId: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            finalPrice: productData.finalPrice ?? undefined,
+            brandId: new UniqueEntityID(productData.brandId),
+            discount: productData.discount ?? undefined,
+            price: productData.price,
+            stock: productData.stock,
+            sku: productData.sku ?? "ntt",
+            height: productData.height ?? undefined,
+            width: productData.width ?? undefined,
+            length: productData.length ?? undefined,
+            weight: productData.weight ?? undefined,
+            onSale: productData.onSale ?? undefined,
+            isFeatured: productData.isFeatured ?? undefined,
+            isNew: productData.isNew ?? undefined,
+            images: productData.images ?? undefined,
+            slug: Slug.createFromText(productData.slug),
+            createdAt: new Date(productData.createdAt),
+            updatedAt: productData.updatedAt
+              ? new Date(productData.updatedAt)
+              : undefined,
+          },
+          new UniqueEntityID(productData.id)
+        )
+      );
+
+      return right(products);
+    } catch (error) {
+      console.error(
+        `Failed to retrieve products for categoryId: ${categoryId}, Error: ${error}`
+      );
+      return left(
+        new ResourceNotFoundError(
+          `Failed to retrieve products for categoryId: ${categoryId}`
+        )
       );
     }
   }
@@ -105,10 +216,10 @@ export class PrismaProductRepository implements IProductRepository {
         product: Product;
         materialName?: string;
         brandName?: string;
-        colors: { id:string, name: string; hex: string }[];
-        sizes: { id:string, name: string; }[];
-        categories: { id:string, name: string; }[];
-        
+        colors: { id: string; name: string; hex: string }[];
+        sizes: { id: string; name: string }[];
+        categories: { id: string; name: string }[];
+
         variants: {
           id: string;
           sizeId?: string;
@@ -146,8 +257,6 @@ export class PrismaProductRepository implements IProductRepository {
           productVariants: true,
         },
       });
-
-    
 
       if (!productData) {
         console.error(`Product not found: ${slug}`); // Log de erro
@@ -199,7 +308,11 @@ export class PrismaProductRepository implements IProductRepository {
         new Map(
           productData.productColors.map((color) => [
             color.color.name,
-            { id: color.color.id, name: color.color.name, hex: color.color.hex },
+            {
+              id: color.color.id,
+              name: color.color.name,
+              hex: color.color.hex,
+            },
           ])
         ).values()
       );

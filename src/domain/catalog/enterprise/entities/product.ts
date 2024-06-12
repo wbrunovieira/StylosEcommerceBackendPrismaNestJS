@@ -34,54 +34,48 @@ export interface ProductProps {
 }
 
 export class Product extends Entity<ProductProps> {
-
-
   private touch() {
-      this.props.updatedAt = new Date();
-   
+    this.props.updatedAt = new Date();
   }
 
   get height() {
     return this.props.height;
   }
 
-  set height(height:number) {
-    this.props.height = height
+  set height(height: number) {
+    this.props.height = height;
     this.touch();
   }
 
-  set width(width:number) {
-    this.props.width = width
+  set width(width: number) {
+    this.props.width = width;
     this.touch();
   }
-  set length(length:number) {
-    this.props.length = length
-    this.touch();
-  }
-
-  set weight(weight:number) {
-    this.props.weight = weight
-    this.touch();
-  }
-  set onSale(onSale:boolean) {
-    this.props.onSale = onSale
-    this.touch();
-  }
-  set isFeatured(isFeatured:boolean) {
-    this.props.isFeatured = isFeatured
-    this.touch();
-  }
-  set isNew(isNew:boolean) {
-    this.props.isNew = isNew
-    this.touch();
-  }
-  set images(images:string[]) {
-    this.props.images = images
+  set length(length: number) {
+    this.props.length = length;
     this.touch();
   }
 
-
-
+  set weight(weight: number) {
+    this.props.weight = weight;
+    this.touch();
+  }
+  set onSale(onSale: boolean) {
+    this.props.onSale = onSale;
+    this.touch();
+  }
+  set isFeatured(isFeatured: boolean) {
+    this.props.isFeatured = isFeatured;
+    this.touch();
+  }
+  set isNew(isNew: boolean) {
+    this.props.isNew = isNew;
+    this.touch();
+  }
+  set images(images: string[]) {
+    this.props.images = images;
+    this.touch();
+  }
 
   get sku() {
     return this.props.sku;
@@ -97,7 +91,7 @@ export class Product extends Entity<ProductProps> {
     return this.props.isFeatured ?? false;
   }
   get images() {
-    return this.props.images ?? []
+    return this.props.images ?? [];
   }
   get width() {
     return this.props.width;
@@ -136,6 +130,8 @@ export class Product extends Entity<ProductProps> {
   get price() {
     return this.props.price;
   }
+
+
 
   get stock() {
     return this.props.stock;
@@ -270,7 +266,6 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-
   setFinalPrice(finalPrice: number) {
     this.props.finalPrice = finalPrice;
     this.touch();
@@ -290,7 +285,7 @@ export class Product extends Entity<ProductProps> {
       },
       id
     );
-  
+
     return product;
   }
 }

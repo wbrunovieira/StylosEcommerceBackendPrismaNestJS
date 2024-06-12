@@ -24,6 +24,7 @@ import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-
 import { PrismaService } from "@/prisma/prisma.service";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
+import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -94,7 +95,8 @@ export class ProductController {
     private prisma: PrismaService,
     private editProductUseCase: EditProductUseCase,
     private getProductBySlug: GetProductBySlugUseCase,
-    private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase
+    private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
+    private findProductByName: FindProductByNameUseCase
   ) {}
 
   @Post()
@@ -142,6 +144,31 @@ export class ProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Get("/search")
+  async searchProducts(@Query("name") name: string) {
+    console.log("name controller", name);
+
+    if (!name) {
+      throw new HttpException(
+        "Query parameter 'name' is required",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const result = await this.findProductByName.execute({ name });
+    console.log("result controller", result);
+
+    if (result.isLeft()) {
+      const error = result.value;
+      console.log("error controller", error);
+      if (error instanceof ResourceNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+    }
+
+    return { products: result.value };
   }
 
   @Get("/category/:categoryId")
@@ -207,6 +234,7 @@ export class ProductController {
 
   @Get(":id")
   async getProduct(@Param("id") id: string) {
+    console.log("id controller");
     const product = await this.prisma.product.findUnique({ where: { id } });
     if (!product) {
       throw new HttpException("Produto não encontrado", HttpStatus.NOT_FOUND);

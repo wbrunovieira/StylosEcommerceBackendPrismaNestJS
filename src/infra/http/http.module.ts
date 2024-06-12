@@ -58,6 +58,7 @@ import { AuthModule } from "@/auth/auth.module";
 import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
+import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -120,6 +121,7 @@ import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use
     GetAllSizesUseCase,
     GetAllCategoriesUseCase,
     GetProductsByCategoryIdUseCase,
+    FindProductByNameUseCase,
 
     ApiGetAllProducts,
 
