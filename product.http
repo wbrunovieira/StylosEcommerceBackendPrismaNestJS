@@ -84,5 +84,14 @@ GET {{BASE_URL}}/products/category/122c3e06-97ab-4de4-a92d-c3d12f1262ec
 
 ###
 
+
 # @name get-product-by-slug
 GET {{BASE_URL}}/products/slug/produto-11-065eb4a9-75a2-4eb1-ad0a-0c972bfc1a21-4812a198-c661-46fd-96bd-005090580e39
+
+
+###
+
+# @name get-product-by-name
+GET {{BASE_URL}}/products/search?name=1
+
+###
