@@ -92,6 +92,6 @@ GET {{BASE_URL}}/products/slug/produto-11-065eb4a9-75a2-4eb1-ad0a-0c972bfc1a21-4
 ###
 
 # @name get-product-by-name
-GET {{BASE_URL}}/products/search?name=1
+GET {{BASE_URL}}/products/search?name=3
 
 ###
