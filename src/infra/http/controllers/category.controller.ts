@@ -128,11 +128,11 @@ export class CategoryController {
   @Get("all")
   async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
     try {
-      
+      console.log("entrando no get all categories");
+
       const result = await this.getAllCategoriesUseCase.execute(params);
-      
+
       if (result.isLeft()) {
-      
         throw new HttpException(
           "Failed to find categories",
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -144,7 +144,7 @@ export class CategoryController {
       return left(new Error("Repository error"));
     }
   }
-  
+
   @Get(":id")
   async findCategoryById(@Param("id") id: string) {
     try {

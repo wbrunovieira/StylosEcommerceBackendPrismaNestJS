@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
-import { v4 as uuidv4 } from "uuid"; // Para gerar slugs únicos
+import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
@@ -71,8 +71,10 @@ async function main() {
   // Criar categorias
   const categories = ["lingerie", "masculino", "pijamas"];
   for (const category of categories) {
-    await prisma.category.create({
-      data: {
+    await prisma.category.upsert({
+      where: { name: category },
+      update: {},
+      create: {
         name: category,
       },
     });
