@@ -33,6 +33,10 @@ const createCategorySchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(20, "Name must not exceed 20 characters"),
+  imageUrl: z
+    .string()
+    .url("Invalid URL format")
+    .nonempty("Image URL must not be empty"),
 });
 const bodyValidationPipe = new ZodValidationsPipe(createCategorySchema);
 type CreateCategoryBodySchema = z.infer<typeof createCategorySchema>;
@@ -42,6 +46,10 @@ const editCategorySchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(20, "Name must not exceed 20 characters"),
+    imageUrl: z
+    .string()
+    .url("Invalid URL format")
+    .nonempty("Image URL must not be empty"),
 });
 const editBodyValidationPipe = new ZodValidationsPipe(editCategorySchema);
 type EditCategoryBodySchema = z.infer<typeof editCategorySchema>;
@@ -76,6 +84,7 @@ export class CategoryController {
     try {
       const result = await this.createCategoryUseCase.execute({
         name: body.name,
+        imageUrl: body.imageUrl,
       });
       if (result.isLeft()) {
         const error = result.value;
@@ -105,6 +114,7 @@ export class CategoryController {
       const result = await this.editCategoryUseCase.execute({
         categoryId,
         name: body.name,
+        imageUrl: body.imageUrl,
       });
       if (result.isLeft()) {
         const error = result.value;

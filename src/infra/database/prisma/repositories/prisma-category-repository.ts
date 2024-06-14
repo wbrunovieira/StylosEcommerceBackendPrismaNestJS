@@ -29,7 +29,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         return left(new ResourceNotFoundError("Category not found"));
 
       const category = Category.create(
-        { name: categoryData.name },
+        { name: categoryData.name, imageUrl: categoryData.imageUrl },
         new UniqueEntityID(categoryData.id)
       );
 
@@ -47,6 +47,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         },
         data: {
           name: category.name,
+          imageUrl: category.imageUrl,
           updatedAt: new Date(),
         },
       });
@@ -62,6 +63,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         data: {
           id: category.id.toString(),
           name: category.name,
+          imageUrl: category.imageUrl,
           createdAt: category.createdAt,
           updatedAt: category.updatedAt,
         },
@@ -96,7 +98,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         return left(new ResourceNotFoundError("Category not found"));
 
       const category = Category.create(
-        { name: categoryData.name },
+        { name: categoryData.name , imageUrl: categoryData.imageUrl},
         new UniqueEntityID(categoryData.id)
       );
 
@@ -114,7 +116,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
       });
 
       const convertedCategory = category.map((b) =>
-        Category.create({ name: b.name }, new UniqueEntityID(b.id))
+        Category.create({ name: b.name , imageUrl: b.imageUrl}, new UniqueEntityID(b.id))
       );
 
       return right(convertedCategory);

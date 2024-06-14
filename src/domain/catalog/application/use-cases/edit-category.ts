@@ -9,6 +9,7 @@ import { ICategoryRepository } from "../repositories/i-category-repository";
 interface EditCategoryUseCaseRequest {
   categoryId: string;
   name: string;
+  imageUrl: string
 }
 
 type EditCategoryUseCaseResponse = Either<
@@ -25,6 +26,7 @@ export class EditCategoryUseCase {
   async execute({
     categoryId,
     name,
+    imageUrl
   }: EditCategoryUseCaseRequest): Promise<EditCategoryUseCaseResponse> {
     const categoryResult = await this.categoryRepository.findById(categoryId);
 
@@ -34,6 +36,8 @@ export class EditCategoryUseCase {
 
     const category = categoryResult.value;
     category.name = name;
+    category.imageUrl = imageUrl;
+
     const saveResult = await this.categoryRepository.save(category);
 
     if (saveResult.isLeft()) {
