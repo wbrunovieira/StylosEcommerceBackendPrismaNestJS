@@ -160,6 +160,7 @@ model ProductSize {
 model Category {
   id       String  @id @default(uuid())
   name     String   @unique
+  imageUrl  String
   productCategories ProductCategory[]
 
   createdAt DateTime @default(now()) @map("created_at")

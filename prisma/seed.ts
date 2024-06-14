@@ -69,13 +69,18 @@ async function main() {
   console.log("Brands created");
 
   // Criar categorias
-  const categories = ["lingerie", "masculino", "pijamas"];
+  const categories = [
+    { name: "lingerie", imageUrl: "/icons/lingerie-mini.svg" },
+    { name: "masculino", imageUrl: "/icons/boy.svg" },
+    { name: "pijamas", imageUrl: "/icons/pijamas-mini.svg" },
+  ];
   for (const category of categories) {
     await prisma.category.upsert({
-      where: { name: category },
+      where: { name: category.name },
       update: {},
       create: {
-        name: category,
+        name: category.name,
+        imageUrl: category.imageUrl,
       },
     });
   }

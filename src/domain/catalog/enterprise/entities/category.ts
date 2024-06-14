@@ -4,6 +4,7 @@ import { Optional } from "@/core/types/optional";
 
 export interface CategoryProps {
   name: string;
+  imageUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -12,6 +13,9 @@ export class Category extends Entity<CategoryProps> {
   get name(): string {
     return this.props.name;
   }
+  get imageUrl(): string {
+    return this.props.imageUrl;
+}
 
   get createdAt(): Date {
     return this.props.createdAt;
@@ -23,6 +27,9 @@ export class Category extends Entity<CategoryProps> {
 
   set name(name: string) {
     this.props.name = name;
+  }
+  set imageUrl(imageUrl: string) {
+    this.props.imageUrl = imageUrl;
   }
 
   static create(
