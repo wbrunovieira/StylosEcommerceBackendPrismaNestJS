@@ -40,8 +40,8 @@ Content-Type: application/json
 ###
 
 # @name find-category-by-id
-GET  {{BASE_URL}}/category/84f4d873-5af4-453d-85d3-a1f26a01ee65
-Authorization: Bearer {{AUTH_TOKEN}}
+GET  {{BASE_URL}}/category/1a26dfa3-83f9-4d9b-bf94-d47224614326
+
 Content-Type: application/json
 
 ###

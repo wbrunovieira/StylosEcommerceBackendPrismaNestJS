@@ -62,7 +62,10 @@ export class PrismaProductRepository implements IProductRepository {
               (color) => new UniqueEntityID(color.colorId)
             ),
             productCategories: productData.productCategories.map(
-              (category) => new UniqueEntityID(category.categoryId)
+              (category) => ({
+                id: new UniqueEntityID(category.categoryId),
+                name: category.category.name,
+              })
             ),
             materialId: productData.materialId
               ? new UniqueEntityID(productData.materialId)
@@ -164,7 +167,10 @@ export class PrismaProductRepository implements IProductRepository {
               (color) => new UniqueEntityID(color.colorId)
             ),
             productCategories: productData.productCategories.map(
-              (category) => new UniqueEntityID(category.categoryId)
+              (category) => ({
+                id: new UniqueEntityID(category.categoryId),
+                name: category.category.name,
+              })
             ),
             materialId: productData.materialId
               ? new UniqueEntityID(productData.materialId)
@@ -272,9 +278,10 @@ export class PrismaProductRepository implements IProductRepository {
           productColors: productData.productColors.map(
             (color) => new UniqueEntityID(color.colorId)
           ),
-          productCategories: productData.productCategories.map(
-            (category) => new UniqueEntityID(category.categoryId)
-          ),
+          productCategories: productData.productCategories.map((category) => ({
+            id: new UniqueEntityID(category.categoryId),
+            name: category.category.name,
+          })),
           materialId: productData.materialId
             ? new UniqueEntityID(productData.materialId)
             : undefined,
@@ -364,9 +371,21 @@ export class PrismaProductRepository implements IProductRepository {
       const productData = await this.prisma.product.findUnique({
         where: { id: productId },
         include: {
-          productColors: true,
-          productSizes: true,
-          productCategories: true,
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
           brand: true,
           material: true,
         },
@@ -387,9 +406,10 @@ export class PrismaProductRepository implements IProductRepository {
           productColors: productData.productColors.map(
             (color) => new UniqueEntityID(color.colorId)
           ),
-          productCategories: productData.productCategories.map(
-            (category) => new UniqueEntityID(category.categoryId)
-          ),
+          productCategories: productData.productCategories.map((category) => ({
+            id: new UniqueEntityID(category.categoryId),
+            name: category.category.name,
+          })),
           materialId: productData.materialId
             ? new UniqueEntityID(productData.materialId)
             : undefined,

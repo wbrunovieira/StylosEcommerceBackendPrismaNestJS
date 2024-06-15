@@ -6,12 +6,17 @@ import { Optional } from "@/core/types/optional";
 import dayjs from "dayjs";
 import { Entity } from "@/core/entities/entity";
 
+interface Category {
+  id: UniqueEntityID;
+  name: string;
+}
+
 export interface ProductProps {
   name: string;
   description: string;
   productSizes?: UniqueEntityID[];
   productColors?: UniqueEntityID[];
-  productCategories?: UniqueEntityID[];
+  productCategories?: Category[];
   materialId?: UniqueEntityID;
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
@@ -131,8 +136,6 @@ export class Product extends Entity<ProductProps> {
     return this.props.price;
   }
 
-
-
   get stock() {
     return this.props.stock;
   }
@@ -228,11 +231,11 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  get productCategories(): UniqueEntityID[] | undefined {
+  get productCategories(): Category[] | undefined {
     return this.props.productCategories;
   }
 
-  set productCategories(categories: UniqueEntityID[]) {
+  set productCategories(categories: Category[]) {
     this.props.productCategories = categories;
     this.touch();
   }
@@ -253,11 +256,11 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  addCategory(categoryId: UniqueEntityID) {
+  addCategory(category: Category) {
     if (!this.props.productCategories) {
       this.props.productCategories = [];
     }
-    this.props.productCategories.push(categoryId);
+    this.props.productCategories.push(category);
     this.touch();
   }
 
