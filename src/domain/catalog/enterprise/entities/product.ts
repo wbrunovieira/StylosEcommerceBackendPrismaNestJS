@@ -21,6 +21,7 @@ export interface ProductProps {
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
   brandId: UniqueEntityID;
+  brandName?: string;
   discount?: number;
   price: number;
   stock: number;

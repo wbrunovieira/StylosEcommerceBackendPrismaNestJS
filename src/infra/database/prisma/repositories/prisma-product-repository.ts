@@ -11,6 +11,101 @@ import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
+  async findByBrandId(brandId: string): Promise<Either<Error, Product[]>> {
+    try {
+      console.log(`Querying database for products with brandId: ${brandId}`);
+      const productsData = await this.prisma.product.findMany({
+        where: {
+          brandId: brandId,
+        },
+        include: {
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
+          brand: true,
+          material: true,
+          productVariants: true,
+        },
+      });
+
+      if (!productsData.length) {
+        return left(
+          new ResourceNotFoundError(`No products found for brandId: ${brandId}`)
+        );
+      }
+
+      const products = productsData.map((productData) =>
+        Product.create(
+          {
+            name: productData.name,
+            description: productData.description,
+            productSizes: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            productColors: productData.productColors.map(
+              (color) => new UniqueEntityID(color.colorId)
+            ),
+            productCategories: productData.productCategories.map(
+              (category) => ({
+                id: new UniqueEntityID(category.categoryId),
+                name: category.category.name,
+              })
+            ),
+            materialId: productData.materialId
+              ? new UniqueEntityID(productData.materialId)
+              : undefined,
+            sizeId: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            finalPrice: productData.finalPrice ?? undefined,
+            brandId: new UniqueEntityID(productData.brandId),
+            brandName: productData.brand?.name ?? "Unknown Brand",
+            discount: productData.discount ?? undefined,
+            price: productData.price,
+            stock: productData.stock,
+            sku: productData.sku ?? "ntt",
+            height: productData.height ?? undefined,
+            width: productData.width ?? undefined,
+            length: productData.length ?? undefined,
+            weight: productData.weight ?? undefined,
+            onSale: productData.onSale ?? undefined,
+            isFeatured: productData.isFeatured ?? undefined,
+            isNew: productData.isNew ?? undefined,
+            images: productData.images ?? undefined,
+            slug: Slug.createFromText(productData.slug),
+            createdAt: new Date(productData.createdAt),
+            updatedAt: productData.updatedAt
+              ? new Date(productData.updatedAt)
+              : undefined,
+          },
+          new UniqueEntityID(productData.id)
+        )
+      );
+
+      return right(products);
+    } catch (error) {
+      console.error(
+        `Failed to retrieve products for brandId: ${brandId}, Error: ${error}`
+      );
+      return left(
+        new ResourceNotFoundError(
+          `Failed to retrieve products for brandId: ${brandId}`
+        )
+      );
+    }
+  }
 
   async findByName(name: string): Promise<Either<Error, Product[]>> {
     try {
