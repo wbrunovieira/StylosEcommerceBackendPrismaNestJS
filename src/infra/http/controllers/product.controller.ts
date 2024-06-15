@@ -64,7 +64,9 @@ const editProductSchema = z.object({
   description: z.string().optional(),
   productSizes: z.array(z.string()).optional(),
   productColors: z.array(z.string()).optional(),
-  productCategories: z.array(z.string()).optional(),
+  productCategories: z
+    .array(z.object({ id: z.string(), name: z.string() }))
+    .optional(),
   slug: z.array(z.string()).optional(),
   materialId: z.string().optional(),
   sizeId: z.array(z.string()).optional(),
@@ -201,6 +203,26 @@ export class ProductController {
       where: {
         isFeatured: true,
       },
+      include: {
+        productColors: {
+          include: {
+            color: true,
+          },
+        },
+        productSizes: {
+          include: {
+            size: true,
+          },
+        },
+        productCategories: {
+          include: {
+            category: true,
+          },
+        },
+        brand: true,
+        material: true,
+        productVariants: true,
+      },
       take: 9,
       orderBy: {
         createdAt: "desc",
@@ -301,9 +323,17 @@ export class ProductController {
     @Param("id") id: string,
     @Body(new ZodValidationsPipe(editProductSchema)) body: EditProductBodySchema
   ) {
+    const transformedBody = {
+      ...body,
+      productCategories: body.productCategories
+        ? body.productCategories.map((category) =>
+            typeof category === "string" ? { id: category, name: "" } : category
+          )
+        : undefined,
+    };
     const result = await this.editProductUseCase.execute({
       productId: id,
-      ...body,
+      ...transformedBody,
     });
 
     if (result.isLeft()) {

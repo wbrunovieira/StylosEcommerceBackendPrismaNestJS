@@ -57,7 +57,6 @@ Content-Type: application/json
 }
 
 
-
 ###
 
 # @name get-product-featured
@@ -79,7 +78,7 @@ GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
 
 ###
 # @name get-product-by-categoryId
-GET {{BASE_URL}}/products/category/122c3e06-97ab-4de4-a92d-c3d12f1262ec
+GET {{BASE_URL}}/products/category/1a26dfa3-83f9-4d9b-bf94-d47224614326
 
 
 ###

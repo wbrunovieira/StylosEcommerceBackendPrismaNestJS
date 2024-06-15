@@ -150,9 +150,16 @@ async function main() {
           })),
         },
         productCategories: {
-          create: categoriesData.map((category) => ({
-            category: { connect: { id: category.id } },
-          })),
+          
+          create: {
+            category: {
+              connect: {
+                id: categoriesData[
+                  Math.floor(Math.random() * categoriesData.length)
+                ].id,
+              },
+            },
+          },
         },
         productSizes: {
           create: sizesData.map((size) => ({
