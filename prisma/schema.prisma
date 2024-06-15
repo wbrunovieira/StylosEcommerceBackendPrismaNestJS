@@ -192,7 +192,8 @@ model Material {
 
 model Brand {
   id       String    @id @default(uuid())
-  name     String
+  name     String     @unique
+  imageUrl  String
   products Product[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")

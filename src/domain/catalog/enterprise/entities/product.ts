@@ -11,6 +11,11 @@ interface Category {
   name: string;
 }
 
+interface Brand {
+  id: UniqueEntityID;
+  name: string;
+}
+
 export interface ProductProps {
   name: string;
   description: string;

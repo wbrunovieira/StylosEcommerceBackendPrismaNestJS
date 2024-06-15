@@ -8,6 +8,7 @@ import { IBrandRepository } from "../repositories/i-brand-repository";
 interface EditBrandUseCaseRequest {
   brandId: string;
   name: string;
+  imageUrl: string;
 }
 
 type EditBrandUseCaseResponse = Either<ResourceNotFoundError, { brand: Brand }>;
@@ -19,6 +20,7 @@ export class EditBrandUseCase {
   async execute({
     brandId,
     name,
+    imageUrl
   }: EditBrandUseCaseRequest): Promise<EditBrandUseCaseResponse> {
     const brandResult = await this.brandsRepository.findById(brandId);
 
@@ -28,6 +30,7 @@ export class EditBrandUseCase {
 
     const brand = brandResult.value;
     brand.name = name;
+    brand.imageUrl = imageUrl;
     const saveResult = await this.brandsRepository.save(brand);
     
     if (saveResult.isLeft()) {

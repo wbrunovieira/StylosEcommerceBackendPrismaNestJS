@@ -18,7 +18,8 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "marca 112sss"
+  "name": "marca 112sss",
+  "imageUrl": ""
   
 }
 
@@ -27,7 +28,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 # @name get-brands
 GET  {{BASE_URL}}/brands
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 ###
 

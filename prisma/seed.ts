@@ -58,11 +58,18 @@ async function main() {
   console.log("Materials created");
 
   // Criar marcas
-  const brands = ["Liz", "Nayane"];
+  const brands = [
+    { name: "Liz", imageUrl: "/icons/logo-liz.svg" },
+    { name: "Nayane", imageUrl: "/icons/logo-nayne.jpeg" },
+  ];
+
   for (const brand of brands) {
-    await prisma.brand.create({
-      data: {
-        name: brand,
+    await prisma.brand.upsert({
+      where: { name: brand.name },
+      update: {},
+      create: {
+        name: brand.name,
+        imageUrl: brand.imageUrl,
       },
     });
   }
@@ -150,7 +157,6 @@ async function main() {
           })),
         },
         productCategories: {
-          
           create: {
             category: {
               connect: {
