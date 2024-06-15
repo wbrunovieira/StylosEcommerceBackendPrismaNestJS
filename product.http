@@ -78,7 +78,20 @@ GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
 
 ###
 # @name get-product-by-categoryId
-GET {{BASE_URL}}/products/category/1a26dfa3-83f9-4d9b-bf94-d47224614326
+GET {{BASE_URL}}/products/category/56daa69a-04b5-497c-b127-28d2e1ab1809
+
+
+
+
+###
+# @name get-product-by-brandId
+GET {{BASE_URL}}/products/brand/f51e5397-8f79-4ddf-af1c-493dcd7442fb
+
+
+
+###
+# @name get-product-by-brandId
+GET {{BASE_URL}}/products/category/56daa69a-04b5-497c-b127-28d2e1ab1809
 
 
 ###
