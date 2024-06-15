@@ -31,6 +31,10 @@ const createBrandSchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(50, "Name must not exceed 50 characters"),
+  imageUrl: z
+    .string()
+    .url("Invalid URL format")
+    .nonempty("Image URL must not be empty"),
 });
 const bodyValidationPipe = new ZodValidationsPipe(createBrandSchema);
 type CreateBrandBodySchema = z.infer<typeof createBrandSchema>;
@@ -40,6 +44,10 @@ const editBrandSchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(50, "Name must not exceed 50 characters"),
+  imageUrl: z
+    .string()
+    .url("Invalid URL format")
+    .nonempty("Image URL must not be empty"),
 });
 const editBodyValidationPipe = new ZodValidationsPipe(editBrandSchema);
 type EditBrandBodySchema = z.infer<typeof editBrandSchema>;
@@ -70,7 +78,10 @@ export class BrandController {
   @Roles("admin")
   async createBrand(@Body(bodyValidationPipe) body: CreateBrandBodySchema) {
     try {
-      const result = await this.createBrandUseCase.execute({ name: body.name });
+      const result = await this.createBrandUseCase.execute({
+        name: body.name,
+        imageUrl: body.imageUrl,
+      });
       if (result.isLeft()) {
         const error = result.value;
         if (error instanceof ResourceNotFoundError) {
@@ -101,6 +112,7 @@ export class BrandController {
       const result = await this.editBrandUseCase.execute({
         brandId,
         name: body.name,
+        imageUrl: body.imageUrl,
       });
       if (result.isLeft()) {
         const error = result.value;

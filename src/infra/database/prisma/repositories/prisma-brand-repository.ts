@@ -22,6 +22,7 @@ export class PrismaBrandRepository implements IBrandRepository {
         data: {
           id: brand.id.toString(),
           name: brand.name,
+          imageUrl: brand.imageUrl,
           createdAt: brand.createdAt,
           updatedAt: brand.updatedAt,
         },
@@ -40,7 +41,7 @@ export class PrismaBrandRepository implements IBrandRepository {
       if (!brandData) return left(new ResourceNotFoundError("Brand not found"));
 
       const brand = Brand.create(
-        { name: brandData.name },
+        { name: brandData.name, imageUrl: brandData.imageUrl },
         new UniqueEntityID(brandData.id)
       );
 
@@ -60,7 +61,7 @@ export class PrismaBrandRepository implements IBrandRepository {
       if (!brandData) return left(new ResourceNotFoundError("Brand not found"));
 
       const brand = Brand.create(
-        { name: brandData.name },
+        { name: brandData.name, imageUrl: brandData.imageUrl  },
         new UniqueEntityID(brandData.id)
       );
 
@@ -78,6 +79,7 @@ export class PrismaBrandRepository implements IBrandRepository {
         },
         data: {
           name: brand.name,
+          imageUrl: brand.imageUrl,
           updatedAt: new Date(),
         },
       });
@@ -107,7 +109,7 @@ export class PrismaBrandRepository implements IBrandRepository {
         take: params.pageSize,
       });
       const convertedBrands = brands.map((b) =>
-        Brand.create({ name: b.name }, new UniqueEntityID(b.id))
+        Brand.create({ name: b.name, imageUrl: b.imageUrl }, new UniqueEntityID(b.id))
       );
       return right(convertedBrands);
     } catch (error) {

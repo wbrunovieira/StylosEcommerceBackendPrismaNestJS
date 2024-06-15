@@ -159,6 +159,7 @@ CREATE TABLE "materials" (
 CREATE TABLE "brands" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -225,6 +226,9 @@ CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "brands_name_key" ON "brands"("name");
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

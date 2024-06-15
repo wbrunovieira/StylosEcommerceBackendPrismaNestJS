@@ -4,6 +4,7 @@ import { Optional } from "@/core/types/optional";
 
 export interface BrandProps {
   name: string;
+  imageUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -11,6 +12,9 @@ export interface BrandProps {
 export class Brand extends Entity<BrandProps> {
   get name(): string {
     return this.props.name;
+  }
+  get imageUrl(): string {
+    return this.props.imageUrl;
   }
 
   get createdAt(): Date {
@@ -23,6 +27,9 @@ export class Brand extends Entity<BrandProps> {
 
   set name(name: string) {
     this.props.name = name;
+  }
+  set imageUrl(imageUrl: string) {
+    this.props.imageUrl = imageUrl;
   }
 
   static create(
