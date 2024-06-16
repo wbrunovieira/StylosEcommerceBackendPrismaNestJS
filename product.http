@@ -81,10 +81,16 @@ Content-Type: application/json
 ###
 # @name get-product-by-categoryId
 GET {{BASE_URL}}/products/category/1b60b886-ab70-498a-a170-7fefae478fee
+Content-Type: application/json
 
 ###
 # @name get-product-by-colorId
 GET {{BASE_URL}}/products/color/30f0c025-ded7-4db6-8d33-1b1c51da1a79
+Content-Type: application/json
+
+###
+# @name get-product-by-sizeId
+GET {{BASE_URL}}/products/size/2d72f278-cc95-45bc-b3be-70c78168f771
 Content-Type: application/json
 
 
@@ -93,13 +99,13 @@ Content-Type: application/json
 ###
 # @name get-product-by-brandId
 GET {{BASE_URL}}/products/brand/ca1968a0-ba06-4585-bcfb-83ec0527ab00
-
+Content-Type: application/json
 
 
 ###
 # @name get-product-by-brandId
 GET {{BASE_URL}}/products/category/56daa69a-04b5-497c-b127-28d2e1ab1809
-
+Content-Type: application/json
 
 ###
 
@@ -112,6 +118,6 @@ GET {{BASE_URL}}/products/slug/produto-11-065eb4a9-75a2-4eb1-ad0a-0c972bfc1a21-4
 
 # @name get-product-by-name
 GET {{BASE_URL}}/products/search?name=1
-
+Content-Type: application/json
 
 ###
