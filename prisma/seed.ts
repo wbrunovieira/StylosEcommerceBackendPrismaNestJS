@@ -101,9 +101,12 @@ async function main() {
     { name: "branco", hex: "#FFFFFF" },
     { name: "vermelho", hex: "#FF0000" },
   ];
+
   for (const color of colors) {
-    await prisma.color.create({
-      data: {
+    await prisma.color.upsert({
+      where: { name: color.name },
+      update: {},
+      create: {
         name: color.name,
         hex: color.hex,
       },

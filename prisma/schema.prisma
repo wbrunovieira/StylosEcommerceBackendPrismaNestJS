@@ -114,7 +114,7 @@ model Address {
 
 model Color {
   id    String @id @default(uuid())
-  name  String
+  name  String  @unique
   hex   String
   productColors ProductColor[]
   productVariants ProductVariant[]
