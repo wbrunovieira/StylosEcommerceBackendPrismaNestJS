@@ -11,6 +11,7 @@ import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
+
   async findByBrandId(brandId: string): Promise<Either<Error, Product[]>> {
     try {
       console.log(`Querying database for products with brandId: ${brandId}`);
@@ -72,6 +73,7 @@ export class PrismaProductRepository implements IProductRepository {
             finalPrice: productData.finalPrice ?? undefined,
             brandId: new UniqueEntityID(productData.brandId),
             brandName: productData.brand?.name ?? "Unknown Brand",
+            brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
             discount: productData.discount ?? undefined,
             price: productData.price,
             stock: productData.stock,
@@ -170,6 +172,8 @@ export class PrismaProductRepository implements IProductRepository {
             ),
             finalPrice: productData.finalPrice ?? undefined,
             brandId: new UniqueEntityID(productData.brandId),
+            brandName: productData.brand?.name ?? "Unknown Brand",
+            brandUrl: productData.brand?.imageUrl ?? "",
             discount: productData.discount ?? undefined,
             price: productData.price,
             stock: productData.stock,
@@ -275,6 +279,8 @@ export class PrismaProductRepository implements IProductRepository {
             ),
             finalPrice: productData.finalPrice ?? undefined,
             brandId: new UniqueEntityID(productData.brandId),
+            brandName: productData.brand?.name ?? "Unknown Brand",
+            brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
             discount: productData.discount ?? undefined,
             price: productData.price,
             stock: productData.stock,
