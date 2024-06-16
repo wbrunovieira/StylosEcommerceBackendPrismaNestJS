@@ -9,7 +9,7 @@ import { IProductRepository } from "../repositories/i-product-repository";
 
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { IMaterialRepository } from "../repositories/i-material-repository";
-import {  Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Material } from "../../enterprise/entities/material";
 import { ISizeRepository } from "../repositories/i-size-repository";
