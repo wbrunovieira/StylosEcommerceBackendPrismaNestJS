@@ -12,7 +12,7 @@ interface EditProductUseCaseRequest {
   name?: string;
   description?: string;
   productSizes?: string[];
-  productColors?: string[];
+  productColors?: { id: string; name: string; hex: string }[];
   productCategories?: { id: string; name: string }[];
   materialId?: string;
   sizeId?: string[];
@@ -47,7 +47,6 @@ export class EditProductUseCase {
   ) {}
 
   private calculateFinalPrice(price: number, discount?: number): number {
-
     if (discount && discount > 0) {
       return price - price * (discount / 100);
     }
@@ -97,15 +96,18 @@ export class EditProductUseCase {
 
     if (productSizes !== undefined)
       product.productSizes = productSizes.map((id) => new UniqueEntityID(id));
-    if (productColors !== undefined)
-      product.productColors = productColors.map((id) => new UniqueEntityID(id));
+
     if (productCategories !== undefined)
-      product.productCategories = productCategories.map(
-        (category) => ({
-          id: new UniqueEntityID(category.id),
-          name: category.name,
-        })
-      );
+      product.productCategories = productCategories.map((category) => ({
+        id: new UniqueEntityID(category.id),
+        name: category.name,
+      }));
+    if (productColors !== undefined)
+      product.productColors = productColors.map((color) => ({
+        id: new UniqueEntityID(color.id),
+        name: color.name,
+        hex: color.hex,
+      }));
     if (materialId !== undefined)
       product.materialId = new UniqueEntityID(materialId);
     if (sizeId !== undefined)
@@ -148,20 +150,14 @@ export class EditProductUseCase {
 
     const brand = brandOrError.value;
     console.log("slug antes do slug ", product.slug);
-    let newSlug
+    let newSlug;
 
     if (nameChanged) {
-      newSlug = generateSlug(
-        product.name,
-        brand.name,
-        product.id.toString()
-                
-      );
+      newSlug = generateSlug(product.name, brand.name, product.id.toString());
       product.slug = newSlug;
-          
     }
     product.slug = newSlug;
-    
+
     console.log("final slug ", product.slug);
 
     const saveResult = await this.productRepository.save(product);

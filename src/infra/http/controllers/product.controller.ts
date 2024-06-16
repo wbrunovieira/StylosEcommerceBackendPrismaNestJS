@@ -26,6 +26,7 @@ import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
 import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
 import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-brand";
+import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -64,7 +65,9 @@ const editProductSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   productSizes: z.array(z.string()).optional(),
-  productColors: z.array(z.string()).optional(),
+  productColors: z
+    .array(z.object({ id: z.string(), name: z.string(), hex: z.string() }))
+    .optional(),
   productCategories: z
     .array(z.object({ id: z.string(), name: z.string() }))
     .optional(),
@@ -100,6 +103,7 @@ export class ProductController {
     private getProductBySlug: GetProductBySlugUseCase,
     private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
     private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
+    private getAllProductsByColorId: GetProductsByColorIdUseCase,
     private findProductByName: FindProductByNameUseCase
   ) {}
 
@@ -204,6 +208,30 @@ export class ProductController {
     try {
       const result = await this.getAllProductsByBrandId.execute({
         brandId,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          console.error(`Products not found: ${error.message}`);
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+      } else {
+        return result.value;
+      }
+    } catch (error) {}
+  }
+
+  @Get("/color/:colorId")
+  async allProductsByColor(@Param("colorId") colorId: string) {
+    try {
+      const result = await this.getAllProductsByColorId.execute({
+        colorId,
       });
 
       if (result.isLeft()) {

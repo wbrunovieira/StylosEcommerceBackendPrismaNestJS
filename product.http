@@ -68,17 +68,24 @@ Content-Type: application/json
 
 # @name delete-product
 DELETE {{BASE_URL}}/products/06e0dcdb-2843-4412-b1e9-950dc2a1b98f
+Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
 # @name get-product-by-id
 GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
+Content-Type: application/json
 
 
 ###
 # @name get-product-by-categoryId
 GET {{BASE_URL}}/products/category/1b60b886-ab70-498a-a170-7fefae478fee
+
+###
+# @name get-product-by-colorId
+GET {{BASE_URL}}/products/color/30f0c025-ded7-4db6-8d33-1b1c51da1a79
+Content-Type: application/json
 
 
 

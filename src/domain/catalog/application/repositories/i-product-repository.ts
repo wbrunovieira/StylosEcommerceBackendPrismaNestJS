@@ -9,6 +9,7 @@ export abstract class IProductRepository {
   abstract findById(productId: string): Promise<Either<Error, Product>>;
   abstract findByCategoryId(categoryId: string): Promise<Either<Error, Product[]>>
   abstract findByBrandId(brandId: string): Promise<Either<Error, Product[]>>
+  abstract findByColorId(colorId: string): Promise<Either<Error, Product[]>>
   abstract findBySlug(slug: string): Promise<
     Either<
       Error,

@@ -15,12 +15,17 @@ interface Brand {
   id: UniqueEntityID;
   name: string;
 }
+interface Color {
+  id: UniqueEntityID;
+  name: string;
+  hex: string;
+}
 
 export interface ProductProps {
   name: string;
   description: string;
   productSizes?: UniqueEntityID[];
-  productColors?: UniqueEntityID[];
+  productColors?: Color[];
   productCategories?: Category[];
   materialId?: UniqueEntityID;
   sizeId?: UniqueEntityID[];
@@ -221,15 +226,6 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  get productColors(): UniqueEntityID[] | undefined {
-    return this.props.productColors;
-  }
-
-  set productColors(productColors: UniqueEntityID[]) {
-    this.props.productColors = productColors;
-    this.touch();
-  }
-
   get productSizes(): UniqueEntityID[] | undefined {
     return this.props.productSizes;
   }
@@ -243,6 +239,10 @@ export class Product extends Entity<ProductProps> {
     return this.props.productCategories;
   }
 
+  set productColors(colors: Color[]) {
+    this.props.productColors = colors;
+    this.touch();
+  }
   set productCategories(categories: Category[]) {
     this.props.productCategories = categories;
     this.touch();
@@ -256,13 +256,13 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  addColor(productColorsId: UniqueEntityID) {
-    if (!this.props.productColors) {
-      this.props.productColors = [];
-    }
-    this.props.productColors.push(productColorsId);
-    this.touch();
-  }
+  // addColor(productColorsId: UniqueEntityID) {
+  //   if (!this.props.productColors) {
+  //     this.props.productColors = [];
+  //   }
+  //   this.props.productColors.push(productColorsId);
+  //   this.touch();
+  // }
 
   addCategory(category: Category) {
     if (!this.props.productCategories) {
