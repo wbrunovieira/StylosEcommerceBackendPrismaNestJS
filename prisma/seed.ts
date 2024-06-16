@@ -80,6 +80,8 @@ async function main() {
     { name: "lingerie", imageUrl: "/icons/lingerie-mini.svg" },
     { name: "masculino", imageUrl: "/icons/boy.svg" },
     { name: "pijamas", imageUrl: "/icons/pijamas-mini.svg" },
+    { name: "bolsa", imageUrl: "/icons/bag-mini.svg" },
+    { name: "oculos", imageUrl: "/icons/glasses-mini.svg" },
   ];
   for (const category of categories) {
     await prisma.category.upsert({
@@ -127,14 +129,34 @@ async function main() {
   const colorsData = await prisma.color.findMany();
   const sizesData = await prisma.size.findMany();
 
-  // Criar produtos
+  // Criar ou atualizar produtos
   for (let i = 1; i <= 12; i++) {
     const price = 100 + i;
     const discount = Math.floor(Math.random() * 30);
     const finalPrice = calculateFinalPrice(price, discount);
-    const product = await prisma.product.create({
-      data: {
-        name: `produto ${i}`,
+    const productName = `produto ${i}`;
+
+    const product = await prisma.product.upsert({
+      where: { name: productName },
+      update: {
+        description: `Descrição atualizada do produto ${i}`,
+        images: ["/images/foto1.jpg"],
+        materialId:
+          materialsData[Math.floor(Math.random() * materialsData.length)].id,
+        brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
+        sku: `sku${i}`,
+        price: price,
+        discount: discount,
+        finalPrice: finalPrice,
+        stock: 10 + i,
+        height: 10 + i,
+        width: 15 + i,
+        length: 20 + i,
+        weight: 0.5 + i,
+        isFeatured: true,
+      },
+      create: {
+        name: productName,
         description: `Descrição do produto ${i}`,
         images: ["/images/foto1.jpg"],
         materialId:
@@ -194,7 +216,81 @@ async function main() {
       data: { slug: String(newSlug) },
     });
   }
-  console.log("Products created");
+  console.log("Products created or updated");
+  // Criar ou atualizar produtos sem cores, tamanhos e variantes (bolsa e oculos)
+  const productsWithoutVariants = [
+    { name: "bolsa 1", category: "bolsa" },
+    { name: "oculos 1", category: "oculos" },
+  ];
+
+  for (const { name, category } of productsWithoutVariants) {
+    const price = 200 + Math.floor(Math.random() * 10);
+    const discount = Math.floor(Math.random() * 20);
+    const finalPrice = calculateFinalPrice(price, discount);
+    const categoryId = categoriesData.find((cat) => cat.name === category)?.id;
+
+    if (!categoryId) {
+      console.error(`Category ${category} not found`);
+      continue;
+    }
+
+    const product = await prisma.product.upsert({
+      where: { name },
+      update: {
+        description: `Descrição atualizada do ${name}`,
+        images: ["/images/foto1.jpg"],
+        materialId:
+          materialsData[Math.floor(Math.random() * materialsData.length)].id,
+        brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
+        sku: `${name}-sku`,
+        price: price,
+        discount: discount,
+        finalPrice: finalPrice,
+        stock: 10 + Math.floor(Math.random() * 10),
+        height: 10 + Math.floor(Math.random() * 10),
+        width: 15 + Math.floor(Math.random() * 10),
+        length: 20 + Math.floor(Math.random() * 10),
+        weight: 0.5 + Math.floor(Math.random() * 10),
+        isFeatured: true,
+      },
+      create: {
+        name,
+        description: `Descrição do ${name}`,
+        images: ["/images/foto1.jpg"],
+        materialId:
+          materialsData[Math.floor(Math.random() * materialsData.length)].id,
+        brandId: brandsData[Math.floor(Math.random() * brandsData.length)].id,
+        sku: `${name}-sku`,
+        price: price,
+        discount: discount,
+        finalPrice: finalPrice,
+        stock: 10 + Math.floor(Math.random() * 10),
+        height: 10 + Math.floor(Math.random() * 10),
+        width: 15 + Math.floor(Math.random() * 10),
+        length: 20 + Math.floor(Math.random() * 10),
+        weight: 0.5 + Math.floor(Math.random() * 10),
+        isFeatured: true,
+        slug: uuidv4(),
+        productCategories: {
+          create: {
+            category: {
+              connect: {
+                id: categoryId,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const newSlug = generateSlug(product.name, product.brandId, product.id);
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { slug: String(newSlug) },
+    });
+  }
+
+  console.log("Products without variants created or updated");
 }
 
 main()
