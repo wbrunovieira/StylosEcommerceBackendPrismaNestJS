@@ -115,11 +115,20 @@ async function main() {
   console.log("Colors created");
 
   // Criar tamanhos
-  const sizes = ["pequena", "media", "grande"];
+
+  const sizes = [
+    { name: "pp" },
+    { name: "p" },
+    { name: "m" },
+    { name: "g" },
+    { name: "xg" },
+  ];
   for (const size of sizes) {
-    await prisma.size.create({
-      data: {
-        name: size,
+    await prisma.size.upsert({
+      where: { name: size.name },
+      update: {},
+      create: {
+        name: size.name,
       },
     });
   }

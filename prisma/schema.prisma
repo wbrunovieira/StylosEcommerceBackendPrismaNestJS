@@ -138,7 +138,7 @@ model ProductColor {
 
 model Size {
   id       String        @id @default(uuid())
-  name     String
+  name     String        @unique
   productSizes ProductSize[]
   productVariants ProductVariant[] 
   createdAt DateTime @default(now()) @map("created_at")
