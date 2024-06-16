@@ -27,6 +27,7 @@ import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use
 import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
 import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-brand";
 import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
+import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -64,7 +65,7 @@ const pageQueryParamSchema = z
 const editProductSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
-  productSizes: z.array(z.string()).optional(),
+  productSizes: z.array(z.object({ id: z.string(), name: z.string() })),
   productColors: z
     .array(z.object({ id: z.string(), name: z.string(), hex: z.string() }))
     .optional(),
@@ -104,6 +105,7 @@ export class ProductController {
     private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
     private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
     private getAllProductsByColorId: GetProductsByColorIdUseCase,
+    private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
     private findProductByName: FindProductByNameUseCase
   ) {}
 
@@ -177,6 +179,30 @@ export class ProductController {
     }
 
     return { products: result.value };
+  }
+
+  @Get("/size/:sizeId")
+  async allProductsBySize(@Param("sizeId") sizeId: string) {
+    try {
+      const result = await this.getAllProductsBySizeId.execute({
+        sizeId,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          console.error(`Products not found: ${error.message}`);
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+      } else {
+        return result.value;
+      }
+    } catch (error) {}
   }
 
   @Get("/category/:categoryId")

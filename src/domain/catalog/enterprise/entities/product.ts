@@ -15,18 +15,24 @@ interface Brand {
   id: UniqueEntityID;
   name: string;
 }
+
 interface Color {
   id: UniqueEntityID;
   name: string;
   hex: string;
 }
+interface Size {
+  id: UniqueEntityID;
+  name: string;
+}
 
 export interface ProductProps {
   name: string;
   description: string;
-  productSizes?: UniqueEntityID[];
+  productSizes?: Size[];
   productColors?: Color[];
   productCategories?: Category[];
+
   materialId?: UniqueEntityID;
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
@@ -226,11 +232,11 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  get productSizes(): UniqueEntityID[] | undefined {
+  get productSizes(): Size[] | undefined {
     return this.props.productSizes;
   }
 
-  set productSizes(sizes: UniqueEntityID[]) {
+  set productSizes(sizes: Size[]) {
     this.props.productSizes = sizes;
     this.touch();
   }
@@ -248,13 +254,13 @@ export class Product extends Entity<ProductProps> {
     this.touch();
   }
 
-  addSize(sizeId: UniqueEntityID) {
-    if (!this.props.productSizes) {
-      this.props.productSizes = [];
-    }
-    this.props.productSizes.push(sizeId);
-    this.touch();
-  }
+  // addSize(sizeId: UniqueEntityID) {
+  //   if (!this.props.productSizes) {
+  //     this.props.productSizes = [];
+  //   }
+  //   this.props.productSizes.push(sizeId);
+  //   this.touch();
+  // }
 
   // addColor(productColorsId: UniqueEntityID) {
   //   if (!this.props.productColors) {

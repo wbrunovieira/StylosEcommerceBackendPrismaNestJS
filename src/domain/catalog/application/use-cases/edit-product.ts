@@ -11,7 +11,7 @@ interface EditProductUseCaseRequest {
   productId: string;
   name?: string;
   description?: string;
-  productSizes?: string[];
+  productSizes?: { id: string; name: string }[];
   productColors?: { id: string; name: string; hex: string }[];
   productCategories?: { id: string; name: string }[];
   materialId?: string;
@@ -95,7 +95,10 @@ export class EditProductUseCase {
     if (description !== undefined) product.description = description;
 
     if (productSizes !== undefined)
-      product.productSizes = productSizes.map((id) => new UniqueEntityID(id));
+      product.productSizes = productSizes.map((size) => ({
+        id: new UniqueEntityID(size.id),
+        name: size.name,
+      }));
 
     if (productCategories !== undefined)
       product.productCategories = productCategories.map((category) => ({
