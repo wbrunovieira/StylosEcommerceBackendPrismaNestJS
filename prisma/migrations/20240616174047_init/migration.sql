@@ -228,6 +228,12 @@ CREATE UNIQUE INDEX "products_name_key" ON "products"("name");
 CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "colors_name_key" ON "colors"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sizes_name_key" ON "sizes"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
 
 -- CreateIndex
