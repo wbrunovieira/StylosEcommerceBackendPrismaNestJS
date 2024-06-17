@@ -12,6 +12,116 @@ import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
+  async findByPriceRange(
+    minPrice: number,
+    maxPrice: number
+  ): Promise<Either<Error, Product[]>> {
+    try {
+      console.log(
+        `Querying database for products with price range: ${minPrice} - ${maxPrice}`
+      );
+      const productsData = await this.prisma.product.findMany({
+        where: {
+          finalPrice: {
+            gte: minPrice,
+            lte: maxPrice,
+          },
+        },
+        include: {
+          productColors: {
+            include: {
+              color: true,
+            },
+          },
+          productSizes: {
+            include: {
+              size: true,
+            },
+          },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
+          brand: true,
+          material: true,
+          productVariants: true,
+        },
+      });
+
+      if (!productsData.length) {
+        return left(
+          new ResourceNotFoundError(
+            `No products found within price range: ${minPrice} - ${maxPrice}`
+          )
+        );
+      }
+
+      const products = productsData.map((productData) =>
+        Product.create(
+          {
+            name: productData.name,
+            description: productData.description,
+            productSizes: productData.productSizes.map((size) => ({
+              id: new UniqueEntityID(size.sizeId),
+              name: size.size.name,
+            })),
+            productColors: productData.productColors.map((color) => ({
+              id: new UniqueEntityID(color.colorId),
+              name: color.color.name,
+              hex: color.color.hex,
+            })),
+            productCategories: productData.productCategories.map(
+              (category) => ({
+                id: new UniqueEntityID(category.categoryId),
+                name: category.category.name,
+              })
+            ),
+            materialId: productData.materialId
+              ? new UniqueEntityID(productData.materialId)
+              : undefined,
+            sizeId: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            finalPrice: productData.finalPrice ?? undefined,
+            brandId: new UniqueEntityID(productData.brandId),
+            brandName: productData.brand?.name ?? "Unknown Brand",
+            brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
+            discount: productData.discount ?? undefined,
+            price: productData.price,
+            stock: productData.stock,
+            sku: productData.sku ?? "ntt",
+            height: productData.height ?? undefined,
+            width: productData.width ?? undefined,
+            length: productData.length ?? undefined,
+            weight: productData.weight ?? undefined,
+            onSale: productData.onSale ?? undefined,
+            isFeatured: productData.isFeatured ?? undefined,
+            isNew: productData.isNew ?? undefined,
+            images: productData.images ?? undefined,
+            slug: Slug.createFromText(productData.slug),
+            createdAt: new Date(productData.createdAt),
+            updatedAt: productData.updatedAt
+              ? new Date(productData.updatedAt)
+              : undefined,
+          },
+          new UniqueEntityID(productData.id)
+        )
+      );
+
+      return right(products);
+    } catch (error) {
+      console.error(
+        `Failed to retrieve products within price range: ${minPrice} - ${maxPrice}, Error: ${error}`
+      );
+      return left(
+        new ResourceNotFoundError(
+          `Failed to retrieve products within price range: ${minPrice} - ${maxPrice}`
+        )
+      );
+    }
+  }
+
   async findBySizeId(sizeId: string): Promise<Either<Error, Product[]>> {
     try {
       console.log(`Querying database for products with sizeId: ${sizeId}`);
