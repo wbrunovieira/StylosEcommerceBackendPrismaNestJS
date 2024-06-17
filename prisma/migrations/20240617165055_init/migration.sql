@@ -237,6 +237,9 @@ CREATE UNIQUE INDEX "sizes_name_key" ON "sizes"("name");
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "materials_name_key" ON "materials"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "brands_name_key" ON "brands"("name");
 
 -- AddForeignKey

@@ -47,14 +47,20 @@ async function main() {
   }
 
   // Criar materiais
-  const materials = ["algodao", "lycra"];
+ 
+  const materials = [{ name: "algodão" }, { name: "lycra" }];
+
   for (const material of materials) {
-    await prisma.material.create({
-      data: {
-        name: material,
+    await prisma.material.upsert({
+      where: { name: material.name },
+      update: {},
+      create: {
+        name: material.name,
       },
     });
   }
+
+
   console.log("Materials created");
 
   // Criar marcas
