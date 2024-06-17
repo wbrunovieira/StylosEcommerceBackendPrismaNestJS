@@ -109,7 +109,13 @@ Content-Type: application/json
 
 
 ###
-# @name get-product-by-brandId
+# @name get-product-by-material
+GET {{BASE_URL}}/products/material/8eb1f27e-fe81-4d71-84f8-5f860fdccd74
+Content-Type: application/json
+
+###
+###
+# @name get-product-by-category
 GET {{BASE_URL}}/products/category/56daa69a-04b5-497c-b127-28d2e1ab1809
 Content-Type: application/json
 

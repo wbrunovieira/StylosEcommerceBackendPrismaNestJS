@@ -34,10 +34,11 @@ export interface ProductProps {
   productCategories?: Category[];
 
   materialId?: UniqueEntityID;
+  materialName?: string;
+
   sizeId?: UniqueEntityID[];
   finalPrice?: number;
   brandId: UniqueEntityID;
-
   brandName?: string;
   brandUrl?: string;
   discount?: number;
