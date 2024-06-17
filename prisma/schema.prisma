@@ -45,6 +45,7 @@ model Product {
   width       Float
   length      Float
   weight      Float
+  erpId      String?
   sku         String?
   upc         String?
   tags        String[]
