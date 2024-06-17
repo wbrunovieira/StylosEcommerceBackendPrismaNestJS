@@ -94,6 +94,12 @@ GET {{BASE_URL}}/products/size/2d72f278-cc95-45bc-b3be-70c78168f771
 Content-Type: application/json
 
 
+###
+# @name get-product-by-price-range
+GET {{BASE_URL}}/products/price-range?minPrice=50&maxPrice=100
+Content-Type: application/json
+
+
 
 
 ###

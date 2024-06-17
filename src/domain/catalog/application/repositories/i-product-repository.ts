@@ -11,6 +11,7 @@ export abstract class IProductRepository {
     categoryId: string
   ): Promise<Either<Error, Product[]>>;
   abstract findByBrandId(brandId: string): Promise<Either<Error, Product[]>>;
+  abstract findByPriceRange(minPrice: number, maxPrice: number): Promise<Either<Error, Product[]>>;
   abstract findByColorId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract findBySizeId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract findBySlug(slug: string): Promise<

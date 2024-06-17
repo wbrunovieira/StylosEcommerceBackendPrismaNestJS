@@ -1,0 +1,38 @@
+import { Product } from "../../enterprise/entities/product";
+import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { IProductRepository } from "../repositories/i-product-repository";
+import { Injectable } from "@nestjs/common";
+
+interface GetProductsByPriceRangeUseCaseRequest {
+  minPrice: number;
+  maxPrice: number;
+}
+
+type GetProductsByPriceRangeUseCaseResponse = Either<
+  ResourceNotFoundError,
+  Product[]
+>;
+
+
+@Injectable()
+export class GetProductsByPriceRangeUseCase {
+  constructor(private productRepository: IProductRepository) {}
+
+  async execute({
+    minPrice,
+    maxPrice,
+  }: GetProductsByPriceRangeUseCaseRequest): Promise<GetProductsByPriceRangeUseCaseResponse> {
+    console.log("Executing GetProductsByPriceRangeUseCase");
+
+    const result = await this.productRepository.findByPriceRange(minPrice, maxPrice);
+
+    if (result.isLeft()) {
+      return left(new ResourceNotFoundError("Products not found within the specified price range"));
+    }
+
+    const products = result.value;
+
+    return right(products);
+  }
+}

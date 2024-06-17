@@ -28,6 +28,7 @@ import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases
 import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-brand";
 import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
+import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -106,7 +107,8 @@ export class ProductController {
     private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
     private getAllProductsByColorId: GetProductsByColorIdUseCase,
     private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
-    private findProductByName: FindProductByNameUseCase
+    private findProductByName: FindProductByNameUseCase,
+    private getProductsByPriceRange: GetProductsByPriceRangeUseCase
   ) {}
 
   @Post()
@@ -275,6 +277,46 @@ export class ProductController {
         return result.value;
       }
     } catch (error) {}
+  }
+
+  @Get("/price-range")
+  async allProductsByPriceRange(
+    @Query("minPrice") minPrice: string,
+    @Query("maxPrice") maxPrice: string
+  ) {
+    const min = parseFloat(minPrice);
+    const max = parseFloat(maxPrice);
+
+    if (isNaN(min) || isNaN(max)) {
+      throw new HttpException("Invalid price range", HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const result = await this.getProductsByPriceRange.execute({
+        minPrice: min,
+        maxPrice: max,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          console.error(`Products not found: ${error.message}`);
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+      } else {
+        return result.value;
+      }
+    } catch (error) {
+      throw new HttpException(
+        "Failed to retrieve products by price range",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   @Get("/featured-products")
