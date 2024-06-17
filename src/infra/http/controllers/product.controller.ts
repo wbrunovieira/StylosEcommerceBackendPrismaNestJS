@@ -29,6 +29,7 @@ import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
+import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -105,6 +106,7 @@ export class ProductController {
     private getProductBySlug: GetProductBySlugUseCase,
     private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
     private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
+    private getAllProductsByMaterialId: GetProductsByMaterialIdUseCase,
     private getAllProductsByColorId: GetProductsByColorIdUseCase,
     private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
     private findProductByName: FindProductByNameUseCase,
@@ -236,6 +238,30 @@ export class ProductController {
     try {
       const result = await this.getAllProductsByBrandId.execute({
         brandId,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        if (error instanceof ResourceNotFoundError) {
+          console.error(`Products not found: ${error.message}`);
+          throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        } else {
+          throw new HttpException(
+            "An unexpected error occurred.",
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+      } else {
+        return result.value;
+      }
+    } catch (error) {}
+  }
+
+  @Get("/material/:materialId")
+  async allProductsByMaterial(@Param("materialId") materialId: string) {
+    try {
+      const result = await this.getAllProductsByMaterialId.execute({
+        materialId,
       });
 
       if (result.isLeft()) {
