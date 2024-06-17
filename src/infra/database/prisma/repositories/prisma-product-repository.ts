@@ -12,107 +12,112 @@ import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 export class PrismaProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
-async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
-  try {
-    console.log(`Querying database for products with materialId: ${materialId}`);
-    const productsData = await this.prisma.product.findMany({
-      where: {
-        materialId: materialId,
-      },
-      include: {
-        productColors: {
-          include: {
-            color: true,
-          },
+  async findByMaterialId(
+    materialId: string
+  ): Promise<Either<Error, Product[]>> {
+    try {
+      console.log(
+        `Querying database for products with materialId: ${materialId}`
+      );
+      const productsData = await this.prisma.product.findMany({
+        where: {
+          materialId: materialId,
         },
-        productSizes: {
-          include: {
-            size: true,
+        include: {
+          productColors: {
+            include: {
+              color: true,
+            },
           },
-        },
-        productCategories: {
-          include: {
-            category: true,
+          productSizes: {
+            include: {
+              size: true,
+            },
           },
+          productCategories: {
+            include: {
+              category: true,
+            },
+          },
+          brand: true,
+          material: true,
+          productVariants: true,
         },
-        brand: true,
-        material: true,
-        productVariants: true,
-      },
-    });
+      });
 
-    if (!productsData.length) {
+      if (!productsData.length) {
+        return left(
+          new ResourceNotFoundError(
+            `No products found for materialId: ${materialId}`
+          )
+        );
+      }
+
+      const products = productsData.map((productData) =>
+        Product.create(
+          {
+            name: productData.name,
+            description: productData.description,
+            productSizes: productData.productSizes.map((size) => ({
+              id: new UniqueEntityID(size.sizeId),
+              name: size.size.name,
+            })),
+            productColors: productData.productColors.map((color) => ({
+              id: new UniqueEntityID(color.colorId),
+              name: color.color.name,
+              hex: color.color.hex,
+            })),
+            productCategories: productData.productCategories.map(
+              (category) => ({
+                id: new UniqueEntityID(category.categoryId),
+                name: category.category.name,
+              })
+            ),
+            materialId: productData.materialId
+              ? new UniqueEntityID(productData.materialId)
+              : undefined,
+            sizeId: productData.productSizes.map(
+              (size) => new UniqueEntityID(size.sizeId)
+            ),
+            finalPrice: productData.finalPrice ?? undefined,
+            brandId: new UniqueEntityID(productData.brandId),
+            brandName: productData.brand?.name ?? "Unknown Brand",
+            materialName: productData.material?.name ?? "Unknown Material",
+            brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
+            discount: productData.discount ?? undefined,
+            price: productData.price,
+            stock: productData.stock,
+            sku: productData.sku ?? "ntt",
+            height: productData.height ?? undefined,
+            width: productData.width ?? undefined,
+            length: productData.length ?? undefined,
+            weight: productData.weight ?? undefined,
+            onSale: productData.onSale ?? undefined,
+            isFeatured: productData.isFeatured ?? undefined,
+            isNew: productData.isNew ?? undefined,
+            images: productData.images ?? undefined,
+            slug: Slug.createFromText(productData.slug),
+            createdAt: new Date(productData.createdAt),
+            updatedAt: productData.updatedAt
+              ? new Date(productData.updatedAt)
+              : undefined,
+          },
+          new UniqueEntityID(productData.id)
+        )
+      );
+
+      return right(products);
+    } catch (error) {
+      console.error(
+        `Failed to retrieve products for materialId: ${materialId}, Error: ${error}`
+      );
       return left(
-        new ResourceNotFoundError(`No products found for materialId: ${materialId}`)
+        new ResourceNotFoundError(
+          `Failed to retrieve products for materialId: ${materialId}`
+        )
       );
     }
-
-    const products = productsData.map((productData) =>
-      Product.create(
-        {
-          name: productData.name,
-          description: productData.description,
-          productSizes: productData.productSizes.map((size) => ({
-            id: new UniqueEntityID(size.sizeId),
-            name: size.size.name,
-          })),
-          productColors: productData.productColors.map((color) => ({
-            id: new UniqueEntityID(color.colorId),
-            name: color.color.name,
-            hex: color.color.hex,
-          })),
-          productCategories: productData.productCategories.map(
-            (category) => ({
-              id: new UniqueEntityID(category.categoryId),
-              name: category.category.name,
-            })
-          ),
-          materialId: productData.materialId
-            ? new UniqueEntityID(productData.materialId)
-            : undefined,
-          sizeId: productData.productSizes.map(
-            (size) => new UniqueEntityID(size.sizeId)
-          ),
-          finalPrice: productData.finalPrice ?? undefined,
-          brandId: new UniqueEntityID(productData.brandId),
-          brandName: productData.brand?.name ?? "Unknown Brand",
-          materialName: productData.material?.name ?? "Unknown Material",
-          brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
-          discount: productData.discount ?? undefined,
-          price: productData.price,
-          stock: productData.stock,
-          sku: productData.sku ?? "ntt",
-          height: productData.height ?? undefined,
-          width: productData.width ?? undefined,
-          length: productData.length ?? undefined,
-          weight: productData.weight ?? undefined,
-          onSale: productData.onSale ?? undefined,
-          isFeatured: productData.isFeatured ?? undefined,
-          isNew: productData.isNew ?? undefined,
-          images: productData.images ?? undefined,
-          slug: Slug.createFromText(productData.slug),
-          createdAt: new Date(productData.createdAt),
-          updatedAt: productData.updatedAt
-            ? new Date(productData.updatedAt)
-            : undefined,
-        },
-        new UniqueEntityID(productData.id)
-      )
-    );
-
-    return right(products);
-  } catch (error) {
-    console.error(
-      `Failed to retrieve products for materialId: ${materialId}, Error: ${error}`
-    );
-    return left(
-      new ResourceNotFoundError(
-        `Failed to retrieve products for materialId: ${materialId}`
-      )
-    );
   }
-}
-
 
   async findByPriceRange(
     minPrice: number,
@@ -994,6 +999,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
         stock,
         materialId,
         brandId,
+        erpId,
         images,
         createdAt,
         updatedAt,
@@ -1008,6 +1014,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
         description: product.description,
         price: product.price,
         stock: product.stock,
+        erpId: product.erpId,
         materialId: product.materialId ? product.materialId.toString() : null,
         brandId: product.brandId.toString(),
         images: product.images,
@@ -1095,6 +1102,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
           slug: slug,
           price: price,
           stock: stock,
+          erpId: erpId,
           height: product.height,
           width: product.width,
           length: product.length,
@@ -1123,6 +1131,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
         stock,
         materialId,
         brandId,
+        erpId,
         width,
         images,
         createdAt,
@@ -1134,6 +1143,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
         description: product.description,
         price: product.price,
         stock: product.stock,
+        erpId:product.erpId,
         materialId: product.materialId
           ? product.materialId.toString()
           : undefined,
@@ -1153,6 +1163,7 @@ async findByMaterialId(materialId: string): Promise<Either<Error, Product[]>> {
           description,
           price,
           stock,
+          erpId,
           materialId: materialId ?? undefined,
           brandId,
           images,

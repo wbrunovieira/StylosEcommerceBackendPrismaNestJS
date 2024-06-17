@@ -35,6 +35,7 @@ interface CreateProductUseCaseRequest {
   price: number;
   stock: number;
   sku?: string | null;
+  erpId?: string
   height: number;
   width: number;
   length: number;
@@ -84,6 +85,7 @@ export class CreateProductUseCase {
     materialId = null,
     brandId,
     sku = null,
+    erpId,
     price,
     stock,
     height,
@@ -208,6 +210,7 @@ export class CreateProductUseCase {
         finalPrice,
         stock,
         sku: sku || "",
+        erpId,
         height,
         width,
         length,

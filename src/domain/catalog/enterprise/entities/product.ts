@@ -45,6 +45,7 @@ export interface ProductProps {
   price: number;
   stock: number;
   sku: string;
+  erpId?: string;
   slug: Slug;
   height: number;
   width: number;
@@ -66,9 +67,16 @@ export class Product extends Entity<ProductProps> {
   get height() {
     return this.props.height;
   }
+  get erpId(): string | undefined {
+    return this.props.erpId;
+  }
 
   set height(height: number) {
     this.props.height = height;
+    this.touch();
+  }
+  set erpId(erpId: string) {
+    this.props.erpId = erpId;
     this.touch();
   }
 

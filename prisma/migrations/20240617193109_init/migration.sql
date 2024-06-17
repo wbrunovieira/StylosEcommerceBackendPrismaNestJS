@@ -35,6 +35,7 @@ CREATE TABLE "products" (
     "width" DOUBLE PRECISION NOT NULL,
     "length" DOUBLE PRECISION NOT NULL,
     "weight" DOUBLE PRECISION NOT NULL,
+    "erpId" TEXT,
     "sku" TEXT,
     "upc" TEXT,
     "tags" TEXT[],

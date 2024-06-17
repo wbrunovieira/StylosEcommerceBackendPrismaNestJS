@@ -22,6 +22,7 @@ interface EditProductUseCaseRequest {
   price?: number;
   stock?: number;
   sku?: string;
+  erpId?: string;
   height?: number;
   width?: number;
   length?: number;
@@ -62,7 +63,7 @@ export class EditProductUseCase {
     productCategories,
     materialId,
     sizeId,
-
+    erpId,
     brandId,
     discount,
     price,
@@ -125,6 +126,7 @@ export class EditProductUseCase {
       priceChanged = true;
     }
     if (stock !== undefined) product.stock = stock;
+    if (erpId !== undefined) product.erpId = erpId;
     if (sku !== undefined) product.sku = sku;
     if (height !== undefined) product.height = height;
     if (width !== undefined) product.width = width;
