@@ -181,7 +181,7 @@ model ProductCategory {
 
 model Material {
   id   String @id @default(uuid())
-  name String
+  name String @unique
   products Product[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
