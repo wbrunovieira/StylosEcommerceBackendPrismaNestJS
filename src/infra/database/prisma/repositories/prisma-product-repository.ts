@@ -9,7 +9,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 import { ProductWithVariants } from "@/domain/catalog/enterprise/entities/productWithVariants";
 import { ProductVariant } from "@/domain/catalog/enterprise/entities/product-variant";
-import { ProductStatus as PrismaProductStatus } from "@prisma/client";;
+import { ProductStatus as PrismaProductStatus } from "@prisma/client";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
@@ -1244,14 +1244,55 @@ export class PrismaProductRepository implements IProductRepository {
 
       return right(undefined);
     } catch (error) {
-      const id = productOrProductWithVariants instanceof ProductWithVariants
-      ? productOrProductWithVariants.product.id.toString()
-      : productOrProductWithVariants.id.toString();
-    return left(
-      new ResourceNotFoundError(
-        `Failed to save product with id: ${id}`
-      )
-    );
+      const id =
+        productOrProductWithVariants instanceof ProductWithVariants
+          ? productOrProductWithVariants.product.id.toString()
+          : productOrProductWithVariants.id.toString();
+      return left(
+        new ResourceNotFoundError(`Failed to save product with id: ${id}`)
+      );
+    }
+  }
+
+  async updateVariant(
+    variant: ProductVariant
+  ): Promise<Either<ResourceNotFoundError, void>> {
+    try {
+      const existingVariant = await this.prisma.productVariant.findUnique({
+        where: { id: variant.id.toString() },
+      });
+
+      if (!existingVariant) {
+        return left(
+          new ResourceNotFoundError(
+            `Variant not found for id: ${variant.id.toString()}`
+          )
+        );
+      }
+
+      await this.prisma.productVariant.update({
+        where: { id: variant.id.toString() },
+        data: {
+          productId: variant.productId.toString(),
+          colorId: variant.colorId?.toString(),
+          sizeId: variant.sizeId?.toString(),
+          sku: variant.sku,
+          upc: variant.upc,
+          stock: variant.stock,
+          price: variant.price,
+          images: variant.images,
+          status: variant.status as PrismaProductStatus,
+          updatedAt: new Date(),
+        },
+      });
+
+      return right(undefined);
+    } catch (error) {
+      return left(
+        new ResourceNotFoundError(
+          `Failed to update variant with id: ${variant.id.toString()}`
+        )
+      );
     }
   }
 
