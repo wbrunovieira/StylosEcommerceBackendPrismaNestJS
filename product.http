@@ -74,7 +74,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/46090bf5-7af9-4adf-8e3a-cad0b5fe6ca5
+GET {{BASE_URL}}/products/8f5e3b42-20d7-4282-a73d-f092b1737f47
 Content-Type: application/json
 
 

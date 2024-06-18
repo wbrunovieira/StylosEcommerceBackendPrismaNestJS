@@ -1,18 +1,27 @@
 import { Either } from "@/core/either";
 import { Product } from "../../enterprise/entities/product";
+import { ProductWithVariants } from "../../enterprise/entities/productWithVariants";
+import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-error";
 
 export abstract class IProductRepository {
   abstract create(product: Product): Promise<Either<Error, void>>;
 
   abstract delete(product: Product): Promise<void>;
   abstract findByName(name: string): Promise<Either<Error, Product[]>>;
-  abstract findById(productId: string): Promise<Either<Error, Product>>;
+  abstract findById(
+    productId: string
+  ): Promise<Either<Error, ProductWithVariants>>;
   abstract findByCategoryId(
     categoryId: string
   ): Promise<Either<Error, Product[]>>;
   abstract findByBrandId(brandId: string): Promise<Either<Error, Product[]>>;
-  abstract findByMaterialId(materialId: string): Promise<Either<Error, Product[]>>;
-  abstract findByPriceRange(minPrice: number, maxPrice: number): Promise<Either<Error, Product[]>>;
+  abstract findByMaterialId(
+    materialId: string
+  ): Promise<Either<Error, Product[]>>;
+  abstract findByPriceRange(
+    minPrice: number,
+    maxPrice: number
+  ): Promise<Either<Error, Product[]>>;
   abstract findByColorId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract findBySizeId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract findBySlug(slug: string): Promise<
@@ -37,5 +46,5 @@ export abstract class IProductRepository {
       }
     >
   >;
-  abstract save(product: Product): Promise<Either<Error, void>>;
+  abstract save(productWithVariants: ProductWithVariants): Promise<Either<ResourceNotFoundError, void>>;
 }

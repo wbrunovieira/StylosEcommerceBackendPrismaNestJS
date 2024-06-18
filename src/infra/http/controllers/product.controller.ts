@@ -30,6 +30,7 @@ import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
+import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -111,6 +112,7 @@ export class ProductController {
     private getAllProductsByMaterialId: GetProductsByMaterialIdUseCase,
     private getAllProductsByColorId: GetProductsByColorIdUseCase,
     private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
+    private readonly getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
     private findProductByName: FindProductByNameUseCase,
     private getProductsByPriceRange: GetProductsByPriceRangeUseCase
   ) {}
@@ -408,11 +410,16 @@ export class ProductController {
   @Get(":id")
   async getProduct(@Param("id") id: string) {
     console.log("id controller");
-    const product = await this.prisma.product.findUnique({ where: { id } });
-    if (!product) {
+    const result = await this.getAllProductsByIdUseCase.execute({
+      productId: id,
+    });
+
+    if (result.isLeft()) {
       throw new HttpException("Produto não encontrado", HttpStatus.NOT_FOUND);
     }
-    return { product };
+
+    const productWithVariants = result.value;
+    return { product: productWithVariants };
   }
 
   @Get("slug/:slug")
@@ -469,28 +476,21 @@ export class ProductController {
     }
   }
 
-  @Put("save/:id")
-  async saveProduct(
-    @Param("id") id: string,
-    @Body(new ZodValidationsPipe(editProductSchema)) body: EditProductBodySchema
-  ) {
-    const transformedBody = {
-      ...body,
-      productCategories: body.productCategories
-        ? body.productCategories.map((category) =>
-            typeof category === "string" ? { id: category, name: "" } : category
-          )
-        : undefined,
-    };
+  @Put(":id")
+  async editProduct(@Param("id") id: string, @Body() body: any) {
     const result = await this.editProductUseCase.execute({
       productId: id,
-      ...transformedBody,
+      ...body,
     });
 
     if (result.isLeft()) {
-      throw new HttpException(result.value.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "Failed to update product",
+        HttpStatus.BAD_REQUEST
+      );
     }
 
-    return { product: result.value.product };
+    const productWithVariants = result.value;
+    return { product: productWithVariants };
   }
 }

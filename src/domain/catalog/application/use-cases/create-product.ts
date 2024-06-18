@@ -23,6 +23,7 @@ import { ProductVariant } from "../../enterprise/entities/product-variant";
 import { ProductStatus } from "../../enterprise/entities/product-status";
 
 import { generateSlug } from "../utils/generate-slug";
+import { ProductWithVariants } from "../../enterprise/entities/productWithVariants";
 
 interface CreateProductUseCaseRequest {
   name: string;
@@ -35,7 +36,7 @@ interface CreateProductUseCaseRequest {
   price: number;
   stock: number;
   sku?: string | null;
-  erpId?: string
+  erpId?: string;
   height: number;
   width: number;
   length: number;
@@ -227,7 +228,11 @@ export class CreateProductUseCase {
 
       const finalSlug = generateSlug(name, brand.name, product.id.toString());
       product.slug = finalSlug;
-      await this.productRepository.save(product);
+      const productWithVariants = ProductWithVariants.create({
+        product,
+        variants: [],
+      });
+      await this.productRepository.save(productWithVariants);
 
       if (productColors) {
         for (const colorId of productColors) {

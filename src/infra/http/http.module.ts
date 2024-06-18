@@ -64,6 +64,7 @@ import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
+import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -131,6 +132,7 @@ import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use
     GetProductsBySizeIdUseCase,
     GetProductsByPriceRangeUseCase,
     GetProductsByMaterialIdUseCase,
+    GetAllProductsByIdUseCase,
     FindProductByNameUseCase,
 
     ApiGetAllProducts,

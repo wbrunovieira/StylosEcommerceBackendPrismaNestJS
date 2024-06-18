@@ -13,6 +13,7 @@ interface CreateCartUseCaseRequest {
   items: {
     productId: string;
     quantity: number;
+    variantId?: string; // Adicionando o variantId
     price: number;
   }[];
 }
@@ -55,14 +56,46 @@ export class CreateCartUseCase {
           );
         }
 
-        const product = productResult.value;
-        if (product.stock < item.quantity) {
-          return left(
-            new ResourceNotFoundError(
-              `Insufficient stock for product: ${item.productId}`
-            )
+        const productWithVariants = productResult.value;
+        const product = productWithVariants.product;
+
+        // Verifica se há variantes
+        let variant;
+        if (item.variantId) {
+          variant = productWithVariants.variants.find(
+            (v) => v.id.toString() === item.variantId
           );
+
+          if (!variant) {
+            return left(
+              new ResourceNotFoundError(
+                `Variant not found: ${item.variantId}`
+              )
+            );
+          }
+
+          if (variant.stock < item.quantity) {
+            return left(
+              new ResourceNotFoundError(
+                `Insufficient stock for variant: ${item.variantId}`
+              )
+            );
+          }
+        } else {
+          if (product.stock < item.quantity) {
+            return left(
+              new ResourceNotFoundError(
+                `Insufficient stock for product: ${item.productId}`
+              )
+            );
+          }
         }
+
+        const height = variant ? variant.height : product.height;
+        const width = variant ? variant.width : product.width;
+        const length = variant ? variant.length : product.length;
+        const weight = variant ? variant.weight : product.weight;
+        const stock = variant ? variant.stock : product.stock;
 
         if (cartItemsMap[item.productId]) {
           const existingItem = cartItemsMap[item.productId];
@@ -72,10 +105,10 @@ export class CreateCartUseCase {
             productId: new UniqueEntityID(item.productId),
             quantity: item.quantity,
             price: item.price,
-            height: product.height,
-            width: product.width,
-            length: product.length,
-            weight: product.weight,
+            height: height,
+            width: width,
+            length: length,
+            weight: weight,
           });
         }
       }

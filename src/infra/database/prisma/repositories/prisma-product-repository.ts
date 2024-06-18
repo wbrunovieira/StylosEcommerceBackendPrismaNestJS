@@ -7,6 +7,9 @@ import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
+import { ProductWithVariants } from "@/domain/catalog/enterprise/entities/productWithVariants";
+import { ProductVariant } from "@/domain/catalog/enterprise/entities/product-variant";
+import { ProductStatus as PrismaProductStatus } from "@prisma/client";;
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
@@ -905,10 +908,16 @@ export class PrismaProductRepository implements IProductRepository {
     }
   }
 
-  async findById(productId: string): Promise<Either<Error, Product>> {
+  async findById(
+    productId: string
+  ): Promise<Either<Error, ProductWithVariants>> {
     try {
+      console.log(`Querying database for product with id: ${productId}`);
+
       const productData = await this.prisma.product.findUnique({
-        where: { id: productId },
+        where: {
+          id: productId,
+        },
         include: {
           productColors: {
             include: {
@@ -927,14 +936,21 @@ export class PrismaProductRepository implements IProductRepository {
           },
           brand: true,
           material: true,
+          productVariants: {
+            include: {
+              color: true,
+              size: true,
+            },
+          },
         },
       });
 
       if (!productData) {
         return left(
-          new ResourceNotFoundError(`Product not found: ${productId}`)
+          new ResourceNotFoundError(`Product not found for id: ${productId}`)
         );
       }
+
       const product = Product.create(
         {
           name: productData.name,
@@ -955,11 +971,10 @@ export class PrismaProductRepository implements IProductRepository {
           materialId: productData.materialId
             ? new UniqueEntityID(productData.materialId)
             : undefined,
-          sizeId: productData.productSizes.map(
-            (size) => new UniqueEntityID(size.sizeId)
-          ),
           finalPrice: productData.finalPrice ?? undefined,
           brandId: new UniqueEntityID(productData.brandId),
+          brandName: productData.brand?.name ?? "Unknown Brand",
+          brandUrl: productData.brand?.imageUrl ?? "Unknown Brand image",
           discount: productData.discount ?? undefined,
           price: productData.price,
           stock: productData.stock,
@@ -972,6 +987,7 @@ export class PrismaProductRepository implements IProductRepository {
           isFeatured: productData.isFeatured ?? undefined,
           isNew: productData.isNew ?? undefined,
           images: productData.images ?? undefined,
+          slug: Slug.createFromText(productData.slug),
           createdAt: new Date(productData.createdAt),
           updatedAt: productData.updatedAt
             ? new Date(productData.updatedAt)
@@ -979,10 +995,41 @@ export class PrismaProductRepository implements IProductRepository {
         },
         new UniqueEntityID(productData.id)
       );
-      return right(product);
+
+      const productVariants = productData.productVariants.map((variant) =>
+        ProductVariant.create(
+          {
+            productId: new UniqueEntityID(variant.productId),
+            colorId: variant.color
+              ? new UniqueEntityID(variant.color.id)
+              : undefined,
+            sizeId: variant.size
+              ? new UniqueEntityID(variant.size.id)
+              : undefined,
+            sku: variant.sku,
+            upc: variant.upc ?? undefined,
+            stock: variant.stock,
+            price: variant.price,
+            images: variant.images,
+            status: variant.status,
+            createdAt: variant.createdAt,
+            updatedAt: variant.updatedAt ?? undefined,
+          },
+          new UniqueEntityID(variant.id)
+        )
+      );
+
+      return right(
+        ProductWithVariants.create({ product, variants: productVariants })
+      );
     } catch (error) {
+      console.error(
+        `Failed to retrieve product for id: ${productId}, Error: ${error}`
+      );
       return left(
-        new ResourceNotFoundError(`Failed to retrieve product: ${productId}`)
+        new ResourceNotFoundError(
+          `Failed to retrieve product for id: ${productId}`
+        )
       );
     }
   }
@@ -1122,61 +1169,89 @@ export class PrismaProductRepository implements IProductRepository {
     }
   }
 
-  async save(product: Product): Promise<Either<Error, void>> {
+  async save(
+    productOrProductWithVariants: Product | ProductWithVariants
+  ): Promise<Either<ResourceNotFoundError, void>> {
     try {
-      const {
-        name,
-        description,
-        price,
-        stock,
-        materialId,
-        brandId,
-        erpId,
-        width,
-        images,
-        createdAt,
-        updatedAt,
-        slug,
-        ...otherProps
-      } = {
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        stock: product.stock,
-        erpId:product.erpId,
-        materialId: product.materialId
-          ? product.materialId.toString()
-          : undefined,
-        brandId: product.brandId.toString(),
-        images: product.images,
-        width: product.width,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        slug: product.slug.toString(),
-        finalPrice: product.finalPrice,
-      };
+      let product: Product;
+      let variants: Array<{
+        id: UniqueEntityID;
+        productId: UniqueEntityID;
+        colorId?: UniqueEntityID;
+        sizeId?: UniqueEntityID;
+        sku: string;
+        upc?: string;
+        stock: number;
+        price: number;
+        images: string[];
+        status: PrismaProductStatus;
+        createdAt: Date;
+        updatedAt?: Date;
+      }> = [];
+
+      if (productOrProductWithVariants instanceof Product) {
+        product = productOrProductWithVariants;
+      } else {
+        product = productOrProductWithVariants.product;
+        variants = productOrProductWithVariants.variants;
+      }
 
       await this.prisma.product.update({
         where: { id: product.id.toString() },
         data: {
-          name,
-          description,
-          price,
-          stock,
-          erpId,
-          materialId: materialId ?? undefined,
-          brandId,
-          images,
-          createdAt,
-          updatedAt,
-          slug,
-          ...otherProps,
+          name: product.name,
+          description: product.description,
+          materialId: product.materialId?.toString(),
+          brandId: product.brandId.toString(),
+          discount: product.discount,
+          price: product.price,
+          finalPrice: product.finalPrice,
+          height: product.height,
+          width: product.width,
+          length: product.length,
+          weight: product.weight,
+          onSale: product.onSale,
+          isFeatured: product.isFeatured,
+          isNew: product.isNew,
+          images: product.images,
+          stock: product.stock,
+          sku: product.sku,
+          erpId: product.erpId,
+          slug: product.slug.toString(),
+          updatedAt: new Date(),
         },
       });
 
+      await Promise.all(
+        variants.map(async (variant) => {
+          await this.prisma.productVariant.update({
+            where: { id: variant.id.toString() },
+            data: {
+              productId: variant.productId.toString(),
+              colorId: variant.colorId?.toString(),
+              sizeId: variant.sizeId?.toString(),
+              sku: variant.sku,
+              upc: variant.upc,
+              stock: variant.stock,
+              price: variant.price,
+              images: variant.images,
+              status: variant.status,
+              updatedAt: new Date(),
+            },
+          });
+        })
+      );
+
       return right(undefined);
     } catch (error) {
-      return left(new Error("Failed to update product"));
+      const id = productOrProductWithVariants instanceof ProductWithVariants
+      ? productOrProductWithVariants.product.id.toString()
+      : productOrProductWithVariants.id.toString();
+    return left(
+      new ResourceNotFoundError(
+        `Failed to save product with id: ${id}`
+      )
+    );
     }
   }
 
