@@ -1,4 +1,3 @@
-import { Product } from "../../enterprise/entities/product";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
@@ -6,6 +5,7 @@ import { IProductRepository } from "../repositories/i-product-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { generateSlug } from "../utils/generate-slug";
 import { IBrandRepository } from "../repositories/i-brand-repository";
+import { ProductWithVariants } from "../../enterprise/entities/productWithVariants";
 
 interface EditProductUseCaseRequest {
   productId: string;
@@ -37,7 +37,7 @@ interface EditProductUseCaseRequest {
 
 type EditProductUseCaseResponse = Either<
   ResourceNotFoundError,
-  { product: Product }
+  ProductWithVariants
 >;
 
 @Injectable()
@@ -84,7 +84,8 @@ export class EditProductUseCase {
       return left(new ResourceNotFoundError("Product not found"));
     }
 
-    const product = productResult.value;
+    const productWithVariants = productResult.value;
+    const product = productWithVariants.product;
     let priceChanged = false;
     let discountChanged = false;
     let nameChanged = false;
@@ -154,25 +155,19 @@ export class EditProductUseCase {
     }
 
     const brand = brandOrError.value;
-    console.log("slug antes do slug ", product.slug);
     let newSlug;
 
     if (nameChanged) {
       newSlug = generateSlug(product.name, brand.name, product.id.toString());
       product.slug = newSlug;
     }
-    product.slug = newSlug;
 
-    console.log("final slug ", product.slug);
-
-    const saveResult = await this.productRepository.save(product);
+    const saveResult = await this.productRepository.save(productWithVariants);
 
     if (saveResult.isLeft()) {
       return left(new ResourceNotFoundError("Failed to update product"));
     }
 
-    return right({
-      product,
-    });
+    return right(productWithVariants);
   }
 }
