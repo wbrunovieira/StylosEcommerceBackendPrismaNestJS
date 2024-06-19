@@ -10,6 +10,7 @@ import {
   UseGuards,
   Query,
   Put,
+  Patch,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/jwt-auth.guard";
 
@@ -31,6 +32,8 @@ import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cas
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
 import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { ProductStatus } from "@prisma/client";
+import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -100,6 +103,27 @@ const queryValidationPipe = new ZodValidationsPipe(pageQueryParamSchema);
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>;
 
+export const updateProductVariantSchema = z.object({
+  productId: z.string().nonempty(),
+  variantUpdates: z.array(
+    z.object({
+      id: z.string().nonempty(),
+      sku: z.string().optional(),
+      stock: z.number().optional(),
+      price: z.number().optional(),
+      images: z.array(z.string()).optional(),
+      status: z.nativeEnum(ProductStatus).optional(),
+    })
+  ),
+});
+const updateProductVariantValidationPipe = new ZodValidationsPipe(
+  updateProductVariantSchema
+);
+
+export type UpdateProductVariantSchema = z.infer<
+  typeof updateProductVariantSchema
+>;
+
 @Controller("/products")
 export class ProductController {
   constructor(
@@ -112,7 +136,8 @@ export class ProductController {
     private getAllProductsByMaterialId: GetProductsByMaterialIdUseCase,
     private getAllProductsByColorId: GetProductsByColorIdUseCase,
     private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
-    private readonly getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
+    private getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
+    private updateProductVariantUseCase: UpdateProductVariantUseCase,
     private findProductByName: FindProductByNameUseCase,
     private getProductsByPriceRange: GetProductsByPriceRangeUseCase
   ) {}
@@ -474,6 +499,24 @@ export class ProductController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Patch("update")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
+  async updateProductVariants(
+    @Body(updateProductVariantValidationPipe)
+    body: UpdateProductVariantSchema
+  ) {
+     const result = await this.updateProductVariantUseCase.execute(body);
+
+    if (result.isLeft()) {
+      throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      message: "Product variants updated successfully",
+    };
   }
 
   @Put(":id")

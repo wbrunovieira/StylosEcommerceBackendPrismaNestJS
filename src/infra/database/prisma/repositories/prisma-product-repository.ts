@@ -10,6 +10,7 @@ import { Slug } from "@/domain/catalog/enterprise/entities/value-objects/slug";
 import { ProductWithVariants } from "@/domain/catalog/enterprise/entities/productWithVariants";
 import { ProductVariant } from "@/domain/catalog/enterprise/entities/product-variant";
 import { ProductStatus as PrismaProductStatus } from "@prisma/client";
+import { toDomainProductStatus } from "../utils/convert-product-status";
 
 @Injectable()
 export class PrismaProductRepository implements IProductRepository {
@@ -1011,7 +1012,7 @@ export class PrismaProductRepository implements IProductRepository {
             stock: variant.stock,
             price: variant.price,
             images: variant.images,
-            status: variant.status,
+            status: toDomainProductStatus(variant.status),
             createdAt: variant.createdAt,
             updatedAt: variant.updatedAt ?? undefined,
           },

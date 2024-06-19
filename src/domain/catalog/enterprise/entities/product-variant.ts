@@ -1,8 +1,9 @@
+// src/domain/catalog/enterprise/entities/product-variant.ts
 import { AggregateRoot } from "@/core/entities/aggregate-root";
 import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
-import { ProductStatus } from "@prisma/client";
+import { ProductStatus } from "./product-status";
 
 export interface ProductVariantProps {
   productId: UniqueEntityID;
@@ -65,6 +66,31 @@ export class ProductVariant extends Entity<ProductVariantProps> {
 
   get status(): ProductStatus {
     return this.props.status;
+  }
+
+  set status(status: ProductStatus) {
+    this.props.status = status;
+    this.touch();
+  }
+
+  set sku(sku: string) {
+    this.props.sku = sku;
+    this.touch();
+  }
+
+  set price(price: number) {
+    this.props.price = price;
+    this.touch();
+  }
+
+  set stock(stock: number) {
+    this.props.stock = stock;
+    this.touch();
+  }
+
+  set images(images: string[]) {
+    this.props.images = images;
+    this.touch();
   }
 
   static create(
