@@ -4,8 +4,10 @@ import { ProductVariant } from "../../../../domain/catalog/enterprise/entities/p
 import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ProductStatus } from "@prisma/client";
+
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { ProductStatus } from "@/domain/catalog/enterprise/entities/product-status";
+import { toDomainProductStatus, toPrismaProductStatus } from "../utils/convert-product-status";
 
 @Injectable()
 export class PrismaProductVariantRepository
@@ -24,7 +26,7 @@ export class PrismaProductVariantRepository
           sku: productVariant.sku,
           stock: productVariant.stock,
           price: productVariant.price,
-          status: productVariant.status,
+          status: toPrismaProductStatus(productVariant.status),
           images: productVariant.images,
           createdAt: productVariant.createdAt,
           updatedAt: productVariant.updatedAt,
@@ -36,30 +38,40 @@ export class PrismaProductVariantRepository
     }
   }
 
-  async findByProductId(productId: string): Promise<ProductVariant[]> {
+  async findByProductId(
+    productId: string
+  ): Promise<Either<ResourceNotFoundError, ProductVariant[]>> {
     const variants = await this.prisma.productVariant.findMany({
       where: { productId },
     });
-    return variants.map((variant) =>
-      ProductVariant.create(
-        {
-          productId: new UniqueEntityID(variant.productId),
-          sizeId: variant.sizeId
-            ? new UniqueEntityID(variant.sizeId)
-            : undefined,
-          colorId: variant.colorId
-            ? new UniqueEntityID(variant.colorId)
-            : undefined,
-          stock: variant.stock,
-          price: variant.price,
-          status: variant.status as ProductStatus,
-          images: variant.images,
 
-          createdAt: variant.createdAt,
-        },
-        new UniqueEntityID(variant.id)
-      )
+    if (variants.length === 0) {
+      return left(
+        new ResourceNotFoundError(
+          `Variants not found for product id: ${productId}`
+        )
+      );
+    }
+
+    const productVariants = variants.map((variant) =>
+      ProductVariant.create({
+        productId: new UniqueEntityID(variant.productId),
+        colorId: variant.colorId
+          ? new UniqueEntityID(variant.colorId)
+          : undefined,
+        sizeId: variant.sizeId ? new UniqueEntityID(variant.sizeId) : undefined,
+        sku: variant.sku,
+        upc: variant.upc ? "" : undefined,
+        stock: variant.stock,
+        price: variant.price,
+        images: variant.images,
+        status: variant.status as ProductStatus,
+        createdAt: new Date(variant.createdAt),
+        updatedAt: variant.updatedAt ? new Date(variant.updatedAt) : undefined,
+      })
     );
+
+    return right(productVariants);
   }
 
   async findById(
@@ -112,7 +124,7 @@ export class PrismaProductVariantRepository
             : undefined,
           stock: variant.stock,
           price: variant.price,
-          status: variant.status,
+          status: toDomainProductStatus(variant.status),
           images: variant.images,
           createdAt: variant.createdAt,
         },
@@ -148,7 +160,7 @@ export class PrismaProductVariantRepository
           stock: variant.stock,
           price: variant.price,
           images: variant.images,
-          status: variant.status as ProductStatus,
+          status: toPrismaProductStatus(variant.status),
           updatedAt: new Date(),
         },
       });

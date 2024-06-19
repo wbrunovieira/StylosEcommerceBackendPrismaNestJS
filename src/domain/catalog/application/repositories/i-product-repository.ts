@@ -6,7 +6,7 @@ import { ProductVariant } from "../../enterprise/entities/product-variant";
 
 export abstract class IProductRepository {
   abstract create(product: Product): Promise<Either<Error, void>>;
-
+  abstract findByColorId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract delete(product: Product): Promise<void>;
   abstract findByName(name: string): Promise<Either<Error, Product[]>>;
   abstract findById(
@@ -23,7 +23,7 @@ export abstract class IProductRepository {
     minPrice: number,
     maxPrice: number
   ): Promise<Either<Error, Product[]>>;
-  
+
   abstract findBySizeId(colorId: string): Promise<Either<Error, Product[]>>;
   abstract findBySlug(slug: string): Promise<
     Either<
@@ -47,5 +47,7 @@ export abstract class IProductRepository {
       }
     >
   >;
-  abstract save(productWithVariants: ProductWithVariants): Promise<Either<ResourceNotFoundError, void>>;
+  abstract save(
+    productWithVariants: ProductWithVariants
+  ): Promise<Either<ResourceNotFoundError, void>>;
 }

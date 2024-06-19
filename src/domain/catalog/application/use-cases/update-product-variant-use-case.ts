@@ -1,9 +1,13 @@
+// src/domain/catalog/application/use-cases/update-product-variant.use-case.ts
 import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
-import { ProductStatus } from "../../enterprise/entities/product-status";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { ProductVariant } from "../../enterprise/entities/product-variant";
+import {
+  toDomainProductStatus,
+  toPrismaProductStatus,
+} from "@/infra/database/prisma/utils/convert-product-status";
+import { ProductStatus as DomainProductStatus } from "../../enterprise/entities/product-status";
 
 interface UpdateProductVariantUseCaseRequest {
   productId: string;
@@ -13,7 +17,7 @@ interface UpdateProductVariantUseCaseRequest {
     stock?: number;
     price?: number;
     images?: string[];
-    status?: ProductStatus;
+    status?: DomainProductStatus;
   }>;
 }
 
@@ -44,14 +48,17 @@ export class UpdateProductVariantUseCase {
       const variant = variants.find((v) => v.id.toString() === update.id);
 
       if (!variant) {
-        continue; // Skip updates for variants not found
+        continue;
       }
 
       if (update.sku !== undefined) variant.sku = update.sku;
       if (update.stock !== undefined) variant.stock = update.stock;
       if (update.price !== undefined) variant.price = update.price;
       if (update.images !== undefined) variant.images = update.images;
-      if (update.status !== undefined) variant.status = update.status;
+      if (update.status !== undefined) {
+        const prismaStatus = toPrismaProductStatus(update.status);
+        variant.status = toDomainProductStatus(prismaStatus);
+      }
 
       const updateResult = await this.productVariantRepository.update(variant);
 
