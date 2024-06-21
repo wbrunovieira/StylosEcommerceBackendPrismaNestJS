@@ -7,7 +7,10 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { ProductStatus } from "@/domain/catalog/enterprise/entities/product-status";
-import { toDomainProductStatus, toPrismaProductStatus } from "../utils/convert-product-status";
+import {
+  toDomainProductStatus,
+  toPrismaProductStatus,
+} from "../utils/convert-product-status";
 
 @Injectable()
 export class PrismaProductVariantRepository
@@ -77,30 +80,39 @@ export class PrismaProductVariantRepository
   async findById(
     id: string
   ): Promise<Either<ResourceNotFoundError, ProductVariant>> {
+    console.log("id", id);
     const variant = await this.prisma.productVariant.findUnique({
       where: { id },
     });
+    console.log("variant", variant);
 
     if (!variant) {
-      return left(new ResourceNotFoundError(`Variant not found for id: ${id}`));
+      return left(
+        new ResourceNotFoundError(
+          `Variant not  in prisma findnyId found for id: ${id}`
+        )
+      );
     }
 
-    const productVariant = ProductVariant.create({
-      productId: new UniqueEntityID(variant.productId),
-      colorId: variant.colorId
-        ? new UniqueEntityID(variant.colorId)
-        : undefined,
-      sizeId: variant.sizeId ? new UniqueEntityID(variant.sizeId) : undefined,
-      sku: variant.sku,
-      upc: variant.upc ? "" : undefined,
-      stock: variant.stock,
-      price: variant.price,
-      images: variant.images,
-      status: variant.status as ProductStatus,
-      createdAt: new Date(variant.createdAt),
-      updatedAt: variant.updatedAt ? new Date(variant.updatedAt) : undefined,
-    });
-
+    const productVariant = ProductVariant.create(
+      {
+        productId: new UniqueEntityID(variant.productId),
+        colorId: variant.colorId
+          ? new UniqueEntityID(variant.colorId)
+          : undefined,
+        sizeId: variant.sizeId ? new UniqueEntityID(variant.sizeId) : undefined,
+        sku: variant.sku,
+        upc: variant.upc ?? undefined,
+        stock: variant.stock,
+        price: variant.price,
+        images: variant.images,
+        status: variant.status as ProductStatus,
+        createdAt: new Date(variant.createdAt),
+        updatedAt: variant.updatedAt ? new Date(variant.updatedAt) : undefined,
+      },
+      new UniqueEntityID(variant.id)
+    );
+    console.log("productVariant in find byID", productVariant);
     return right(productVariant);
   }
 
@@ -137,9 +149,16 @@ export class PrismaProductVariantRepository
     variant: ProductVariant
   ): Promise<Either<ResourceNotFoundError, void>> {
     try {
+      console.log("entrou no prisma update variant", variant);
+      const variantIdString = variant.idString;
+      console.log("variantIdString", variantIdString);
+      const todasVAriants = await this.prisma.productVariant.findMany();
+      console.log("todasVAriants", todasVAriants);
+
       const existingVariant = await this.prisma.productVariant.findUnique({
-        where: { id: variant.id.toString() },
+        where: { id: variantIdString },
       });
+      console.log("existingVariant", existingVariant);
 
       if (!existingVariant) {
         return left(

@@ -1,4 +1,3 @@
-// src/domain/catalog/application/use-cases/update-product-variant.use-case.ts
 import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
@@ -10,15 +9,14 @@ import {
 import { ProductStatus as DomainProductStatus } from "../../enterprise/entities/product-status";
 
 interface UpdateProductVariantUseCaseRequest {
-  productId: string;
-  variantUpdates: Array<{
+  variantUpdate: {
     id: string;
     sku?: string;
     stock?: number;
     price?: number;
     images?: string[];
     status?: DomainProductStatus;
-  }>;
+  };
 }
 
 type UpdateProductVariantUseCaseResponse = Either<ResourceNotFoundError, void>;
@@ -28,47 +26,46 @@ export class UpdateProductVariantUseCase {
   constructor(private productVariantRepository: IProductVariantRepository) {}
 
   async execute({
-    productId,
-    variantUpdates,
+    variantUpdate,
   }: UpdateProductVariantUseCaseRequest): Promise<UpdateProductVariantUseCaseResponse> {
-    const variantsOrError =
-      await this.productVariantRepository.findByProductId(productId);
+    console.log("variantUpdate antes de acionar o prisma", variantUpdate);
+    const variantOrError = await this.productVariantRepository.findById(
+      variantUpdate.id
+    );
 
-    if (variantsOrError.isLeft() || variantsOrError.value.length === 0) {
+    console.log("variantOrError ", variantOrError);
+    console.log("variantUpdate depois do repo ", variantUpdate);
+
+    if (variantOrError.isLeft()) {
       return left(
         new ResourceNotFoundError(
-          `Variants not found for product id: ${productId}`
+          `Variant not found for id: ${variantUpdate.id}`
         )
       );
     }
 
-    const variants = variantsOrError.value;
+    const variant = variantOrError.value;
 
-    for (const update of variantUpdates) {
-      const variant = variants.find((v) => v.id.toString() === update.id);
+    if (variantUpdate.sku !== undefined) variant.sku = variantUpdate.sku;
+    if (variantUpdate.stock !== undefined) variant.stock = variantUpdate.stock;
+    if (variantUpdate.price !== undefined) variant.price = variantUpdate.price;
+    if (variantUpdate.images !== undefined)
+      variant.images = variantUpdate.images;
+    if (variantUpdate.status !== undefined) {
+      const prismaStatus = toPrismaProductStatus(variantUpdate.status);
+      variant.status = toDomainProductStatus(prismaStatus);
+    }
 
-      if (!variant) {
-        continue;
-      }
+    const updateResult = await this.productVariantRepository.update(variant);
 
-      if (update.sku !== undefined) variant.sku = update.sku;
-      if (update.stock !== undefined) variant.stock = update.stock;
-      if (update.price !== undefined) variant.price = update.price;
-      if (update.images !== undefined) variant.images = update.images;
-      if (update.status !== undefined) {
-        const prismaStatus = toPrismaProductStatus(update.status);
-        variant.status = toDomainProductStatus(prismaStatus);
-      }
+    console.log("updateResult", updateResult);
 
-      const updateResult = await this.productVariantRepository.update(variant);
-
-      if (updateResult.isLeft()) {
-        return left(
-          new ResourceNotFoundError(
-            `Failed to update variant with id: ${update.id}`
-          )
-        );
-      }
+    if (updateResult.isLeft()) {
+      return left(
+        new ResourceNotFoundError(
+          `Failed do Usecase to update variant with  id: ${variantUpdate.id}`
+        )
+      );
     }
 
     return right(undefined);

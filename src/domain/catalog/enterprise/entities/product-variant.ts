@@ -1,4 +1,3 @@
-// src/domain/catalog/enterprise/entities/product-variant.ts
 import { AggregateRoot } from "@/core/entities/aggregate-root";
 import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
@@ -93,19 +92,23 @@ export class ProductVariant extends Entity<ProductVariantProps> {
     this.touch();
   }
 
+  get idString(): string {
+    return this.id.toString();
+  }
+
   static create(
     props: Optional<ProductVariantProps, "createdAt" | "updatedAt">,
     id?: UniqueEntityID
   ): ProductVariant {
-    const now = new Date();
-    const product = new ProductVariant(
+  
+    const productVariant = new ProductVariant(
       {
         ...props,
-        createdAt: props.createdAt || now,
-        updatedAt: props.updatedAt || now,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       id
     );
-    return product;
+    return productVariant;
   }
 }

@@ -34,6 +34,7 @@ import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use
 import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
 import { ProductStatus } from "@prisma/client";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
+import { toDomainProductStatus } from "@/infra/database/prisma/utils/convert-product-status";
 
 const createProductBodySchema = z.object({
   name: z.string(),
@@ -104,18 +105,13 @@ const queryValidationPipe = new ZodValidationsPipe(pageQueryParamSchema);
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>;
 
 export const updateProductVariantSchema = z.object({
-  productId: z.string().nonempty(),
-  variantUpdates: z.array(
-    z.object({
-      id: z.string().nonempty(),
-      sku: z.string().optional(),
-      stock: z.number().optional(),
-      price: z.number().optional(),
-      images: z.array(z.string()).optional(),
-      status: z.nativeEnum(ProductStatus).optional(),
-    })
-  ),
+  sku: z.string().optional(),
+  stock: z.number().optional(),
+  price: z.number().optional(),
+  images: z.array(z.string()).optional(),
+  status: z.enum(["ACTIVE", "INACTIVE", "DISCONTINUED"]).optional(),
 });
+
 const updateProductVariantValidationPipe = new ZodValidationsPipe(
   updateProductVariantSchema
 );
@@ -143,7 +139,6 @@ export class ProductController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("admin")
   async createProduct(@Body(bodyValidationPipe) body: CreateProductBodySchema) {
     try {
@@ -426,6 +421,7 @@ export class ProductController {
             category: true,
           },
         },
+        productVariants: {},
       },
     });
 
@@ -501,21 +497,30 @@ export class ProductController {
     }
   }
 
-  @Patch("update")
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch("update/variant/:variantId")
   @Roles("admin")
-  async updateProductVariants(
+  async updateProductVariant(
+    @Param("variantId") variantId: string,
     @Body(updateProductVariantValidationPipe)
     body: UpdateProductVariantSchema
   ) {
-     const result = await this.updateProductVariantUseCase.execute(body);
+    const { status, ...rest } = body;
+    const variantUpdate = {
+      id: variantId,
+      ...rest,
+      status: status ? toDomainProductStatus(status) : undefined,
+    };
+
+    const result = await this.updateProductVariantUseCase.execute({
+      variantUpdate,
+    });
 
     if (result.isLeft()) {
       throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
     }
 
     return {
-      message: "Product variants updated successfully",
+      message: "Product variant updated successfully",
     };
   }
 
