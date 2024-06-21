@@ -49,11 +49,25 @@ Content-Type: application/json
 ###
 
 # @name edit-products
-PUT {{BASE_URL}}/products/save/37567094-b13c-47aa-bed4-fa5667dc1e4f
+PUT {{BASE_URL}}/products/save/9108357c-2b18-444c-a061-c180f4d3695a
 Content-Type: application/json
 
 {
   "price": 10030
+}
+###
+
+# @name edit-products-variants
+PATCH {{BASE_URL}}/products/update/variant/4b54fbb7-3093-45c5-a94d-2cc351b12b26
+Authorization: Bearer {{AUTH_TOKEN}}
+Content-Type: application/json
+
+{
+  "sku": "new-sku",
+  "stock": 10,
+  "price": 10030,
+  "images": ["image1.jpg", "image2.jpg"],
+  "status": "ACTIVE"
 }
 
 

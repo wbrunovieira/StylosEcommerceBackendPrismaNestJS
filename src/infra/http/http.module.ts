@@ -65,6 +65,7 @@ import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cas
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
 import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -134,6 +135,7 @@ import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-case
     GetProductsByMaterialIdUseCase,
     GetAllProductsByIdUseCase,
     FindProductByNameUseCase,
+    UpdateProductVariantUseCase,
 
     ApiGetAllProducts,
 
