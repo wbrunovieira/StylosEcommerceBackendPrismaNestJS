@@ -128,8 +128,9 @@ export class CreateProductUseCase {
 
     const material = materialOrError.isRight() ? materialOrError.value : null;
 
+    let uniqueSizes
     if (productSizes) {
-      const uniqueSizes = new Set<string>();
+      uniqueSizes = new Set<string>();
 
       for (const sizeId of productSizes) {
         if (!sizeId) {
@@ -147,8 +148,10 @@ export class CreateProductUseCase {
       }
     }
 
+    let uniqueColors
+
     if (productColors) {
-      const uniqueColors = new Set<string>();
+      uniqueColors = new Set<string>();
 
       for (const colorId of productColors) {
         if (!colorId) {
@@ -209,7 +212,7 @@ export class CreateProductUseCase {
         brandId: new UniqueEntityID(brandId),
         price,
         finalPrice,
-        stock,
+        stock: uniqueColors.length === 0 && uniqueSizes.length === 0 ? stock : 0,
         sku: sku || "",
         erpId,
         height,
