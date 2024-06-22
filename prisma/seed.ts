@@ -47,7 +47,7 @@ async function main() {
   }
 
   // Criar materiais
- 
+
   const materials = [{ name: "algodão" }, { name: "lycra" }];
 
   for (const material of materials) {
@@ -59,7 +59,6 @@ async function main() {
       },
     });
   }
-
 
   console.log("Materials created");
 
@@ -166,7 +165,7 @@ async function main() {
         price: price,
         discount: discount,
         finalPrice: finalPrice,
-        stock: 10 + i,
+        stock: 0,
         height: 10 + i,
         width: 15 + i,
         length: 20 + i,
@@ -235,6 +234,7 @@ async function main() {
     });
   }
   console.log("Products created or updated");
+
   // Criar ou atualizar produtos sem cores, tamanhos e variantes (bolsa e oculos)
   const productsWithoutVariants = [
     { name: "bolsa 1", category: "bolsa" },

@@ -1,6 +1,7 @@
 FROM node:20-buster
 
-RUN apt-get update && apt-get install -y netcat
+RUN apt-get update && apt-get install -y  netcat \
+postgresql-client
 
 WORKDIR /app
 

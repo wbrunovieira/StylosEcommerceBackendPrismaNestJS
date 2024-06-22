@@ -6,12 +6,19 @@ services:
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
+      - ./src/infra/database/scripts:/app/scripts
     ports:
       - "3333:3333"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+      - DB_USER=postgres
+      - DB_PASSWORD=docker
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=stylos_db_prisma
+      - DB_SCHEMA=public
 
     depends_on:
       - db
@@ -24,6 +31,7 @@ services:
       echo 'Banco de dados pronto!';
       npx prisma generate
       npx prisma migrate deploy;
+      psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
       npm run seed;
       npm run start:dev;
       "

@@ -93,3 +93,6 @@ docker compose exec app npm run test:e2e -- src/controllers/create-brand.control
 
 
 docker compose exec app npx ts-node prisma/seed.ts
+
+psql $DATABASE_URL -f /app/scripts/triggers.sql
+psql -U postgres -h db -d stylos_db_prisma -c 'SET search_path TO public;' && psql -U postgres -h db -d stylos_db_prisma -f /app/scripts/triggers.sql
