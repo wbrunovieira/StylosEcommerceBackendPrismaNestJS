@@ -81,6 +81,7 @@ import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-ca
     AccountController,
     AddressController,
     CartController,
+    AddressController,
   ],
   providers: [
     JwtService,

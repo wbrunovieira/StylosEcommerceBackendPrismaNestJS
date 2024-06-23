@@ -82,6 +82,10 @@ import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-reposito
       provide: ICartRepository,
       useClass: PrismaCartRepository,
     },
+    {
+      provide: IAddressRepository,
+      useClass: PrismaAddressRepository,
+    },
     PrismaColorRepository,
     PrismaSizeRepository,
     PrismaCategoryRepository,

@@ -31,12 +31,12 @@ export const createAddressSchema = z.object({
 const createBodyValidationPipe = new ZodValidationsPipe(createAddressSchema);
 type CreateAddressBodySchema = z.infer<typeof createAddressSchema>;
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller("users/:userId/addresses")
+@Controller("users")
 export class AddressController {
   private readonly logger = new Logger(AddressController.name);
   constructor(private readonly createAddressUseCase: CreateAddressUseCase) {}
 
-  @Post()
+  @Post(":userId/addresses")
   async create(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body(createBodyValidationPipe) body: CreateAddressBodySchema
