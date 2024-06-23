@@ -66,6 +66,7 @@ import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use
 import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
 import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
+import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -103,6 +104,7 @@ import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-ca
     EditSizeUseCase,
     EditCategoryUseCase,
     EditProductUseCase,
+    EditAddressUseCase,
 
     DeleteBrandUseCase,
     DeleteMaterialUseCase,

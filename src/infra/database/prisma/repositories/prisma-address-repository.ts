@@ -10,12 +10,12 @@ import { PaginationParams } from "@/core/repositories/pagination-params";
 @Injectable()
 export class PrismaAddressRepository implements IAddressRepository {
   constructor(private prisma: PrismaService) {}
-    findByUserId(userId: string, params: PaginationParams): Promise<Either<Error, Address[]>> {
-        throw new Error("Method not implemented.");
-    }
-    save(address: Address): Promise<Either<Error, void>> {
-        throw new Error("Method not implemented.");
-    }
+  findByUserId(
+    userId: string,
+    params: PaginationParams
+  ): Promise<Either<Error, Address[]>> {
+    throw new Error("Method not implemented.");
+  }
 
   async findById(id: string): Promise<Either<Error, Address>> {
     try {
@@ -29,7 +29,7 @@ export class PrismaAddressRepository implements IAddressRepository {
 
       const address = Address.create(
         {
-         userId: addressData.userId,
+          userId: addressData.userId,
           street: addressData.street,
           number: addressData.number,
           complement: addressData.complement ?? undefined,
@@ -37,7 +37,6 @@ export class PrismaAddressRepository implements IAddressRepository {
           state: addressData.state,
           country: addressData.country,
           zipCode: addressData.zipCode,
-      
         },
         new UniqueEntityID(addressData.id)
       );
@@ -61,7 +60,6 @@ export class PrismaAddressRepository implements IAddressRepository {
           state: address.state,
           country: address.country,
           zipCode: address.zipCode,
-   
         },
       });
       return right(undefined);
@@ -91,7 +89,6 @@ export class PrismaAddressRepository implements IAddressRepository {
       const addresses = addressesData.map((addressData) =>
         Address.create(
           {
-            
             userId: addressData.userId,
             street: addressData.street,
             number: addressData.number,
@@ -100,7 +97,6 @@ export class PrismaAddressRepository implements IAddressRepository {
             state: addressData.state,
             country: addressData.country,
             zipCode: addressData.zipCode,
-          
           },
           new UniqueEntityID(addressData.id)
         )
@@ -109,6 +105,27 @@ export class PrismaAddressRepository implements IAddressRepository {
       return right(addresses);
     } catch (error) {
       return left(new Error("Failed to find addresses"));
+    }
+  }
+
+  async save(address: Address): Promise<Either<Error, void>> {
+    try {
+      await this.prisma.address.update({
+        where: { id: address.id.toString() },
+        data: {
+          userId: address.userId,
+          street: address.street,
+          number: address.number,
+          complement: address.complement,
+          city: address.city,
+          state: address.state,
+          country: address.country,
+          zipCode: address.zipCode,
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to save address"));
     }
   }
 }

@@ -7,4 +7,5 @@ export abstract class IAddressRepository {
   abstract create(address: Address): Promise<Either<Error, void>>;
   abstract findAll(params: PaginationParams): Promise<Either<Error, Address[]>>;
   abstract delete(address: Address): Promise<Either<Error, void>>;
+  abstract save(address: Address): Promise<Either<Error, void>>;
 }
