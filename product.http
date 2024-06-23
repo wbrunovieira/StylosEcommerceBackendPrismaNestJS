@@ -137,7 +137,13 @@ Content-Type: application/json
 
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/produto-11-065eb4a9-75a2-4eb1-ad0a-0c972bfc1a21-4812a198-c661-46fd-96bd-005090580e39
+GET {{BASE_URL}}/products/slug/oculos-1-857c0787-7d33-414b-b6e0-f186c1666e38-18e58daf-e48e-4f4d-8e8d-ec7eeb6be9ee
+
+
+###
+
+# @name get-product-by-slug
+GET {{BASE_URL}}/products/slug/produto-12-484fc45f-5b0d-432a-a60e-16a6a4253f7a-c3bfec14-dbd5-40a7-913b-8db25ccaa8fe
 
 
 ###
