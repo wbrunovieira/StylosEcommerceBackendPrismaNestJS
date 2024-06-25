@@ -15,6 +15,7 @@ import {
   ConflictException,
   Put,
   Get,
+  Query,
 } from "@nestjs/common";
 import { z } from "zod";
 import { Logger } from "@nestjs/common";
@@ -135,18 +136,13 @@ export class AddressController {
   }
 
   @Get("by-user-id")
-  async findByUserId(
-    @Body(findAddressesByUserIdValidationPipe)
-    body: FindAddressesByUserIdBodySchema
-  ) {
-    this.logger.log(
-      `Received request to find addresses for userId: ${body.userId}`
-    );
+  async findByUserId(@Query("userId") userId: string) {
+    this.logger.log(`Received request to find addresses for userId: ${userId}`);
     const result = await this.findAddressesByUserIdUseCase.execute({
-      userId: body.userId,
+      userId: userId,
       pagination: {
-        page: body.page,
-        pageSize: body.pageSize,
+        page: 1,
+        pageSize: 10,
       },
     });
 

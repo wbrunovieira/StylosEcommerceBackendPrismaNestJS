@@ -6,10 +6,9 @@ POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
 {
-  "email": "admin@example.com",
-  "password": "Adminpassword@8"
+  "email": "brunao@bruno.com",
+  "password": "123456aA@"
 }
-
 
 ###
 
@@ -31,15 +30,16 @@ Authorization: Bearer {{AUTH_TOKEN}}
 }
 
 ###
+
+
 # @name get-adress-by-userId
-GET {{BASE_URL}}/users/by-user-id
+GET {{BASE_URL}}/users/by-user-id?userId=d5b8f38e-fc63-43f7-8ff6-7258347287e7
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
   "userId": "d5b8f38e-fc63-43f7-8ff6-7258347287e7"
-
-   
+  
 }
 
 ###
