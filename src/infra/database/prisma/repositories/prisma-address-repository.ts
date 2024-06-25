@@ -10,11 +10,38 @@ import { PaginationParams } from "@/core/repositories/pagination-params";
 @Injectable()
 export class PrismaAddressRepository implements IAddressRepository {
   constructor(private prisma: PrismaService) {}
-  findByUserId(
+
+  async findByUserId(
     userId: string,
     params: PaginationParams
   ): Promise<Either<Error, Address[]>> {
-    throw new Error("Method not implemented.");
+    try {
+      const addressesData = await this.prisma.address.findMany({
+        where: { userId },
+        skip: (params.page - 1) * params.pageSize,
+        take: params.pageSize,
+      });
+
+      const addresses = addressesData.map((addressData) =>
+        Address.create(
+          {
+            userId: addressData.userId,
+            street: addressData.street,
+            number: addressData.number,
+            complement: addressData.complement ?? undefined,
+            city: addressData.city,
+            state: addressData.state,
+            country: addressData.country,
+            zipCode: addressData.zipCode,
+          },
+          new UniqueEntityID(addressData.id)
+        )
+      );
+
+      return right(addresses);
+    } catch (error) {
+      return left(new Error("Failed to find addresses by userId"));
+    }
   }
 
   async findById(id: string): Promise<Either<Error, Address>> {

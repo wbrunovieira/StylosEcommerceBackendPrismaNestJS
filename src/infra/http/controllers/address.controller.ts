@@ -14,10 +14,12 @@ import {
   HttpStatus,
   ConflictException,
   Put,
+  Get,
 } from "@nestjs/common";
 import { z } from "zod";
 import { Logger } from "@nestjs/common";
 import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
+import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
 
 export const createAddressSchema = z.object({
   userId: z.string().uuid(),
@@ -44,6 +46,19 @@ export const editAddressSchema = z.object({
   zipCode: z.string().min(1, "ZipCode is required"),
 });
 
+export const findAddressesByUserIdSchema = z.object({
+  userId: z.string().uuid(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).default(10),
+});
+
+const findAddressesByUserIdValidationPipe = new ZodValidationsPipe(
+  findAddressesByUserIdSchema
+);
+type FindAddressesByUserIdBodySchema = z.infer<
+  typeof findAddressesByUserIdSchema
+>;
+
 const editBodyValidationPipe = new ZodValidationsPipe(editAddressSchema);
 type EditAddressBodySchema = z.infer<typeof editAddressSchema>;
 
@@ -53,7 +68,8 @@ export class AddressController {
   private readonly logger = new Logger(AddressController.name);
   constructor(
     private readonly createAddressUseCase: CreateAddressUseCase,
-    private readonly editAddressUseCase: EditAddressUseCase
+    private readonly editAddressUseCase: EditAddressUseCase,
+    private readonly findAddressesByUserIdUseCase: FindAddressesByUserIdUseCase
   ) {}
 
   @Post(":userId/addresses")
@@ -110,6 +126,32 @@ export class AddressController {
     if (result.isLeft()) {
       const error = result.value;
 
+      if (error) {
+        throw new ConflictException(error.message);
+      }
+      throw new ConflictException("An unexpected error occurred");
+    }
+    return result.value;
+  }
+
+  @Get("by-user-id")
+  async findByUserId(
+    @Body(findAddressesByUserIdValidationPipe)
+    body: FindAddressesByUserIdBodySchema
+  ) {
+    this.logger.log(
+      `Received request to find addresses for userId: ${body.userId}`
+    );
+    const result = await this.findAddressesByUserIdUseCase.execute({
+      userId: body.userId,
+      pagination: {
+        page: body.page,
+        pageSize: body.pageSize,
+      },
+    });
+
+    if (result.isLeft()) {
+      const error = result.value;
       if (error) {
         throw new ConflictException(error.message);
       }
