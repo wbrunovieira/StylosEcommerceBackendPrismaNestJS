@@ -65,7 +65,7 @@ POST {{BASE_URL}}/accounts/check
 Content-Type: application/json
 
 {
-  "email": "brunogmdaddifld@bruno.com"
+  "email": "brunao@bruno.com"
 }
 
 
