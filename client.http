@@ -12,6 +12,11 @@ Content-Type: application/json
   "password": "123456aA@"
 }
 
+# {
+#   "email": "admin@example.com",
+#   "password": "Adminpassword@8"
+# }
+
 ###
 
 # @name create-account
@@ -29,13 +34,14 @@ Content-Type: application/json
 
 
 # @name update-account
-PUT {{BASE_URL}}/accounts/27997069-e5ed-4af7-a428-e6f32c102c8e
+PUT  {{BASE_URL}}/accounts/edit/8e30f012-2ce4-4c78-a8bf-7e5396874b1a
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "email": "brunao@brunao.com"
- 
+  "phone": "11900000000",
+  "gender": "macho"
+  
 }
 
 ###

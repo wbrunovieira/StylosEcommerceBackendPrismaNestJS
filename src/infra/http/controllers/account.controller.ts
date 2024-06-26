@@ -19,6 +19,8 @@ import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create-account";
 import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/create-account-with-google";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-account";
+import { UserProps } from "@/domain/auth/enterprise/entities/user";
 
 const passwordSchema = z
   .string()
@@ -47,9 +49,11 @@ const createGoogleAccountBodySchema = z.object({
 
 const updateUserBodySchema = z.object({
   name: z.string().optional(),
-  email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
-  role: z.enum(["user", "admin"]).optional(),
+  phone: z.string().optional(),
+  birthDate: z.string().optional(),
+  gender: z.string().optional(),
+  lastLogin: z.string().optional(),
+  profileImageUrl: z.string().optional(),
 });
 
 type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
@@ -65,6 +69,7 @@ export class AccountController {
   constructor(
     private createAccountUseCase: CreateAccountUseCase,
     private createGoogleAccountUseCase: CreateGoogleAccountUseCase,
+    private editAccountUseCase: EditAccountUseCase,
     private prisma: PrismaService
     // private jwt: JwtService
   ) {}
@@ -123,23 +128,30 @@ export class AccountController {
     return { user: result.value.user };
   }
 
-  // @Delete("/:id")
-  // @HttpCode(204)
-  // async deleteAccount(@Param("id") id: string) {
-  //   const user = await this.prisma.user.findUnique({
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //   if (!user) {
-  //     throw new ConflictException("User not found");
-  //   }
-  //   await this.prisma.user.delete({
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  // }
+  @Put("edit/:id")
+  // @UsePipes(new ZodValidationsPipe(updateUserBodySchema))
+  async handleEditAccount(
+    @Param("id") id: string,
+    @Body() body: any
+  ): Promise<{ user: Omit<UserProps, "password"> & { id: string } }> {
+    console.log("PUT /accounts/:id endpoint hit");
+    console.log("Received body:", body);
+    const result = await this.editAccountUseCase.execute({
+      id,
+      ...body,
+    });
+
+    if (result.isLeft()) {
+      const error = result.value;
+      if (error instanceof ResourceNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new ConflictException(error.message);
+    }
+
+    const { user } = result.value;
+    return { user: user.toResponseObject() };
+  }
 
   @Post("/check")
   async checkUserByEmail(@Body("email") email: string) {
@@ -162,39 +174,4 @@ export class AccountController {
 
     return false;
   }
-
-  // @Put("/:id")
-  // @UseGuards(JwtAuthGuard)
-  // @HttpCode(HttpStatus.OK)
-  // async updateUser(@Param("id") id: string, @Body() body: any) {
-  //   const { name, email, password, role } = body;
-
-  //   const user = await this.prisma.user.findUnique({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-
-  //   if (!user) {
-  //     throw new NotFoundException("User not found");
-  //   }
-  //   const updatedUserData: any = {};
-
-  //   if (name !== undefined) updatedUserData.name = name;
-  //   if (email !== undefined) updatedUserData.email = email;
-  //   if (password !== undefined) {
-  //     const hashPassword = await hash(password, 8);
-  //     updatedUserData.password = hashPassword;
-  //   }
-  //   if (role !== undefined) updatedUserData.role = role;
-
-  //   const updatedUser = await this.prisma.user.update({
-  //     where: {
-  //       id,
-  //     },
-  //     data: updatedUserData,
-  //   });
-
-  //   return updatedUser;
-  // }
 }

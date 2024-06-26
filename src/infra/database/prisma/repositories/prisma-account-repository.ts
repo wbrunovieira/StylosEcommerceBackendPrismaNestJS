@@ -3,14 +3,10 @@ import { PaginationParams } from "../../../../core/repositories/pagination-param
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 
-
 import { Either, left, right } from "@/core/either";
 import { IAccountRepository } from "@/domain/auth/application/repositories/i-account-repository";
 import { User } from "@/domain/auth/enterprise/entities/user";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
-
-
-
 
 @Injectable()
 export class PrismaAccountRepository implements IAccountRepository {
@@ -32,8 +28,6 @@ export class PrismaAccountRepository implements IAccountRepository {
           email: accountData.email,
           password: accountData.password,
           role: accountData.role as "user" | "admin",
-          
-        
         },
         new UniqueEntityID(accountData.id)
       );
@@ -52,8 +46,19 @@ export class PrismaAccountRepository implements IAccountRepository {
           name: user.name,
           email: user.email,
           password: user.password,
+          profileImageUrl: user.profileImageUrl,
+          googleUserId: user.googleUserId,
+          isGoogleUser: user.isGoogleUser,
           role: user.role,
-          updatedAt: user.updatedAt,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          gender: user.gender,
+          lastLogin: user.lastLogin,
+          accountStatus: user.accountStatus,
+          marketingPreferences: user.marketingPreferences
+          ? JSON.stringify(user.marketingPreferences)
+          : undefined,
+          updatedAt: new Date(),
         },
       });
       return right(undefined);
@@ -108,8 +113,6 @@ export class PrismaAccountRepository implements IAccountRepository {
           email: accountData.email,
           password: accountData.password,
           role: accountData.role as "user" | "admin",
-          
-         
         },
         new UniqueEntityID(accountData.id)
       );
@@ -134,7 +137,6 @@ export class PrismaAccountRepository implements IAccountRepository {
             email: account.email,
             password: account.password,
             role: account.role as "user" | "admin",
-          
           },
           new UniqueEntityID(account.id)
         )
