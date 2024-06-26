@@ -40,13 +40,21 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 {
   "phone": "11900000000",
-  "gender": "macho"
+  "gender": "masculino",
+  "profileImageUrl": "url teste"
   
 }
 
 ###
 # @name delete-account
 DELETE {{BASE_URL}}/accounts/109eaa76-5b9b-4912-b2c9-e24d5c96eefa
+Content-Type: application/json
+
+
+###
+###
+# @name get-account-by-id
+GET {{BASE_URL}}/accounts/8e30f012-2ce4-4c78-a8bf-7e5396874b1a
 Content-Type: application/json
 
 
