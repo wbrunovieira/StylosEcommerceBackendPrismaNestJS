@@ -23,6 +23,7 @@ import { Logger } from "@nestjs/common";
 import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
 import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
 import { DeleteAddressUseCase } from "@/domain/auth/application/use-cases/delete-adress";
+import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 
 export const createAddressSchema = z.object({
   userId: z.string().uuid(),
@@ -66,13 +67,14 @@ const editBodyValidationPipe = new ZodValidationsPipe(editAddressSchema);
 type EditAddressBodySchema = z.infer<typeof editAddressSchema>;
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller("users")
+@Controller("adress")
 export class AddressController {
   private readonly logger = new Logger(AddressController.name);
   constructor(
     private readonly createAddressUseCase: CreateAddressUseCase,
     private readonly editAddressUseCase: EditAddressUseCase,
-    private readonly findAddressesByUserIdUseCase: FindAddressesByUserIdUseCase,
+    private findAddressesByUserIdUseCase: FindAddressesByUserIdUseCase,
+    private readonly findAccountByIdUseCase: FindAccountByIdUseCase,
     private readonly deleteAddressUseCase: DeleteAddressUseCase
   ) {}
 
@@ -141,7 +143,22 @@ export class AddressController {
   @Get("by-user-id")
   async findByUserId(@Query("userId") userId: string) {
     this.logger.log(`Received request to find addresses for userId: ${userId}`);
-    const result = await this.findAddressesByUserIdUseCase.execute({
+
+    const userResult = await this.findAccountByIdUseCase.execute({
+      id: userId,
+    });
+
+    if (userResult.isLeft()) {
+      const error = userResult.value;
+      if (error) {
+        throw new ConflictException(error.message);
+      }
+      throw new ConflictException("An unexpected error occurred");
+    }
+
+    const user = userResult.value.user.toResponseObjectPartial();
+
+    const addressResult = await this.findAddressesByUserIdUseCase.execute({
       userId: userId,
       pagination: {
         page: 1,
@@ -149,21 +166,21 @@ export class AddressController {
       },
     });
 
-    if (result.isLeft()) {
-      const error = result.value;
+    if (addressResult.isLeft()) {
+      const error = addressResult.value;
       if (error) {
         throw new ConflictException(error.message);
       }
       throw new ConflictException("An unexpected error occurred");
     }
-    return result.value;
+
+    const addresses = addressResult.value.addresses;
+
+    return { user, addresses };
   }
 
   @Delete("/addresses/:addressId")
-  async delete(
-    
-    @Param("addressId", ParseUUIDPipe) addressId: string
-  ) {
+  async delete(@Param("addressId", ParseUUIDPipe) addressId: string) {
     this.logger.log(
       `Received request to delete address and addressId: ${addressId}`
     );

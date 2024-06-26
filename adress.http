@@ -13,7 +13,7 @@ Content-Type: application/json
 ###
 
 # @name create-adress
-POST {{BASE_URL}}/users/d5b8f38e-fc63-43f7-8ff6-7258347287e7/addresses
+POST {{BASE_URL}}/adress/d5b8f38e-fc63-43f7-8ff6-7258347287e7/addresses
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
@@ -33,7 +33,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 
 # @name get-adress-by-userId
-GET {{BASE_URL}}/users/by-user-id?userId=d8e30f012-2ce4-4c78-a8bf-7e5396874b1a
+GET {{BASE_URL}}/adress/by-user-id?userId=8e30f012-2ce4-4c78-a8bf-7e5396874b1a
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
@@ -45,7 +45,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name delete-adress
-DELETE {{BASE_URL}}/users/addresses/8d103c78-e8a7-4cdd-9570-cce1a0f8f433
+DELETE {{BASE_URL}}/adress/addresses/8d103c78-e8a7-4cdd-9570-cce1a0f8f433
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
@@ -53,7 +53,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name edit-adress
-PUT {{BASE_URL}}/users/d5b8f38e-fc63-43f7-8ff6-7258347287e7/addresses/8d103c78-e8a7-4cdd-9570-cce1a0f8f433
+PUT {{BASE_URL}}/adress/d5b8f38e-fc63-43f7-8ff6-7258347287e7/addresses/8d103c78-e8a7-4cdd-9570-cce1a0f8f433
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
