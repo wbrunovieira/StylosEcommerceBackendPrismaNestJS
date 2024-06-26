@@ -16,11 +16,13 @@ import {
   Put,
   Get,
   Query,
+  Delete,
 } from "@nestjs/common";
 import { z } from "zod";
 import { Logger } from "@nestjs/common";
 import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
 import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
+import { DeleteAddressUseCase } from "@/domain/auth/application/use-cases/delete-adress";
 
 export const createAddressSchema = z.object({
   userId: z.string().uuid(),
@@ -70,7 +72,8 @@ export class AddressController {
   constructor(
     private readonly createAddressUseCase: CreateAddressUseCase,
     private readonly editAddressUseCase: EditAddressUseCase,
-    private readonly findAddressesByUserIdUseCase: FindAddressesByUserIdUseCase
+    private readonly findAddressesByUserIdUseCase: FindAddressesByUserIdUseCase,
+    private readonly deleteAddressUseCase: DeleteAddressUseCase
   ) {}
 
   @Post(":userId/addresses")
@@ -154,5 +157,32 @@ export class AddressController {
       throw new ConflictException("An unexpected error occurred");
     }
     return result.value;
+  }
+
+  @Delete("/addresses/:addressId")
+  async delete(
+    
+    @Param("addressId", ParseUUIDPipe) addressId: string
+  ) {
+    this.logger.log(
+      `Received request to delete address and addressId: ${addressId}`
+    );
+
+    const result = await this.deleteAddressUseCase.execute({
+      id: addressId,
+    });
+
+    if (result.isLeft()) {
+      const error = result.value;
+
+      if (error) {
+        throw new ConflictException(error.message);
+      }
+      throw new ConflictException("An unexpected error occurred");
+    }
+
+    return {
+      message: "Address deleted successfully",
+    };
   }
 }
