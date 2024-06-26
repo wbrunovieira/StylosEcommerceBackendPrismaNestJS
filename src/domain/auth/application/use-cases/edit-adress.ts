@@ -39,7 +39,6 @@ export class EditAddressUseCase {
     zipCode,
   }: EditAddressUseCaseRequest): Promise<EditAddressUseCaseResponse> {
     try {
-        
       const addressOrError = await this.addressRepository.findById(id);
 
       if (addressOrError.isLeft()) {
@@ -48,7 +47,14 @@ export class EditAddressUseCase {
 
       const address = addressOrError.value;
 
-      
+      address.street = street;
+      address.number = number;
+      address.complement = complement;
+      address.city = city;
+      address.state = state;
+      address.country = country;
+      address.zipCode = zipCode;
+
       const saveOrError = await this.addressRepository.save(address);
 
       if (saveOrError.isLeft()) {

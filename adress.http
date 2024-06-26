@@ -52,7 +52,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 {
   "userId": "d5b8f38e-fc63-43f7-8ff6-7258347287e7",
   "street": "Rua de aqui mesmo nao era nao" ,
-  "number": 2000,
+  "number": 3000,
   "complement": "Bloco de cima ap 222",
   "city": "Osasco",
   "state":"SP",
