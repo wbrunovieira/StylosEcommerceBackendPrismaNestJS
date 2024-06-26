@@ -42,11 +42,21 @@ export interface UserProps {
 }
 
 export class User extends Entity<UserProps> {
-  toResponseObject() {
-    const { password, ...propsWithoutPassword } = this.props;
+  toResponseObjectPartial(): Partial<Omit<UserProps, "password">> & {
+    id: string;
+  } {
+    const { password, ...userWithoutPassword } = this.props;
     return {
       id: this.id.toString(),
-      ...propsWithoutPassword,
+      ...userWithoutPassword,
+    };
+  }
+
+  toResponseObject(): Omit<UserProps, "password"> & { id: string } {
+    const { password, ...userWithoutPassword } = this.props;
+    return {
+      id: this.id.toString(),
+      ...(userWithoutPassword as Omit<UserProps, "password">),
     };
   }
 
@@ -86,6 +96,7 @@ export class User extends Entity<UserProps> {
     this.props.profileImageUrl = value;
     this.touch();
   }
+
   set phone(value: string) {
     this.props.phone = value;
     this.touch();
@@ -106,6 +117,9 @@ export class User extends Entity<UserProps> {
 
   get gender(): string | null {
     return this.props.gender || null;
+  }
+  get phone(): string | null {
+    return this.props.phone || null;
   }
 
   set gender(value: string) {

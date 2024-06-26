@@ -33,7 +33,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 
 # @name get-adress-by-userId
-GET {{BASE_URL}}/users/by-user-id?userId=d5b8f38e-fc63-43f7-8ff6-7258347287e7
+GET {{BASE_URL}}/users/by-user-id?userId=d8e30f012-2ce4-4c78-a8bf-7e5396874b1a
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 

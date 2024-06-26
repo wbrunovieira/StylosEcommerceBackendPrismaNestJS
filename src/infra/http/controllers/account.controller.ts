@@ -1,6 +1,6 @@
 import {
   ConflictException,
-  Delete,
+  Get,
   HttpException,
   HttpStatus,
   NotFoundException,
@@ -21,6 +21,7 @@ import { CreateGoogleAccountUseCase } from "@/domain/auth/application/use-cases/
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-account";
 import { UserProps } from "@/domain/auth/enterprise/entities/user";
+import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 
 const passwordSchema = z
   .string()
@@ -70,6 +71,7 @@ export class AccountController {
     private createAccountUseCase: CreateAccountUseCase,
     private createGoogleAccountUseCase: CreateGoogleAccountUseCase,
     private editAccountUseCase: EditAccountUseCase,
+    private findAccountByIdUseCase: FindAccountByIdUseCase,
     private prisma: PrismaService
     // private jwt: JwtService
   ) {}
@@ -173,5 +175,21 @@ export class AccountController {
     }
 
     return false;
+  }
+
+  @Get("/:id")
+  async handleGetAccountById(@Param("id") id: string) {
+    const result = await this.findAccountByIdUseCase.execute({ id });
+
+    if (result.isLeft()) {
+      const error = result.value;
+      if (error instanceof ResourceNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new ConflictException(error.message);
+    }
+
+    const { user } = result.value;
+    return { user: user.toResponseObjectPartial() };
   }
 }

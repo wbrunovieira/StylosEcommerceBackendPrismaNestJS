@@ -50,7 +50,7 @@ export class Address extends Entity<AddressProps> {
   set complement(value: string | undefined) {
     this.props.complement = value;
     this.touch();
-  }
+}
 
   get city(): string {
     return this.props.city;

@@ -27,6 +27,10 @@ export class PrismaAccountRepository implements IAccountRepository {
           name: accountData.name,
           email: accountData.email,
           password: accountData.password,
+          phone: accountData.phone ?? undefined,
+          birthDate: accountData.birthDate ?? undefined,
+          gender: accountData.gender ?? undefined,
+          profileImageUrl: accountData.profileImageUrl ?? undefined,
           role: accountData.role as "user" | "admin",
         },
         new UniqueEntityID(accountData.id)
@@ -56,8 +60,8 @@ export class PrismaAccountRepository implements IAccountRepository {
           lastLogin: user.lastLogin,
           accountStatus: user.accountStatus,
           marketingPreferences: user.marketingPreferences
-          ? JSON.stringify(user.marketingPreferences)
-          : undefined,
+            ? JSON.stringify(user.marketingPreferences)
+            : undefined,
           updatedAt: new Date(),
         },
       });

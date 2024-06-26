@@ -70,6 +70,7 @@ import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adr
 import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
 import { DeleteAddressUseCase } from "@/domain/auth/application/use-cases/delete-adress";
 import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-account";
+import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -122,6 +123,7 @@ import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-acc
     FindSizeByIdUseCase,
     FindCategoryByIdUseCase,
     FindAddressesByUserIdUseCase,
+    FindAccountByIdUseCase,
 
     FindBrandByNameUseCase,
     FindMaterialByNameUseCase,
