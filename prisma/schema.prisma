@@ -17,6 +17,12 @@ model User {
   googleUserId    String?
   isGoogleUser    Boolean?
   role            String
+  phone                String?
+  birthDate            DateTime?
+  gender               String? 
+  lastLogin            DateTime?
+  accountStatus        String? 
+  marketingPreferences Json? 
   addresses       Address[]
    carts           Cart[] 
    orders   Order[]

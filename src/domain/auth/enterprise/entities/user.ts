@@ -2,11 +2,38 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 
-interface UserProps {
+interface EmailPreferences {
+  enabled: boolean;
+  frequency: "daily" | "weekly" | "monthly";
+  categories: string[];
+}
+
+interface SmsPreferences {
+  enabled: boolean;
+}
+
+interface PushNotificationPreferences {
+  enabled: boolean;
+  frequency: "daily" | "weekly" | "monthly";
+}
+
+interface MarketingPreferences {
+  email?: EmailPreferences;
+  sms?: SmsPreferences;
+  pushNotifications?: PushNotificationPreferences;
+}
+
+export interface UserProps {
   name: string;
   email: string;
   password: string;
+  phone?: string;
   googleUserId?: string;
+  birthDate?: Date;
+  gender?: string;
+  lastLogin?: Date;
+  accountStatus?: string;
+  marketingPreferences?: MarketingPreferences;
   isGoogleUser?: boolean;
   profileImageUrl?: string;
   createdAt: Date;
@@ -15,6 +42,14 @@ interface UserProps {
 }
 
 export class User extends Entity<UserProps> {
+  toResponseObject() {
+    const { password, ...propsWithoutPassword } = this.props;
+    return {
+      id: this.id.toString(),
+      ...propsWithoutPassword,
+    };
+  }
+
   get name(): string {
     return this.props.name;
   }
@@ -47,17 +82,70 @@ export class User extends Entity<UserProps> {
     this.props.name = value;
     this.touch();
   }
+  set profileImageUrl(value: string) {
+    this.props.profileImageUrl = value;
+    this.touch();
+  }
+  set phone(value: string) {
+    this.props.phone = value;
+    this.touch();
+  }
 
   get googleUserId() {
     return this.props.googleUserId;
+  }
+
+  get birthDate(): Date | null {
+    return this.props.birthDate || null;
+  }
+
+  set birthDate(value: Date) {
+    this.props.birthDate = value;
+    this.touch();
+  }
+
+  get gender(): string | null {
+    return this.props.gender || null;
+  }
+
+  set gender(value: string) {
+    this.props.gender = value;
+    this.touch();
+  }
+
+  get lastLogin(): Date | null {
+    return this.props.lastLogin || null;
+  }
+
+  set lastLogin(value: Date) {
+    this.props.lastLogin = value;
+    this.touch();
+  }
+
+  get accountStatus(): string | null {
+    return this.props.accountStatus || null;
+  }
+
+  set accountStatus(value: string) {
+    this.props.accountStatus = value;
+    this.touch();
+  }
+
+  get marketingPreferences(): MarketingPreferences | undefined {
+    return this.props.marketingPreferences || undefined;
+  }
+
+  set marketingPreferences(value: MarketingPreferences | undefined) {
+    this.props.marketingPreferences = value;
+    this.touch();
   }
 
   get isGoogleUser() {
     return this.props.isGoogleUser;
   }
 
-  get profileImageUrl() {
-    return this.props.profileImageUrl;
+  get profileImageUrl(): string | null {
+    return this.props.profileImageUrl || null;
   }
 
   public static create(

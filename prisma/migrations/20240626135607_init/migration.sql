@@ -14,6 +14,12 @@ CREATE TABLE "users" (
     "googleUserId" TEXT,
     "isGoogleUser" BOOLEAN,
     "role" TEXT NOT NULL,
+    "phone" TEXT,
+    "birthDate" TIMESTAMP(3),
+    "gender" TEXT,
+    "lastLogin" TIMESTAMP(3),
+    "accountStatus" TEXT,
+    "marketingPreferences" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
