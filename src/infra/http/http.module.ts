@@ -68,6 +68,7 @@ import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-case
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
 import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
+import { DeleteAddressUseCase } from "@/domain/auth/application/use-cases/delete-adress";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -112,6 +113,7 @@ import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-case
     DeleteColorUseCase,
     DeleteSizeUseCase,
     DeleteCategoryUseCase,
+    DeleteAddressUseCase,
 
     FindBrandByIdUseCase,
     FindMaterialByIdUseCase,
