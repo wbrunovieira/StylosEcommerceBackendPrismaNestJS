@@ -44,7 +44,7 @@ const createGoogleAccountBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   googleUserId: z.string(),
-  profileImageUrl: z.string(),
+  profileImageUrl: z.string().url(),
   role: z.enum(["user", "admin"]).default("user"),
 });
 
@@ -116,6 +116,7 @@ export class AccountController {
       googleUserId,
       profileImageUrl,
       role,
+      
     });
 
     if (result.isLeft()) {

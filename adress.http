@@ -13,7 +13,7 @@ Content-Type: application/json
 ###
 
 # @name create-adress
-POST {{BASE_URL}}/adress/d5b8f38e-fc63-43f7-8ff6-7258347287e7/addresses
+POST {{BASE_URL}}/adress/8e30f012-2ce4-4c78-a8bf-7e5396874b1a/addresses
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
@@ -33,7 +33,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 
 # @name get-adress-by-userId
-GET {{BASE_URL}}/adress/by-user-id?userId=8e30f012-2ce4-4c78-a8bf-7e5396874b1a
+GET {{BASE_URL}}/adress/by-user-id?userId=d5b8f38e-fc63-43f7-8ff6-7258347287e7
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
