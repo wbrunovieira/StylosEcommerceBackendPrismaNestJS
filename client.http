@@ -7,15 +7,15 @@
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
-{
-  "email": "brunao@bruno.com",
-  "password": "123456aA@"
-}
-
 # {
-#   "email": "admin@example.com",
-#   "password": "Adminpassword@8"
+#   "email": "brunao@bruno.com",
+#   "password": "123456aA@"
 # }
+
+{
+  "email": "admin@example.com",
+  "password": "Adminpassword@8"
+}
 
 ###
 
@@ -39,15 +39,17 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "phone": "11900000000",
+  "email":"brunao@bruno.com",
+  "phone": "1193333333333",
   "gender": "masculino",
-  "profileImageUrl": "url teste"
+  "profileImageUrl": "url teste",
+  "birthDate":"12/2/2002"
   
 }
 
 ###
 # @name delete-account
-DELETE {{BASE_URL}}/accounts/109eaa76-5b9b-4912-b2c9-e24d5c96eefa
+DELETE {{BASE_URL}}/accounts/a7d4c26c-6188-48e2-90c3-f4208ff1d8f7
 Content-Type: application/json
 
 
