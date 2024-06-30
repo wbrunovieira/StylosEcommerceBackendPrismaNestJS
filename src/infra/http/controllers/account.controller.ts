@@ -72,8 +72,8 @@ export class AccountController {
     private createGoogleAccountUseCase: CreateGoogleAccountUseCase,
     private editAccountUseCase: EditAccountUseCase,
     private findAccountByIdUseCase: FindAccountByIdUseCase,
-    private prisma: PrismaService
-    // private jwt: JwtService
+    private prisma: PrismaService,
+    private jwt: JwtService
   ) {}
 
   @Post()
@@ -116,7 +116,6 @@ export class AccountController {
       googleUserId,
       profileImageUrl,
       role,
-      
     });
 
     if (result.isLeft()) {
@@ -172,10 +171,10 @@ export class AccountController {
     });
 
     if (user) {
-      return true;
+      return { found: true, user };
     }
 
-    return false;
+    return { found: false };
   }
 
   @Get("/:id")

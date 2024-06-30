@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "userId": "d5b8f38e-fc63-43f7-8ff6-7258347287e7",
+  "userId": "8e30f012-2ce4-4c78-a8bf-7e5396874b1a",
   "street": "Rua de aqui mesmo essa e outa" ,
   "number": 20,
   "complement": "Bloco de cima ap 222",

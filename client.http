@@ -39,7 +39,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "email":"brunao@bruno.com",
+  "email":"brunao2@bruno.com",
   "phone": "1193333333333",
   "gender": "masculino",
   "profileImageUrl": "url teste",

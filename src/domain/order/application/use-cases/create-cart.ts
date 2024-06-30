@@ -13,7 +13,7 @@ interface CreateCartUseCaseRequest {
   items: {
     productId: string;
     quantity: number;
-    variantId?: string; // Adicionando o variantId
+    variantId?: string; 
     price: number;
   }[];
 }
