@@ -10,8 +10,6 @@ import {
   Param,
   ParseUUIDPipe,
   UseGuards,
-  HttpException,
-  HttpStatus,
   ConflictException,
   Put,
   Get,
@@ -66,7 +64,6 @@ type FindAddressesByUserIdBodySchema = z.infer<
 const editBodyValidationPipe = new ZodValidationsPipe(editAddressSchema);
 type EditAddressBodySchema = z.infer<typeof editAddressSchema>;
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("adress")
 export class AddressController {
   private readonly logger = new Logger(AddressController.name);
@@ -83,8 +80,11 @@ export class AddressController {
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body(createBodyValidationPipe) body: CreateAddressBodySchema
   ) {
+    console.log("userId recebido no create address:", userId);
+    console.log("Corpo da requisição no create address:", body);
     this.logger.log(`Received request to create address for userId: ${userId}`);
     this.logger.log(`Request body: ${JSON.stringify(body)}`);
+
     const result = await this.createAddressUseCase.execute({
       userId: userId,
       street: body.street,

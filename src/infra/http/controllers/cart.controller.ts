@@ -48,7 +48,7 @@ export class CartController {
       }
       return result.value;
     } catch (error) {
-      console.error("Erro ao criar pedido:", error);
+      console.error("Erro ao criar cart:", error);
       if (error instanceof ConflictException) {
         throw error;
       }
