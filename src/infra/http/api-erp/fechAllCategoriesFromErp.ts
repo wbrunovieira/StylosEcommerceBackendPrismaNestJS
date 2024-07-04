@@ -20,6 +20,10 @@ const createCategorySchema = z.object({
     .string()
     .url('Invalid URL format')
     .nonempty('Image URL must not be empty'),
+    erpId: z
+    .string()
+    .optional()
+
 });
 
 const categoryImages = {
@@ -120,21 +124,24 @@ export class SyncCategoriesUseCase {
         (category: any) => !category.properties.deleted_at
       );
       
-      console.log('categories fetchCategories',categories )
+      console.log('categories fetchCategories depois',categories )
+      
       for (const category of categories) {
         const imageUrl = categoryImages[category.id] || defaultImage;
+        const erpId = String(category.id); 
+        console.log('erpId',erpId )
         console.log('for (const category of categories) {',category )
           const categoryData = {
             name: category.properties.name,
             imageUrl,
-            erpId: category.id.toString(),
+            erpId
           };
           console.log('for (const category of categories categoryData ',categoryData )
             
             try {
           console.log('try antes docreateCategorySchema')
           createCategorySchema.parse(categoryData);
-          console.log('try depois docreateCategorySchema',createCategorySchema )
+          console.log('try depois docreateCategorySchema',categoryData )
          const createdCategory = await this.createCategory(categoryData, token);
           console.log('deu bom', createdCategory)
         } catch (error) {

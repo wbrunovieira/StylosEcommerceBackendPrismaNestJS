@@ -5,6 +5,7 @@ import { Optional } from "@/core/types/optional";
 export interface CategoryProps {
   name: string;
   imageUrl: string;
+  erpId:string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,6 +14,11 @@ export class Category extends Entity<CategoryProps> {
   get name(): string {
     return this.props.name;
   }
+
+  get erpId(): string {
+    return this.props.erpId;
+  }
+
   get imageUrl(): string {
     return this.props.imageUrl;
 }
@@ -28,6 +34,11 @@ export class Category extends Entity<CategoryProps> {
   set name(name: string) {
     this.props.name = name;
   }
+  
+  set erpId(erpId: string) {
+    this.props.erpId = erpId;
+  }
+
   set imageUrl(imageUrl: string) {
     this.props.imageUrl = imageUrl;
   }
