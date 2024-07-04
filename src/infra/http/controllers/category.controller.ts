@@ -37,6 +37,9 @@ const createCategorySchema = z.object({
     .string()
     .url("Invalid URL format")
     .nonempty("Image URL must not be empty"),
+    erpId: z
+    .string()
+    .optional()
 });
 const bodyValidationPipe = new ZodValidationsPipe(createCategorySchema);
 type CreateCategoryBodySchema = z.infer<typeof createCategorySchema>;
@@ -50,6 +53,9 @@ const editCategorySchema = z.object({
     .string()
     .url("Invalid URL format")
     .nonempty("Image URL must not be empty"),
+    erpId: z
+    .string()
+    .optional()
 });
 const editBodyValidationPipe = new ZodValidationsPipe(editCategorySchema);
 type EditCategoryBodySchema = z.infer<typeof editCategorySchema>;
@@ -84,6 +90,7 @@ export class CategoryController {
       const result = await this.createCategoryUseCase.execute({
         name: body.name,
         imageUrl: body.imageUrl,
+        erpId: body.erpId || 'undefined'
       });
       if (result.isLeft()) {
         const error = result.value;

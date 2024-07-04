@@ -9,6 +9,8 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 interface CreateCategoryUseCaseRequest {
   name: string;
   imageUrl: string;
+  erpId: string
+  
 }
 
 type CreateCategoryUseCaseResponse = Either<
@@ -24,6 +26,7 @@ export class CreateCategoryUseCase {
   async execute({
     name,
     imageUrl,
+    erpId
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
     try {
       const trimmedName = name.trim();
@@ -54,9 +57,11 @@ export class CreateCategoryUseCase {
           new ResourceNotFoundError("Category with this name already exists")
         );
       }
+      
       const category = Category.create({
         name: trimmedName,
         imageUrl,
+        erpId
       });
 
       await this.categoryRepository.create(category);
