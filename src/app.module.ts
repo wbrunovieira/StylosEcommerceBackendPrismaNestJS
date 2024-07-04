@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaService } from "./prisma/prisma.service";
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { envSchema } from "src/env";
 import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
@@ -20,6 +22,10 @@ import { HttpModule } from "./infra/http/http.module";
     AuthModule,
     HttpModule,
     DatabaseModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public', 
+    }),
   ],
   controllers: [AuthenticateController, ListAllAccountsController],
   providers: [PrismaService],

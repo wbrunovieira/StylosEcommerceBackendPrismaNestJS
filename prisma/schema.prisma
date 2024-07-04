@@ -169,7 +169,7 @@ model Category {
   name     String   @unique
   imageUrl  String
   productCategories ProductCategory[]
-
+  erpId      String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 

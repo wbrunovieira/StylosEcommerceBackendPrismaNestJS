@@ -9,6 +9,14 @@ Accept: application/json
 Content-Type: application/json
 
 ###
+
+# @name create-categories-from-api
+GET {{BASE_URL}}/sync-categories
+Accept: application/json
+Content-Type: application/json
+
+###
+
 # @name all-products
 https://connectplug.com.br/api/v2/product
 Accept: application/json

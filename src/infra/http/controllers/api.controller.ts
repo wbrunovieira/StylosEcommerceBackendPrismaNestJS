@@ -1,13 +1,33 @@
 import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, HttpException, HttpStatus } from "@nestjs/common";
+import { SyncCategoriesUseCase } from "../api-erp/fechAllCategoriesFromErp";
 
 @Controller("api")
 export class ApiController {
-  constructor(private readonly productsService: ApiGetAllProducts) {}
+  constructor(private readonly productsService: ApiGetAllProducts,
+    private readonly syncCategoriesService: SyncCategoriesUseCase) {}
 
   @Get("fetch-and-save")
   async fetchAndSaveProducts() {
     await this.productsService.fetchAndSaveProducts();
     return { message: "Products fetched and saved successfully" };
+  }
+
+
+  @Get('sync-categories')
+  async syncCategories() {
+    try {
+      await this.syncCategoriesService.syncCategories();
+      return { message: 'Categories synced successfully' };
+    } catch (error) {
+      console.error('Error syncing categories:', (error as Error).message);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to sync categories',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
