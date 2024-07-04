@@ -77,7 +77,6 @@ export class CategoryController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async createCategory(
     @Body(bodyValidationPipe) body: CreateCategoryBodySchema
   ) {
