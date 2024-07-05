@@ -123,6 +123,7 @@ model Color {
   id    String @id @default(uuid())
   name  String  @unique
   hex   String
+  erpId      String?
   productColors ProductColor[]
   productVariants ProductVariant[]
   createdAt DateTime @default(now()) @map("created_at")
@@ -147,6 +148,7 @@ model Size {
   id       String        @id @default(uuid())
   name     String        @unique
   productSizes ProductSize[]
+  erpId      String?
   productVariants ProductVariant[] 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -201,6 +203,7 @@ model Brand {
   id       String    @id @default(uuid())
   name     String     @unique
   imageUrl  String
+  erpId      String?
   products Product[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")

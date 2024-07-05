@@ -101,6 +101,7 @@ CREATE TABLE "colors" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "hex" TEXT NOT NULL,
+    "erpId" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -119,6 +120,7 @@ CREATE TABLE "product_colors" (
 CREATE TABLE "sizes" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "erpId" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -168,6 +170,7 @@ CREATE TABLE "brands" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
+    "erpId" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
