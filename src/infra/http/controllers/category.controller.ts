@@ -51,7 +51,6 @@ const editCategorySchema = z.object({
     .max(20, "Name must not exceed 20 characters"),
     imageUrl: z
     .string()
-    .url("Invalid URL format")
     .nonempty("Image URL must not be empty"),
     erpId: z
     .string()
@@ -110,8 +109,6 @@ export class CategoryController {
   }
 
   @Put(":categoryId")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async editCategory(
     @Param("categoryId") categoryId: string,
     @Body(editBodyValidationPipe) body: EditCategoryBodySchema

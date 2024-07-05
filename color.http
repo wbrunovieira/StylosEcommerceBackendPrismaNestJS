@@ -50,17 +50,18 @@ Content-Type: application/json
 # @name get-colors-all
 GET {{BASE_URL}}/colors/all?page=1&pageSize=10
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 ###
 
 # @name edit-color
-PUT  {{BASE_URL}}/colors/e6fcf64a-cfbd-4674-b9c0-ab4fb84abfa5
+PUT  {{BASE_URL}}/colors/02791a4f-3e71-4eda-8b0d-c56551c76acb
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "rosinha"
+  "name": "vermelhinho",
+  "hex":"#690000"
   
 }
 

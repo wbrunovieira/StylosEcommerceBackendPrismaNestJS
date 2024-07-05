@@ -56,14 +56,16 @@ Content-Type: application/json
 ###
 
 # @name edit-brand
-PUT  {{BASE_URL}}/category/84f4d873-5af4-453d-85d3-a1f26a01ee65
+PUT  {{BASE_URL}}/category/9a4fa308-aa8b-4b40-8694-c5cee1277f75
 Authorization: Bearer {{AUTH_TOKEN}}
 Content-Type: application/json
 
 {
-  "name": "category 2"
-  
-}
+  "name": "category 2",
+  "imageUrl": "/icons/pijamas-mini.svg"
+
+  }
+
 
 
 

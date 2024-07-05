@@ -19,7 +19,8 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 {
   "name": "marca 112sss",
-  "imageUrl": ""
+  "imageUrl": "/icons/logo-nayne.jpeg",
+  "erpId":"1000"
   
 }
 
@@ -68,12 +69,13 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name edit-brand
-PUT  {{BASE_URL}}/brands/638002d1-b91c-4666-9030-66cbc25fc0ac
+PUT  {{BASE_URL}}/brands/ad7be056-f43d-45c5-8ddd-93da748da4ea
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "brand 4"
+  "name": "brand 4",
+  "imageUrl": "/icons/logo-nayne.jpeg"
   
 }
 

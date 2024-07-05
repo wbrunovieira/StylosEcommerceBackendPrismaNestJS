@@ -8,6 +8,7 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 interface CreateBrandUseCaseRequest {
   name: string;
   imageUrl: string;
+  erpId:string;
 }
 
 type CreateBrandUseCaseResponse = Either<
@@ -24,9 +25,11 @@ export class CreateBrandUseCase {
   async execute({
     name,
     imageUrl,
+    erpId
   }: CreateBrandUseCaseRequest): Promise<CreateBrandUseCaseResponse> {
     try {
       const trimmedName = name.trim();
+      const trimmedErpId = name.trim();
       if (!trimmedName || trimmedName.length === 0) {
         return left(new ResourceNotFoundError("Brand name is required"));
       }
@@ -56,6 +59,7 @@ export class CreateBrandUseCase {
       const brand = Brand.create({
         name: trimmedName,
         imageUrl,
+        erpId:trimmedErpId
       });
 
       await this.brandRepository.create(brand);

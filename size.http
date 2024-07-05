@@ -48,9 +48,8 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name edit-size
-PUT  {{BASE_URL}}/size/022220c0-2995-4e31-8a53-c52fa5c683f4
+PUT  {{BASE_URL}}/size/88864ced-ec77-4034-a728-4519e71943f4
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
 
 {
   "name": "G"
@@ -60,9 +59,9 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 # @name get-size-all
-GET {{BASE_URL}}/size/all?page=1&pageSize=10
+GET {{BASE_URL}}/size/all?page=1&pageSize=20
 Content-Type: application/json
-Authorization: Bearer {{AUTH_TOKEN}}
+
 
 
 

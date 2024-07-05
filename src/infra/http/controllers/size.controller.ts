@@ -82,8 +82,6 @@ export class SizeController {
   }
 
   @Put(":sizeId")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async editSize(
     @Param("sizeId") sizeId: string,
     @Body(editBodyValidationPipe) body: EditSizeBodySchema
