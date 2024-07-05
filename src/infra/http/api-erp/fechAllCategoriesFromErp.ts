@@ -148,16 +148,55 @@ export class SyncCategoriesUseCase {
           console.error('Validation or creation error:', error);
         }
       }
+
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   }
+
+  normalizeString(str: string): string {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  async categoryExists(name: string, erpId: string, token: string): Promise<boolean> {
+    try {
+      const response = await axios.get(`${BASE_URL}/category`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const categories = response.data.data;
+      const normalizedNewName = this.normalizeString(name);
+
+      return categories.some(
+        (category: any) =>
+          category.erpId === erpId ||
+          this.normalizeString(category.name) === normalizedNewName
+      );
+    } catch (error) {
+      console.error('Error checking category existence:', error);
+      return false;
+    }
+  }
+
   
+  async createCategoryIfNotExist(categoryData: { name: string; imageUrl: string; erpId?: string }, token: string) {
+    const { name, erpId } = categoryData;
+
+    if (await this.categoryExists(name, erpId ?? '', token)) {
+      console.log(`Category with name "${name}" or ERP ID "${erpId}" already exists.`);
+      return;
+    }
+
+    await this.createCategory(categoryData, token);
+  }
+
   async createCategory(
-    categoryData: { name: string; imageUrl: string; erpId?: string  },
+    categoryData: { name: string; imageUrl: string; erpId?: string },
     token: string
   ) {
-    console.log('entrou no createCategory bom categoryData', categoryData)
     try {
       const response = await axios.post(`${BASE_URL}/category`, categoryData, {
         headers: {
@@ -165,12 +204,13 @@ export class SyncCategoriesUseCase {
           'Content-Type': 'application/json',
         },
       });
-      console.log('entrou no createCategory response', response)
       console.log('Category created:', response.data);
     } catch (error) {
       console.error('Error creating category:', error);
     }
   }
+
+
 
   async syncCategories() {
     try {
