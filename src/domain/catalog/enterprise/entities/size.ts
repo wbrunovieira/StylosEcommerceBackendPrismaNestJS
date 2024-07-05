@@ -1,9 +1,11 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
+import { string } from 'zod';
 
 export interface SizeProps {
   name: string;
+  erpId: string
   createdAt: Date;
   updatedAt: Date;
 }
@@ -11,6 +13,9 @@ export interface SizeProps {
 export class Size extends Entity<SizeProps> {
   get name(): string {
     return this.props.name;
+  }
+  get erpId(): string {
+    return this.props.erpId;
   }
 
   get createdAt(): Date {
@@ -23,6 +28,9 @@ export class Size extends Entity<SizeProps> {
 
   set name(name: string) {
     this.props.name = name;
+  }
+  set erpId(erpId: string) {
+    this.props.erpId = erpId;
   }
 
   public static create(

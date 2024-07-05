@@ -20,7 +20,8 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "pequena"
+  "name": "pequena",
+  "erpId":"1000"
 }
 
 ###
