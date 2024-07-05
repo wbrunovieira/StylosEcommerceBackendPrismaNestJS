@@ -25,6 +25,7 @@ export class PrismaSizeRepository implements ISizeRepository {
         data: {
           id: size.id.toString(),
           name: size.name,
+          erpId:size.erpId,
           createdAt: size.createdAt,
           updatedAt: size.updatedAt,
         },
@@ -43,7 +44,7 @@ export class PrismaSizeRepository implements ISizeRepository {
       if (!sizeData) return left(new ResourceNotFoundError("Size not found"));
 
       const size = Size.create(
-        { name: sizeData.name },
+        { name: sizeData.name , erpId: sizeData.erpId || ''},
         new UniqueEntityID(sizeData.id)
       );
 
@@ -63,7 +64,7 @@ export class PrismaSizeRepository implements ISizeRepository {
       if (!sizeData) return left(new ResourceNotFoundError("Size not found"));
 
       const size = Size.create(
-        { name: sizeData.name },
+        { name: sizeData.name, erpId: sizeData.erpId || '' },
         new UniqueEntityID(sizeData.id)
       );
 
@@ -110,7 +111,7 @@ export class PrismaSizeRepository implements ISizeRepository {
         take: params.pageSize,
       });
       const convertedSizes = sizes.map((b) =>
-        Size.create({ name: b.name }, new UniqueEntityID(b.id))
+        Size.create({ name: b.name, erpId:b.erpId || '' }, new UniqueEntityID(b.id))
       );
       return right(convertedSizes);
     } catch (error) {

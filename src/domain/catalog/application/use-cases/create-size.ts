@@ -7,6 +7,7 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 interface CreateSizeUseCaseRequest {
   name: string;
+  erpId:string
 }
 
 type CreateSizeUseCaseResponse = Either<
@@ -22,12 +23,16 @@ export class CreateSizeUseCase {
 
   async execute({
     name,
+    erpId
   }: CreateSizeUseCaseRequest): Promise<CreateSizeUseCaseResponse> {
     try {
       const trimmedName = name.trim();
+      const trimmedErpId = erpId.trim();
+
       if (!trimmedName || trimmedName.length === 0) {
         return left(new ResourceNotFoundError("Size name is required"));
       }
+    
 
       if (trimmedName.length < 0) {
         return left(
@@ -53,6 +58,7 @@ export class CreateSizeUseCase {
       }
       const size = Size.create({
         name: trimmedName,
+        erpId: trimmedErpId
       });
 
       await this.sizeRepository.create(size);

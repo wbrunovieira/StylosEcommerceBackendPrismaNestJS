@@ -31,6 +31,7 @@ const createSizeSchema = z.object({
     .string()
     .min(1, "Name must not be empty")
     .max(10, "Name must not exceed 10 characters"),
+  erpId: z.string().optional()  
 });
 const bodyValidationPipe = new ZodValidationsPipe(createSizeSchema);
 type CreateSizeBodySchema = z.infer<typeof createSizeSchema>;
@@ -66,10 +67,10 @@ export class SizeController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
+  
   async createSize(@Body(bodyValidationPipe) body: CreateSizeBodySchema) {
     try {
-      const result = await this.createSizeUseCase.execute({ name: body.name });
+      const result = await this.createSizeUseCase.execute({ name: body.name, erpId:body.erpId || 'undefined' });
       return result.value;
     } catch (error) {
       console.error("Erro ao criar tamanho:", error);
