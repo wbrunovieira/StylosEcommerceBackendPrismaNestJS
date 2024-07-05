@@ -1,11 +1,12 @@
 import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-all-products";
 import { Controller, Get, HttpException, HttpStatus } from "@nestjs/common";
 import { SyncCategoriesUseCase } from "../api-erp/fechAllCategoriesFromErp";
+import { SyncAttributesUseCase } from "../api-erp/fechAllColorESizesFromErp";
 
 @Controller("api")
 export class ApiController {
   constructor(private readonly productsService: ApiGetAllProducts,
-    private readonly syncCategoriesService: SyncCategoriesUseCase) {}
+    private readonly syncCategoriesService: SyncCategoriesUseCase, private readonly syncAttributesService: SyncAttributesUseCase) {}
 
   @Get("fetch-and-save")
   async fetchAndSaveProducts() {
@@ -25,6 +26,23 @@ export class ApiController {
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to sync categories',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('sync-attributes')
+  async syncAttributes() {
+    try {
+      await this.syncAttributesService.syncAttributes();
+      return { message: 'Attributes synced successfully' };
+    } catch (error) {
+      console.error('Error syncing attributes:', (error as Error).message);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to sync attributes',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

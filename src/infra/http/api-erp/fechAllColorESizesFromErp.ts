@@ -16,6 +16,7 @@ const createSizeSchema = z.object({
     .string()
     .min(1, 'Name must not be empty')
     .max(50, 'Name must not exceed 50 characters'),
+    erpId: z.string().optional()
 });
 
 const createColorSchema = z.object({
@@ -23,6 +24,11 @@ const createColorSchema = z.object({
     .string()
     .min(1, 'Name must not be empty')
     .max(50, 'Name must not exceed 50 characters'),
+  hex: z
+    .string()
+    .min(4, 'Hex code must not be empty')
+    .max(7, 'Hex code must not exceed 7 characters'),
+    erpId: z.string().optional()
 });
 
 @Injectable()
@@ -46,6 +52,7 @@ export class SyncAttributesUseCase {
         }
       );
 
+      console.log('response.data.access_token',response.data.access_token)
       return response.data.access_token;
     } catch (error) {
       console.error('Authentication error:', error);
@@ -64,31 +71,40 @@ export class SyncAttributesUseCase {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `${TOKEN_CONNECTPLUG}`,
         },
       });
-
+      console.log('response da erp api',response)
+      
       const attributes = response.data.data.filter(
         (attribute: any) => !attribute.properties.deleted_at
       );
-
-    
+      
+      console.log('attributes',attributes)
+      
+      for (const attribute of attributes) {
+        if (this.isSize(attribute)) {
+          console.log('attribute size',attribute)
+          
+          await this.syncSizeAttributes(attribute, token);
+        } else if (this.isColor(attribute)) {
+          console.log('attribute color',attribute)
+          await this.syncColorAttributes(attribute, token);
+        }
+      }
     } catch (error) {
       console.error('Error fetching attributes:', error);
     }
   }
 
-  isSize(attribute: { name: string; code: string }): boolean {
-    const sizeKeywords = ['size', 'tamanho', 'pequena', 'media', 'grande'];
-    const normalizedAttributeName = this.normalizeString(attribute.name);
-    return sizeKeywords.some(keyword => normalizedAttributeName.includes(keyword));
+  isSize(attribute: { properties: { code: string } }): boolean {
+    return attribute.properties.code === 'TM';
   }
 
-  isColor(attribute: { name: string; code: string }): boolean {
-    const colorKeywords = ['color', 'cor', 'vermelho', 'azul', 'preto'];
-    const normalizedAttributeName = this.normalizeString(attribute.name);
-    return colorKeywords.some(keyword => normalizedAttributeName.includes(keyword));
+  isColor(attribute: { properties: { code: string } }): boolean {
+    return attribute.properties.code === 'CR';
   }
+
 
   normalizeString(str: string): string {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -96,7 +112,7 @@ export class SyncAttributesUseCase {
 
   async sizeExists(name: string, token: string): Promise<boolean> {
     try {
-      const response = await axios.get(`${BASE_URL}/sizes`, {
+      const response = await axios.get(`${BASE_URL}/size/all?page=1&pageSize=10`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -104,6 +120,7 @@ export class SyncAttributesUseCase {
       });
 
       const sizes = response.data.data;
+      console.log('sizes',sizes)
       const normalizedNewName = this.normalizeString(name);
 
       return sizes.some((size: any) => this.normalizeString(size.name) === normalizedNewName);
@@ -115,7 +132,7 @@ export class SyncAttributesUseCase {
 
   async colorExists(name: string, token: string): Promise<boolean> {
     try {
-      const response = await axios.get(`${BASE_URL}/colors`, {
+      const response = await axios.get(`${BASE_URL}/colors/all?page=1&pageSize=10`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -132,29 +149,64 @@ export class SyncAttributesUseCase {
     }
   }
 
-  async createSizeIfNotExist(attributeData: { name: string; code: string }, token: string) {
-    const { name } = attributeData;
-
-    if (await this.sizeExists(name, token)) {
-      console.log(`Size with name "${name}" already exists.`);
-      return;
+  async syncSizeAttributes(attribute: any, token: string) {
+    const options = attribute.relationships.options.data;
+    for (const option of options) {
+      const { name } = option.properties;
+      const { id } = option;
+      if (await this.sizeExists(name, token)) {
+        console.log(`Size with name "${name}" already exists.`);
+        continue;
+      }
+      await this.createSize({ name, erpId: id.toString() }, token);
     }
-
-    await this.createSize({ name }, token);
   }
 
-  async createColorIfNotExist(attributeData: { name: string; code: string }, token: string) {
-    const { name } = attributeData;
-
-    if (await this.colorExists(name, token)) {
-      console.log(`Color with name "${name}" already exists.`);
-      return;
+  async syncColorAttributes(attribute: any, token: string) {
+    const options = attribute.relationships.options.data;
+    for (const option of options) {
+      const { name } = option.properties;
+      const { id } = option;
+      if (await this.colorExists(name, token)) {
+        console.log(`Color with name "${name}" already exists.`);
+        continue;
+      }
+      const colorData = this.getColorData(name, id);
+      if (colorData) {
+        await this.createColor(colorData, token);
+      } else {
+        console.log(`No hex code found for color "${name}".`);
+      }
     }
-
-    await this.createColor({ name }, token);
   }
 
-  async createSize(sizeData: { name: string }, token: string) {
+  getColorData(name: string,id: number): { name: string; hex: string; erpId: string} | null {
+    const colors = {
+      cereja: '#DE3163',
+      azul: '#0000FF',
+      branco: '#ffffff',
+      cristal: '#E0FFFF',
+      preto: '#000000',
+      tango: '#F28500',
+      blush: '#DE5D83',
+      areia: '#C2B280',
+      malva: '#993366',
+      paprica: '#D94E1F',
+      chocolate: '#7B3F00',
+      ameixa: '#8E4585',
+      hibisco: '#B43757',
+    };
+
+    const normalizedColorName = this.normalizeString(name);
+    const hex = colors[normalizedColorName as keyof typeof colors];
+
+    if (hex) {
+      return { name, hex,erpId: id.toString() };
+    }
+    return null;
+  }
+
+  async createSize(sizeData: { name: string; erpId: string }, token: string) {
     try {
       const response = await axios.post(`${BASE_URL}/size`, sizeData, {
         headers: {
@@ -168,7 +220,7 @@ export class SyncAttributesUseCase {
     }
   }
 
-  async createColor(colorData: { name: string }, token: string) {
+  async createColor(colorData: { name: string; hex: string; erpId: string }, token: string) {
     try {
       const response = await axios.post(`${BASE_URL}/colors`, colorData, {
         headers: {
