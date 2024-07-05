@@ -86,7 +86,7 @@ async function main() {
     { name: "masculino", imageUrl: "/icons/boy.svg" },
     { name: "pijamas", imageUrl: "/icons/pijamas-mini.svg" },
     { name: "bolsa", imageUrl: "/icons/bag-mini.svg" },
-    { name: "oculos", imageUrl: "/icons/glasses-mini.svg" },
+    
   ];
   for (const category of categories) {
     await prisma.category.upsert({
@@ -238,7 +238,7 @@ async function main() {
   // Criar ou atualizar produtos sem cores, tamanhos e variantes (bolsa e oculos)
   const productsWithoutVariants = [
     { name: "bolsa 1", category: "bolsa" },
-    { name: "oculos 1", category: "oculos" },
+   
   ];
 
   for (const { name, category } of productsWithoutVariants) {
