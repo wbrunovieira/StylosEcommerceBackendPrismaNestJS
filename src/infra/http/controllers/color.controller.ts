@@ -101,7 +101,6 @@ export class ColorsController {
 
   @Put(":colorId")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async editColor(
     @Param("colorId") colorId: string,
     @Body(editBodyValidationPipe) body: EditColorBodySchema

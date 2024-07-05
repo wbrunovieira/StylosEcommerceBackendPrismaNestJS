@@ -33,8 +33,8 @@ const createBrandSchema = z.object({
     .max(50, "Name must not exceed 50 characters"),
   imageUrl: z
     .string()
-    .url("Invalid URL format")
     .nonempty("Image URL must not be empty"),
+  erpId: z.string().optional()
 });
 const bodyValidationPipe = new ZodValidationsPipe(createBrandSchema);
 type CreateBrandBodySchema = z.infer<typeof createBrandSchema>;
@@ -46,8 +46,7 @@ const editBrandSchema = z.object({
     .max(50, "Name must not exceed 50 characters"),
   imageUrl: z
     .string()
-    .url("Invalid URL format")
-    .nonempty("Image URL must not be empty"),
+   .nonempty("Image URL must not be empty"),
 });
 const editBodyValidationPipe = new ZodValidationsPipe(editBrandSchema);
 type EditBrandBodySchema = z.infer<typeof editBrandSchema>;
@@ -74,13 +73,12 @@ export class BrandController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async createBrand(@Body(bodyValidationPipe) body: CreateBrandBodySchema) {
     try {
       const result = await this.createBrandUseCase.execute({
         name: body.name,
         imageUrl: body.imageUrl,
+        erpId: body.erpId || 'undefined'
       });
       if (result.isLeft()) {
         const error = result.value;
@@ -102,8 +100,6 @@ export class BrandController {
   }
 
   @Put(":brandId")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
   async editBrand(
     @Param("brandId") brandId: string,
     @Body(editBodyValidationPipe) body: EditBrandBodySchema
