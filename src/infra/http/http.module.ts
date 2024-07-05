@@ -72,6 +72,7 @@ import { DeleteAddressUseCase } from "@/domain/auth/application/use-cases/delete
 import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-account";
 import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 import { SyncCategoriesUseCase } from "./api-erp/fechAllCategoriesFromErp";
+import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -150,6 +151,7 @@ import { SyncCategoriesUseCase } from "./api-erp/fechAllCategoriesFromErp";
 
     ApiGetAllProducts,
     SyncCategoriesUseCase,
+    SyncAttributesUseCase,
 
     CreateAccountUseCase,
     CreateGoogleAccountUseCase,
