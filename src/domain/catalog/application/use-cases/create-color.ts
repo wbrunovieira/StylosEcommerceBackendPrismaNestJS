@@ -7,6 +7,7 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 interface CreateColorUseCaseRequest {
   name: string;
   hex: string;
+  erpId:string
 }
 
 type CreateColorUseCaseResponse = Either<
@@ -22,7 +23,8 @@ export class CreateColorUseCase {
 
   async execute({
     name,
-    hex
+    hex,
+    erpId
   }: CreateColorUseCaseRequest): Promise<CreateColorUseCaseResponse> {
     try {
       const trimmedName = name.trim();
@@ -55,6 +57,7 @@ export class CreateColorUseCase {
       const color = Color.create({
         name: trimmedName,
         hex,
+        erpId
       });
 
       await this.colorRepository.create(color);

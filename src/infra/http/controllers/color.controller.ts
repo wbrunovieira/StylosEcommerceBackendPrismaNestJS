@@ -34,6 +34,7 @@ const createColorSchema = z.object({
     .min(1, "Color must not be empty")
     .max(50, "Color must not exceed 20 characters"),
   hex: z.string().regex(hexColorRegex, "Invalid hex color format"),
+  erpId: z.string().optional()
 });
 const bodyValidationPipe = new ZodValidationsPipe(createColorSchema);
 type CreateColorBodySchema = z.infer<typeof createColorSchema>;
@@ -71,12 +72,13 @@ export class ColorsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
+
   async createColor(@Body(bodyValidationPipe) body: CreateColorBodySchema) {
     try {
       const result = await this.createColorUseCase.execute({
         name: body.name,
         hex: body.hex,
+        erpId:body.erpId || 'undefined'
       });
       if (result.isLeft()) {
         const error = result.value;

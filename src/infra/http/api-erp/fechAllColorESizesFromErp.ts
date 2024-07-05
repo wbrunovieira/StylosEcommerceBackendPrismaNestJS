@@ -72,18 +72,7 @@ export class SyncAttributesUseCase {
         (attribute: any) => !attribute.properties.deleted_at
       );
 
-      for (const attribute of attributes) {
-        const attributeData = {
-          name: attribute.properties.name,
-          code: attribute.properties.code
-        };
-
-        if (this.isSize(attributeData)) {
-          await this.createSizeIfNotExist(attributeData, token);
-        } else if (this.isColor(attributeData)) {
-          await this.createColorIfNotExist(attributeData, token);
-        }
-      }
+    
     } catch (error) {
       console.error('Error fetching attributes:', error);
     }

@@ -61,10 +61,18 @@ const categoryImages = {
   21: `${baseImageUrl}woman (1).svg`,
   39: `${baseImageUrl}sport.svg`,
   28: `${baseImageUrl}glasses-mini.svg`,
+  29: `${baseImageUrl}bag.svg`,
   30: `${baseImageUrl}glasses-mini.svg`,
   51: `${baseImageUrl}dry-skin.svg`,
   16: `${baseImageUrl}perfume-mini.svg`,
   22: `${baseImageUrl}dry-skin.svg`,
+  48: `${baseImageUrl}robe.svg`,
+  45: `${baseImageUrl}manwear.svg`,
+  55: `${baseImageUrl}ballet-shoes.svg`,
+  40: `${baseImageUrl}robe.svg`,
+  57: `${baseImageUrl}underware.svg`,
+  12: `${baseImageUrl}bikini.svg`,
+  47: `${baseImageUrl}nightie.svg`,
 };
 
 const defaultImage = `${baseImageUrl}no-photos.svg`;

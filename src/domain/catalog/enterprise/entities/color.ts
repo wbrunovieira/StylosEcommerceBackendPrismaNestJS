@@ -5,6 +5,7 @@ import { Optional } from "@/core/types/optional";
 export interface ColorProps {
   name: string;
   hex: string;
+  erpId: string
   createdAt: Date;
   updatedAt: Date;
 }
@@ -12,6 +13,9 @@ export interface ColorProps {
 export class Color extends Entity<ColorProps> {
   get name(): string {
     return this.props.name;
+  }
+  get erpId(): string {
+    return this.props.erpId;
   }
   get hex(): string {
     return this.props.hex;
@@ -27,6 +31,9 @@ export class Color extends Entity<ColorProps> {
 
   set name(name: string) {
     this.props.name = name;
+  }
+  set erpId(erpId: string) {
+    this.props.erpId = erpId;
   }
   set hex(hex: string) {
     this.props.hex = hex;

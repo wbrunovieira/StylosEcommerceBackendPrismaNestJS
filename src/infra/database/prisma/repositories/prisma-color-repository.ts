@@ -27,7 +27,7 @@ export class PrismaColorRepository implements IColorRepository {
       if (!colorData) return left(new ResourceNotFoundError("Color not found"));
 
       const color = Color.create(
-        { name: colorData.name, hex: colorData.hex },
+        { name: colorData.name, hex: colorData.hex, erpId:colorData.erpId  || ''},
         new UniqueEntityID(colorData.id)
       );
 
@@ -49,6 +49,7 @@ export class PrismaColorRepository implements IColorRepository {
         {
           name: colorData.name,
           hex: colorData.hex,
+          erpId:colorData.erpId  || ''
         },
         new UniqueEntityID(colorData.id)
       );
@@ -66,6 +67,7 @@ export class PrismaColorRepository implements IColorRepository {
           id: color.id.toString(),
           name: color.name,
           hex: color.hex,
+          erpId: color.erpId,
           createdAt: color.createdAt,
           updatedAt: color.updatedAt,
         },
@@ -96,7 +98,7 @@ export class PrismaColorRepository implements IColorRepository {
         take: params.pageSize,
       });
       const convertedColors = colors.map((b) =>
-        Color.create({ name: b.name, hex: b.hex }, new UniqueEntityID(b.id))
+        Color.create({ name: b.name, hex: b.hex, erpId:b.erpId  || '' }, new UniqueEntityID(b.id))
       );
       return right(convertedColors);
     } catch (error) {
@@ -112,6 +114,7 @@ export class PrismaColorRepository implements IColorRepository {
         },
         data: {
           name: color.name,
+          hex: color.hex,
           updatedAt: new Date(),
         },
       });
