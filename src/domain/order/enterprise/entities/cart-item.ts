@@ -9,6 +9,8 @@ interface CartItemProps {
   width: number;
   length: number;
   weight: number;
+  color?: string;
+  size?: string;
 }
 
 export class CartItem extends Entity<CartItemProps> {
@@ -18,6 +20,12 @@ export class CartItem extends Entity<CartItemProps> {
 
   get productId(): UniqueEntityID {
     return this.props.productId;
+  }
+  get color(): string | undefined {
+    return this.props.color ;
+  }
+  get size(): string | undefined  {
+    return this.props.size;
   }
 
   get quantity(): number {

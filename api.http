@@ -64,11 +64,12 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/product/5/supplier
+GET https://connectplug.com.br/api/v2/product/20/supplier
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
+###
 
 # @name show-product-attribute-by-id
 GET https://connectplug.com.br/api/v2/product-attribute/2
@@ -93,13 +94,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 ###
 
-# @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/sale
-Accept: application/json
-Content-Type: application/json
-Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
-###
 
 # @name show-product-category-all
 GET https://connectplug.com.br/api/v2/product-category
@@ -111,7 +106,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-category-all
-GET https://connectplug.com.br/api/v2/product-category/1
+GET https://connectplug.com.br/api/v2/product-category/2
 
 Accept: application/json
 Content-Type: application/json

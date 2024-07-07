@@ -200,6 +200,8 @@ CREATE TABLE "cart_items" (
     "weight" DOUBLE PRECISION NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
+    "colorId" TEXT,
+    "sizeId" TEXT,
 
     CONSTRAINT "cart_items_pkey" PRIMARY KEY ("id")
 );

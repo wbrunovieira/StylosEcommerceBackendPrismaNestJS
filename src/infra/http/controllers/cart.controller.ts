@@ -20,10 +20,14 @@ const createCartSchema = z.object({
     z.object({
       productId: z.string(),
       quantity: z.number().min(0),
+      variantId: z.string().optional(),  // Adicionado o campo variantId
       price: z.number().min(0),
+      colorId: z.string().optional(),  // Adicionado o campo colorId
+      sizeId: z.string().optional(),   // Adicionado o campo sizeId
     })
   ),
 });
+
 const bodyValidationPipe = new ZodValidationsPipe(createCartSchema);
 type CreateCartBodySchema = z.infer<typeof createCartSchema>;
 

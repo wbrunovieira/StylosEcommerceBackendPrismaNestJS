@@ -26,17 +26,19 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-    "userId": "ba95f5080-f6bb-4bd9-95ca-1c0a98072ff9",
+    "userId": "c775386f-cfc3-427a-ad34-fed0f8687147",
     "items": [
         {
-            "productId": "8b533198-4221-4757-b110-68c7fed02106",
+            "productId": "6b60d2ab-5b75-47db-adae-a8cf0cabb423",
             "quantity": 1,
-            "price": 50.00
+            "price": 105.00
         },
         {
-            "productId": "8b533198-4221-4757-b110-68c7fed02106",
+            "productId": "2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d",
             "quantity": 2,
-            "price":150.00
+            "price": 112.00,
+            "colorId": "preto",
+            "sizeId":"g"
         }
       
     ]
