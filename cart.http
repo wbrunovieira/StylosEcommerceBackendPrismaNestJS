@@ -30,16 +30,16 @@ Authorization: Bearer {{AUTH_TOKEN}}
     "items": [
         {
             "productId": "6b60d2ab-5b75-47db-adae-a8cf0cabb423",
-            "quantity": 1,
+            "quantity": 12,
             "price": 105.00
-        },
-        {
-            "productId": "2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d",
-            "quantity": 2,
-            "price": 112.00,
-            "colorId": "preto",
-            "sizeId":"g"
         }
+        # {
+        #     "productId": "2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d",
+        #     "quantity": 2,
+        #     "price": 112.00,
+        #     "colorId": "preto",
+        #     "sizeId":"g"
+        # }
       
     ]
 }

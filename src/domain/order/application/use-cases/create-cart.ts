@@ -121,20 +121,21 @@ export class CreateCartUseCase {
             
             const product = productResult.value;
             console.log(' product',product)
-
-          if (product.stock < item.quantity) {
-            return left(
+            
+            if (product.stock < item.quantity) {
+              return left(
               new ResourceNotFoundError(
                 `Insufficient stock for product: ${item.productId}`
               )
             );
           }
 
-          const height = product.height;
-          const width = product.width;
-          const length = product.length;
-          const weight = product.weight;
-
+          const height = product.props.height;
+          const width = product.props.width;
+          const length = product.props.length;
+          const weight = product.props.weight;
+          console.log(' product height height',product,height,width,length,weight)
+          
           if (cartItemsMap[item.productId]) {
             const existingItem = cartItemsMap[item.productId];
             existingItem.setQuantity(existingItem.quantity + item.quantity);
