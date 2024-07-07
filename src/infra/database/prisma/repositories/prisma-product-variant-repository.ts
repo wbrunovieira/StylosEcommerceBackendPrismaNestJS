@@ -15,6 +15,7 @@ import {
 @Injectable()
 export class PrismaProductVariantRepository
   implements IProductVariantRepository
+  
 {
   constructor(private prisma: PrismaService) {}
 
@@ -80,13 +81,14 @@ export class PrismaProductVariantRepository
   async findById(
     id: string
   ): Promise<Either<ResourceNotFoundError, ProductVariant>> {
-    console.log("id", id);
+    console.log("id no prisma variant", id);
     const variant = await this.prisma.productVariant.findUnique({
       where: { id },
     });
-    console.log("variant", variant);
-
+    console.log("variant no prisma", variant);
+    
     if (!variant) {
+      console.log("variant no deu mal prisma", variant);
       return left(
         new ResourceNotFoundError(
           `Variant not  in prisma findnyId found for id: ${id}`
@@ -96,7 +98,7 @@ export class PrismaProductVariantRepository
 
     const productVariant = ProductVariant.create(
       {
-        productId: new UniqueEntityID(variant.productId),
+        productId: new UniqueEntityID(variant.id),
         colorId: variant.colorId
           ? new UniqueEntityID(variant.colorId)
           : undefined,
@@ -112,7 +114,7 @@ export class PrismaProductVariantRepository
       },
       new UniqueEntityID(variant.id)
     );
-    console.log("productVariant in find byID", productVariant);
+    console.log("productVariant in find byID prisma variant", productVariant);
     return right(productVariant);
   }
 

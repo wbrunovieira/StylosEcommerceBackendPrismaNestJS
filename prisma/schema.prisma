@@ -236,6 +236,8 @@ model CartItem {
   weight      Float
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
+  colorId     String?
+  sizeId      String?
 
   @@map("cart_items")
 }

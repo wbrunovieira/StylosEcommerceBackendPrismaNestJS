@@ -58,7 +58,7 @@ Content-Type: application/json
 ###
 
 # @name edit-products-variants
-PATCH {{BASE_URL}}/products/update/variant/4b54fbb7-3093-45c5-a94d-2cc351b12b26
+PATCH {{BASE_URL}}/products/update/variant/2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d
 Authorization: Bearer {{AUTH_TOKEN}}
 Content-Type: application/json
 
@@ -88,7 +88,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/8f5e3b42-20d7-4282-a73d-f092b1737f47
+GET {{BASE_URL}}/products/2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d
 Content-Type: application/json
 
 
@@ -149,7 +149,7 @@ GET {{BASE_URL}}/products/slug/produto-12-484fc45f-5b0d-432a-a60e-16a6a4253f7a-c
 ###
 
 # @name get-product-by-name
-GET {{BASE_URL}}/products/search?name=1
+GET {{BASE_URL}}/products/search?name=produto
 Content-Type: application/json
 
 ###
