@@ -20,10 +20,10 @@ const createCartSchema = z.object({
     z.object({
       productId: z.string(),
       quantity: z.number().min(0),
-      variantId: z.string().optional(),  // Adicionado o campo variantId
+      variantId: z.string().optional(),  
       price: z.number().min(0),
-      colorId: z.string().optional(),  // Adicionado o campo colorId
-      sizeId: z.string().optional(),   // Adicionado o campo sizeId
+      colorId: z.string().optional(), 
+      sizeId: z.string().optional(),  
     })
   ),
 });

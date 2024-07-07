@@ -996,6 +996,8 @@ export class PrismaProductRepository implements IProductRepository {
         },
         new UniqueEntityID(productData.id)
       );
+      console.log(' produto no prisma ...product',product )
+     
 
       const productVariants = productData.productVariants.map((variant) =>
         ProductVariant.create(
@@ -1019,6 +1021,7 @@ export class PrismaProductRepository implements IProductRepository {
           new UniqueEntityID(variant.id)
         )
       );
+      console.log(' produto no prisma ...product productVariants',productVariants )
 
       return right(
         ProductWithVariants.create({ product, variants: productVariants })

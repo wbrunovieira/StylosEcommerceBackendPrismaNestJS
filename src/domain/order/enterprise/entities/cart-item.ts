@@ -24,7 +24,7 @@ export class CartItem extends Entity<CartItemProps> {
   get color(): string | undefined {
     return this.props.color ;
   }
-  get size(): string | undefined  {
+  get size(): string | undefined   {
     return this.props.size;
   }
 
