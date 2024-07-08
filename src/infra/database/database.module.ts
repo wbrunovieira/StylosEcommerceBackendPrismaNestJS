@@ -82,6 +82,7 @@ import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-reposito
       provide: ICartRepository,
       useClass: PrismaCartRepository,
     },
+    
     {
       provide: IAddressRepository,
       useClass: PrismaAddressRepository,
@@ -90,6 +91,7 @@ import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-reposito
     PrismaSizeRepository,
     PrismaCategoryRepository,
     PrismaAccountRepository,
+    
   ],
   exports: [
     PrismaService,
@@ -104,8 +106,8 @@ import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-reposito
     IProductColorRepository,
     IProductVariantRepository,
     IAccountRepository,
+    ICartRepository,
     IAddressRepository,
-    ICartRepository
   ],
 })
 export class DatabaseModule {}
