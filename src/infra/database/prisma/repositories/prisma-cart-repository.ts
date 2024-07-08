@@ -127,5 +127,18 @@ export class PrismaCartRepository implements ICartRepository {
     }
   }
 
+  async cartExists(userId: string): Promise<Either<Error, boolean>> {
+    try {
+      const cartRecord = await this.prisma.cart.findFirst({
+        where: { userId },
+      });
+
+      return right(!!cartRecord);
+      
+    } catch (error) {
+      return left(new Error("Failed to check if cart exists"));
+    }
+  }
+
 
 }

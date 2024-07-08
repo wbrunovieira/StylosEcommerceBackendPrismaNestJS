@@ -74,6 +74,7 @@ import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find
 import { SyncCategoriesUseCase } from "./api-erp/fechAllCategoriesFromErp";
 import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
 import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
+import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -151,6 +152,7 @@ import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-i
     UpdateProductVariantUseCase,
     
     AddItemToCartUseCase,
+    CheckCartExistsUseCase,
 
     ApiGetAllProducts,
     SyncCategoriesUseCase,
