@@ -27,4 +27,12 @@ export class Cart extends Entity<CartProps> {
   addItem(item: CartItem): void {
     this.props.items.push(item);
   }
+
+  toObject() {
+    return {
+      id: this.id,
+      userId: this.props.userId,
+      items: this.props.items
+    };
+  }
 }
