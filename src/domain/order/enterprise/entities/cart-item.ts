@@ -2,7 +2,7 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface CartItemProps {
-  productId: UniqueEntityID;
+  productId: string;
   quantity: number;
   price: number;
   height: number;
@@ -18,7 +18,7 @@ export class CartItem extends Entity<CartItemProps> {
     super(props, id);
   }
 
-  get productId(): UniqueEntityID {
+  get productId(): string {
     return this.props.productId;
   }
   get color(): string | undefined {
@@ -54,6 +54,27 @@ export class CartItem extends Entity<CartItemProps> {
   setQuantity(quantity: number): void {
     this.props.quantity = quantity;
   }
+
+  toObject() {
+    return {
+      id: this.id?.toString(),
+      productId: this.productId,
+      quantity: this.quantity,
+      price: this.price,
+      height: this.height,
+      width: this.width,
+      length: this.length,
+      weight: this.weight,
+      color: this.color,
+      size: this.size,
+    };
+  }
+
+  static create(props: CartItemProps, id?: UniqueEntityID): CartItem {
+    return new CartItem(props, id);
+  }
+
+
 
 
 }

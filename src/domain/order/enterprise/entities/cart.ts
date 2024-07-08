@@ -32,7 +32,7 @@ export class Cart extends Entity<CartProps> {
     return {
       id: this.id,
       userId: this.props.userId,
-      items: this.props.items
+      items: this.props.items.map(item => item.toObject()),
     };
   }
 }

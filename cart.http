@@ -48,3 +48,23 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 
+# @name add-item-cart
+POST {{BASE_URL}}/cart/add-item/c775386f-cfc3-427a-ad34-fed0f8687147
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+    "productId": "6b60d2ab-5b75-47db-adae-a8cf0cabb423",
+    "quantity": 2,
+    "price": 200,
+    "height": 11,
+    "width": 16,
+    "length": 26,
+    "weight": 2.5
+
+}
+
+
+
+###
+

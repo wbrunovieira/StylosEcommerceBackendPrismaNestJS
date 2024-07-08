@@ -73,6 +73,7 @@ import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-acc
 import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 import { SyncCategoriesUseCase } from "./api-erp/fechAllCategoriesFromErp";
 import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
+import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -148,6 +149,8 @@ import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
     GetAllProductsByIdUseCase,
     FindProductByNameUseCase,
     UpdateProductVariantUseCase,
+    
+    AddItemToCartUseCase,
 
     ApiGetAllProducts,
     SyncCategoriesUseCase,
@@ -156,9 +159,12 @@ import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
     CreateAccountUseCase,
     CreateGoogleAccountUseCase,
 
+
     CreateAddressUseCase,
 
     CreateCartUseCase,
+    
   ],
+  
 })
 export class HttpModule {}

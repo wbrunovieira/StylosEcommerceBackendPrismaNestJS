@@ -105,7 +105,7 @@ export class CreateCartUseCase {
           } else {
             console.log('item. ss',item)
             cartItemsMap[productIdString] = new CartItem({
-              productId: new UniqueEntityID(productIdString),
+              productId: item.productId,
               quantity: item.quantity,
               price: item.price,
               height: height,
@@ -150,7 +150,7 @@ export class CreateCartUseCase {
             existingItem.setQuantity(existingItem.quantity + item.quantity);
           } else {
             cartItemsMap[item.productId] = new CartItem({
-              productId: new UniqueEntityID(item.productId),
+              productId: item.productId,
               quantity: item.quantity,
               price: item.price,
               height,
