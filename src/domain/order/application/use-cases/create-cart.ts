@@ -53,12 +53,15 @@ export class CreateCartUseCase {
         let productResult;
         let variant;
 
+
         if (item.colorId && item.sizeId) {
           
           const variantResult = await this.variantRepository.findById(
             item.productId
           );
           console.log('variantResult',variantResult)
+          console.log('variantResult.value;',variantResult.value)
+       
           
           if (variantResult.isLeft()) {
             console.log('variantResult isLeft',variantResult)
@@ -68,12 +71,11 @@ export class CreateCartUseCase {
           }
           
           variant = variantResult.value;
-          console.log('variant quase bom productResult',productResult)
-          console.log('variant quase bom',variant)
-        
- 
+          console.log('variant quase bom variantResult',variantResult)
 
-         
+          console.log('variant quase bom variant',variant)
+        
+
           if (variant.stock < item.quantity) {
             return left(
               new ResourceNotFoundError(
@@ -81,32 +83,37 @@ export class CreateCartUseCase {
               )
             );
           }
-          console.log('produto com variant quase pronto:',variant)
 
-          const height = variant.height;
-          const width = variant.width;
-          const length = variant.length;
-          const weight = variant.weight;
-          const colorId = variant.colorId;
-          const sizeId = variant.sizeId;
-          console.log('height',height,width,length, weight,colorId,sizeId )
+          console.log('produto com variant quase pronto:',variant)
+          
+          const productIdString = String(variant.props.productId.value)
+          
+          console.log('pid do produto da variant:',productIdString)
+          productResult = await this.productRepository.findById(productIdString);
+          const { product, variants } = productResult.value;
+
+          console.log('product consulltaaaa', product)
+          console.log('product consulltaaaa', variants)
+
+          const { height, width, length, weight } = product.props;
+          console.log(' product height height',product,height,width,length,weight)
 
           if (cartItemsMap[item.productId]) {
             console.log('item 11',item)
-            const existingItem = cartItemsMap[item.productId];
+            const existingItem = cartItemsMap[productIdString];
             existingItem.setQuantity(existingItem.quantity + item.quantity);
           } else {
             console.log('item. ss',item)
-            cartItemsMap[item.productId] = new CartItem({
-              productId: new UniqueEntityID(item.productId),
+            cartItemsMap[productIdString] = new CartItem({
+              productId: new UniqueEntityID(productIdString),
               quantity: item.quantity,
               price: item.price,
               height: height,
               width: width,
               length: length,
               weight: weight,
-              color: colorId,
-              size: sizeId,
+              color: item.colorId,
+              size: item.sizeId,
             });
           }
         } else {

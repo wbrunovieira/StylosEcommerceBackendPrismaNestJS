@@ -98,7 +98,7 @@ export class PrismaProductVariantRepository
 
     const productVariant = ProductVariant.create(
       {
-        productId: new UniqueEntityID(variant.id),
+        productId: new UniqueEntityID(variant.productId),
         colorId: variant.colorId
           ? new UniqueEntityID(variant.colorId)
           : undefined,
