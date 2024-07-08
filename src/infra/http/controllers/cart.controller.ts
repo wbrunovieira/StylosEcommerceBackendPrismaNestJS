@@ -7,6 +7,7 @@ import {
   ConflictException,
   UseGuards,
   Param,
+  Get,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
@@ -15,6 +16,7 @@ import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-c
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
+import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
 
 const createCartSchema = z.object({
   userId: z.string(),
@@ -54,7 +56,7 @@ type AddItemBodySchema = z.infer<typeof addItemSchema>;
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
-  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase,) {}
+  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase, private readonly checkCartExistsUseCase: CheckCartExistsUseCase) {}
 
   @Post()
   async createCart(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
@@ -119,6 +121,23 @@ console.log('entrou no controller add result',result)
       }
       throw new HttpException(
         "Failed to add item to cart",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get(':userId/exists')
+  async checkCartExists(@Param('userId') userId: string) {
+    try {
+      const result = await this.checkCartExistsUseCase.execute({ userId });
+      if (result.isLeft()) {
+        throw new HttpException(result.value.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      return { exists: result.value };
+    } catch (error) {
+      console.error('Erro ao verificar se o carrinho existe:', error);
+      throw new HttpException(
+        'Failed to check if cart exists',
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

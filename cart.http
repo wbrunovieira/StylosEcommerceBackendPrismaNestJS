@@ -65,6 +65,13 @@ Authorization: Bearer {{AUTH_TOKEN}}
 }
 
 
+###
+# @name check-cart-exist
+GET {{BASE_URL}}/cart/c775386f-cfc3-427a-ad34-fed0f8687147/exists
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
 
 ###
 
