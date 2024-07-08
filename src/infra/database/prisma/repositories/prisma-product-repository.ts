@@ -755,7 +755,7 @@ export class PrismaProductRepository implements IProductRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<
+async findBySlug(slug: string): Promise<
     Either<
       Error,
       {
@@ -1022,6 +1022,7 @@ export class PrismaProductRepository implements IProductRepository {
         )
       );
       console.log(' produto no prisma ...product productVariants',productVariants )
+      console.log(' produto no prisma ...product product ante do retorno',product )
 
       return right(
         ProductWithVariants.create({ product, variants: productVariants })

@@ -43,6 +43,7 @@ export class CreateCartUseCase {
       const cartItemsMap: { [productId: string]: CartItem } = {};
 
       for (const item of items) {
+
         if (item.quantity <= 0) {
           return left(
             new ResourceNotFoundError("Quantity must be greater than zero")
@@ -111,7 +112,11 @@ export class CreateCartUseCase {
         } else {
           console.log('entrou no produto sem size e color com id ',item.productId)
           productResult = await this.productRepository.findById(item.productId);
-            console.log('productResult product',productResult)
+
+          const { product, variants } = productResult.value;
+
+            console.log('productResult product',product)
+
             if (productResult.isLeft()) {
               console.log('productResult product left 2',productResult)
               return left(
@@ -119,7 +124,7 @@ export class CreateCartUseCase {
               );
             }
             
-            const product = productResult.value;
+            
             console.log(' product',product)
             
             if (product.stock < item.quantity) {
@@ -130,10 +135,7 @@ export class CreateCartUseCase {
             );
           }
 
-          const height = product.props.height;
-          const width = product.props.width;
-          const length = product.props.length;
-          const weight = product.props.weight;
+          const { height, width, length, weight } = product.props;
           console.log(' product height height',product,height,width,length,weight)
           
           if (cartItemsMap[item.productId]) {
@@ -144,10 +146,10 @@ export class CreateCartUseCase {
               productId: new UniqueEntityID(item.productId),
               quantity: item.quantity,
               price: item.price,
-              height: height,
-              width: width,
-              length: length,
-              weight: weight,
+              height,
+              width,
+              length,
+              weight,
               color: item.colorId,
               size: item.sizeId,
             });
