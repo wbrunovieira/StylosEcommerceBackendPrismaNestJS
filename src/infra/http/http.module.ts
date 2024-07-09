@@ -75,6 +75,7 @@ import { SyncCategoriesUseCase } from "./api-erp/fechAllCategoriesFromErp";
 import { SyncAttributesUseCase } from "./api-erp/fechAllColorESizesFromErp";
 import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
 import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
+import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -153,6 +154,7 @@ import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/che
     
     AddItemToCartUseCase,
     CheckCartExistsUseCase,
+    DeleteItemFromCartUseCase,
 
     ApiGetAllProducts,
     SyncCategoriesUseCase,

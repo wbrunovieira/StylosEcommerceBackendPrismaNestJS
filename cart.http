@@ -75,4 +75,12 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 
 ###
+# @name delete-item-cart
+DELETE {{BASE_URL}}/cart/63c0f430-db37-48bc-bcee-d943ee79c2e5/item/02abb5ed-3bb2-4052-91a1-f47284a3c6f4
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+
+###
 

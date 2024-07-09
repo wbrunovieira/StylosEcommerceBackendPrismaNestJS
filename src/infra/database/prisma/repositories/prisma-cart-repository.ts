@@ -6,6 +6,7 @@ import { Cart } from "../../../../domain/order/enterprise/entities/cart";
 import { ICartRepository } from "@/domain/order/application/repositories/i-cart-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { CartItem } from "@/domain/order/enterprise/entities/cart-item";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 @Injectable()
 export class PrismaCartRepository implements ICartRepository {
@@ -121,7 +122,7 @@ export class PrismaCartRepository implements ICartRepository {
           },
         },
       });
-      
+
       console.log('cartSaved in prisma save cart',cartSaved)
   
       return right(undefined);
@@ -140,6 +141,60 @@ export class PrismaCartRepository implements ICartRepository {
 
     } catch (error) {
       return left(new Error("Failed to check if cart exists"));
+    }
+  }
+
+  async removeItemFromCart(cartId: string, itemId: string): Promise<Either<Error, void>> {
+    try {
+      await this.prisma.cart.update({
+        where: { id: cartId },
+        data: {
+          items: {
+            delete: { id: itemId },
+          },
+        },
+      });
+      return right(undefined);
+    } catch (error) {
+      return left(new Error("Failed to remove item from cart"));
+    }
+  }
+
+  async findById(cartId: string): Promise<Either<Error, Cart>> {
+    try {
+      const cartData = await this.prisma.cart.findUnique({
+        where: { id: cartId },
+        include: {
+          items: true,
+        },
+      });
+
+      if (!cartData) {
+        return left(new ResourceNotFoundError("Cart not found"));
+      }
+
+      const cartItems = cartData.items.map(item => 
+        new CartItem({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          height: item.height,
+          width: item.width,
+          length: item.length,
+          weight: item.weight,
+          color: item.colorId || "undefined",
+          size: item.sizeId || "undefined",
+        }, new UniqueEntityID(item.id))
+      );
+
+      const cart = Cart.create({
+        userId: cartData.userId,
+        items: cartItems,
+      }, new UniqueEntityID(cartData.id));
+
+      return right(cart);
+    } catch (error) {
+      return left(new ResourceNotFoundError("Failed to fetch cart"));
     }
   }
 
