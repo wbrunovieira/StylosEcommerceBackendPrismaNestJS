@@ -8,6 +8,7 @@ import {
   UseGuards,
   Param,
   Get,
+  Delete,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
@@ -17,6 +18,7 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
 import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
+import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
 
 const createCartSchema = z.object({
   userId: z.string(),
@@ -56,7 +58,7 @@ type AddItemBodySchema = z.infer<typeof addItemSchema>;
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
-  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase, private readonly checkCartExistsUseCase: CheckCartExistsUseCase) {}
+  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase, private readonly checkCartExistsUseCase: CheckCartExistsUseCase, private deleteItemFromCartUseCase: DeleteItemFromCartUseCase) {}
 
   @Post()
   async createCart(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
@@ -138,6 +140,33 @@ console.log('entrou no controller add result',result)
       console.error('Erro ao verificar se o carrinho existe:', error);
       throw new HttpException(
         'Failed to check if cart exists',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Delete(':cartId/item/:itemId')
+  async deleteItemFromCart(
+    @Param('cartId') cartId: string,
+    @Param('itemId') itemId: string
+  ) {
+    try {
+      const result = await this.deleteItemFromCartUseCase.execute({
+        cartId,
+        itemId,
+      });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        message: "Item removed from cart successfully",
+      };
+    } catch (error) {
+      throw new HttpException(
+        "Failed to remove item from cart",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
