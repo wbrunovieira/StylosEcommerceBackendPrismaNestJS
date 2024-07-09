@@ -29,8 +29,8 @@ export class PrismaCartRepository implements ICartRepository {
               width: item.width,
               length: item.length,
               weight: item.weight,
-              colorId: item.color?.toString(), 
-              sizeId: item.size?.toString(),   
+              colorId: item.colorId?.toString(), 
+              sizeId: item.sizeId?.toString(),   
             })),
           },
         },
@@ -87,8 +87,9 @@ export class PrismaCartRepository implements ICartRepository {
   async save(cart: Cart): Promise<Either<Error, void>> {
     try {
       const cartData = cart.toObject();
+      console.log('cartData in prisma save cart',cartData)
   
-      await this.prisma.cart.update({
+   const cartSaved =   await this.prisma.cart.update({
         where: { id: cartData.id.toString() },
         data: {
           userId: cartData.userId,
@@ -102,8 +103,8 @@ export class PrismaCartRepository implements ICartRepository {
                 width: item.width,
                 length: item.length,
                 weight: item.weight,
-                colorId: item.color?.toString(),
-                sizeId: item.size?.toString(),
+                colorId: item.colorId?.toString(),
+                sizeId: item.sizeId?.toString(),
               },
               create: {
                 productId: item.productId,
@@ -113,13 +114,15 @@ export class PrismaCartRepository implements ICartRepository {
                 width: item.width,
                 length: item.length,
                 weight: item.weight,
-                colorId: item.color?.toString(),
-                sizeId: item.size?.toString(),
+                colorId: item.colorId?.toString(),
+                sizeId: item.sizeId?.toString(),
               },
             })),
           },
         },
       });
+      
+      console.log('cartSaved in prisma save cart',cartSaved)
   
       return right(undefined);
     } catch (error) {
@@ -134,7 +137,7 @@ export class PrismaCartRepository implements ICartRepository {
       });
 
       return right(!!cartRecord);
-      
+
     } catch (error) {
       return left(new Error("Failed to check if cart exists"));
     }

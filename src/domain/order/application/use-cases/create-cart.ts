@@ -40,6 +40,7 @@ export class CreateCartUseCase {
     items,
   }: CreateCartUseCaseRequest): Promise<CreateCartUseCaseResponse> {
     try {
+      
       const cartItemsMap: { [productId: string]: CartItem } = {};
 
       for (const item of items) {
@@ -59,6 +60,7 @@ export class CreateCartUseCase {
           const variantResult = await this.variantRepository.findById(
             item.productId
           );
+
           console.log('variantResult',variantResult)
           console.log('variantResult.value;',variantResult.value)
        
@@ -89,7 +91,9 @@ export class CreateCartUseCase {
           const productIdString = String(variant.props.productId.value)
           
           console.log('pid do produto da variant:',productIdString)
+
           productResult = await this.productRepository.findById(productIdString);
+
           const { product, variants } = productResult.value;
 
           console.log('product consulltaaaa', product)
