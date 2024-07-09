@@ -19,6 +19,7 @@ import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-item-cart";
 import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
 import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
+import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-Cart-ByUserId";
 
 const createCartSchema = z.object({
   userId: z.string(),
@@ -58,7 +59,7 @@ type AddItemBodySchema = z.infer<typeof addItemSchema>;
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
-  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase, private readonly checkCartExistsUseCase: CheckCartExistsUseCase, private deleteItemFromCartUseCase: DeleteItemFromCartUseCase) {}
+  constructor(private readonly createcartUseCase: CreateCartUseCase,private readonly addItemToCartUseCase: AddItemToCartUseCase, private readonly checkCartExistsUseCase: CheckCartExistsUseCase, private deleteItemFromCartUseCase: DeleteItemFromCartUseCase, private getCartByUserUseCase: GetCartByUserUseCase,) {}
 
   @Post()
   async createCart(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
@@ -145,6 +146,26 @@ console.log('entrou no controller add result',result)
     }
   }
 
+  @Get('user/:userId')
+  async getCartByUser(@Param('userId') userId: string) {
+    try {
+      const result = await this.getCartByUserUseCase.execute({ userId });
+
+      if (result.isLeft()) {
+        const error = result.value;
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+
+      return result.value;
+    } catch (error) {
+      throw new HttpException(
+        "Failed to fetch cart",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+
   @Delete(':cartId/item/:itemId')
   async deleteItemFromCart(
     @Param('cartId') cartId: string,
@@ -171,4 +192,5 @@ console.log('entrou no controller add result',result)
       );
     }
   }
+
 }

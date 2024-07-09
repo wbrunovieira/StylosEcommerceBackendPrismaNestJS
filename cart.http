@@ -75,6 +75,14 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 
 ###
+# @name get-the-cart-by-userId
+GET {{BASE_URL}}/cart/user/76345bcb-2d1b-450e-af2b-dd1a290c3a1c
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+
+
+###
 # @name delete-item-cart
 DELETE {{BASE_URL}}/cart/63c0f430-db37-48bc-bcee-d943ee79c2e5/item/02abb5ed-3bb2-4052-91a1-f47284a3c6f4
 Content-Type: application/json
