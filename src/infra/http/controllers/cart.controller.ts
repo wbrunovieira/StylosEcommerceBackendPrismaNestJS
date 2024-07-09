@@ -45,8 +45,8 @@ const addItemSchema = z.object({
   length: z.number().optional(),
   width: z.number().optional(),
   price: z.number().min(0),
-  color: z.string().optional(),
-  size: z.string().optional(),
+  colorId: z.string().optional(),
+  sizeId: z.string().optional(),
 });
 
 const addItemValidationPipe = new ZodValidationsPipe(addItemSchema);

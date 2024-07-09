@@ -65,8 +65,8 @@ export class CartItem extends Entity<CartItemProps> {
       width: this.width,
       length: this.length,
       weight: this.weight,
-      color: this.color,
-      size: this.size,
+      colorId: this.color,
+      sizeId: this.size,
     };
   }
 
