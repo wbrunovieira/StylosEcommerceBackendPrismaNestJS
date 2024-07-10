@@ -20,11 +20,11 @@ export class FindProductByNameUseCase {
   async execute({
     name,
   }: FindProductByNameUseCaseRequest): Promise<FindProductByNameUseCaseResponse> {
-    console.log("Finding products by name", name);
+    
 
     const result = await this.productRepository.findByName(name);
 
-    console.log("Finding products by name result", result);
+  
 
     if (result.isLeft()) {
       return left(new ResourceNotFoundError("Products not found"));

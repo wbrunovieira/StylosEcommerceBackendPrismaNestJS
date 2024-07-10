@@ -81,14 +81,14 @@ export class PrismaProductVariantRepository
   async findById(
     id: string
   ): Promise<Either<ResourceNotFoundError, ProductVariant>> {
-    console.log("id no prisma variant", id);
+   
     const variant = await this.prisma.productVariant.findUnique({
       where: { id },
     });
-    console.log("variant no prisma", variant);
+ 
     
     if (!variant) {
-      console.log("variant no deu mal prisma", variant);
+ 
       return left(
         new ResourceNotFoundError(
           `Variant not  in prisma findnyId found for id: ${id}`
@@ -114,7 +114,7 @@ export class PrismaProductVariantRepository
       },
       new UniqueEntityID(variant.id)
     );
-    console.log("productVariant in find byID prisma variant", productVariant);
+    
     return right(productVariant);
   }
 
@@ -151,16 +151,16 @@ export class PrismaProductVariantRepository
     variant: ProductVariant
   ): Promise<Either<ResourceNotFoundError, void>> {
     try {
-      console.log("entrou no prisma update variant", variant);
+    
       const variantIdString = variant.idString;
-      console.log("variantIdString", variantIdString);
+   
       const todasVAriants = await this.prisma.productVariant.findMany();
-      console.log("todasVAriants", todasVAriants);
+ 
 
       const existingVariant = await this.prisma.productVariant.findUnique({
         where: { id: variantIdString },
       });
-      console.log("existingVariant", existingVariant);
+    
 
       if (!existingVariant) {
         return left(

@@ -32,13 +32,10 @@ export class AddItemToCartUseCase {
     item,
   }: AddItemToCartRequest): Promise<AddItemToCartResponse> {
 
-    console.log('AddItemToCartUseCase entrou userId',userId)
-    console.log('AddItemToCartUseCase entrou item',item)
-    console.log('AddItemToCartUseCase - cartRepository:', this.cartRepository);
+  
     
     const cartResult = await this.cartRepository.findCartByUser(userId);
 
-    console.log('cartResult in AddItemToCartUseCase',cartResult)
 
     if (cartResult.isLeft()) {
         return left(new ResourceNotFoundError("Cart not found"));
@@ -46,25 +43,7 @@ export class AddItemToCartUseCase {
 
 const cart = cartResult.value; 
 
-console.log('cart in AddItemToCartUseCase',cart)
-console.log('cart.items in AddItemToCartUseCase',cart.items)
 
-
-
-// const cartItem = CartItem.create({
-//   productId: item.productId,
-//   quantity: item.quantity,
-//   price: item.price,
-//   height: item.height,
-//   width: item.width,
-//   length: item.length,
-//   weight: item.weight,
-//   color: item.colorId,
-//   size: item.sizeId,
-//     });
-
-
-//     console.log('cartItem in AddItemToCartUseCase',cartItem)
 
 
 let productResult;
@@ -102,7 +81,7 @@ if (item.colorId && item.sizeId) {
  
 
   const { height, width, length, weight } = product.props;
-  console.log(' product height height',product,height,width,length,weight)
+ 
   cartItem =  new CartItem({
     productId: productIdToUse,
     quantity: item.quantity,
@@ -114,7 +93,7 @@ if (item.colorId && item.sizeId) {
     color: item.colorId,
     size: item.sizeId,
   });
-  console.log('com cor e size cartItem',cartItem)
+ 
 
 } else {
   productResult = await this.productRepository.findById(item.productId);
@@ -142,15 +121,9 @@ if (item.colorId && item.sizeId) {
 }
     
     cart.addItem(cartItem);
-    const cartToObject = Object.values(cart.items)
-    console.log('cartItem in AddItemToCartUseCase',cartItem)
-    console.log('cart in AddItemToCartUseCase',cart)
-    console.log('cart items in AddItemToCartUseCase',cart.items)
-    console.log('cartToObject in AddItemToCartUseCase',cartToObject)
+
     
-    const savedCart =  await this.cartRepository.save(cart);
-    
-    console.log('savedCart in add item in cart useCase',savedCart)
+   
 
     return right(undefined);
   }

@@ -66,7 +66,7 @@ export class SyncProductsUseCase {
   async authenticate() {
     try {
       if (!AUTH_URL) {
-        console.log('authenticate nao achou o url', AUTH_URL);
+  
         return null;
       }
       const response = await axios.post(
@@ -92,7 +92,7 @@ export class SyncProductsUseCase {
   async fetchProducts(token: string) {
     try {
       if (!API_URL_PRODUCTS) {
-        console.log('API_URL_PRODUCTS deu mal', API_URL_PRODUCTS);
+
         return null;
       }
 
@@ -162,7 +162,7 @@ export class SyncProductsUseCase {
     const { integrationKey } = productData;
 
     if (await this.productExists(integrationKey, token)) {
-      console.log(`Product with integration key "${integrationKey}" already exists.`);
+
       return;
     }
 
@@ -180,7 +180,7 @@ export class SyncProductsUseCase {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Product created:', response.data);
+    
     } catch (error) {
       console.error('Error creating product:', error);
     }

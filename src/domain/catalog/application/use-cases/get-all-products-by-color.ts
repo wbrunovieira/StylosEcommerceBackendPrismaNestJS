@@ -20,7 +20,7 @@ export class GetProductsByColorIdUseCase {
   async execute({
     colorId,
   }: GetProductsByColorIdUseCaseRequest): Promise<GetProductsByColorIdUseCaseResponse> {
-    console.log("Executing GetProductsByColorIdUseCase");
+
 
     const result = await this.productRepository.findByColorId(colorId);
 

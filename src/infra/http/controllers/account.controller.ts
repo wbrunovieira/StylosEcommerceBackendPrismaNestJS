@@ -136,8 +136,7 @@ export class AccountController {
     @Param("id") id: string,
     @Body() body: any
   ): Promise<{ user: Omit<UserProps, "password"> & { id: string } }> {
-    console.log("PUT /accounts/:id endpoint hit");
-    console.log("Received body:", body);
+
     const result = await this.editAccountUseCase.execute({
       id,
       ...body,

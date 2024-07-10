@@ -41,7 +41,7 @@ describe("CartController", () => {
     createCartUseCase = moduleFixture.get<CreateCartUseCase>(CreateCartUseCase);
     await app.init();
 
-    console.log("Starting setup...");
+    c
 
     let response = await request(app.getHttpServer())
       .post("/sessions")
@@ -50,17 +50,17 @@ describe("CartController", () => {
 
     adminAuthToken = response.body.access_token;
 
-    console.log("adm", adminAuthToken);
+ 
 
     response = await request(app.getHttpServer())
       .post("/colors")
       .set("Authorization", `Bearer ${adminAuthToken}`)
       .send({ name: "black" })
       .expect(201);
-    console.log("Create Color Response:", response.body);
+
     colorId1 = response.body.color._id.value;
 
-    console.log("colorId1", colorId1);
+
 
     response = await request(app.getHttpServer())
       .post("/colors")
@@ -69,7 +69,7 @@ describe("CartController", () => {
       .expect(201);
     colorId2 = response.body.color._id.value;
 
-    console.log("colorId2", colorId2);
+
 
     response = await request(app.getHttpServer())
       .post("/category")
@@ -78,7 +78,7 @@ describe("CartController", () => {
       .expect(201);
     categoryId = response.body.category._id.value;
 
-    console.log("CategoryId:", categoryId);
+
 
     response = await request(app.getHttpServer())
       .post("/size")
@@ -87,7 +87,6 @@ describe("CartController", () => {
       .expect(201);
     sizeId1 = response.body.size._id.value;
 
-    console.log("SizeId1:", sizeId1);
 
     response = await request(app.getHttpServer())
       .post("/size")
@@ -96,7 +95,7 @@ describe("CartController", () => {
       .expect(201);
     sizeId2 = response.body.size._id.value;
 
-    console.log("SizeId2:", sizeId2);
+
 
     response = await request(app.getHttpServer())
       .post("/materials")
@@ -105,7 +104,7 @@ describe("CartController", () => {
       .expect(201);
     materialId = response.body.material._id.value;
 
-    console.log("MaterialId:", materialId);
+
 
     response = await request(app.getHttpServer())
       .post("/brands")
@@ -113,7 +112,6 @@ describe("CartController", () => {
       .send({ name: "marca 112sss" })
       .expect(201);
     brandId = response.body.brand._id.value;
-    console.log("BrandId:", brandId);
 
     response = await request(app.getHttpServer())
       .post("/products")
@@ -134,7 +132,7 @@ describe("CartController", () => {
       .expect(201);
 
     createdProductId = response.body.product._id.value;
-    console.log("CreatedProductId:", createdProductId);
+ 
 
     response = await request(app.getHttpServer())
       .post("/accounts")
@@ -146,8 +144,7 @@ describe("CartController", () => {
       })
       .expect(201);
     userId = response.body.user._id.value;
-    console.log("userId", userId);
-    console.log("response create user", response.body);
+  
 
     response = await request(app.getHttpServer())
       .post("/sessions")
@@ -156,7 +153,7 @@ describe("CartController", () => {
 
     userAuthToken = response.body.access_token;
 
-    console.log("User token:", userAuthToken);
+  
   });
 
   afterAll(async () => {
@@ -172,7 +169,7 @@ describe("CartController", () => {
         items: [{ productId: createdProductId, quantity: 1, price: 100 }],
       })
       .expect(201);
-    console.log("Response body:", response);
+    
   });
 
   // it("should return a conflict error if product does not exist", async () => {

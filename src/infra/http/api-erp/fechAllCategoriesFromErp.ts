@@ -80,10 +80,10 @@ const defaultImage = `${baseImageUrl}no-photos.svg`;
 @Injectable()
 export class SyncCategoriesUseCase {
   async authenticate() {
-    console.log('entrou no authenticate')
+
     try {
       if (!AUTH_URL) {
-        console.log('authenticate nao achou o url',AUTH_URL )
+    
         return null;
       }
       const response = await axios.post(
@@ -99,11 +99,9 @@ export class SyncCategoriesUseCase {
         }
       );
 
-      console.log('authenticate response',response )
-      
-      console.log('authenticate response.data.access_token',response.data.access_token )
+
       const token = response.data.access_token
-      console.log('token',token )
+
       return response.data.access_token;
     } catch (error) {
       console.error('Authentication error:', error);
@@ -112,10 +110,10 @@ export class SyncCategoriesUseCase {
   }
   
   async fetchCategories(token: string) {
-    console.log('entrou no fetchCategories',token )
+
     try {
       if (!API_URL_CREATE_CATEGORY) {
-        console.log('API_URL_CREATE_CATEGORY deu mal',API_URL_CREATE_CATEGORY )
+
         return null;
       }
       
@@ -126,32 +124,30 @@ export class SyncCategoriesUseCase {
           Authorization: `${TOKEN_CONNECTPLUG}`,
         },
       });
-      console.log('response fetchCategories',response )
+
       
       const categories = response.data.data.filter(
         (category: any) => !category.properties.deleted_at
       );
-      
-      console.log('categories fetchCategories depois',categories )
+
       
       for (const category of categories) {
         const imageUrl = categoryImages[category.id] || defaultImage;
         const erpId = String(category.id); 
-        console.log('erpId',erpId )
-        console.log('for (const category of categories) {',category )
+  
           const categoryData = {
             name: category.properties.name,
             imageUrl,
             erpId
           };
-          console.log('for (const category of categories categoryData ',categoryData )
+       
             
             try {
-          console.log('try antes docreateCategorySchema')
+    
           createCategorySchema.parse(categoryData);
-          console.log('try depois docreateCategorySchema',categoryData )
+
          const createdCategory = await this.createCategory(categoryData, token);
-          console.log('deu bom', createdCategory)
+  
         } catch (error) {
           console.error('Validation or creation error:', error);
         }
@@ -194,7 +190,7 @@ export class SyncCategoriesUseCase {
     const { name, erpId } = categoryData;
 
     if (await this.categoryExists(name, erpId ?? '', token)) {
-      console.log(`Category with name "${name}" or ERP ID "${erpId}" already exists.`);
+    
       return;
     }
 
@@ -212,7 +208,7 @@ export class SyncCategoriesUseCase {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Category created:', response.data);
+      
     } catch (error) {
       console.error('Error creating category:', error);
     }

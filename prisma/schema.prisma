@@ -40,6 +40,7 @@ model Product {
   productSizes ProductSize[]
   productCategories  ProductCategory[]
   materialId  String 
+  productIdVariant  String? 
   material    Material?     @relation(fields: [materialId], references: [id])
   slug        String        @unique 
   brandId     String

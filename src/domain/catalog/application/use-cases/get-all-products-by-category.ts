@@ -20,7 +20,7 @@ export class GetProductsByCategoryIdUseCase {
   async execute({
     categoryId,
   }: GetProductsByCategoryIdUseCaseRequest): Promise<GetProductsByCategoryIdUseCaseResponse> {
-    console.log("entrou no useCase find by categoryId");
+
 
     const result = await this.productRepository.findByCategoryId(categoryId);
 

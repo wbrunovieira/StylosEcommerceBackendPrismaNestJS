@@ -28,13 +28,12 @@ export class UpdateProductVariantUseCase {
   async execute({
     variantUpdate,
   }: UpdateProductVariantUseCaseRequest): Promise<UpdateProductVariantUseCaseResponse> {
-    console.log("variantUpdate antes de acionar o prisma", variantUpdate);
+   
     const variantOrError = await this.productVariantRepository.findById(
       variantUpdate.id
     );
 
-    console.log("variantOrError ", variantOrError);
-    console.log("variantUpdate depois do repo ", variantUpdate);
+
 
     if (variantOrError.isLeft()) {
       return left(
@@ -58,7 +57,7 @@ export class UpdateProductVariantUseCase {
 
     const updateResult = await this.productVariantRepository.update(variant);
 
-    console.log("updateResult", updateResult);
+
 
     if (updateResult.isLeft()) {
       return left(

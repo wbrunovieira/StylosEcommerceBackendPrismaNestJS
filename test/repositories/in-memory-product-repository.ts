@@ -41,7 +41,7 @@ export class InMemoryProductRepository implements IProductRepository {
     const index = this.items.findIndex(
       (item) => item.id.toString() === product.id.toString()
     );
-    console.log("slug no inmemory antes do generate", product.slug.value);
+    
 
     const baseSlug = product.slug.value;
 
@@ -58,7 +58,7 @@ export class InMemoryProductRepository implements IProductRepository {
       this.items[index] = product;
     }
 
-    console.log("slug no inmemory", product.slug.value);
+
 
     return right(undefined);
   }

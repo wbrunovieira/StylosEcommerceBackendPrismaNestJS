@@ -80,10 +80,6 @@ export class AddressController {
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body(createBodyValidationPipe) body: CreateAddressBodySchema
   ) {
-    console.log("userId recebido no create address:", userId);
-    console.log("Corpo da requisição no create address:", body);
-    this.logger.log(`Received request to create address for userId: ${userId}`);
-    this.logger.log(`Request body: ${JSON.stringify(body)}`);
 
     const result = await this.createAddressUseCase.execute({
       userId: userId,

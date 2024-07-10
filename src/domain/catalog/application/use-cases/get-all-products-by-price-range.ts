@@ -23,7 +23,7 @@ export class GetProductsByPriceRangeUseCase {
     minPrice,
     maxPrice,
   }: GetProductsByPriceRangeUseCaseRequest): Promise<GetProductsByPriceRangeUseCaseResponse> {
-    console.log("Executing GetProductsByPriceRangeUseCase");
+   
 
     const result = await this.productRepository.findByPriceRange(minPrice, maxPrice);
 
