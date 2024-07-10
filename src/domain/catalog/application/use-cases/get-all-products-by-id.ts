@@ -21,7 +21,7 @@ export class GetAllProductsByIdUseCase {
   async execute({
     productId,
   }: GetAllProductsByIdUseCaseRequest): Promise<GetAllProductsByIdUseCaseResponse> {
-    console.log("Executing GetAllProductsByIdUseCase");
+   
 
     const result = await this.productRepository.findById(productId);
 

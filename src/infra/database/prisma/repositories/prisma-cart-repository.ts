@@ -15,8 +15,7 @@ export class PrismaCartRepository implements ICartRepository {
     async create(cart: Cart): Promise<Either<Error, void>> {
         try {
             const cartData = cart.toObject();
-            console.log("entrou no prisma cart com:", cartData);
-            console.log("entrou no prisma cart com:", cartData.items);
+      
             const createdCart = await this.prisma.cart.create({
                 data: {
                     id: cartData.id.toString(),
@@ -36,10 +35,7 @@ export class PrismaCartRepository implements ICartRepository {
                     },
                 },
             });
-            console.log(
-                "entrou no prisma cart e crioo cart createdCart",
-                createdCart
-            );
+                
 
             return right(undefined);
         } catch (error) {
@@ -49,16 +45,13 @@ export class PrismaCartRepository implements ICartRepository {
 
     async findCartByUser(userId: string): Promise<Either<Error, Cart>> {
         try {
-            console.log("PrismaCartRepository findByUserId entrou");
+         
             const cartRecord = await this.prisma.cart.findFirst({
                 where: { userId },
                 include: { items: true },
             });
 
-            console.log(
-                "PrismaCartRepository findByUserId cartRecord",
-                cartRecord
-            );
+         
 
             if (!cartRecord) {
                 return left(new Error("Cart not found"));
@@ -83,10 +76,7 @@ export class PrismaCartRepository implements ICartRepository {
                 )
             );
 
-            console.log(
-                "PrismaCartRepository findByUserId cartItems",
-                cartItems
-            );
+          
             const cart = Cart.create(
                 {
                     userId: cartRecord.userId,
@@ -95,7 +85,7 @@ export class PrismaCartRepository implements ICartRepository {
                 new UniqueEntityID(cartRecord.id)
             );
 
-            console.log("PrismaCartRepository findByUserId cart", cart);
+          
 
             return right(cart);
         } catch (error) {
@@ -106,7 +96,7 @@ export class PrismaCartRepository implements ICartRepository {
     async save(cart: Cart): Promise<Either<Error, void>> {
         try {
             const cartData = cart.toObject();
-            console.log("cartData in prisma save cart", cartData);
+           
 
             const cartSaved = await this.prisma.cart.update({
                 where: { id: cartData.id.toString() },
@@ -141,7 +131,6 @@ export class PrismaCartRepository implements ICartRepository {
                 },
             });
 
-            console.log("cartSaved in prisma save cart", cartSaved);
 
             return right(undefined);
         } catch (error) {

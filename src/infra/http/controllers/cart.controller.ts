@@ -63,10 +63,10 @@ export class CartController {
 
   @Post()
   async createCart(@Body(bodyValidationPipe) body: CreateCartBodySchema) {
-    console.log("Received request body:", body);
+
     try {
       const result = await this.createcartUseCase.execute(body);
-      console.log("CreateCartUseCase result:", result);
+   
 
       if (result.isLeft()) {
         const error = result.value;
@@ -95,8 +95,7 @@ export class CartController {
   ) {
 
     try {
-console.log('entrou no controller add item')
-console.log('entrou no controller add item com userId',userId)
+
 const item = {
   ...body,
   weight: body.weight ?? 0,
@@ -104,10 +103,10 @@ const item = {
   length: body.length ?? 0,
   width: body.width ?? 0,
 };
-console.log('entrou no controller add item com item',item)
+
 
 const result = await this.addItemToCartUseCase.execute({ userId, item });
-console.log('entrou no controller add result',result)
+
 
       if (result.isLeft()) {
         const error = result.value;

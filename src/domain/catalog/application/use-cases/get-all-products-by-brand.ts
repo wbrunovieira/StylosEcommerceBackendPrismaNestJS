@@ -19,7 +19,7 @@ interface GetProductsByBrandIdUseCaseRequest {
     async execute({
       brandId,
     }: GetProductsByBrandIdUseCaseRequest): Promise<GetProductsByBrandIdUseCaseResponse> {
-      console.log("entrou no useCase find by brandId");
+    
   
       const result = await this.productRepository.findByBrandId(brandId);
   

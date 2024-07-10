@@ -32,6 +32,7 @@ CREATE TABLE "products" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "materialId" TEXT NOT NULL,
+    "productIdVariant" TEXT,
     "slug" TEXT NOT NULL,
     "brandId" TEXT NOT NULL,
     "discount" DOUBLE PRECISION DEFAULT 0,

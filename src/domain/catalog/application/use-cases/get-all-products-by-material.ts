@@ -20,7 +20,7 @@ export class GetProductsByMaterialIdUseCase {
   async execute({
     materialId,
   }: GetProductsByMaterialIdUseCaseRequest): Promise<GetProductsByMaterialIdUseCaseResponse> {
-    console.log("Entered useCase find by materialId");
+    
 
     const result = await this.productRepository.findByMaterialId(materialId);
 

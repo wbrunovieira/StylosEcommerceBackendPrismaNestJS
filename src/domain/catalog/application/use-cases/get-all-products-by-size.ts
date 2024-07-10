@@ -20,7 +20,7 @@ export class GetProductsBySizeIdUseCase {
   async execute({
     sizeId,
   }: GetProductsBySizeIdUseCaseRequest): Promise<GetProductsBySizeIdUseCaseResponse> {
-    console.log("Executing GetProductsBySizeIdUseCase");
+   
 
     const result = await this.productRepository.findBySizeId(sizeId);
 

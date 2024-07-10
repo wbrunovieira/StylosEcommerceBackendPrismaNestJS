@@ -36,7 +36,7 @@ export class SyncAttributesUseCase {
   async authenticate() {
     try {
       if (!AUTH_URL) {
-        console.log('authenticate nao achou o url', AUTH_URL);
+    
         return null;
       }
       const response = await axios.post(
@@ -52,10 +52,10 @@ export class SyncAttributesUseCase {
         }
       );
 
-      console.log('response.data.access_token',response.data.access_token)
+  
       return response.data.access_token;
     } catch (error) {
-      console.error('Authentication error:', error);
+
       throw new Error('Failed to authenticate');
     }
   }
@@ -63,7 +63,7 @@ export class SyncAttributesUseCase {
   async fetchAttributes(token: string) {
     try {
       if (!API_URL_PRODUCT_ATTRIBUTE) {
-        console.log('API_URL_PRODUCT_ATTRIBUTE deu mal', API_URL_PRODUCT_ATTRIBUTE);
+
         return null;
       }
 
@@ -74,21 +74,21 @@ export class SyncAttributesUseCase {
           Authorization: `${TOKEN_CONNECTPLUG}`,
         },
       });
-      console.log('response da erp api',response)
+   
       
       const attributes = response.data.data.filter(
         (attribute: any) => !attribute.properties.deleted_at
       );
       
-      console.log('attributes',attributes)
+    
       
       for (const attribute of attributes) {
         if (this.isSize(attribute)) {
-          console.log('attribute size',attribute)
+
           
           await this.syncSizeAttributes(attribute, token);
         } else if (this.isColor(attribute)) {
-          console.log('attribute color',attribute)
+
           await this.syncColorAttributes(attribute, token);
         }
       }
@@ -120,7 +120,7 @@ export class SyncAttributesUseCase {
       });
 
       const sizes = response.data.data;
-      console.log('sizes',sizes)
+
       const normalizedNewName = this.normalizeString(name);
 
       return sizes.some((size: any) => this.normalizeString(size.name) === normalizedNewName);
@@ -155,7 +155,7 @@ export class SyncAttributesUseCase {
       const { name } = option.properties;
       const { id } = option;
       if (await this.sizeExists(name, token)) {
-        console.log(`Size with name "${name}" already exists.`);
+
         continue;
       }
       await this.createSize({ name, erpId: id.toString() }, token);
@@ -168,14 +168,14 @@ export class SyncAttributesUseCase {
       const { name } = option.properties;
       const { id } = option;
       if (await this.colorExists(name, token)) {
-        console.log(`Color with name "${name}" already exists.`);
+
         continue;
       }
       const colorData = this.getColorData(name, id);
       if (colorData) {
         await this.createColor(colorData, token);
       } else {
-        console.log(`No hex code found for color "${name}".`);
+
       }
     }
   }
@@ -214,7 +214,7 @@ export class SyncAttributesUseCase {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Size created:', response.data);
+      
     } catch (error) {
       console.error('Error creating size:', error);
     }
@@ -228,7 +228,7 @@ export class SyncAttributesUseCase {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Color created:', response.data);
+
     } catch (error) {
       console.error('Error creating color:', error);
     }

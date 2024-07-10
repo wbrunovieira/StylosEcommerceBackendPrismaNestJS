@@ -196,13 +196,13 @@ describe("EditProductUseCase", () => {
       },
       anotherProductId
     );
-    console.log("anothe product", anotherProduct);
+    
 
     await mockProductRepository.create(anotherProduct);
 
     const result = await useCase.execute({
       productId: productId.toString(),
-      name: "Existing Product", // This will try to generate the same slug
+      name: "Existing Product", 
       description: "Updated product description",
     });
 
@@ -210,7 +210,7 @@ describe("EditProductUseCase", () => {
 
     if (result.isRight()) {
       const updatedProduct = result.value.product;
-      console.log("slug no test", updatedProduct.slug.value);
+     
       expect(updatedProduct.slug.value).not.toBe("existing-product");
       expect(updatedProduct.slug.value).toMatch(/existing-product-\d+/);
     } else {

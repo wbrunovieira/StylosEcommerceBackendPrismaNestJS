@@ -141,7 +141,7 @@ export class CategoryController {
   @Get("all")
   async getAllCategories(@Query(paginationPipe) params: PaginationParams) {
     try {
-      console.log("entrando no get all categories");
+  
 
       const result = await this.getAllCategoriesUseCase.execute(params);
 

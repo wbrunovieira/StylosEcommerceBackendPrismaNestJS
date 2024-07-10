@@ -17,6 +17,8 @@ interface CreateCartUseCaseRequest {
         price: number;
         colorId?: string;
         sizeId?: string;
+        productIdVariant?: string;
+        hasVariants?: string;
     }[];
 }
 
@@ -50,7 +52,9 @@ export class CreateCartUseCase {
                         )
                     );
                 }
+            
 
+              
                 let productResult;
                 let variant;
 
@@ -59,11 +63,10 @@ export class CreateCartUseCase {
                         item.productId
                     );
 
-                    console.log("variantResult", variantResult);
-                    console.log("variantResult.value;", variantResult.value);
+               
 
                     if (variantResult.isLeft()) {
-                        console.log("variantResult isLeft", variantResult);
+                      
                         return left(
                             new ResourceNotFoundError(
                                 `Variant not found: ${item.productId}`
@@ -72,12 +75,8 @@ export class CreateCartUseCase {
                     }
 
                     variant = variantResult.value;
-                    console.log(
-                        "variant quase bom variantResult",
-                        variantResult
-                    );
 
-                    console.log("variant quase bom variant", variant);
+                
 
                     if (variant.stock < item.quantity) {
                         return left(
@@ -87,40 +86,31 @@ export class CreateCartUseCase {
                         );
                     }
 
-                    console.log("produto com variant quase pronto:", variant);
+                  
 
                     const productIdString = String(
                         variant.props.productId.value
                     );
 
-                    console.log("pid do produto da variant:", productIdString);
+                 
 
                     productResult =
                         await this.productRepository.findById(productIdString);
 
                     const { product, variants } = productResult.value;
 
-                    console.log("product consulltaaaa", product);
-                    console.log("product consulltaaaa", variants);
 
                     const { height, width, length, weight } = product.props;
-                    console.log(
-                        " product height height",
-                        product,
-                        height,
-                        width,
-                        length,
-                        weight
-                    );
+                  
 
                     if (cartItemsMap[productIdString]) {
-                        console.log("item 11", item);
+                     
                         const existingItem = cartItemsMap[productIdString];
                         existingItem.setQuantity(
                             existingItem.quantity + item.quantity
                         );
                     } else {
-                        console.log("item. ss", item);
+                      
                         cartItemsMap[productIdString] = new CartItem({
                             productId: productIdString,
                             quantity: item.quantity,
@@ -134,23 +124,16 @@ export class CreateCartUseCase {
                         });
                     }
                 } else {
-                    console.log(
-                        "entrou no produto sem size e color com id ",
-                        item.productId
-                    );
+                
                     productResult = await this.productRepository.findById(
                         item.productId
                     );
 
                     const { product, variants } = productResult.value;
 
-                    console.log("productResult product", product);
 
                     if (productResult.isLeft()) {
-                        console.log(
-                            "productResult product left 2",
-                            productResult
-                        );
+                     
                         return left(
                             new ResourceNotFoundError(
                                 `Product not found: ${item.productId}`
@@ -158,7 +141,7 @@ export class CreateCartUseCase {
                         );
                     }
 
-                    console.log(" product", product);
+              
 
                     if (product.stock < item.quantity) {
                         return left(
@@ -169,14 +152,7 @@ export class CreateCartUseCase {
                     }
 
                     const { height, width, length, weight } = product.props;
-                    console.log(
-                        " product height height",
-                        product,
-                        height,
-                        width,
-                        length,
-                        weight
-                    );
+                    
 
                     if (cartItemsMap[item.productId]) {
                         const existingItem = cartItemsMap[item.productId];
@@ -198,18 +174,14 @@ export class CreateCartUseCase {
                     }
                 }
 
-                console.log("chegou aqui cartItemsMap", cartItemsMap);
             }
-            console.log(
-                "saiu do for no usecase com cartItemsMap",
-                cartItemsMap
-            );
+           
 
             const cartItems = Object.values(cartItemsMap);
-            console.log("cartItems", cartItems);
+            
 
             const cart = Cart.create({ userId, items: cartItems });
-            console.log("cart in usecase", cart);
+       
             await this.cartRepository.create(cart);
 
             return right({ cart });

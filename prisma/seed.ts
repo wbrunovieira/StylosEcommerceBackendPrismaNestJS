@@ -168,6 +168,7 @@ async function main() {
                 price: price,
                 discount: discount,
                 finalPrice: finalPrice,
+
                 stock: 0,
                 height: 10 + i,
                 width: 15 + i,
@@ -240,7 +241,7 @@ async function main() {
         const newSlug = generateSlug(product.name, product.brandId, product.id);
         await prisma.product.update({
             where: { id: product.id },
-            data: { slug: String(newSlug) },
+            data: { slug: String(newSlug), productIdVariant: product.id },
         });
     }
     console.log("Products created or updated");

@@ -47,6 +47,7 @@ interface CreateProductUseCaseRequest {
     hasVariants: boolean;
     isNew?: boolean;
     images?: string[];
+    productIdVariant?: string;
 }
 
 type CreateProductUseCaseResponse = Either<
@@ -91,6 +92,7 @@ export class CreateProductUseCase {
         price,
         stock,
         height,
+        productIdVariant,
         width,
         length,
         weight,
@@ -240,6 +242,7 @@ export class CreateProductUseCase {
                 erpId,
                 height,
                 width,
+                productIdVariant,
                 length,
                 weight,
                 onSale,
@@ -260,6 +263,7 @@ export class CreateProductUseCase {
             );
             product.slug = finalSlug;
             product.hasVariants = true;
+            product.productIdVariant = product.id.toString();
             const productWithVariants = ProductWithVariants.create({
                 product,
                 variants: [],
