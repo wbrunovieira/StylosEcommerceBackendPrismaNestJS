@@ -59,8 +59,10 @@ model Product {
   seoDescription    String?
   seoKeywords       String?
   visibility        Boolean             @default(true)
-  status      ProductStatus   @default(ACTIVE)
+  status      ProductStatus   @default(ACTIVE)  
   productVariants   ProductVariant[]
+  hasVariants Boolean   @default(false)
+  showInSite Boolean   @default(true)
   cartItems   CartItem[] 
   orderItems  OrderItem[]
   onSale      Boolean   @default(false)
@@ -70,6 +72,7 @@ model Product {
   stock       Int
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt
+  deletedAt   DateTime?
 
   @@map("products")
 }
@@ -96,6 +99,7 @@ model ProductVariant {
   status      ProductStatus   @default(ACTIVE)
   createdAt   DateTime        @default(now()) @map("created_at")
   updatedAt   DateTime?       @updatedAt
+  deletedAt   DateTime?
 
   @@map("product_variants")
 }

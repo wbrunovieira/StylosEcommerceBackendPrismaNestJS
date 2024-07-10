@@ -50,6 +50,8 @@ CREATE TABLE "products" (
     "seoKeywords" TEXT,
     "visibility" BOOLEAN NOT NULL DEFAULT true,
     "status" "ProductStatus" NOT NULL DEFAULT 'ACTIVE',
+    "hasVariants" BOOLEAN NOT NULL DEFAULT false,
+    "showInSite" BOOLEAN NOT NULL DEFAULT true,
     "onSale" BOOLEAN NOT NULL DEFAULT false,
     "isNew" BOOLEAN NOT NULL DEFAULT false,
     "isFeatured" BOOLEAN NOT NULL DEFAULT false,
@@ -57,6 +59,7 @@ CREATE TABLE "products" (
     "stock" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -75,6 +78,7 @@ CREATE TABLE "product_variants" (
     "status" "ProductStatus" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
 );
