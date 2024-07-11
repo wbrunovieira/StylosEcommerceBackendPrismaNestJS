@@ -243,6 +243,7 @@ model CartItem {
   updatedAt   DateTime? @updatedAt @map("updated_at")
   colorId     String?
   sizeId      String?
+  hasVariants Boolean   @default(false)
 
   @@map("cart_items")
 }
