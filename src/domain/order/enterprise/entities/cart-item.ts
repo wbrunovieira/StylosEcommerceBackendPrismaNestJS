@@ -11,6 +11,7 @@ interface CartItemProps {
     weight: number;
     color?: string;
     size?: string;
+    hasVariants: boolean;
     productIdVariant?: string;
 }
 
@@ -21,6 +22,9 @@ export class CartItem extends Entity<CartItemProps> {
 
     get productId(): string {
         return this.props.productId;
+    }
+    get hasVariants(): boolean {
+        return this.props.hasVariants;
     }
 
     get productIdVariant(): string | undefined {
@@ -74,6 +78,7 @@ export class CartItem extends Entity<CartItemProps> {
             weight: this.weight,
             colorId: this.color,
             sizeId: this.size,
+            hasVariants: this.hasVariants,
         };
     }
 

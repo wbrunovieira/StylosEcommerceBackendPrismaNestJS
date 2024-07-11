@@ -27,11 +27,12 @@ const createCartSchema = z.object({
         z.object({
             productId: z.string(),
             quantity: z.number().min(0),
-            hasVariants: z.boolean().optional(),
+            
             price: z.number().min(0),
             colorId: z.string().optional(),
             sizeId: z.string().optional(),
             productIdVariant: z.string().optional(),
+            hasVariants: z.boolean(),
         })
     ),
 });
@@ -49,6 +50,7 @@ const addItemSchema = z.object({
     price: z.number().min(0),
     colorId: z.string().optional(),
     sizeId: z.string().optional(),
+    hasVariants: z.boolean(),
 });
 
 const addItemValidationPipe = new ZodValidationsPipe(addItemSchema);

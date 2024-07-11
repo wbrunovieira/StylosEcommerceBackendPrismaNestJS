@@ -18,7 +18,7 @@ interface CreateCartUseCaseRequest {
         colorId?: string;
         sizeId?: string;
         productIdVariant?: string;
-        hasVariants?: boolean;
+        hasVariants: boolean;
     }[];
 }
 
@@ -43,7 +43,7 @@ export class CreateCartUseCase {
     }: CreateCartUseCaseRequest): Promise<CreateCartUseCaseResponse> {
         try {
             const cartItemsMap: { [productId: string]: CartItem } = {};
-            console.log('entrou no CreateCartUseCase  userId',userId)
+            console.log("entrou no CreateCartUseCase  userId", userId);
 
             for (const item of items) {
                 if (item.quantity <= 0) {
@@ -116,7 +116,6 @@ export class CreateCartUseCase {
                             existingItem.quantity + item.quantity
                         );
                     } else {
-                        
                         cartItemsMap[productIdFromVarianttoproduct] =
                             new CartItem({
                                 productId: productIdFromVariant,
@@ -129,9 +128,14 @@ export class CreateCartUseCase {
                                 weight: weight,
                                 color: item.colorId,
                                 size: item.sizeId,
+                                hasVariants: item.hasVariants,
                             });
                     }
                 } else {
+                    console.log(
+                        "nao tem variant vamos criar o produto",
+                        item.productId
+                    );
                     productResult = await this.productRepository.findById(
                         item.productId
                     );
@@ -172,14 +176,15 @@ export class CreateCartUseCase {
                             weight,
                             color: item.colorId,
                             size: item.sizeId,
+                            hasVariants: item.hasVariants,
                         });
                     }
                 }
             }
 
             const cartItems = Object.values(cartItemsMap);
-            
-            console.log('quase saindo no CreateCartUseCase  userId',userId)
+
+            console.log("quase saindo no CreateCartUseCase  userId", userId);
 
             const cart = Cart.create({ userId, items: cartItems });
 

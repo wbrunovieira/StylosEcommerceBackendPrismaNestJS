@@ -207,6 +207,7 @@ CREATE TABLE "cart_items" (
     "updated_at" TIMESTAMP(3),
     "colorId" TEXT,
     "sizeId" TEXT,
+    "hasVariants" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "cart_items_pkey" PRIMARY KEY ("id")
 );
