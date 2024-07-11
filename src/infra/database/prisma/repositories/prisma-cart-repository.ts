@@ -14,7 +14,9 @@ export class PrismaCartRepository implements ICartRepository {
 
     async create(cart: Cart): Promise<Either<Error, void>> {
         try {
+            console.log("entrou no prisma cart create cart", cart);
             const cartData = cart.toObject();
+            console.log("entrou no prisma cart create cartData", cartData);
 
             const createdCart = await this.prisma.cart.create({
                 data: {
@@ -26,7 +28,7 @@ export class PrismaCartRepository implements ICartRepository {
                             quantity: item.quantity,
                             price: item.price,
                             height: item.height,
-                            productIdVariant: item.productIdVariant,
+
                             hasVariants: item.hasVariants,
                             width: item.width,
                             length: item.length,

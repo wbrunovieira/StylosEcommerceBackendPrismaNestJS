@@ -64,7 +64,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/product/31/supplier
+GET https://connectplug.com.br/api/v2/product/20/supplier
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
