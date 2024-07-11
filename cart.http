@@ -26,21 +26,23 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-    "userId": "5872ff3d-aed1-4038-9864-d43ef44f736e",
+    "userId": "799a657b-45c2-4c1e-82d4-7cc0bc9515a0",
     "items": [
 
-          {
-            "productId": "1e3ca1c8-b1f1-4b60-9033-e18fffd96c21",
-            "quantity": 2,
-            "price": 112.00,
-            "colorId": "preto",
-            "sizeId":"g"
-        }
-        # {
-        #     "productId": "6b60d2ab-5b75-47db-adae-a8cf0cabb423",
-        #     "quantity": 12,
-        #     "price": 105.00
+        #   {
+        #     "productId": "1e3ca1c8-b1f1-4b60-9033-e18fffd96c21",
+        #     "quantity": 2,
+        #     "price": 112.00,
+        #     "colorId": "preto",
+        #     "sizeId":"g"
         # }
+
+        {
+            "productId": "c2d0b703-af33-4385-811c-87eb815d5ce4",
+            "quantity": 2,
+            "price": 204.00,
+            "hasVariants": false
+        }
       
           ]
 }
@@ -49,18 +51,19 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name add-item-cart
-POST {{BASE_URL}}/cart/add-item/c775386f-cfc3-427a-ad34-fed0f8687147
+POST {{BASE_URL}}/cart/add-item/799a657b-45c2-4c1e-82d4-7cc0bc9515a0
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-    "productId": "675936ca-f2b2-4e2b-8b2c-27c15853627e",
-    "quantity": 2,
-    "price": 200,
-    "height": 11,
+    "productId": "c2d0b703-af33-4385-811c-87eb815d5ce4",
+    "quantity": 1,
+    "price": 204,
+    "height": 14,
     "width": 16,
-    "length": 26,
-    "weight": 2.5
+    "length": 27,
+    "weight": 1.5,
+    "hasVariants": false
   
 
 }

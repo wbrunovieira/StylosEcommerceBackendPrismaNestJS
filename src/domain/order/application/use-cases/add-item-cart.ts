@@ -120,7 +120,7 @@ export class AddItemToCartUseCase {
                     )
                 );
             }
-            
+
             const { height, width, length, weight } = product.props;
             console.log(
                 "height, width, length, weight",
@@ -142,6 +142,7 @@ export class AddItemToCartUseCase {
                 size: sizeIdValue,
                 hasVariants: item.hasVariants,
             });
+            return cartItem;
 
             console.log("cartItem", cartItem);
         } else {
@@ -192,11 +193,8 @@ export class AddItemToCartUseCase {
             cartCreated
         );
 
-        const cartSaved =  await this.cartRepository.save(cart);
-        console.log(
-            "cartSAved",
-            cartSaved
-        );
-        return right(undefined);
+        const cartSaved = await this.cartRepository.save(cart);
+        console.log("cartSAved", cartSaved);
+        return right(cartItem);
     }
 }
