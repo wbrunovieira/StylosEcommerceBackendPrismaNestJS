@@ -120,7 +120,7 @@ export class AddItemToCartUseCase {
                     )
                 );
             }
-
+            
             const { height, width, length, weight } = product.props;
             console.log(
                 "height, width, length, weight",
@@ -192,10 +192,10 @@ export class AddItemToCartUseCase {
             cartCreated
         );
 
-        const cartSAved =  await this.cartRepository.save(cart);
+        const cartSaved =  await this.cartRepository.save(cart);
         console.log(
             "cartSAved",
-            cartSAved
+            cartSaved
         );
         return right(undefined);
     }

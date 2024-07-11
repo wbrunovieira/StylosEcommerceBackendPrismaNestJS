@@ -100,6 +100,7 @@ export class PrismaCartRepository implements ICartRepository {
         try {
             console.log("PrismaCartRepository save Cart", Cart);
             const cartData = cart.toObject();
+            console.log("PrismaCartRepository save cartData", cartData);
 
             const cartSaved = await this.prisma.cart.update({
                 where: { id: cartData.id.toString() },

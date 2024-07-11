@@ -23,10 +23,21 @@ export class Cart extends Entity<CartProps> {
     get items(): CartItem[] {
         return this.props.items;
     }
+    addItem(newItem: CartItem) {
+        const existingItemIndex = this.items.findIndex(
+            (item) =>
+                item.productId === newItem.productId &&
+                item.color === newItem.color &&
+                item.size === newItem.size
+        );
 
-    addItem(item: CartItem): CartItem {
-        this.props.items.push(item);
-        return item;
+        if (existingItemIndex !== -1) {
+           
+            this.items[existingItemIndex].quantity += newItem.quantity;
+        } else {
+         
+            this.items.push(newItem);
+        }
     }
 
     toObject() {

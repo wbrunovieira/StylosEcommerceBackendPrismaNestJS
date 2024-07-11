@@ -76,7 +76,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 # @name get-the-cart-by-userId
-GET {{BASE_URL}}/cart/user/76345bcb-2d1b-450e-af2b-dd1a290c3a1c
+GET {{BASE_URL}}/cart/user/799a657b-45c2-4c1e-82d4-7cc0bc9515a0
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 

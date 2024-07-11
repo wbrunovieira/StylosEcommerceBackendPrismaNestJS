@@ -41,6 +41,10 @@ export class CartItem extends Entity<CartItemProps> {
     get quantity(): number {
         return this.props.quantity;
     }
+    set quantity(quantity:number){
+        this.props.quantity = quantity;
+       
+    }
 
     get price(): number {
         return this.props.price;
