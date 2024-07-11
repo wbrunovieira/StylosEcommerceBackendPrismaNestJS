@@ -15,7 +15,7 @@ export class PrismaCartRepository implements ICartRepository {
     async create(cart: Cart): Promise<Either<Error, void>> {
         try {
             const cartData = cart.toObject();
-      
+
             const createdCart = await this.prisma.cart.create({
                 data: {
                     id: cartData.id.toString(),
@@ -26,6 +26,7 @@ export class PrismaCartRepository implements ICartRepository {
                             quantity: item.quantity,
                             price: item.price,
                             height: item.height,
+                            productIdVariant: item.productIdVariant,
                             width: item.width,
                             length: item.length,
                             weight: item.weight,
@@ -35,7 +36,7 @@ export class PrismaCartRepository implements ICartRepository {
                     },
                 },
             });
-                
+            console.log("createdCart in PrismaCartRepository", createdCart);
 
             return right(undefined);
         } catch (error) {
@@ -45,13 +46,10 @@ export class PrismaCartRepository implements ICartRepository {
 
     async findCartByUser(userId: string): Promise<Either<Error, Cart>> {
         try {
-         
             const cartRecord = await this.prisma.cart.findFirst({
                 where: { userId },
                 include: { items: true },
             });
-
-         
 
             if (!cartRecord) {
                 return left(new Error("Cart not found"));
@@ -76,7 +74,6 @@ export class PrismaCartRepository implements ICartRepository {
                 )
             );
 
-          
             const cart = Cart.create(
                 {
                     userId: cartRecord.userId,
@@ -84,8 +81,6 @@ export class PrismaCartRepository implements ICartRepository {
                 },
                 new UniqueEntityID(cartRecord.id)
             );
-
-          
 
             return right(cart);
         } catch (error) {
@@ -96,7 +91,6 @@ export class PrismaCartRepository implements ICartRepository {
     async save(cart: Cart): Promise<Either<Error, void>> {
         try {
             const cartData = cart.toObject();
-           
 
             const cartSaved = await this.prisma.cart.update({
                 where: { id: cartData.id.toString() },
@@ -130,7 +124,6 @@ export class PrismaCartRepository implements ICartRepository {
                     },
                 },
             });
-
 
             return right(undefined);
         } catch (error) {
@@ -190,6 +183,7 @@ export class PrismaCartRepository implements ICartRepository {
                             quantity: item.quantity,
                             price: item.price,
                             height: item.height,
+
                             width: item.width,
                             length: item.length,
                             weight: item.weight,
