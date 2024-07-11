@@ -89,6 +89,7 @@ export class CreateCartUseCase {
                         );
 
                     console.log("variantResult value", variantResult.value);
+                    
                     if (variantResult.isRight()) {
                         const productVariant = variantResult.value;
                         if (variantResult.isRight()) {
