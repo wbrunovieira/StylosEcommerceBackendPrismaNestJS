@@ -49,10 +49,12 @@ export class PrismaCartRepository implements ICartRepository {
 
     async findCartByUser(userId: string): Promise<Either<Error, Cart>> {
         try {
+            console.log("entrou no prisma findCartByUser", userId);
             const cartRecord = await this.prisma.cart.findFirst({
                 where: { userId },
                 include: { items: true },
             });
+            console.log(" prisma findCartByUser userId ", cartRecord);
 
             if (!cartRecord) {
                 return left(new Error("Cart not found"));
@@ -77,6 +79,7 @@ export class PrismaCartRepository implements ICartRepository {
                     new UniqueEntityID(item.id)
                 )
             );
+            console.log(" prisma findCartByUser cartItems ", cartItems);
 
             const cart = Cart.create(
                 {
@@ -86,6 +89,7 @@ export class PrismaCartRepository implements ICartRepository {
                 new UniqueEntityID(cartRecord.id)
             );
 
+            console.log(" prisma findCartByUser cart ", cart);
             return right(cart);
         } catch (error) {
             return left(new Error("Failed to fetch cart"));
@@ -94,6 +98,7 @@ export class PrismaCartRepository implements ICartRepository {
 
     async save(cart: Cart): Promise<Either<Error, void>> {
         try {
+            console.log("PrismaCartRepository save Cart", Cart);
             const cartData = cart.toObject();
 
             const cartSaved = await this.prisma.cart.update({
@@ -110,6 +115,7 @@ export class PrismaCartRepository implements ICartRepository {
                                 width: item.width,
                                 length: item.length,
                                 weight: item.weight,
+                                hasVariants: item.hasVariants,
                                 colorId: item.colorId?.toString(),
                                 sizeId: item.sizeId?.toString(),
                             },
@@ -120,6 +126,7 @@ export class PrismaCartRepository implements ICartRepository {
                                 height: item.height,
                                 width: item.width,
                                 length: item.length,
+                                hasVariants: item.hasVariants,
                                 weight: item.weight,
                                 colorId: item.colorId?.toString(),
                                 sizeId: item.sizeId?.toString(),
@@ -129,6 +136,7 @@ export class PrismaCartRepository implements ICartRepository {
                 },
             });
 
+            console.log("PrismaCartRepository cartSaved", cartSaved);
             return right(undefined);
         } catch (error) {
             return left(new Error("Failed to save cart"));
