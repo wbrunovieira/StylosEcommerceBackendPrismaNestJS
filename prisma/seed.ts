@@ -247,7 +247,7 @@ async function main() {
     console.log("Products created or updated");
 
     // Criar ou atualizar produtos sem cores, tamanhos e variantes (bolsa e oculos)
-    const productsWithoutVariants = [{ name: "bolsa 1", category: "bolsa" }];
+    const productsWithoutVariants = [{ name: "bolsa 1", category: "bolsa" },{ name: "bolsa 2", category: "bolsa" },{ name: "bolsa 3", category: "bolsa" },];
 
     for (const { name, category } of productsWithoutVariants) {
         const price = 200 + Math.floor(Math.random() * 10);

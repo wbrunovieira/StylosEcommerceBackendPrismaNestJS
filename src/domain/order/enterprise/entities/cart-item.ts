@@ -2,6 +2,7 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface CartItemProps {
+    cartId: string;
     productId: string;
     quantity: number;
     price: number;
@@ -23,6 +24,9 @@ export class CartItem extends Entity<CartItemProps> {
     get productId(): string {
         return this.props.productId;
     }
+    get cartId(): string {
+        return this.props.cartId;
+    }
     get hasVariants(): boolean {
         return this.props.hasVariants;
     }
@@ -41,9 +45,8 @@ export class CartItem extends Entity<CartItemProps> {
     get quantity(): number {
         return this.props.quantity;
     }
-    set quantity(quantity:number){
+    set quantity(quantity: number) {
         this.props.quantity = quantity;
-       
     }
 
     get price(): number {
@@ -65,6 +68,8 @@ export class CartItem extends Entity<CartItemProps> {
         return this.props.weight;
     }
 
+  
+
     setQuantity(quantity: number): void {
         this.props.quantity = quantity;
     }
@@ -73,6 +78,8 @@ export class CartItem extends Entity<CartItemProps> {
         return {
             id: this.id?.toString(),
             productId: this.productId,
+            cartId: this.cartId,
+
             quantity: this.quantity,
             price: this.price,
             height: this.height,

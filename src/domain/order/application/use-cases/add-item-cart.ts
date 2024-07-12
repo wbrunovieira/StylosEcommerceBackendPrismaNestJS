@@ -5,11 +5,11 @@ import { CartItem } from "../../enterprise/entities/cart-item";
 import { Injectable } from "@nestjs/common";
 import { IProductVariantRepository } from "@/domain/catalog/application/repositories/i-product-variant-repository";
 import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
-import { Cart } from "../../enterprise/entities/cart";
 
 interface AddItemToCartRequest {
     userId: string;
     item: {
+        cartId: string;
         productId: string;
         quantity: number;
         price: number;
@@ -20,11 +20,11 @@ interface AddItemToCartRequest {
         colorId?: string;
         sizeId?: string;
         hasVariants: boolean;
-        productIdVariant?: string
+        productIdVariant?: string;
     };
 }
 
-type AddItemToCartResponse = Either<ResourceNotFoundError, Cart>;
+type AddItemToCartResponse = Either<ResourceNotFoundError, CartItem>;
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -49,10 +49,7 @@ export class AddItemToCartUseCase {
         const cart = cartResult.value;
         console.log(" AddItemToCartUseCase cart ", cart);
         console.log(" AddItemToCartUseCase cart ", cart.items);
-        console.log(
-            "AddItemToCartUseCase item.hasVariants",
-            item.hasVariants
-        );
+        console.log("AddItemToCartUseCase item.hasVariants", item.hasVariants);
         console.log(
             "AddItemToCartUseCase item.productIdVariant",
             item.productIdVariant
@@ -80,22 +77,20 @@ export class AddItemToCartUseCase {
             );
             console.log(" add item use case variantResult", variantResult);
 
-          
+            const productVariant = variantResult.value;
+            console.log("productVariant esse", productVariant);
+            if (variantResult.isRight()) {
                 const productVariant = variantResult.value;
-                console.log("productVariant esse", productVariant);
-                if (variantResult.isRight()) {
-                    const productVariant = variantResult.value;
 
-                    const colorId = productVariant.colorId;
-                    const sizeId = productVariant.sizeId;
+                const colorId = productVariant.colorId;
+                const sizeId = productVariant.sizeId;
 
-                    colorIdValue = colorId ? colorId.toString() : null;
-                    sizeIdValue = sizeId ? sizeId.toString() : null;
+                colorIdValue = colorId ? colorId.toString() : null;
+                sizeIdValue = sizeId ? sizeId.toString() : null;
 
-                    console.log("Color ID:", colorIdValue);
-                    console.log("Size ID:", sizeIdValue);
-                }
-            
+                console.log("Color ID:", colorIdValue);
+                console.log("Size ID:", sizeIdValue);
+            }
 
             if (variantResult.isLeft()) {
                 return left(
@@ -145,6 +140,7 @@ export class AddItemToCartUseCase {
 
             cartItem = new CartItem({
                 productId: productIdToUse,
+                cartId: item.cartId,
                 quantity: item.quantity,
                 price: item.price,
                 height,
@@ -166,12 +162,44 @@ export class AddItemToCartUseCase {
             if (cartSaved.isLeft()) {
                 return left(new ResourceNotFoundError("Failed to save cart"));
             }
+            const savedCart = cartSaved.value;
+            const savedItems = savedCart.getItems();
 
-            return right(cartSaved.value);
+           
+            console.log("savedCart", savedCart);
+            console.log("savedItems", savedItems);
+            console.log("savedCart 0", savedCart[0]);
+                      
+
+            const savedItem = savedItems.find(
+                (savedItem) =>
+                    savedItem.productId === cartItem.productId &&
+                    savedItem.color === cartItem.color &&
+                    savedItem.size === cartItem.size &&
+                    savedItem.quantity === cartItem.quantity &&
+                    savedItem.price === cartItem.price &&
+                    savedItem.height === cartItem.height &&
+                    savedItem.width === cartItem.width &&
+                    savedItem.length === cartItem.length &&
+                    savedItem.weight === cartItem.weight
+            );
+
+            console.log("savedItem", savedItem);
+
+            if (!savedItem) {
+                return left(
+                    new ResourceNotFoundError("Item not found in saved cart")
+                );
+            }
+
+            return right(savedItem);
+
         } else {
-            productResult = await this.productRepository.findById(
+
+         productResult = await this.productRepository.findById(
                 item.productId
             );
+
             if (productResult.isLeft()) {
                 return left(
                     new ResourceNotFoundError(
@@ -192,6 +220,7 @@ export class AddItemToCartUseCase {
             );
 
             cartItem = new CartItem({
+                cartId: item.cartId,
                 productId: item.productId,
                 quantity: item.quantity,
                 price: item.price,
@@ -215,13 +244,42 @@ export class AddItemToCartUseCase {
             "no final do add item cart quase return sem variavel cartCreated",
             cartCreated
         );
-
+        
         const cartSaved = await this.cartRepository.save(cart);
-
+        
+        console.log(
+            "no final do add item cart quase return sem variavel cartSaved",
+            cartSaved
+        );
         if (cartSaved.isLeft()) {
             return left(new ResourceNotFoundError("Failed to save cart"));
         }
-        console.log("cartSAved", cartSaved);
-        return right(cartSaved.value);
+        
+
+        const savedCart = cartSaved.value;
+        console.log('savedCart usecase no variants', savedCart)
+
+      const savedItem = savedCart.getItems().find(
+    (savedItem) =>
+        savedItem.productId === cartItem.productId &&
+        savedItem.color === cartItem.color &&
+        savedItem.size === cartItem.size &&
+        savedItem.quantity === cartItem.quantity &&
+        savedItem.price === cartItem.price &&
+        savedItem.height === cartItem.height &&
+        savedItem.width === cartItem.width &&
+        savedItem.length === cartItem.length &&
+        savedItem.weight === cartItem.weight
+);
+
+        console.log('savedItem usecase no variants', savedItem)
+
+        if (!savedItem) {
+            return left(
+                new ResourceNotFoundError("Item not found in saved cart")
+            );
+        }
+
+        return right(savedItem);
     }
 }

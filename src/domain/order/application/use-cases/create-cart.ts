@@ -12,6 +12,7 @@ import { IProductVariantRepository } from "@/domain/catalog/application/reposito
 interface CreateCartUseCaseRequest {
     userId: string;
     items: {
+        cartId: string;
         productId: string;
         quantity: number;
         price: number;
@@ -89,7 +90,7 @@ export class CreateCartUseCase {
                         );
 
                     console.log("variantResult value", variantResult.value);
-                    
+
                     if (variantResult.isRight()) {
                         const productVariant = variantResult.value;
                         if (variantResult.isRight()) {
@@ -171,7 +172,7 @@ export class CreateCartUseCase {
                         );
                         cartItemsMap[productIdFromVariant] = new CartItem({
                             productId: productIdFromVarianttoproduct,
-
+                            cartId: item.cartId,
                             quantity: item.quantity,
                             price: item.price,
                             height: height,
@@ -219,6 +220,7 @@ export class CreateCartUseCase {
                         );
                     } else {
                         cartItemsMap[item.productId] = new CartItem({
+                            cartId: item.cartId,
                             productId: item.productId,
                             quantity: item.quantity,
                             price: item.price,
