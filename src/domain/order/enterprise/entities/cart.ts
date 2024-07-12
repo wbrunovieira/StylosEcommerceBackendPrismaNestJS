@@ -32,10 +32,8 @@ export class Cart extends Entity<CartProps> {
         );
 
         if (existingItemIndex !== -1) {
-           
             this.items[existingItemIndex].quantity += newItem.quantity;
         } else {
-         
             this.items.push(newItem);
         }
     }
@@ -46,5 +44,34 @@ export class Cart extends Entity<CartProps> {
             userId: this.props.userId,
             items: this.props.items.map((item) => item.toObject()),
         };
+    }
+    static fromPrisma(cartData: any): Cart {
+        const items = cartData.items.map((item: any) =>
+            CartItem.create(
+                {
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: item.price,
+                    height: item.height,
+                    width: item.width,
+                    length: item.length,
+                    weight: item.weight,
+                    color: item.colorId,
+                    size: item.sizeId,
+                    hasVariants: item.hasVariants,
+                    productIdVariant: item.productIdVariant,
+                },
+                new UniqueEntityID(item.id)
+            )
+        );
+        console.log("cart entity items", items);
+
+        return Cart.create(
+            {
+                userId: cartData.userId,
+                items: items,
+            },
+            new UniqueEntityID(cartData.id)
+        );
     }
 }
