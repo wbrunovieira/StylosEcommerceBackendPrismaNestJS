@@ -23,7 +23,14 @@ export class Cart extends Entity<CartProps> {
     get items(): CartItem[] {
         return this.props.items;
     }
+
+    getItems(): CartItem[] {
+        return this.props.items;
+    }
+
     addItem(newItem: CartItem) {
+        console.log("entrou addItem cart entity foi chamado");
+        console.log("addItem cart entity newItem", newItem);
         const existingItemIndex = this.items.findIndex(
             (item) =>
                 item.productId === newItem.productId &&
@@ -31,6 +38,7 @@ export class Cart extends Entity<CartProps> {
                 item.size === newItem.size
         );
 
+        console.log("addItem cart entity existingItemIndex", existingItemIndex);
         if (existingItemIndex !== -1) {
             this.items[existingItemIndex].quantity += newItem.quantity;
         } else {
@@ -45,10 +53,12 @@ export class Cart extends Entity<CartProps> {
             items: this.props.items.map((item) => item.toObject()),
         };
     }
+
     static fromPrisma(cartData: any): Cart {
         const items = cartData.items.map((item: any) =>
             CartItem.create(
                 {
+                    cartId: item.cartId,
                     productId: item.productId,
                     quantity: item.quantity,
                     price: item.price,
@@ -66,12 +76,15 @@ export class Cart extends Entity<CartProps> {
         );
         console.log("cart entity items", items);
 
-        return Cart.create(
+        const cartCreated = Cart.create(
             {
                 userId: cartData.userId,
                 items: items,
             },
             new UniqueEntityID(cartData.id)
         );
+
+        console.log("cart entity cartCreated", cartCreated);
+        return cartCreated;
     }
 }

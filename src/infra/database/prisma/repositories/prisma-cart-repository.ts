@@ -64,6 +64,7 @@ export class PrismaCartRepository implements ICartRepository {
             const cartItems = cartRecord.items.map((item) =>
                 CartItem.create(
                     {
+                        cartId: item.cartId,
                         productId: item.productId,
                         quantity: item.quantity,
                         price: item.price,
@@ -152,6 +153,7 @@ export class PrismaCartRepository implements ICartRepository {
             console.log("PrismaCartRepository save cartEntity", cartEntity);
 
             return right(cartEntity);
+            
         } catch (error) {
             console.error("Erro ao salvar o carrinho:", error);
 
@@ -238,6 +240,7 @@ export class PrismaCartRepository implements ICartRepository {
                     new CartItem(
                         {
                             productId: item.productId,
+                            cartId: item.cartId,
                             quantity: item.quantity,
                             price: item.price,
                             height: item.height,
