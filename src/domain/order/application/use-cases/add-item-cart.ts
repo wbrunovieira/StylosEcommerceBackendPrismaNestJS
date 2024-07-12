@@ -5,6 +5,7 @@ import { CartItem } from "../../enterprise/entities/cart-item";
 import { Injectable } from "@nestjs/common";
 import { IProductVariantRepository } from "@/domain/catalog/application/repositories/i-product-variant-repository";
 import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
+import { Cart } from "../../enterprise/entities/cart";
 
 interface AddItemToCartRequest {
     userId: string;
@@ -19,10 +20,11 @@ interface AddItemToCartRequest {
         colorId?: string;
         sizeId?: string;
         hasVariants: boolean;
+        productIdVariant?: string
     };
 }
 
-type AddItemToCartResponse = Either<ResourceNotFoundError, void>;
+type AddItemToCartResponse = Either<ResourceNotFoundError, Cart>;
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -45,6 +47,16 @@ export class AddItemToCartUseCase {
         }
 
         const cart = cartResult.value;
+        console.log(" AddItemToCartUseCase cart ", cart);
+        console.log(" AddItemToCartUseCase cart ", cart.items);
+        console.log(
+            "AddItemToCartUseCase item.hasVariants",
+            item.hasVariants
+        );
+        console.log(
+            "AddItemToCartUseCase item.productIdVariant",
+            item.productIdVariant
+        );
 
         let productResult;
         let variant;
@@ -68,8 +80,9 @@ export class AddItemToCartUseCase {
             );
             console.log(" add item use case variantResult", variantResult);
 
-            if (variantResult.isRight()) {
+          
                 const productVariant = variantResult.value;
+                console.log("productVariant esse", productVariant);
                 if (variantResult.isRight()) {
                     const productVariant = variantResult.value;
 
@@ -82,7 +95,7 @@ export class AddItemToCartUseCase {
                     console.log("Color ID:", colorIdValue);
                     console.log("Size ID:", sizeIdValue);
                 }
-            }
+            
 
             if (variantResult.isLeft()) {
                 return left(
@@ -142,9 +155,19 @@ export class AddItemToCartUseCase {
                 size: sizeIdValue,
                 hasVariants: item.hasVariants,
             });
-            return cartItem;
 
             console.log("cartItem", cartItem);
+
+            cart.addItem(cartItem);
+            console.log("cart depois de aciononar o item moo use case", cart);
+            const cartSaved = await this.cartRepository.save(cart);
+            console.log("cartSaved", cartSaved);
+
+            if (cartSaved.isLeft()) {
+                return left(new ResourceNotFoundError("Failed to save cart"));
+            }
+
+            return right(cartSaved.value);
         } else {
             productResult = await this.productRepository.findById(
                 item.productId
@@ -189,12 +212,16 @@ export class AddItemToCartUseCase {
         const cartCreated = cart.addItem(cartItem);
 
         console.log(
-            "no final do add item cart quase return cartCreated",
+            "no final do add item cart quase return sem variavel cartCreated",
             cartCreated
         );
 
         const cartSaved = await this.cartRepository.save(cart);
+
+        if (cartSaved.isLeft()) {
+            return left(new ResourceNotFoundError("Failed to save cart"));
+        }
         console.log("cartSAved", cartSaved);
-        return right(cartItem);
+        return right(cartSaved.value);
     }
 }

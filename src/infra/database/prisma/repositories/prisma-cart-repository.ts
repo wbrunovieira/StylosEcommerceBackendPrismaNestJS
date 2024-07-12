@@ -7,6 +7,7 @@ import { ICartRepository } from "@/domain/order/application/repositories/i-cart-
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { CartItem } from "@/domain/order/enterprise/entities/cart-item";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @Injectable()
 export class PrismaCartRepository implements ICartRepository {
@@ -96,7 +97,7 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
-    async save(cart: Cart): Promise<Either<Error, void>> {
+    async save(cart: Cart): Promise<Either<Error, Cart>> {
         try {
             console.log("PrismaCartRepository save Cart", Cart);
             const cartData = cart.toObject();
@@ -114,6 +115,7 @@ export class PrismaCartRepository implements ICartRepository {
                                 price: item.price,
                                 height: item.height,
                                 width: item.width,
+                                productIdVariant: item.productIdVariant,
                                 length: item.length,
                                 weight: item.weight,
                                 hasVariants: item.hasVariants,
@@ -128,6 +130,7 @@ export class PrismaCartRepository implements ICartRepository {
                                 width: item.width,
                                 length: item.length,
                                 hasVariants: item.hasVariants,
+                                productIdVariant: item.productIdVariant,
                                 weight: item.weight,
                                 colorId: item.colorId?.toString(),
                                 sizeId: item.sizeId?.toString(),
@@ -135,11 +138,37 @@ export class PrismaCartRepository implements ICartRepository {
                         })),
                     },
                 },
+                include: {
+                    items: true,
+                },
             });
 
-            console.log("PrismaCartRepository cartSaved", cartSaved);
-            return right(undefined);
+            console.log(
+                "PrismaCartRepository save Raw cartSaved data: cartSaved",
+                cartSaved
+            );
+
+            const cartEntity = Cart.fromPrisma(cartSaved);
+            console.log("PrismaCartRepository save cartEntity", cartEntity);
+
+            return right(cartEntity);
         } catch (error) {
+            console.error("Erro ao salvar o carrinho:", error);
+
+            if (error instanceof PrismaClientKnownRequestError) {
+                console.error(
+                    "PrismaClientKnownRequestError code:",
+                    error.code
+                );
+
+                if (error.code === "P2025") {
+                    return left(new Error("Cart not found"));
+                }
+                if (error.code === "P2002") {
+                    return left(new Error("Unique constraint failed"));
+                }
+            }
+
             return left(new Error("Failed to save cart"));
         }
     }
@@ -152,7 +181,23 @@ export class PrismaCartRepository implements ICartRepository {
 
             return right(!!cartRecord);
         } catch (error) {
-            return left(new Error("Failed to check if cart exists"));
+            console.error("Erro ao salvar o carrinho:", error);
+
+            if (error instanceof PrismaClientKnownRequestError) {
+                console.error(
+                    "PrismaClientKnownRequestError code:",
+                    error.code
+                );
+
+                if (error.code === "P2025") {
+                    return left(new Error("Cart not found"));
+                }
+                if (error.code === "P2002") {
+                    return left(new Error("Unique constraint failed"));
+                }
+            }
+
+            return left(new Error("Failed to save cart"));
         }
     }
 
