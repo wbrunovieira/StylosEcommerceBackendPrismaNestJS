@@ -27,7 +27,7 @@ const createCartSchema = z.object({
         z.object({
             productId: z.string(),
             quantity: z.number().min(0),
-            
+            cartId: z.string().optional(),
             price: z.number().min(0),
             colorId: z.string().optional(),
             sizeId: z.string().optional(),
@@ -42,6 +42,7 @@ type CreateCartBodySchema = z.infer<typeof createCartSchema>;
 
 const addItemSchema = z.object({
     productId: z.string(),
+    cartId: z.string().optional(),
     quantity: z.number().min(0),
     weight: z.number().optional(),
     height: z.number().optional(),

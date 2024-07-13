@@ -194,8 +194,6 @@ export class ProductController {
 
     @Get("/search")
     async searchProducts(@Query("name") name: string) {
-   
-
         if (!name) {
             throw new HttpException(
                 "Query parameter 'name' is required",
@@ -204,11 +202,10 @@ export class ProductController {
         }
 
         const result = await this.findProductByName.execute({ name });
- 
 
         if (result.isLeft()) {
             const error = result.value;
-     
+
             if (error instanceof ResourceNotFoundError) {
                 throw new HttpException(error.message, HttpStatus.NOT_FOUND);
             }
@@ -424,7 +421,7 @@ export class ProductController {
                 material: true,
                 productVariants: true,
             },
-            take: 9,
+            take: 12,
             orderBy: {
                 createdAt: "desc",
             },
@@ -460,7 +457,6 @@ export class ProductController {
 
     @Get(":id")
     async getProduct(@Param("id") id: string) {
-    
         const result = await this.getAllProductsByIdUseCase.execute({
             productId: id,
         });
@@ -479,7 +475,6 @@ export class ProductController {
     @Get("slug/:slug")
     async getProductbySlug(@Param("slug") slug: string) {
         try {
-    
             const result = await this.getProductBySlug.execute({ slug });
 
             if (result.isLeft()) {

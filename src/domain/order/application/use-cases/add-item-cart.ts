@@ -9,7 +9,7 @@ import { IProductRepository } from "@/domain/catalog/application/repositories/i-
 interface AddItemToCartRequest {
     userId: string;
     item: {
-        cartId: string;
+        cartId?: string;
         productId: string;
         quantity: number;
         price: number;
@@ -140,7 +140,7 @@ export class AddItemToCartUseCase {
 
             cartItem = new CartItem({
                 productId: productIdToUse,
-                cartId: item.cartId,
+                cartId: item.cartId || "undefined",
                 quantity: item.quantity,
                 price: item.price,
                 height,
@@ -165,11 +165,9 @@ export class AddItemToCartUseCase {
             const savedCart = cartSaved.value;
             const savedItems = savedCart.getItems();
 
-           
             console.log("savedCart", savedCart);
             console.log("savedItems", savedItems);
             console.log("savedCart 0", savedCart[0]);
-                      
 
             const savedItem = savedItems.find(
                 (savedItem) =>
@@ -193,10 +191,8 @@ export class AddItemToCartUseCase {
             }
 
             return right(savedItem);
-
         } else {
-
-         productResult = await this.productRepository.findById(
+            productResult = await this.productRepository.findById(
                 item.productId
             );
 
@@ -220,7 +216,7 @@ export class AddItemToCartUseCase {
             );
 
             cartItem = new CartItem({
-                cartId: item.cartId,
+                cartId: item.cartId || "undefined",
                 productId: item.productId,
                 quantity: item.quantity,
                 price: item.price,
@@ -244,41 +240,18 @@ export class AddItemToCartUseCase {
             "no final do add item cart quase return sem variavel cartCreated",
             cartCreated
         );
-        
-        const cartSaved = await this.cartRepository.save(cart);
-        
-        console.log(
-            "no final do add item cart quase return sem variavel cartSaved",
-            cartSaved
+
+        const savedItemResult = await this.cartRepository.addItemToCart(
+            cart.id.toString(),
+            cartItem
         );
-        if (cartSaved.isLeft()) {
-            return left(new ResourceNotFoundError("Failed to save cart"));
+
+        if (savedItemResult.isLeft()) {
+            return left(new ResourceNotFoundError("Failed to save cart item"));
         }
-        
 
-        const savedCart = cartSaved.value;
-        console.log('savedCart usecase no variants', savedCart)
-
-      const savedItem = savedCart.getItems().find(
-    (savedItem) =>
-        savedItem.productId === cartItem.productId &&
-        savedItem.color === cartItem.color &&
-        savedItem.size === cartItem.size &&
-        savedItem.quantity === cartItem.quantity &&
-        savedItem.price === cartItem.price &&
-        savedItem.height === cartItem.height &&
-        savedItem.width === cartItem.width &&
-        savedItem.length === cartItem.length &&
-        savedItem.weight === cartItem.weight
-);
-
-        console.log('savedItem usecase no variants', savedItem)
-
-        if (!savedItem) {
-            return left(
-                new ResourceNotFoundError("Item not found in saved cart")
-            );
-        }
+        const savedItem = savedItemResult.value;
+        console.log("savedItem usecase no variants", savedItem);
 
         return right(savedItem);
     }
