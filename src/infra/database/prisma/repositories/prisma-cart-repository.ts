@@ -153,7 +153,6 @@ export class PrismaCartRepository implements ICartRepository {
             console.log("PrismaCartRepository save cartEntity", cartEntity);
 
             return right(cartEntity);
-            
         } catch (error) {
             console.error("Erro ao salvar o carrinho:", error);
 
@@ -172,6 +171,50 @@ export class PrismaCartRepository implements ICartRepository {
             }
 
             return left(new Error("Failed to save cart"));
+        }
+    }
+
+    async addItemToCart(
+        cartId: string,
+        item: CartItem
+    ): Promise<Either<Error, CartItem>> {
+        try {
+            const savedItem = await this.prisma.cartItem.create({
+                data: {
+                    cartId: cartId,
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: item.price,
+                    height: item.height,
+                    width: item.width,
+                    length: item.length,
+                    weight: item.weight,
+                    colorId: item.color,
+                    sizeId: item.size,
+                    hasVariants: item.hasVariants,
+                },
+            });
+
+            const cartItem = CartItem.create(
+                {
+                    cartId: savedItem.cartId,
+                    productId: savedItem.productId,
+                    quantity: savedItem.quantity,
+                    price: savedItem.price,
+                    height: savedItem.height,
+                    width: savedItem.width,
+                    length: savedItem.length,
+                    weight: savedItem.weight,
+                    color: savedItem.colorId ?? undefined,
+                    size: savedItem.sizeId ?? undefined,
+                    hasVariants: savedItem.hasVariants,
+                },
+                new UniqueEntityID(savedItem.id)
+            );
+
+            return right(cartItem);
+        } catch (error) {
+            return left(new Error("Failed to save cart item"));
         }
     }
 
