@@ -12,7 +12,6 @@ import { IProductVariantRepository } from "@/domain/catalog/application/reposito
 interface CreateCartUseCaseRequest {
     userId: string;
     items: {
-        cartId?: string;
         productId: string;
         quantity: number;
         price: number;
@@ -172,7 +171,8 @@ export class CreateCartUseCase {
                         );
                         cartItemsMap[productIdFromVariant] = new CartItem({
                             productId: productIdFromVarianttoproduct,
-                            cartId: item.cartId || "undefined",
+                            productIdVariant: item.productIdVariant,
+                            cartId: "",
                             quantity: item.quantity,
                             price: item.price,
                             height: height,
@@ -211,7 +211,7 @@ export class CreateCartUseCase {
                         );
                     }
 
-                    const { height, width, length, weight } = product.props;
+                  
 
                     if (cartItemsMap[item.productId]) {
                         const existingItem = cartItemsMap[item.productId];
@@ -220,14 +220,14 @@ export class CreateCartUseCase {
                         );
                     } else {
                         cartItemsMap[item.productId] = new CartItem({
-                            cartId: item.cartId || "undefined",
+                            cartId: "",
                             productId: item.productId,
                             quantity: item.quantity,
                             price: item.price,
-                            height,
-                            width,
-                            length,
-                            weight,
+                            height: product.props.height,
+                            width: product.props.width,
+                            length: product.props.length,
+                            weight: product.props.weight,
                             color: item.colorId,
                             size: item.sizeId,
                             hasVariants: item.hasVariants,
@@ -235,14 +235,19 @@ export class CreateCartUseCase {
                     }
                 }
             }
-
             const cartItems = Object.values(cartItemsMap);
+            const cart = Cart.create({ userId, items: cartItems });
+            cart.items.forEach(item => item.setCartId(cart.id.toString()));
+
 
             console.log("quase saindo no CreateCartUseCase  userId", userId);
 
-            const cart = Cart.create({ userId, items: cartItems });
+            
 
-            await this.cartRepository.create(cart);
+            console.log("quase saindo no CreateCartUseCase  cart", cart);
+
+            const cartCreated = await this.cartRepository.create(cart);
+            console.log("quase saindo no CreateCartUseCase  cart", cartCreated);
 
             return right({ cart });
         } catch (error) {

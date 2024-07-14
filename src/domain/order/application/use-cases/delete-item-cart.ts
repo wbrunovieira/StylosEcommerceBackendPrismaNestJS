@@ -18,21 +18,26 @@ export class DeleteItemFromCartUseCase {
     cartId,
     itemId,
   }: DeleteItemFromCartRequest): Promise<DeleteItemFromCartResponse> {
+    console.log('chamou delete cart id use case')
     const cartResult = await this.cartRepository.findById(cartId);
-
+    console.log('chamou delete cart id use case cartResult', cartResult)
+    
     if (cartResult.isLeft()) {
       return left(new ResourceNotFoundError("Cart not found"));
     }
 
     const cart = cartResult.value;
-
+    console.log('chamou delete cart id use case cart', cart)
+    
     const itemExists = cart.items.some(item => item.id.toString() === itemId);
-
+    console.log('chamou delete cart id use case itemExists', itemExists)
+    
     if (!itemExists) {
       return left(new ResourceNotFoundError("Item not found in cart"));
     }
-
+    
     const result = await this.cartRepository.removeItemFromCart(cartId, itemId);
+    console.log('chamou delete cart id use case result', result)
 
     if (result.isLeft()) {
       return left(new Error("Failed to remove item from cart"));

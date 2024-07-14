@@ -18,15 +18,16 @@ interface CartItemProps {
 
 export class CartItem extends Entity<CartItemProps> {
     constructor(props: CartItemProps, id?: UniqueEntityID) {
-        super(props, id);
+        super(props, id );
     }
 
     get productId(): string {
         return this.props.productId;
     }
-    get cartId(): string {
+    get cartId(): string | undefined{
         return this.props.cartId;
     }
+
     get hasVariants(): boolean {
         return this.props.hasVariants;
     }
@@ -72,6 +73,10 @@ export class CartItem extends Entity<CartItemProps> {
 
     setQuantity(quantity: number): void {
         this.props.quantity = quantity;
+    }
+
+    setCartId(cartId: string): void {
+        this.props.cartId = cartId;
     }
 
     toObject() {
