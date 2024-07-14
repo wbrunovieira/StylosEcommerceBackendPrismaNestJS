@@ -9,7 +9,7 @@ interface CartProps {
 
 export class Cart extends Entity<CartProps> {
     private constructor(props: CartProps, id?: UniqueEntityID) {
-        super(props, id);
+        super(props, id || new UniqueEntityID());
     }
 
     static create(props: CartProps, id?: UniqueEntityID): Cart {

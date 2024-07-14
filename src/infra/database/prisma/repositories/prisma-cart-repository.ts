@@ -25,7 +25,9 @@ export class PrismaCartRepository implements ICartRepository {
                     userId: cartData.userId,
                     items: {
                         create: cartData.items.map((item) => ({
+                            id: item.id?.toString(),
                             productId: item.productId.toString(),
+
                             quantity: item.quantity,
                             price: item.price,
                             height: item.height,
