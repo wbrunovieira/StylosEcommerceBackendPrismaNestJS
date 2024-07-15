@@ -9,6 +9,7 @@ import {
     Param,
     Get,
     Delete,
+    Patch,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
@@ -20,6 +21,7 @@ import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-i
 import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
 import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
 import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-Cart-ByUserId";
+import { UpdateItemQuantityInCartUseCase } from "@/domain/order/application/use-cases/update-quantity-item";
 
 const createCartSchema = z.object({
     userId: z.string(),
@@ -58,6 +60,17 @@ const addItemValidationPipe = new ZodValidationsPipe(addItemSchema);
 
 type AddItemBodySchema = z.infer<typeof addItemSchema>;
 
+const updateItemQuantitySchema = z.object({
+   
+    quantity: z.number().min(0),
+});
+
+const updateItemQuantityValidationPipe = new ZodValidationsPipe(
+    updateItemQuantitySchema
+);
+
+type UpdateItemQuantityBodySchema = z.infer<typeof updateItemQuantitySchema>;
+
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
@@ -66,7 +79,8 @@ export class CartController {
         private readonly addItemToCartUseCase: AddItemToCartUseCase,
         private readonly checkCartExistsUseCase: CheckCartExistsUseCase,
         private deleteItemFromCartUseCase: DeleteItemFromCartUseCase,
-        private getCartByUserUseCase: GetCartByUserUseCase
+        private getCartByUserUseCase: GetCartByUserUseCase,
+        private updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase
     ) {}
 
     @Post()
@@ -196,6 +210,45 @@ export class CartController {
         } catch (error) {
             throw new HttpException(
                 "Failed to remove item from cart",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Patch(":userId/item/:itemId")
+    async updateItemQuantityInCart(
+        @Param("userId") userId: string,
+        @Param("itemId") itemId: string,
+        @Body(updateItemQuantityValidationPipe)
+        body: UpdateItemQuantityBodySchema
+    ) {
+        try {
+            const { quantity } = body;
+            const result = await this.updateItemQuantityInCartUseCase.execute({
+                userId,
+                itemId,
+                quantity,
+            });
+
+            if (result.isLeft()) {
+                const error = result.value;
+                if (error instanceof ResourceNotFoundError) {
+                    throw new ConflictException(error.message);
+                }
+                throw new ConflictException("An unexpected error occurred");
+            }
+
+            return result.value;
+        } catch (error) {
+            console.error(
+                "Erro ao atualizar quantidade do item no cart:",
+                error
+            );
+            if (error instanceof ConflictException) {
+                throw error;
+            }
+            throw new HttpException(
+                "Failed to update item quantity in cart",
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
