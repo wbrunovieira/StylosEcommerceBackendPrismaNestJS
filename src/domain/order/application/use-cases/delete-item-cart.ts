@@ -19,6 +19,8 @@ export class DeleteItemFromCartUseCase {
     itemId,
   }: DeleteItemFromCartRequest): Promise<DeleteItemFromCartResponse> {
     console.log('chamou delete cart id use case')
+    console.log('chamou delete cart id use case cartId',cartId)
+    console.log('chamou delete cart id use case itemId',itemId)
     const cartResult = await this.cartRepository.findById(cartId);
     console.log('chamou delete cart id use case cartResult', cartResult)
     

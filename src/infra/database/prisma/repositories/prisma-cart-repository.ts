@@ -269,12 +269,14 @@ export class PrismaCartRepository implements ICartRepository {
 
     async findById(cartId: string): Promise<Either<Error, Cart>> {
         try {
+            console.log("entrou no cart repo findById com o CartID", cartId);
             const cartData = await this.prisma.cart.findUnique({
                 where: { id: cartId },
                 include: {
                     items: true,
                 },
             });
+            console.log("cart repo findById com o cartData", cartData);
 
             if (!cartData) {
                 return left(new ResourceNotFoundError("Cart not found"));

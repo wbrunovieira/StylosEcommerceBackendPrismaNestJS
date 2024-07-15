@@ -72,6 +72,21 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 }
 
+###
+
+# @name update-qtd-item-cart
+PATCH {{BASE_URL}}/cart/de3e7aec-d7f9-4de7-8e73-1269faf99ed4/item/f8453dbe-6bb9-41aa-b9cb-a3872da4d2f5 
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+   
+    "quantity": 10
+  
+  
+
+}
+
 
 ###
 # @name check-cart-exist

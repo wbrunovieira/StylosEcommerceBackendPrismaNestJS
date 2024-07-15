@@ -77,6 +77,7 @@ import { AddItemToCartUseCase } from "@/domain/order/application/use-cases/add-i
 import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/check-cart-exists";
 import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
 import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-Cart-ByUserId";
+import { UpdateItemQuantityInCartUseCase } from "@/domain/order/application/use-cases/update-quantity-item";
 
 @Module({
   imports: [DatabaseModule, AuthModule],
@@ -157,6 +158,7 @@ import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-C
     CheckCartExistsUseCase,
     DeleteItemFromCartUseCase,
     GetCartByUserUseCase,
+    UpdateItemQuantityInCartUseCase,
 
     ApiGetAllProducts,
     SyncCategoriesUseCase,
