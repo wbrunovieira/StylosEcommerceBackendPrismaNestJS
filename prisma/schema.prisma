@@ -22,6 +22,7 @@ model User {
   gender               String? 
   lastLogin            DateTime?
   accountStatus        String? 
+  isVerified    Boolean  @default(false)
   marketingPreferences Json? 
   addresses       Address[]
    carts           Cart[] 
