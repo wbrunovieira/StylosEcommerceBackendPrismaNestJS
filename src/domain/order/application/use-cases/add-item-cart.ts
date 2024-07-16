@@ -54,13 +54,31 @@ export class AddItemToCartUseCase {
             "AddItemToCartUseCase item.productIdVariant",
             item.productIdVariant
         );
-
+        
         let productResult;
         let variant;
         let productIdToUse;
         let cartItem;
         let colorIdValue;
         let sizeIdValue;
+        
+        const existingItem = cart.items.find(
+            (cartItem) =>
+                cartItem.productId === item.productId &&
+            cartItem.color === item.colorId &&
+            cartItem.size === item.sizeId
+        );
+        console.log("AddItemToCartUseCase iexistingItem", existingItem);
+        
+        if (existingItem) {
+            existingItem.quantity += item.quantity;
+            const cartSaved = await this.cartRepository.save(cart);
+            if (cartSaved.isLeft()) {
+                return left(new ResourceNotFoundError("Failed to save cart"));
+            }
+            console.log("AddItemToCartUseCase cartSaved", cartSaved);
+            return right(existingItem);
+        }
 
         if (item.hasVariants) {
             console.log(
