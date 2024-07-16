@@ -4,7 +4,6 @@ import { ICartRepository } from "../repositories/i-cart-repository";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { Cart } from "../../enterprise/entities/cart";
 
-
 interface UpdateItemQuantityInCartUseCaseRequest {
     userId: string;
     itemId: string;
@@ -29,13 +28,19 @@ export class UpdateItemQuantityInCartUseCase {
     }: UpdateItemQuantityInCartUseCaseRequest): Promise<UpdateItemQuantityInCartUseCaseResponse> {
         const cartOrError = await this.cartRepository.findCartByUser(userId);
         if (cartOrError.isLeft()) {
-            return left(new ResourceNotFoundError(`Cart not found for user: ${userId}`));
+            return left(
+                new ResourceNotFoundError(`Cart not found for user: ${userId}`)
+            );
         }
 
         const cart = cartOrError.value;
-        const itemIndex = cart.items.findIndex(item => item.id.toString() === itemId);
+        const itemIndex = cart.items.findIndex(
+            (item) => item.id.toString() === itemId
+        );
         if (itemIndex === -1) {
-            return left(new ResourceNotFoundError(`Item not found in cart: ${itemId}`));
+            return left(
+                new ResourceNotFoundError(`Item not found in cart: ${itemId}`)
+            );
         }
 
         const item = cart.items[itemIndex];
