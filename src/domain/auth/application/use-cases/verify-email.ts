@@ -16,8 +16,10 @@ export class VerifyEmailUseCase {
     async execute({
         token,
     }: VerifyEmailUseCaseRequest): Promise<VerifyEmailUseCaseResponse> {
+        console.log("ENTROU NA VerifyEmailUseCase token", token);
         const user =
             await this.accountRepository.findByVerificationToken(token);
+        console.log(" VerifyEmailUseCase user", user);
 
         if (!user) {
             return left(new ResourceNotFoundError("Invalid or expired token"));
@@ -25,8 +27,10 @@ export class VerifyEmailUseCase {
 
         user.isVerified = true;
         user.verificationToken = null;
+        console.log("VerifyEmailUseCase use settour", user);
 
-        await this.accountRepository.save(user);
+        const userSaved = await this.accountRepository.save(user);
+        console.log("VerifyEmailUseCase use userSaved", userSaved);
 
         return right(null);
     }

@@ -28,9 +28,11 @@ export class PrismaAccountRepository implements IAccountRepository {
     }
 
     async findByVerificationToken(token: string): Promise<User | null> {
+        console.log('findByVerificationToken token',token)
         const user = await this.prisma.user.findFirst({
             where: { verificationToken: token },
         });
+        console.log('findByVerificationToken user',user)
 
         return user ? this.toDomain(user) : null;
     }

@@ -61,6 +61,13 @@ Content-Type: application/json
 
 
 ###
+###
+# @name verify-email
+GET {{BASE_URL}}/accounts/verify?token=2rxnxnzlvmc 
+Content-Type: application/json
+
+
+###
 
 # @name create-account-google
 POST {{BASE_URL}}/accounts/google

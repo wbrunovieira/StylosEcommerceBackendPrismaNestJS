@@ -7,6 +7,7 @@ import {
     Param,
     Patch,
     Put,
+    Query,
     UseGuards,
 } from "@nestjs/common";
 import { Body, Controller, HttpCode, Post, UsePipes } from "@nestjs/common";
@@ -195,9 +196,18 @@ export class AccountController {
         return { user: user.toResponseObjectPartial() };
     }
 
-    @Get("/verify-email/:token")
-    async verifyEmail(@Param("token") token: string) {
+    @Get("/verify")
+    async verifyEmail(@Query("token") token: string) {
+        console.log("entrou no verify email token", token);
+        if (!token) {
+            throw new HttpException(
+                "Query parameter 'token' is required",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        console.log("entrou no verify email token2", token);
         const result = await this.verifyEmailUseCase.execute({ token });
+        console.log("entrou no verify email result", result);
 
         if (result.isLeft()) {
             const error = result.value;
