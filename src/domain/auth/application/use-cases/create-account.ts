@@ -5,6 +5,7 @@ import { IAccountRepository } from "../repositories/i-account-repository";
 import { hash } from "bcryptjs";
 import { User } from "../../enterprise/entities/user";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { MailerService } from "./mailer.service";
 
 interface CreateAccountUseCaseRequest {
   name: string;
@@ -22,7 +23,7 @@ ResourceNotFoundError | null,
 
 @Injectable()
 export class CreateAccountUseCase {
-  constructor(private accountRepository: IAccountRepository) {}
+  constructor(private accountRepository: IAccountRepository,private mailerService: MailerService) {}
 
   async execute({
     name,
@@ -51,6 +52,7 @@ export class CreateAccountUseCase {
         }
     
         const hashPassword = await hash(password, 8);
+        const verificationToken = Math.random().toString(36).substr(2);
     
         const user = User.create({
           name,
@@ -60,6 +62,7 @@ export class CreateAccountUseCase {
         });
     
         await this.accountRepository.create(user);
+        await this.mailerService.sendVerificationEmail(email, verificationToken);
     
         return right({
           user,
