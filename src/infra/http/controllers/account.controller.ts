@@ -24,6 +24,8 @@ import { EditAccountUseCase } from "@/domain/auth/application/use-cases/edit-acc
 import { UserProps } from "@/domain/auth/enterprise/entities/user";
 import { FindAccountByIdUseCase } from "@/domain/auth/application/use-cases/find-user-by-id";
 import { VerifyEmailUseCase } from "@/domain/auth/application/use-cases/verify-email";
+import { ResetPasswordUseCase } from "@/domain/auth/application/use-cases/reset-password";
+import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgot-password";
 
 const passwordSchema = z
     .string()
@@ -77,6 +79,8 @@ export class AccountController {
         private findAccountByIdUseCase: FindAccountByIdUseCase,
         private verifyEmailUseCase: VerifyEmailUseCase,
         private prisma: PrismaService,
+        private resetPasswordUseCase: ResetPasswordUseCase,
+        private forgotPasswordUseCase: ForgotPasswordUseCase,
         private jwt: JwtService
     ) {}
 
@@ -180,24 +184,8 @@ export class AccountController {
         return { found: false };
     }
 
-    @Get("/:id")
-    async handleGetAccountById(@Param("id") id: string) {
-        const result = await this.findAccountByIdUseCase.execute({ id });
-
-        if (result.isLeft()) {
-            const error = result.value;
-            if (error instanceof ResourceNotFoundError) {
-                throw new NotFoundException(error.message);
-            }
-            throw new ConflictException(error.message);
-        }
-
-        const { user } = result.value;
-        return { user: user.toResponseObjectPartial() };
-    }
-
-    @Get("/verify")
-    async verifyEmail(@Query("token") token: string) {
+    @Get("/verify/:token")
+    async verifyEmail(@Param("token") token: string) {
         console.log("entrou no verify email token", token);
         if (!token) {
             throw new HttpException(
@@ -215,5 +203,55 @@ export class AccountController {
         }
 
         return { message: "Email verified successfully" };
+    }
+
+    @Post("reset-password")
+    async resetPassword(
+        @Body("token") token: string,
+        @Body("newPassword") newPassword: string,
+        @Body("userId") userId: string
+    ) {
+        const result = await this.resetPasswordUseCase.execute({
+            token,
+            newPassword,
+            userId,
+        });
+
+        if (result.isLeft()) {
+            throw result.value;
+        }
+
+        return {
+            message: "Password has been successfully reset",
+        };
+    }
+
+    @Post("forgot-password")
+    async forgotPassword(@Body("email") email: string) {
+        const result = await this.forgotPasswordUseCase.execute({ email });
+
+        if (result.isLeft()) {
+            throw result.value;
+        }
+
+        return {
+            message: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.",
+        };
+    }
+
+    @Get("/:id")
+    async handleGetAccountById(@Param("id") id: string) {
+        const result = await this.findAccountByIdUseCase.execute({ id });
+
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error instanceof ResourceNotFoundError) {
+                throw new NotFoundException(error.message);
+            }
+            throw new ConflictException(error.message);
+        }
+
+        const { user } = result.value;
+        return { user: user.toResponseObjectPartial() };
     }
 }

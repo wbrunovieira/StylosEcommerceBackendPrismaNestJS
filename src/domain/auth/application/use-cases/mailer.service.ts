@@ -54,4 +54,40 @@ export class MailerService {
             );
         }
     }
+
+    async sendResetPasswordEmail(email: string, token: string) {
+        const resetPasswordUrl = `${this.configService.get("NEXT_PUBLIC_URL")}/reset-password?token=${token}`;
+        const msg = {
+            to: email,
+            from: "wbrunovieira77@gmail.com",
+            subject: "Redefinição de Senha",
+            text: `Para redefinir sua senha, clique no link: ${resetPasswordUrl}`,
+            html: `<b>Para redefinir sua senha, clique no link: <a href="${resetPasswordUrl}">${resetPasswordUrl}</a></b>`,
+        };
+        console.log("enviando email de redefinição de senha", msg);
+        try {
+            const sentEmail = await sgMail.send(msg);
+            console.log("email de redefinição de senha enviado", sentEmail);
+        } catch (error: any) {
+            if (
+                error.response &&
+                error.response.body &&
+                error.response.body.errors
+            ) {
+                console.error(
+                    "erro ao enviar email de redefinição de senha",
+                    error.response.body.errors
+                );
+            } else {
+                console.error(
+                    "erro ao enviar email de redefinição de senha",
+                    error.message || error.toString()
+                );
+            }
+            throw new InternalServerErrorException(
+                "Falha ao enviar e-mail de redefinição de senha"
+            );
+        }
+    }
+
 }

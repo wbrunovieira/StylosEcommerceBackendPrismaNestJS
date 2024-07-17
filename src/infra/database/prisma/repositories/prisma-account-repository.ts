@@ -28,11 +28,11 @@ export class PrismaAccountRepository implements IAccountRepository {
     }
 
     async findByVerificationToken(token: string): Promise<User | null> {
-        console.log('findByVerificationToken token',token)
+        console.log("findByVerificationToken token", token);
         const user = await this.prisma.user.findFirst({
             where: { verificationToken: token },
         });
-        console.log('findByVerificationToken user',user)
+        console.log("findByVerificationToken user", user);
 
         return user ? this.toDomain(user) : null;
     }
@@ -50,6 +50,7 @@ export class PrismaAccountRepository implements IAccountRepository {
             const account = User.create(
                 {
                     name: accountData.name,
+                    verificationToken: accountData.verificationToken,
                     email: accountData.email,
                     password: accountData.password,
                     phone: accountData.phone ?? undefined,
@@ -78,6 +79,8 @@ export class PrismaAccountRepository implements IAccountRepository {
                     profileImageUrl: user.profileImageUrl,
                     googleUserId: user.googleUserId,
                     isGoogleUser: user.isGoogleUser,
+                    isVerified: user.isVerified,
+                    verificationToken: user.verificationToken,
                     role: user.role,
                     phone: user.phone,
                     birthDate: user.birthDate,
@@ -93,6 +96,24 @@ export class PrismaAccountRepository implements IAccountRepository {
             return right(undefined);
         } catch (error) {
             return left(new Error("Failed to update user"));
+        }
+    }
+
+    async updatePassword(
+        userId: string,
+        password: string
+    ): Promise<Either<Error, void>> {
+        try {
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: {
+                    password,
+                    updatedAt: new Date(),
+                },
+            });
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to update password"));
         }
     }
 
@@ -142,6 +163,7 @@ export class PrismaAccountRepository implements IAccountRepository {
 
             const user = User.create(
                 {
+                    
                     name: accountData.name,
                     email: accountData.email,
                     password: accountData.password,
