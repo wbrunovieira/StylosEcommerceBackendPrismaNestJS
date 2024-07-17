@@ -80,6 +80,8 @@ import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-C
 import { UpdateItemQuantityInCartUseCase } from "@/domain/order/application/use-cases/update-quantity-item";
 import { VerifyEmailUseCase } from "@/domain/auth/application/use-cases/verify-email";
 import { MailerService } from "@/domain/auth/application/use-cases/mailer.service";
+import { ResetPasswordUseCase } from "@/domain/auth/application/use-cases/reset-password";
+import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgot-password";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -143,6 +145,8 @@ import { MailerService } from "@/domain/auth/application/use-cases/mailer.servic
 
         VerifyEmailUseCase,
         MailerService,
+        ResetPasswordUseCase,
+        ForgotPasswordUseCase,
 
         GetAllBrandsUseCase,
         GetAllMaterialsUseCase,

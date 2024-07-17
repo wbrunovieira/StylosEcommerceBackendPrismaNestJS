@@ -63,7 +63,7 @@ Content-Type: application/json
 ###
 ###
 # @name verify-email
-GET {{BASE_URL}}/accounts/verify?token=2rxnxnzlvmc 
+GET {{BASE_URL}}/accounts/verify/2rxnxnzlvmc 
 Content-Type: application/json
 
 
