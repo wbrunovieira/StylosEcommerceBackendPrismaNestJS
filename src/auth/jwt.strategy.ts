@@ -9,12 +9,14 @@ import { z } from "zod";
 const tokenPayloadSchema = z.object({
     sub: z.string().uuid(),
     role: z.string(),
+    type: z.enum(["access", "reset-password"]),
 });
 
 export type UserPayload = z.infer<typeof tokenPayloadSchema>;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+    
     constructor(config: ConfigService<Env, true>) {
         const publicKey = config.get("JWT_PUBLIC_KEY", { infer: true });
 
@@ -29,6 +31,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         if (payload.iss !== "https://accounts.google.com") {
             return tokenPayloadSchema.parse(payload);
         }
+
+
+
+
 
         const tokenInfo = await this.validateGoogleToken(payload);
 

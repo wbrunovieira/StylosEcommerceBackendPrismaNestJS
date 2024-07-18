@@ -209,12 +209,12 @@ export class AccountController {
     async resetPassword(
         @Body("token") token: string,
         @Body("newPassword") newPassword: string,
-        @Body("userId") userId: string
+      
     ) {
         const result = await this.resetPasswordUseCase.execute({
             token,
             newPassword,
-            userId,
+            
         });
 
         if (result.isLeft()) {
