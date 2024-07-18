@@ -7,15 +7,15 @@
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
-{
-  "email": "wbrunovieira@yahoo.com.br",
-  "password": ")2hjk8)fcr4cPK0zx%*N"
-}
-
 # {
-#   "email": "admin@example.com",
-#   "password": "Adminpassword@8"
+#   "email": "wbrunovieira@yahoo.com.br",
+#   "password": ")2hjk8)fcr4cPK0zx%*N"
 # }
+
+{
+  "email": "admin@example.com",
+  "password": "Adminpassword@8"
+}
 
 ###
 

@@ -2,10 +2,11 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { IAccountRepository } from "../repositories/i-account-repository";
 
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
-import { randomBytes } from "crypto";
+
 import { Either, left, right } from "@/core/either";
 import { MailerService } from "./mailer.service";
 
+import { JwtResetPasswordService } from "@/auth/jwtReset.strategy";
 
 interface ForgotPasswordUseCaseRequest {
     email: string;
@@ -17,7 +18,8 @@ type ForgotPasswordUseCaseResponse = Either<ResourceNotFoundError, null>;
 export class ForgotPasswordUseCase {
     constructor(
         private accountRepository: IAccountRepository,
-        private mailerService: MailerService
+        private mailerService: MailerService,
+        private jwtResetPasswordService: JwtResetPasswordService
     ) {}
 
     async execute({
@@ -27,16 +29,11 @@ export class ForgotPasswordUseCase {
         if (userOrError.isLeft()) {
             return left(new ResourceNotFoundError("User not found"));
         }
-
         const user = userOrError.value;
 
-        function generateResetToken(): string {
-            const token = randomBytes(32).toString("hex");
-            const timestamp = Date.now();
-            return `${token}.${timestamp}`;
-        }
-
-        const token = generateResetToken();
+        const token = this.jwtResetPasswordService.generateResetToken(
+            user.id.toString()
+        );
 
         try {
             await this.mailerService.sendResetPasswordEmail(user.email, token);
