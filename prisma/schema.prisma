@@ -23,6 +23,7 @@ model User {
   lastLogin            DateTime?
   accountStatus        String? 
   isVerified    Boolean  @default(false)
+   shippings       Shipping[]
   marketingPreferences Json? 
   addresses       Address[]
    carts           Cart[] 
@@ -225,6 +226,8 @@ model Cart {
   items     CartItem[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
+  shipping        Shipping? @relation(fields: [shippingId], references: [id])
+  shippingId      String? @unique
 
   @@map("carts")
 }
@@ -259,6 +262,7 @@ model Order {
   status      OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt
+  shippings      Shipping[]
 
   @@map("orders")
 }
@@ -277,9 +281,37 @@ model OrderItem {
   @@map("order_items")
 }
 
+
+
+model Shipping {
+  id             String     @id @default(uuid())
+  userId         String
+  orderId        String
+  carrier        String
+  service        String
+  trackingCode   String?
+  shippingCost   Float
+  deliveryTime   Int        
+  status         ShippingStatus @default(PENDING)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime?  @updatedAt
+
+  user           User       @relation(fields: [userId], references: [id])
+  order          Order      @relation(fields: [orderId], references: [id])
+  cart           Cart?
+  @@map("shippings")
+}
+
 enum OrderStatus {
   PENDING
   COMPLETED
+  CANCELLED
+}
+
+enum ShippingStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
   CANCELLED
 }
 

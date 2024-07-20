@@ -8,6 +8,11 @@ export const envSchema = z.object({
     JWT_PUBLIC_KEY: z.string(),
     SENDGRID_API_KEY: z.string(),
     PORT: z.coerce.number().optional().default(3333),
+
+    MELHOR_ENVIO_CLIENTID_TEST: z.coerce.number(),
+    MELHOR_ENVIO_SECRET_TEST: z.string(),
+    MELHOR_ENVIO_API_URL_TEST: z.string().url(),
+    MELHOR_ENVIO_API_URL_CALLBACK_TEST: z.string().url(),
 });
 
 export type Env = z.infer<typeof envSchema>;
