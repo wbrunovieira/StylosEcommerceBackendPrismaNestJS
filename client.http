@@ -18,6 +18,20 @@ Content-Type: application/json
 }
 
 ###
+# @name authenticate-melhor-envio
+POST {{BASE_URL}}/sessions/request-token
+Content-Type: application/json
+
+{
+  "grant_type": "authorization_code",
+  "client_id": "YOUR_CLIENT_ID",
+  "client_secret": "YOUR_CLIENT_SECRET",
+  "redirect_uri": "YOUR_REDIRECT_URI",
+  "code": "AUTHORIZATION_CODE"
+}
+
+
+###
 
 # @name create-account
 POST {{BASE_URL}}/accounts
