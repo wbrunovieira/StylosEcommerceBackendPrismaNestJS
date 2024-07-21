@@ -133,14 +133,14 @@ export class AuthenticateController {
         return { authUrl };
     }
 
-    // @Post("request-token")
-    // async requestToken(@Body("code") code: string) {
-    //     if (!code) {
-    //         throw new HttpException(
-    //             "Authorization code is required",
-    //             HttpStatus.BAD_REQUEST
-    //         );
-    //     }
-    //     return this.authMelhorEnvioUseCase.requestToken(code);
-    // }
+    @Post("request-token")
+    async requestToken(@Body("code") code: string) {
+        if (!code) {
+            throw new HttpException(
+                "Authorization code is required",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        return this.authMelhorEnvioUseCase.requestToken(code);
+    }
 }
