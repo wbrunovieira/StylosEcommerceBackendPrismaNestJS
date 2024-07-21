@@ -18,6 +18,11 @@ Content-Type: application/json
 }
 
 ###
+# @name get-uri-melhor-envio
+GET {{BASE_URL}}/sessions/melhor-envio/auth-url
+Content-Type: application/json
+
+###
 # @name authenticate-melhor-envio
 POST {{BASE_URL}}/sessions/request-token
 Content-Type: application/json

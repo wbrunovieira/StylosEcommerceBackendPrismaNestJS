@@ -82,7 +82,6 @@ import { VerifyEmailUseCase } from "@/domain/auth/application/use-cases/verify-e
 import { MailerService } from "@/domain/auth/application/use-cases/mailer.service";
 import { ResetPasswordUseCase } from "@/domain/auth/application/use-cases/reset-password";
 import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgot-password";
-// import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -180,8 +179,6 @@ import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgo
         CreateAddressUseCase,
 
         CreateCartUseCase,
-
-        // AuthMelhorEnvioUseCase,
     ],
 })
 export class HttpModule {}

@@ -2,6 +2,7 @@ import {
     Body,
     ConflictException,
     Controller,
+    Get,
     HttpCode,
     HttpException,
     HttpStatus,
@@ -18,7 +19,7 @@ import { PrismaService } from "../../../prisma/prisma.service";
 import { compare, hash } from "bcryptjs";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
-// import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
+import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
 
 const autheticateBodySchema = z.object({
     email: z.string(),
@@ -30,15 +31,21 @@ const createAdminAccountBodySchema = z.object({
     password: z.string().min(6),
 });
 
+const generateAuthUrlSchema = z.object({
+    scopes: z.array(z.string()),
+});
+
 type AuthenticateBodySchema = z.infer<typeof autheticateBodySchema>;
 type CreateAdminAccountBodySchema = z.infer<
     typeof createAdminAccountBodySchema
 >;
+type GenerateAuthUrlSchema = z.infer<typeof generateAuthUrlSchema>;
 @Controller("/sessions")
 export class AuthenticateController {
     constructor(
         private prisma: PrismaService,
-        // private authMelhorEnvioUseCase:AuthMelhorEnvioUseCase,
+        private authMelhorEnvioUseCase: AuthMelhorEnvioUseCase,
+
         private jwt: JwtService
     ) {}
 
@@ -117,6 +124,13 @@ export class AuthenticateController {
         const accessToken = this.jwt.sign({ sub: admin.id, role: admin.role });
 
         return { admin, accessToken };
+    }
+
+    @Get("/melhor-envio/auth-url")
+    async getMelhorEnvioAuthUrl() {
+        const authUrl = this.authMelhorEnvioUseCase.generateAuthUrl();
+        console.log(" authUrl", authUrl);
+        return { authUrl };
     }
 
     // @Post("request-token")

@@ -7,7 +7,7 @@ import { JwtStrategy } from "./jwt.strategy";
 
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { JwtResetPasswordService } from "./jwtReset.strategy";
-
+import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
 
 @Module({
     imports: [
@@ -16,7 +16,6 @@ import { JwtResetPasswordService } from "./jwtReset.strategy";
             inject: [ConfigService],
             global: true,
             useFactory(config: ConfigService<Env, true>) {
-
                 const privateKey = config.get("JWT_PRIVATE_KEY", {
                     infer: true,
                 });
@@ -44,7 +43,17 @@ import { JwtResetPasswordService } from "./jwtReset.strategy";
             },
         }),
     ],
-    providers: [JwtStrategy, JwtAuthGuard,JwtResetPasswordService],
-    exports: [JwtAuthGuard, JwtModule,JwtResetPasswordService],
+    providers: [
+        JwtStrategy,
+        JwtAuthGuard,
+        JwtResetPasswordService,
+        AuthMelhorEnvioUseCase,
+    ],
+    exports: [
+        JwtAuthGuard,
+        JwtModule,
+        JwtResetPasswordService,
+        AuthMelhorEnvioUseCase,
+    ],
 })
 export class AuthModule {}
