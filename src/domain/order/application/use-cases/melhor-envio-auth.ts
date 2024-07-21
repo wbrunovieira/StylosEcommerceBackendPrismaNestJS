@@ -2,7 +2,7 @@ import { Env } from "@/env";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 ("@nestjs/common");
 import { ConfigService } from "@nestjs/config";
-
+import axios from "axios";
 
 @Injectable()
 export class AuthMelhorEnvioUseCase {
@@ -28,39 +28,39 @@ export class AuthMelhorEnvioUseCase {
         return url;
     }
 
-    // async requestToken(authCode: string): Promise<any> {
-    //     const url = "https://sandbox.melhorenvio.com.br/oauth/token";
-    //     const headers = {
-    //         "Content-Type": "application/json",
-    //         "User-Agent": "StylosAppTeste (bruno@wbdigitalsolutions.com)",
-    //         Accept: "application/json",
-    //     };
-    //     const body = {
-    //         grant_type: "authorization_code",
-    //         client_id: this.clientId,
-
-    //         redirect_uri: this.urlCallBack,
-    //         code: authCode,
-    //     };
-    //     try {
-    //         console.log("AuthMelhorEnvioUseCase body", body);
-    //         const response = await axios.post(url, body, { headers });
-    //         console.log("AuthMelhorEnvioUseCase response", response);
-    //         return response.data;
-    //     } catch (error: any) {
-    //         if (error.response) {
-    //             throw new HttpException(
-    //                 error.response.data,
-    //                 error.response.status
-    //             );
-    //         } else {
-    //             throw new HttpException(
-    //                 "An error occurred while requesting the token",
-    //                 HttpStatus.INTERNAL_SERVER_ERROR
-    //             );
-    //         }
-    //     }
-    // }
+    async requestToken(authCode: string): Promise<any> {
+        const url = "https://sandbox.melhorenvio.com.br/oauth/token";
+        const headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "StylosAppTeste (bruno@wbdigitalsolutions.com)",
+            Accept: "application/json",
+        };
+        const body = {
+            grant_type: "authorization_code",
+            client_id: this.clientId,
+            clientSecret: this.clientSecret,
+            redirect_uri: this.urlCallBack,
+            code: authCode,
+        };
+        try {
+            console.log("AuthMelhorEnvioUseCase body", body);
+            const response = await axios.post(url, body, { headers });
+            console.log("AuthMelhorEnvioUseCase response", response);
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                throw new HttpException(
+                    error.response.data,
+                    error.response.status
+                );
+            } else {
+                throw new HttpException(
+                    "An error occurred while requesting the token",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+        }
+    }
 
     // async refreshToken(refreshToken: string): Promise<any> {
     //     const url = "https://sandbox.melhorenvio.com.br/oauth/token";
