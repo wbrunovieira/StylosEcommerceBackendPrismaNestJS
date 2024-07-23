@@ -10,6 +10,7 @@ import {
     Get,
     Delete,
     Patch,
+    UsePipes,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
@@ -22,6 +23,7 @@ import { CheckCartExistsUseCase } from "@/domain/order/application/use-cases/che
 import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/delete-item-cart";
 import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-Cart-ByUserId";
 import { UpdateItemQuantityInCartUseCase } from "@/domain/order/application/use-cases/update-quantity-item";
+import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/calculate-shipping";
 
 const createCartSchema = z.object({
     userId: z.string(),
@@ -61,7 +63,6 @@ const addItemValidationPipe = new ZodValidationsPipe(addItemSchema);
 type AddItemBodySchema = z.infer<typeof addItemSchema>;
 
 const updateItemQuantitySchema = z.object({
-   
     quantity: z.number().min(0),
 });
 
@@ -70,6 +71,46 @@ const updateItemQuantityValidationPipe = new ZodValidationsPipe(
 );
 
 type UpdateItemQuantityBodySchema = z.infer<typeof updateItemQuantitySchema>;
+
+const calculateShipmentSchema = z.object({
+    
+    token: z.string(),
+    cartItems: z.array(
+        z.object({
+            id: z.string(),
+            title: z.string(),
+            image: z.string(),
+            price: z.number(),
+            quantity: z.number(),
+            color: z.string().optional(),
+            size: z.string().optional(),
+            width: z.number(),  
+            height: z.number(), 
+            length: z.number(), 
+            weight: z.number(), 
+            insurance_value: z.number().optional(),
+        })
+    ),
+    selectedAddress: z.object({
+        _id: z.object({
+            value: z.string(),
+        }),
+        props: z.object({
+            userId: z.string(),
+            street: z.string(),
+            number: z.number(),
+            complement: z.string().optional(),
+            city: z.string(),
+            state: z.string(),
+            country: z.string(),
+            zipCode: z.string(),
+            createdAt: z.string(),
+            updatedAt: z.string(),
+        }),
+    }),
+});
+
+type CalculateShipmentSchema = z.infer<typeof calculateShipmentSchema>;
 
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
@@ -80,6 +121,7 @@ export class CartController {
         private readonly checkCartExistsUseCase: CheckCartExistsUseCase,
         private deleteItemFromCartUseCase: DeleteItemFromCartUseCase,
         private getCartByUserUseCase: GetCartByUserUseCase,
+        private calculateshipment: CalculateShipmentUseCase,
         private updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase
     ) {}
 
@@ -253,4 +295,38 @@ export class CartController {
             );
         }
     }
+
+    @Post("/calculate-shipment")
+    @UsePipes(new ZodValidationsPipe(calculateShipmentSchema))
+    async calculateShipment(@Body() body: CalculateShipmentSchema) {
+        const { token, cartItems, selectedAddress } = body;
+
+        if (!token || !cartItems.length || !selectedAddress) {
+            throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
+        }
+
+        const shipmentData = {
+            from: {
+              postal_code: '01002001', // Replace with your actual sender postal code
+            },
+            to: {
+              postal_code: selectedAddress.props.zipCode,
+            },
+            package: {
+              height: cartItems[0].height,
+              width: cartItems[0].width,
+              length: cartItems[0].length,
+              weight: cartItems.reduce((total, item) => total + item.weight * item.quantity, 0),
+            },
+            options: {
+              insurance_value: cartItems.reduce((total, item) => total + (item.insurance_value || item.price) * item.quantity, 0),
+              receipt: false,
+              own_hand: false,
+            },
+            services: '1,2,3,4,7,11', // Replace with actual services you want to use
+          };
+
+        return this.calculateshipment.calculateShipment(shipmentData, token);
+    }
+
 }
