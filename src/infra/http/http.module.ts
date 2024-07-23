@@ -82,6 +82,7 @@ import { VerifyEmailUseCase } from "@/domain/auth/application/use-cases/verify-e
 import { MailerService } from "@/domain/auth/application/use-cases/mailer.service";
 import { ResetPasswordUseCase } from "@/domain/auth/application/use-cases/reset-password";
 import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgot-password";
+import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/calculate-shipping";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -168,6 +169,8 @@ import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgo
         DeleteItemFromCartUseCase,
         GetCartByUserUseCase,
         UpdateItemQuantityInCartUseCase,
+
+        CalculateShipmentUseCase,
 
         ApiGetAllProducts,
         SyncCategoriesUseCase,

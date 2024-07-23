@@ -32,7 +32,7 @@ export class AuthMelhorEnvioUseCase {
         const url = "https://sandbox.melhorenvio.com.br/oauth/token";
         const headers = {
             "Content-Type": "application/json",
-            "User-Agent": "StylosAppTeste (bruno@wbdigitalsolutions.com)",
+            "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
             Accept: "application/json",
         };
         const body = {
@@ -49,6 +49,10 @@ export class AuthMelhorEnvioUseCase {
             return response.data;
         } catch (error: any) {
             if (error.response) {
+                console.log(
+                    "AuthMelhorEnvioUseCase error.response",
+                    error.response
+                );
                 throw new HttpException(
                     error.response.data,
                     error.response.status
