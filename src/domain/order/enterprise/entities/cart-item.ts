@@ -3,6 +3,8 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface CartItemProps {
     cartId: string;
+    productName: string;
+    ImageUrl: string;
     productId: string;
     quantity: number;
     price: number;
@@ -18,13 +20,19 @@ interface CartItemProps {
 
 export class CartItem extends Entity<CartItemProps> {
     constructor(props: CartItemProps, id?: UniqueEntityID) {
-        super(props, id );
+        super(props, id);
     }
 
     get productId(): string {
         return this.props.productId;
     }
-    get cartId(): string | undefined{
+    get productName(): string {
+        return this.props.productName;
+    }
+    get ImageUrl(): string {
+        return this.props.ImageUrl;
+    }
+    get cartId(): string | undefined {
         return this.props.cartId;
     }
 
@@ -69,8 +77,6 @@ export class CartItem extends Entity<CartItemProps> {
         return this.props.weight;
     }
 
-  
-
     setQuantity(quantity: number): void {
         this.props.quantity = quantity;
     }
@@ -84,7 +90,8 @@ export class CartItem extends Entity<CartItemProps> {
             id: this.id?.toString(),
             productId: this.productId,
             cartId: this.cartId,
-
+            ImageUrl: this.ImageUrl,
+            productName: this.productName,
             quantity: this.quantity,
             price: this.price,
             height: this.height,
