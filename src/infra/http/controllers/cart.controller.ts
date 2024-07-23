@@ -32,6 +32,8 @@ const createCartSchema = z.object({
             productId: z.string(),
             quantity: z.number().min(0),
             cartId: z.string().optional(),
+            productName: z.string(),
+            imageUrl: z.string(),
             price: z.number().min(0),
             colorId: z.string().optional(),
             sizeId: z.string().optional(),
@@ -48,6 +50,8 @@ const addItemSchema = z.object({
     productId: z.string(),
     cartId: z.string().optional(),
     quantity: z.number().min(0),
+    productName: z.string(),
+    imageUrl: z.string(),
     weight: z.number().optional(),
     height: z.number().optional(),
     length: z.number().optional(),
@@ -73,7 +77,6 @@ const updateItemQuantityValidationPipe = new ZodValidationsPipe(
 type UpdateItemQuantityBodySchema = z.infer<typeof updateItemQuantitySchema>;
 
 const calculateShipmentSchema = z.object({
-    
     token: z.string(),
     cartItems: z.array(
         z.object({
@@ -81,13 +84,14 @@ const calculateShipmentSchema = z.object({
             title: z.string(),
             image: z.string(),
             price: z.number(),
+
             quantity: z.number(),
             color: z.string().optional(),
             size: z.string().optional(),
-            width: z.number(),  
-            height: z.number(), 
-            length: z.number(), 
-            weight: z.number(), 
+            width: z.number(),
+            height: z.number(),
+            length: z.number(),
+            weight: z.number(),
             insurance_value: z.number().optional(),
         })
     ),
@@ -162,6 +166,7 @@ export class CartController {
                 height: body.height ?? 0,
                 length: body.length ?? 0,
                 width: body.width ?? 0,
+                imageUrl: body.imageUrl,
             };
 
             const result = await this.addItemToCartUseCase.execute({
@@ -307,26 +312,33 @@ export class CartController {
 
         const shipmentData = {
             from: {
-              postal_code: '01002001', // Replace with your actual sender postal code
+                postal_code: "01002001", // Replace with your actual sender postal code
             },
             to: {
-              postal_code: selectedAddress.props.zipCode,
+                postal_code: selectedAddress.props.zipCode,
             },
             package: {
-              height: cartItems[0].height,
-              width: cartItems[0].width,
-              length: cartItems[0].length,
-              weight: cartItems.reduce((total, item) => total + item.weight * item.quantity, 0),
+                height: cartItems[0].height,
+                width: cartItems[0].width,
+                length: cartItems[0].length,
+                weight: cartItems.reduce(
+                    (total, item) => total + item.weight * item.quantity,
+                    0
+                ),
             },
             options: {
-              insurance_value: cartItems.reduce((total, item) => total + (item.insurance_value || item.price) * item.quantity, 0),
-              receipt: false,
-              own_hand: false,
+                insurance_value: cartItems.reduce(
+                    (total, item) =>
+                        total +
+                        (item.insurance_value || item.price) * item.quantity,
+                    0
+                ),
+                receipt: false,
+                own_hand: false,
             },
-            services: '1,2,3,4,7,11', // Replace with actual services you want to use
-          };
+            services: "1,2,3,4,7,11", // Replace with actual services you want to use
+        };
 
         return this.calculateshipment.calculateShipment(shipmentData, token);
     }
-
 }

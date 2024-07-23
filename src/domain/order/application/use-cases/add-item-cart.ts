@@ -12,6 +12,8 @@ interface AddItemToCartRequest {
         cartId?: string;
         productId: string;
         quantity: number;
+        imageUrl: string;
+        productName: string;
         price: number;
         height: number;
         width: number;
@@ -54,22 +56,22 @@ export class AddItemToCartUseCase {
             "AddItemToCartUseCase item.productIdVariant",
             item.productIdVariant
         );
-        
+
         let productResult;
         let variant;
         let productIdToUse;
         let cartItem;
         let colorIdValue;
         let sizeIdValue;
-        
+
         const existingItem = cart.items.find(
             (cartItem) =>
                 cartItem.productId === item.productId &&
-            cartItem.color === item.colorId &&
-            cartItem.size === item.sizeId
+                cartItem.color === item.colorId &&
+                cartItem.size === item.sizeId
         );
         console.log("AddItemToCartUseCase iexistingItem", existingItem);
-        
+
         if (existingItem) {
             existingItem.quantity += item.quantity;
             const cartSaved = await this.cartRepository.save(cart);
@@ -161,6 +163,8 @@ export class AddItemToCartUseCase {
                 cartId: item.cartId || "undefined",
                 quantity: item.quantity,
                 price: item.price,
+                ImageUrl: item.imageUrl,
+                productName: item.productName,
                 height,
                 width,
                 length,
@@ -238,6 +242,8 @@ export class AddItemToCartUseCase {
                 productId: item.productId,
                 quantity: item.quantity,
                 price: item.price,
+                ImageUrl: item.imageUrl,
+                productName: item.productName,
                 height,
                 width,
                 length,

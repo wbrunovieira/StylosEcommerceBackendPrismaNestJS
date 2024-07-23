@@ -13,6 +13,8 @@ interface CreateCartUseCaseRequest {
     userId: string;
     items: {
         productId: string;
+        productName: string;
+        imageUrl: string;
         quantity: number;
         price: number;
         colorId?: string;
@@ -175,6 +177,8 @@ export class CreateCartUseCase {
                             cartId: "",
                             quantity: item.quantity,
                             price: item.price,
+                            ImageUrl: item.imageUrl,
+                            productName: item.productName,
                             height: height,
                             width: width,
                             length: length,
@@ -211,8 +215,6 @@ export class CreateCartUseCase {
                         );
                     }
 
-                  
-
                     if (cartItemsMap[item.productId]) {
                         const existingItem = cartItemsMap[item.productId];
                         existingItem.setQuantity(
@@ -224,6 +226,8 @@ export class CreateCartUseCase {
                             productId: item.productId,
                             quantity: item.quantity,
                             price: item.price,
+                            ImageUrl: item.imageUrl,
+                            productName: item.productName,
                             height: product.props.height,
                             width: product.props.width,
                             length: product.props.length,
@@ -237,12 +241,9 @@ export class CreateCartUseCase {
             }
             const cartItems = Object.values(cartItemsMap);
             const cart = Cart.create({ userId, items: cartItems });
-            cart.items.forEach(item => item.setCartId(cart.id.toString()));
-
+            cart.items.forEach((item) => item.setCartId(cart.id.toString()));
 
             console.log("quase saindo no CreateCartUseCase  userId", userId);
-
-            
 
             console.log("quase saindo no CreateCartUseCase  cart", cart);
 
