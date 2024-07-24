@@ -4,7 +4,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 interface CartItemProps {
     cartId: string;
     productName: string;
-    ImageUrl: string;
+    imageUrl: string;
     productId: string;
     quantity: number;
     price: number;
@@ -29,8 +29,8 @@ export class CartItem extends Entity<CartItemProps> {
     get productName(): string {
         return this.props.productName;
     }
-    get ImageUrl(): string {
-        return this.props.ImageUrl;
+    get imageUrl(): string {
+        return this.props.imageUrl;
     }
     get cartId(): string | undefined {
         return this.props.cartId;
@@ -90,7 +90,7 @@ export class CartItem extends Entity<CartItemProps> {
             id: this.id?.toString(),
             productId: this.productId,
             cartId: this.cartId,
-            ImageUrl: this.ImageUrl,
+            imageUrl: this.imageUrl,
             productName: this.productName,
             quantity: this.quantity,
             price: this.price,

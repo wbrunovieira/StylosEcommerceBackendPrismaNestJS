@@ -5,22 +5,26 @@ import { Cart } from "../../enterprise/entities/cart";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 interface GetCartByUserRequest {
-  userId: string;
+    userId: string;
 }
 
 type GetCartByUserResponse = Either<ResourceNotFoundError, Cart>;
 
 @Injectable()
 export class GetCartByUserUseCase {
-  constructor(private cartRepository: ICartRepository) {}
+    constructor(private cartRepository: ICartRepository) {}
 
-  async execute({ userId }: GetCartByUserRequest): Promise<GetCartByUserResponse> {
-    const cartResult = await this.cartRepository.findCartByUser(userId);
+    async execute({
+        userId,
+    }: GetCartByUserRequest): Promise<GetCartByUserResponse> {
+        const cartResult = await this.cartRepository.findCartByUser(userId);
+        console.log("cartResult", cartResult);
 
-    if (cartResult.isLeft()) {
-      return left(new ResourceNotFoundError("Cart not found"));
+        if (cartResult.isLeft()) {
+            return left(new ResourceNotFoundError("Cart not found"));
+        }
+        console.log("cartResult.value", cartResult.value);
+
+        return right(cartResult.value);
     }
-
-    return right(cartResult.value);
-  }
 }

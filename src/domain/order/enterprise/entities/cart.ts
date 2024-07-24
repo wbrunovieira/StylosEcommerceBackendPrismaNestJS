@@ -60,7 +60,7 @@ export class Cart extends Entity<CartProps> {
                 {
                     cartId: item.cartId,
                     productId: item.productId,
-                    ImageUrl: item.ImageUrl,
+                    imageUrl: item.imageUrl,
                     productName: item.productName,
                     quantity: item.quantity,
                     price: item.price,
