@@ -235,7 +235,7 @@ model Cart {
 model CartItem {
   id          String  @id @default(uuid())
   productName String
-  ImageUrl    String
+  imageUrl    String
   cartId      String
   cart        Cart    @relation(fields: [cartId], references: [id])
   productId   String

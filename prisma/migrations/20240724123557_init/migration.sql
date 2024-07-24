@@ -202,7 +202,7 @@ CREATE TABLE "carts" (
 CREATE TABLE "cart_items" (
     "id" TEXT NOT NULL,
     "productName" TEXT NOT NULL,
-    "ImageUrl" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
     "cartId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
