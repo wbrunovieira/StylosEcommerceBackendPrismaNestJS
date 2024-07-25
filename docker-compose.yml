@@ -1,75 +1,85 @@
 version: "3.8"
 services:
-  app:
-    build: .
-    container_name: stylos_backP
-    volumes:
-      - ./src:/app/src
-      - ./prisma:/app/prisma
-      - ./src/infra/database/scripts:/app/scripts
-    ports:
-      - "3333:3333"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
-      - DB_USER=postgres
-      - DB_PASSWORD=docker
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=stylos_db_prisma
-      - DB_SCHEMA=public
+    app:
+        build: .
+        container_name: stylos_backP
+        env_file:
+            - .env
+        volumes:
+            - ./src:/app/src
+            - ./prisma:/app/prisma
+            - ./src/infra/database/scripts:/app/scripts
+            - ./.env:/app/.env
+        ports:
+            - "3333:3333"
+        # environment:
+        #     - DATABASE_URL=${DATABASE_URL}
+        #     - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+        #     - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+        #     - MELHOR_ENVIO_CLIENTID_TEST=${MELHOR_ENVIO_CLIENTID_TEST}
+        #     - MELHOR_ENVIO_SECRET_TEST=${MELHOR_ENVIO_SECRET_TEST}
+        #     - MELHOR_ENVIO_API_URL_TEST=${MELHOR_ENVIO_API_URL_TEST}
+        #     - MELHOR_ENVIO_API_URL_TOKEN_TEST=${MELHOR_ENVIO_API_URL_TOKEN_TEST}
+        #     - MELHOR_ENVIO_API_URL_CALLBACK_TEST=${MELHOR_ENVIO_API_URL_CALLBACK_TEST}
+        #     - DB_USER=postgres
+        #     - DB_PASSWORD=docker
+        #     - DB_HOST=db
+        #     - DB_PORT=5432
+        #     - DB_NAME=stylos_db_prisma
+        #     - DB_SCHEMA=public
 
-    depends_on:
-      - db
-    command: >
-      sh -c "
-      echo 'Aguardando o banco de dados ficar pronto...';
-      while ! nc -z db 5432; do
-        sleep 1;
-      done;
-      echo 'Banco de dados pronto!';
-      npx prisma generate
-      npx prisma migrate deploy;
-      psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
-      npm run seed;
-      npm run start:dev;
-      "
-    networks:
-      - backend
+        depends_on:
+            - db
+        command: >
+            sh -c "
+            echo 'Aguardando o banco de dados ficar pronto...';
+            while ! nc -z db 5432; do
+              sleep 1;
+            done;
+            echo 'Banco de dados pronto!';
 
-  db:
-    image: postgres
+            npx prisma generate
+            npx prisma migrate deploy;
+            psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
+            npm run seed;
+            npm run start:dev;
+            "
+        networks:
+            - backend
 
-    container_name: stylos_db_prisma
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: stylos_db_prisma
-      PGDATA: /data/postgres
-    volumes:
-      - ./data/pg:/data/postgres
-    networks:
-      - backend
+    db:
+        image: postgres
 
-  test:
-    build: .
-    command: sh -c "npm run test:e2e && tail -f /dev/null"
-    container_name: stylos_db_test
-    volumes:
-      - ./src:/app/src
-      - ./prisma:/app/prisma
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+        container_name: stylos_db_prisma
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: docker
+            POSTGRES_DB: stylos_db_prisma
+            PGDATA: /data/postgres
+        volumes:
+            - ./data/pg:/data/postgres
+        networks:
+            - backend
 
-    networks:
-      - backend
+    test:
+        build: .
+        command: sh -c "npm run test:e2e && tail -f /dev/null"
+        container_name: stylos_db_test
+        volumes:
+            - ./src:/app/src
+            - ./prisma:/app/prisma
+            - ./.env:/app/.env
+        depends_on:
+            - db
+        environment:
+            - DATABASE_URL=${DATABASE_URL}
+            - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+            - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+
+        networks:
+            - backend
 networks:
-  backend:
-    driver: bridge
+    backend:
+        driver: bridge

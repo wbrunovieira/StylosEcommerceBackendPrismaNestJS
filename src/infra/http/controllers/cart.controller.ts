@@ -302,9 +302,14 @@ export class CartController {
     }
 
     @Post("/calculate-shipment")
-    @UsePipes(new ZodValidationsPipe(calculateShipmentSchema))
     async calculateShipment(@Body() body: CalculateShipmentSchema) {
         const { token, cartItems, selectedAddress } = body;
+        console.log(
+            '@Post("/calculate-shipment token, cartItems, selectedAddress',
+            token,
+            cartItems,
+            selectedAddress
+        );
 
         if (!token || !cartItems.length || !selectedAddress) {
             throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
@@ -312,7 +317,7 @@ export class CartController {
 
         const shipmentData = {
             from: {
-                postal_code: "01002001", // Replace with your actual sender postal code
+                postal_code: "06053-010",
             },
             to: {
                 postal_code: selectedAddress.props.zipCode,
@@ -336,7 +341,6 @@ export class CartController {
                 receipt: false,
                 own_hand: false,
             },
-            services: "1,2,3,4,7,11", // Replace with actual services you want to use
         };
 
         return this.calculateshipment.calculateShipment(shipmentData, token);
