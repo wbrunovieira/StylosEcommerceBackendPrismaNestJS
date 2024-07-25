@@ -34,11 +34,12 @@ export class AuthMelhorEnvioUseCase {
             "Content-Type": "application/json",
             "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
             Accept: "application/json",
+            
         };
         const body = {
             grant_type: "authorization_code",
             client_id: this.clientId,
-            clientSecret: this.clientSecret,
+            client_secret: this.clientSecret,
             redirect_uri: this.urlCallBack,
             code: authCode,
         };
