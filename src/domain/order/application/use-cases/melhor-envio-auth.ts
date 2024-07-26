@@ -24,7 +24,9 @@ export class AuthMelhorEnvioUseCase {
         const baseUrl = "https://sandbox.melhorenvio.com.br/oauth/authorize";
         const scopes = ["shipping-calculate", "shipping-checkout"];
         const scope = scopes.join(" ");
-        const url = `${baseUrl}?client_id=${this.clientId}&redirect_uri=${encodeURIComponent(this.urlCallBack)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+
+        const url = `${baseUrl}?client_id=${this.clientId}&redirect_uri=${this.urlCallBack}&response_type=code&scope=${scope}`;
+        console.log("this.urlCallBack", this.urlCallBack);
         return url;
     }
 
@@ -34,7 +36,6 @@ export class AuthMelhorEnvioUseCase {
             "Content-Type": "application/json",
             "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
             Accept: "application/json",
-            
         };
         const body = {
             grant_type: "authorization_code",
@@ -67,35 +68,35 @@ export class AuthMelhorEnvioUseCase {
         }
     }
 
-    // async refreshToken(refreshToken: string): Promise<any> {
-    //     const url = "https://sandbox.melhorenvio.com.br/oauth/token";
-    //     const headers = {
-    //         "Content-Type": "application/json",
-    //         "User-Agent": "StylosAppTeste (bruno@wbdigitalsolutions.com)",
-    //         Accept: "application/json",
-    //     };
-    //     const body = {
-    //         grant_type: "refresh_token",
-    //         client_id: this.clientId,
-    //         client_secret: this.clientSecret,
-    //         refresh_token: refreshToken,
-    //     };
 
-    //     try {
-    //         const response = await axios.post(url, body, { headers });
-    //         return response.data;
-    //     } catch (error: any) {
-    //         if (error.response) {
-    //             throw new HttpException(
-    //                 error.response.data,
-    //                 error.response.status
-    //             );
-    //         } else {
-    //             throw new HttpException(
-    //                 "An error occurred while refreshing the token",
-    //                 HttpStatus.INTERNAL_SERVER_ERROR
-    //             );
-    //         }
-    //     }
-    // }
+    async refreshToken(refreshToken: string): Promise<any> {
+        const url = "https://sandbox.melhorenvio.com.br/oauth/token";
+        const headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
+            Accept: "application/json",
+        };
+        const body = {
+            grant_type: "refresh_token",
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            refresh_token: refreshToken,
+        };
+        try {
+            console.log("AuthMelhorEnvioUseCase refreshToken body", body);
+            const response = await axios.post(url, body, { headers });
+            console.log("AuthMelhorEnvioUseCase refreshToken response", response);
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                console.log("AuthMelhorEnvioUseCase refreshToken error.response", error.response);
+                throw new HttpException(error.response.data, error.response.status);
+            } else {
+                throw new HttpException(
+                    "An error occurred while refreshing the token",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+        }
+    }
 }
