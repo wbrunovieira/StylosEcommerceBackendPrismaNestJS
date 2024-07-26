@@ -133,7 +133,7 @@ export class AuthenticateController {
         return { authUrl };
     }
 
-    @Post("request-token")
+    @Post("refresh-token")
     async refreshToken(@Body("refresh_token") refresh_token: string) {
         if (!refresh_token) {
             throw new HttpException(
