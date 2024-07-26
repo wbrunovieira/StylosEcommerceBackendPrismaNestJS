@@ -134,6 +134,24 @@ export class AuthenticateController {
     }
 
     @Post("request-token")
+    async refreshToken(@Body("refresh_token") refresh_token: string) {
+        if (!refresh_token) {
+            throw new HttpException(
+                "Authorization code is required",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        try {
+            const newToken =
+                await this.authMelhorEnvioUseCase.refreshToken(refresh_token);
+            return newToken;
+        } catch (error: any) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
+    @Post("request-token")
     async requestToken(@Body("code") code: string) {
         if (!code) {
             throw new HttpException(
@@ -141,6 +159,13 @@ export class AuthenticateController {
                 HttpStatus.BAD_REQUEST
             );
         }
-        return this.authMelhorEnvioUseCase.requestToken(code);
+
+        try {
+            const tokenData =
+                await this.authMelhorEnvioUseCase.requestToken(code);
+            return tokenData;
+        } catch (error: any) {
+            throw new HttpException(error.message, error.status);
+        }
     }
 }
