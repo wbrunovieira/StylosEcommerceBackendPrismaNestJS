@@ -42,17 +42,20 @@ export class CalculateShipmentUseCase {
     }
 
     async calculateShipment(data: any, token: string) {
+        console.log(" calculateShipment use case data", data);
         const url =
             "https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate";
         const headers = {
             "Content-Type": "application/json",
+
             "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
+            Authorization: `Bearer ${token}`,
             Accept: "application/json",
         };
 
         try {
             const response = await axios.post(url, data, { headers });
-
+            console.log(" calculateShipment use case response", response);
             return response.data;
         } catch (error) {
             console.error("Error calculating shipment:", error);
