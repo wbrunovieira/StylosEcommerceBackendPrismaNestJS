@@ -96,21 +96,7 @@ const calculateShipmentSchema = z.object({
         })
     ),
     selectedAddress: z.object({
-        _id: z.object({
-            value: z.string(),
-        }),
-        props: z.object({
-            userId: z.string(),
-            street: z.string(),
-            number: z.number(),
-            complement: z.string().optional(),
-            city: z.string(),
-            state: z.string(),
-            country: z.string(),
-            zipCode: z.string(),
-            createdAt: z.string(),
-            updatedAt: z.string(),
-        }),
+        zipCode: z.string(),
     }),
 });
 
@@ -303,6 +289,7 @@ export class CartController {
 
     @Post("/calculate-shipment")
     async calculateShipment(@Body() body: CalculateShipmentSchema) {
+        console.log('@Post("/calculate-shipment bateu');
         const { token, cartItems, selectedAddress } = body;
         console.log(
             '@Post("/calculate-shipment token, cartItems, selectedAddress',
@@ -320,7 +307,7 @@ export class CartController {
                 postal_code: "06053-010",
             },
             to: {
-                postal_code: selectedAddress.props.zipCode,
+                postal_code: selectedAddress.zipCode,
             },
             package: {
                 height: cartItems[0].height,
@@ -342,7 +329,14 @@ export class CartController {
                 own_hand: false,
             },
         };
+        console.log('@Post("/calculate-shipment shipmentData', shipmentData);
 
-        return this.calculateshipment.calculateShipment(shipmentData, token);
+        const result = this.calculateshipment.calculateShipment(
+            shipmentData,
+            token
+        );
+        console.log('@Post("/calculate-shipment result ', result);
+
+        return result;
     }
 }

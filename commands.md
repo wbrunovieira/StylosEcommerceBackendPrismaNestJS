@@ -96,3 +96,6 @@ docker compose exec app npx ts-node prisma/seed.ts
 
 psql $DATABASE_URL -f /app/scripts/triggers.sql
 psql -U postgres -h db -d stylos_db_prisma -c 'SET search_path TO public;' && psql -U postgres -h db -d stylos_db_prisma -f /app/scripts/triggers.sql
+
+ssh -vvv -R wbstylosbackend.serveo.net:80:localhost:3333 serveo.net
+ssh -v -R wbstylosfrontend.serveo.net:80:localhost:3000 serveo.net
