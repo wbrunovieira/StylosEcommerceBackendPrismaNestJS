@@ -83,6 +83,8 @@ import { MailerService } from "@/domain/auth/application/use-cases/mailer.servic
 import { ResetPasswordUseCase } from "@/domain/auth/application/use-cases/reset-password";
 import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgot-password";
 import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/calculate-shipping";
+import { SaveShippingUseCase } from "@/domain/order/application/use-cases/create-shipping";
+import { ShippingController } from "./controllers/shipping.controller";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -98,6 +100,7 @@ import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/c
         AccountController,
         CartController,
         AddressController,
+        ShippingController,
     ],
     providers: [
         JwtService,
@@ -171,6 +174,7 @@ import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/c
         UpdateItemQuantityInCartUseCase,
 
         CalculateShipmentUseCase,
+        SaveShippingUseCase,
 
         ApiGetAllProducts,
         SyncCategoriesUseCase,

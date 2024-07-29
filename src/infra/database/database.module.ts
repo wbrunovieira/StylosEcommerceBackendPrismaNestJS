@@ -26,88 +26,94 @@ import { IAddressRepository } from "@/domain/auth/application/repositories/i-add
 import { PrismaAddressRepository } from "./prisma/repositories/prisma-address-repository";
 import { ICartRepository } from "@/domain/order/application/repositories/i-cart-repository";
 import { PrismaCartRepository } from "./prisma/repositories/prisma-cart-repository";
+import { IShippingRepository } from "@/domain/order/application/repositories/i-shipping-repository";
+import { ShippingRepository } from "./prisma/repositories/prisma-shipping-repository";
 
 @Module({
-  providers: [
-    PrismaService,
-    {
-      provide: IBrandRepository,
-      useClass: PrismaBrandRepository,
-    },
-    {
-      provide: ICategoryRepository,
-      useClass: PrismaCategoryRepository,
-    },
-    {
-      provide: IColorRepository,
-      useClass: PrismaColorRepository,
-    },
-    {
-      provide: IProductRepository,
-      useClass: PrismaProductRepository,
-    },
-    {
-      provide: IMaterialRepository,
-      useClass: PrismaMaterialRepository,
-    },
-    {
-      provide: IProductCategoryRepository,
-      useClass: PrismaProductCategoryRepository,
-    },
-    {
-      provide: IProductSizeRepository,
-      useClass: PrismaProductSizeRepository,
-    },
-    {
-      provide: IProductColorRepository,
-      useClass: PrismaProductColorRepository,
-    },
-    {
-      provide: IProductVariantRepository,
-      useClass: PrismaProductVariantRepository,
-    },
-    {
-      provide: ISizeRepository,
-      useClass: PrismaSizeRepository,
-    },
-    {
-      provide: IAccountRepository,
-      useClass: PrismaAccountRepository,
-    },
-    {
-      provide: IAddressRepository,
-      useClass: PrismaAddressRepository,
-    },
-    {
-      provide: ICartRepository,
-      useClass: PrismaCartRepository,
-    },
-    
-    {
-      provide: IAddressRepository,
-      useClass: PrismaAddressRepository,
-    },
-    PrismaColorRepository,
-    PrismaSizeRepository,
-    PrismaCategoryRepository,
-    PrismaAccountRepository,
-    
-  ],
-  exports: [
-    PrismaService,
-    IBrandRepository,
-    IMaterialRepository,
-    ICategoryRepository,
-    IColorRepository,
-    ISizeRepository,
-    IProductRepository,
-    IProductCategoryRepository,
-    IProductSizeRepository,
-    IProductColorRepository,
-    IProductVariantRepository,
-    IAccountRepository,
-    ICartRepository,
-    IAddressRepository,
-  ],
+    providers: [
+        PrismaService,
+        {
+            provide: IBrandRepository,
+            useClass: PrismaBrandRepository,
+        },
+        {
+            provide: ICategoryRepository,
+            useClass: PrismaCategoryRepository,
+        },
+        {
+            provide: IColorRepository,
+            useClass: PrismaColorRepository,
+        },
+        {
+            provide: IProductRepository,
+            useClass: PrismaProductRepository,
+        },
+        {
+            provide: IMaterialRepository,
+            useClass: PrismaMaterialRepository,
+        },
+        {
+            provide: IProductCategoryRepository,
+            useClass: PrismaProductCategoryRepository,
+        },
+        {
+            provide: IProductSizeRepository,
+            useClass: PrismaProductSizeRepository,
+        },
+        {
+            provide: IProductColorRepository,
+            useClass: PrismaProductColorRepository,
+        },
+        {
+            provide: IProductVariantRepository,
+            useClass: PrismaProductVariantRepository,
+        },
+        {
+            provide: ISizeRepository,
+            useClass: PrismaSizeRepository,
+        },
+        {
+            provide: IAccountRepository,
+            useClass: PrismaAccountRepository,
+        },
+        {
+            provide: IAddressRepository,
+            useClass: PrismaAddressRepository,
+        },
+        {
+            provide: ICartRepository,
+            useClass: PrismaCartRepository,
+        },
+        {
+            provide: IShippingRepository,
+            useClass: ShippingRepository,
+        },
+
+        {
+            provide: IAddressRepository,
+            useClass: PrismaAddressRepository,
+        },
+        PrismaColorRepository,
+        PrismaSizeRepository,
+        PrismaCategoryRepository,
+        PrismaAccountRepository,
+    ],
+    exports: [
+        PrismaService,
+        IBrandRepository,
+        IMaterialRepository,
+        ICategoryRepository,
+        IColorRepository,
+        ISizeRepository,
+        IProductRepository,
+        IProductCategoryRepository,
+        IProductSizeRepository,
+        IProductColorRepository,
+        IProductVariantRepository,
+        IAccountRepository,
+        ICartRepository,
+        IAddressRepository,
+        IShippingRepository,
+    ],
 })
 export class DatabaseModule {}
