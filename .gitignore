@@ -5,6 +5,8 @@
 
 ngrok.yml
 
+mercadoPago.md
+
 # Logs
 logs
 *.log

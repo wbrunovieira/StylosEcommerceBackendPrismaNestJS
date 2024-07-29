@@ -249,9 +249,9 @@ CREATE TABLE "order_items" (
 CREATE TABLE "shippings" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "orderId" TEXT NOT NULL,
-    "carrier" TEXT NOT NULL,
-    "service" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "orderId" TEXT,
+    "service" TEXT,
     "trackingCode" TEXT,
     "shippingCost" DOUBLE PRECISION NOT NULL,
     "deliveryTime" INTEGER NOT NULL,
@@ -350,4 +350,4 @@ ALTER TABLE "order_items" ADD CONSTRAINT "order_items_productId_fkey" FOREIGN KE
 ALTER TABLE "shippings" ADD CONSTRAINT "shippings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "shippings" ADD CONSTRAINT "shippings_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "shippings" ADD CONSTRAINT "shippings_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;

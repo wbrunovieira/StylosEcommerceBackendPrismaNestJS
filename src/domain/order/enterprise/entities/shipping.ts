@@ -6,7 +6,7 @@ interface ShippingProps {
     name: string;
     orderId?: string;
 
-    service: string;
+    service?: string;
     trackingCode?: string;
     shippingCost: number;
     deliveryTime: number;
@@ -43,7 +43,7 @@ export class Shipping extends Entity<ShippingProps> {
         return this.props.orderId;
     }
 
-    get service(): string {
+    get service(): string | undefined {
         return this.props.service;
     }
 

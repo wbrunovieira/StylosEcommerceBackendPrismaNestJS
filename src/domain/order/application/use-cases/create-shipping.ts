@@ -11,7 +11,7 @@ interface CreateShippingUseCaseRequest {
     name: string;
     orderId?: string;
 
-    service: string;
+    service?: string;
     trackingCode?: string;
     shippingCost: number;
     deliveryTime: number;
