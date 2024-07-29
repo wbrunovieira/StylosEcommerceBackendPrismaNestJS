@@ -16,7 +16,7 @@ const createShipmentSchema = z.object({
     userId: z.string(),
     orderId: z.string().optional(),
     name: z.string(),
-    service: z.string(),
+    service: z.string().optional(),
     trackingCode: z.string().optional(),
     shippingCost: z.number().min(0),
     deliveryTime: z.number().min(0),
@@ -34,7 +34,10 @@ export class ShippingController {
         @Body(bodyValidationPipe) body: CreateShipmentBodySchema
     ) {
         try {
+            console.log("entrou no createShipment");
+            console.log("entrou no createShipment body", body);
             const result = await this.saveShippingUseCase.execute(body);
+            console.log("entrou no createShipment body", result);
 
             if (result.isLeft()) {
                 const error = result.value;

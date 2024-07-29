@@ -291,7 +291,7 @@ model Shipping {
   name           String
   orderId        String?
   
-  service        String
+  service        String?
   trackingCode   String?
   shippingCost   Float
   deliveryTime   Int        
