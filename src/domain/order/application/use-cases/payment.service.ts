@@ -1,39 +1,53 @@
-// import { Injectable } from "@nestjs/common";
-// import { ConfigService } from "@nestjs/config";
-// import MercadoPago from "mercadopago";
+import { Injectable } from "@nestjs/common";
+import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
 
-// @Injectable()
-// export class PaymentService {
-//     private mercadopago: typeof MercadoPago;
+interface Item {
+    id: string;
+    title: string;
+    quantity: number;
+    unit_price: number;
+}
 
-//     constructor(private configService: ConfigService) {
-//         this.mercadopago = new MercadoPago(
-//             this.configService.get<string>("MERCADO_PAGO_ACCESS_TOKEN")
-//         );
-//     }
+@Injectable()
+export class MercadoPagoService {
+    private client;
+    constructor() {
+        this.client = new MercadoPagoConfig({
+            accessToken: "YOUR_ACCESS_TOKEN",
+        });
+    }
 
-//     async createPreference() {
-//         const preference = {
-//             items: [
-//                 {
-//                     title: "My product",
-//                     quantity: 1,
-//                     unit_price: 2000,
-//                 },
-//             ],
-//             payment_methods: {
-//                 excluded_payment_methods: [{ id: "pec" }],
-//                 excluded_payment_types: [],
-//                 installments: 3,
-//             },
-//         };
+    async createPreference(items: Item[]) {
+        try {
+            const payment = new Payment(this.client);
+            const preference = new Preference(this.client);
 
-//         try {
-//             const response =
-//                 await this.mercadopago.preferences.create(preference);
-//             return response.body;
-//         } catch (error) {
-//             throw new Error(`Error creating preference: ${error.message}`);
-//         }
-//     }
-// }
+            preference
+                .create({
+                    body: {
+                        payment_methods: {
+                            excluded_payment_methods: [
+                                {
+                                    id: "pec",
+                                },
+                            ],
+                            excluded_payment_types: [
+                                {
+                                    id: "debit_card",
+                                },
+                            ],
+                            installments: 3,
+                        },
+                        items: items,
+                    },
+                })
+                .then(console.log)
+                .catch(console.log);
+            const response = await this.client.preferences.create(preference);
+            return response.body;
+        } catch (error) {
+            console.log(error);
+            throw new Error("Error creating preference");
+        }
+    }
+}

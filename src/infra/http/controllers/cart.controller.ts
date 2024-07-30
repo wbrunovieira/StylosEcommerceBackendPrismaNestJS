@@ -24,6 +24,7 @@ import { DeleteItemFromCartUseCase } from "@/domain/order/application/use-cases/
 import { GetCartByUserUseCase } from "@/domain/order/application/use-cases/get-Cart-ByUserId";
 import { UpdateItemQuantityInCartUseCase } from "@/domain/order/application/use-cases/update-quantity-item";
 import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/calculate-shipping";
+import { MercadoPagoService } from "@/domain/order/application/use-cases/payment.service";
 
 const createCartSchema = z.object({
     userId: z.string(),
@@ -102,6 +103,17 @@ const calculateShipmentSchema = z.object({
 
 type CalculateShipmentSchema = z.infer<typeof calculateShipmentSchema>;
 
+const createPreferenceSchema = z.object({
+    id: z.string(),
+    description: z.string(),
+    price: z.number(),
+    quantity: z.number(),
+});
+const createPreferenceValidationPipe = new ZodValidationsPipe(
+    createPreferenceSchema
+);
+type CreatePreferenceSchema = z.infer<typeof createPreferenceSchema>;
+
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
 export class CartController {
@@ -112,7 +124,8 @@ export class CartController {
         private deleteItemFromCartUseCase: DeleteItemFromCartUseCase,
         private getCartByUserUseCase: GetCartByUserUseCase,
         private calculateshipment: CalculateShipmentUseCase,
-        private updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase
+        private updateItemQuantityInCartUseCase: UpdateItemQuantityInCartUseCase,
+        private mercadoPagoService: MercadoPagoService
     ) {}
 
     @Post()
@@ -338,5 +351,30 @@ export class CartController {
         console.log('@Post("/calculate-shipment result ', result);
 
         return result;
+    }
+
+    @Post("/create-preference")
+    async createPreference(
+        @Body(createPreferenceValidationPipe) body: CreatePreferenceSchema
+    ) {
+        try {
+            const items = [
+                {
+                    id: body.id,
+                    title: body.description,
+                    unit_price: body.price,
+                    quantity: body.quantity,
+                },
+            ];
+            const response =
+                await this.mercadoPagoService.createPreference(items);
+            return response;
+        } catch (error) {
+            console.error("Erro ao criar preferência no MercadoPago:", error);
+            throw new HttpException(
+                "Failed to create preference",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

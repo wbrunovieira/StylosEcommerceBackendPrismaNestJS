@@ -85,6 +85,7 @@ import { ForgotPasswordUseCase } from "@/domain/auth/application/use-cases/forgo
 import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/calculate-shipping";
 import { SaveShippingUseCase } from "@/domain/order/application/use-cases/create-shipping";
 import { ShippingController } from "./controllers/shipping.controller";
+import { MercadoPagoService } from "@/domain/order/application/use-cases/payment.service";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -175,6 +176,7 @@ import { ShippingController } from "./controllers/shipping.controller";
 
         CalculateShipmentUseCase,
         SaveShippingUseCase,
+        MercadoPagoService,
 
         ApiGetAllProducts,
         SyncCategoriesUseCase,
