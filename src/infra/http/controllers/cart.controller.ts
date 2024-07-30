@@ -358,6 +358,8 @@ export class CartController {
         @Body(createPreferenceValidationPipe) body: CreatePreferenceSchema
     ) {
         try {
+            console.log("entrou /create-preference");
+            console.log("entrou /create-preference body", body);
             const items = [
                 {
                     id: body.id,
@@ -366,8 +368,10 @@ export class CartController {
                     quantity: body.quantity,
                 },
             ];
+            console.log("entrou /create-preference items", items);
             const response =
                 await this.mercadoPagoService.createPreference(items);
+            console.log("entrou /create-preference response", response);
             return response;
         } catch (error) {
             console.error("Erro ao criar preferência no MercadoPago:", error);
