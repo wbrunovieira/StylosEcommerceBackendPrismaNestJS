@@ -1,4 +1,6 @@
+import { Env } from "@/env";
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
 
 interface Item {
@@ -11,9 +13,15 @@ interface Item {
 @Injectable()
 export class MercadoPagoService {
     private client;
-    constructor() {
+    private readonly mercado_pago_accesstoken;
+    constructor(private configService: ConfigService<Env, true>) {
+        this.configService = configService;
+        this.mercado_pago_accesstoken = configService.get(
+            "MERCADO_PAGO_ACCESS_TOKEN"
+        );
+
         this.client = new MercadoPagoConfig({
-            accessToken: "YOUR_ACCESS_TOKEN",
+            accessToken: this.mercado_pago_accesstoken,
         });
     }
 

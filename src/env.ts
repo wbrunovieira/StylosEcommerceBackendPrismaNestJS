@@ -13,6 +13,8 @@ export const envSchema = z.object({
     MELHOR_ENVIO_SECRET_TEST: z.string(),
     MELHOR_ENVIO_API_URL_TEST: z.string().url(),
     MELHOR_ENVIO_API_URL_CALLBACK_TEST: z.string().url(),
+
+    MERCADO_PAGO_ACCESS_TOKEN:z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;
