@@ -1,34 +1,34 @@
 import { Env } from "@/env";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
+import { MercadoPagoConfig, Preference, } from "mercadopago";
 
 interface Item {
     id: string;
     title: string;
+    description?: string;
     quantity: number;
     unit_price: number;
+    currency_id?: string;
+    picture_url?: string;
+    category_id?: string;
 }
 
 @Injectable()
 export class MercadoPagoService {
     private client;
-    private readonly mercado_pago_accesstoken;
+    
     constructor(private configService: ConfigService<Env, true>) {
-        this.configService = configService;
-        this.mercado_pago_accesstoken = configService.get(
-            "MERCADO_PAGO_ACCESS_TOKEN"
-        );
-
-        this.client = new MercadoPagoConfig({
-            accessToken: this.mercado_pago_accesstoken,
-        });
+        const accessToken = configService.get<string>("MERCADO_PAGO_ACCESS_TOKEN");
+        this.client = new MercadoPagoConfig({ accessToken });
     }
 
     async createPreference(items: Item[]) {
         try {
-            const payment = new Payment(this.client);
+
+            
             const preference = new Preference(this.client);
+            console.log("payment preference", preference);
 
             preference
                 .create({
@@ -51,6 +51,7 @@ export class MercadoPagoService {
                 })
                 .then(console.log)
                 .catch(console.log);
+            console.log("payment preference create", preference);
             const response = await this.client.preferences.create(preference);
             return response.body;
         } catch (error) {
