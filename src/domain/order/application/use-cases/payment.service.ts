@@ -1,7 +1,9 @@
 import { Env } from "@/env";
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+
+import * as crypto from "crypto";
 
 interface Item {
     id: string;
@@ -17,11 +19,15 @@ interface Item {
 @Injectable()
 export class MercadoPagoService {
     private client;
-
+    private secretKey: string;
     constructor(private configService: ConfigService<Env, true>) {
         const accessToken = configService.get<string>(
             "MERCADO_PAGO_ACCESS_TOKEN"
         );
+        this.secretKey = configService.get<string>(
+            "MERCADO_PAGO_ASSINATURA_SECRETA_WEBHOOK"
+        );
+
         this.client = new MercadoPagoConfig({ accessToken });
     }
 
@@ -66,5 +72,74 @@ export class MercadoPagoService {
             console.log(error);
             throw new Error("Error creating preference");
         }
+    }
+
+    validateSignature(
+        payload: any,
+        xSignature: string,
+        xRequestId: string
+    ): boolean {
+        if (!this.secretKey) {
+            throw new Error(
+                "MERCADO_PAGO_SECRET_KEY is not set in environment variables"
+            );
+        }
+
+        console.log("validateSignature entrou");
+
+        const [tsPart, v1Part] = xSignature.split(",");
+
+        if (!tsPart || !v1Part) {
+            throw new HttpException(
+                "Invalid signature format",
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        const ts = tsPart.split("=")[1];
+        const v1 = v1Part.split("=")[1];
+
+        const signatureTemplate = `id:${payload.data.id};request-id:${xRequestId};ts:${ts};`;
+
+        const hash = crypto
+            .createHmac("sha256", this.secretKey)
+            .update(signatureTemplate)
+            .digest("hex");
+
+        console.log("Signature Template:", signatureTemplate);
+        console.log("Calculated Hash:", hash);
+        console.log("Provided Hash:", v1);
+        console.log("this.secretKey", this.secretKey);
+
+        console.log("Calculated Hash:", hash);
+
+        if (hash !== v1) {
+            throw new HttpException(
+                "Invalid signature",
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        return true;
+    }
+
+    async processWebhookNotification(notification: any) {
+        console.log("Processing webhook notification:", notification);
+
+        const { action, data } = notification;
+        if (action === "payment.created") {
+            const paymentId = data.id;
+            console.log(
+                `Processing payment created event for payment ID: ${paymentId}`
+            );
+            // Update payment status in the database, etc.
+        } else if (action === "payment.updated") {
+            const paymentId = data.id;
+            console.log(
+                `Processing payment updated event for payment ID: ${paymentId}`
+            );
+            // Additional logic for payment updates
+        }
+        // Add more logic as necessary
     }
 }
