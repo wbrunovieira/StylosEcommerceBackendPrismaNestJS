@@ -6,11 +6,14 @@ import {
     HttpException,
     ConflictException,
     UseGuards,
+    Headers,
     Param,
     Get,
     Delete,
     Patch,
     UsePipes,
+    Req,
+    Res,
 } from "@nestjs/common";
 
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
@@ -113,6 +116,8 @@ const createPreferenceValidationPipe = new ZodValidationsPipe(
     createPreferenceSchema
 );
 type CreatePreferenceSchema = z.infer<typeof createPreferenceSchema>;
+
+
 
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
@@ -299,6 +304,8 @@ export class CartController {
             );
         }
     }
+
+
 
     @Post("/calculate-shipment")
     async calculateShipment(@Body() body: CalculateShipmentSchema) {
