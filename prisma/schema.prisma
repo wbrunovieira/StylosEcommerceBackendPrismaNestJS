@@ -265,7 +265,7 @@ model Order {
   user        User        @relation(fields: [userId], references: [id])
   items       OrderItem[]
   
-  totalAmount Float
+ 
   status      OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt

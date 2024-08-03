@@ -111,13 +111,12 @@ const createPreferenceSchema = z.object({
     description: z.string(),
     price: z.number(),
     quantity: z.number(),
+    cartId: z.string(),
 });
 const createPreferenceValidationPipe = new ZodValidationsPipe(
     createPreferenceSchema
 );
 type CreatePreferenceSchema = z.infer<typeof createPreferenceSchema>;
-
-
 
 @UseGuards(JwtAuthGuard)
 @Controller("cart")
@@ -305,8 +304,6 @@ export class CartController {
         }
     }
 
-
-
     @Post("/calculate-shipment")
     async calculateShipment(@Body() body: CalculateShipmentSchema) {
         console.log('@Post("/calculate-shipment bateu');
@@ -376,8 +373,11 @@ export class CartController {
                 },
             ];
             console.log("entrou /create-preference items", items);
-            const response =
-                await this.mercadoPagoService.createPreference(items);
+            const response = await this.mercadoPagoService.createPreference(
+                body.cartId,
+                items
+            );
+            
             console.log("entrou /create-preference response", response);
             return response;
         } catch (error) {

@@ -86,6 +86,7 @@ import { CalculateShipmentUseCase } from "@/domain/order/application/use-cases/c
 import { SaveShippingUseCase } from "@/domain/order/application/use-cases/create-shipping";
 import { ShippingController } from "./controllers/shipping.controller";
 import { MercadoPagoService } from "@/domain/order/application/use-cases/payment.service";
+import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-order";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -184,6 +185,9 @@ import { MercadoPagoService } from "@/domain/order/application/use-cases/payment
 
         CreateAccountUseCase,
         CreateGoogleAccountUseCase,
+
+        CreateOrderUseCase,
+        
 
         CreateAddressUseCase,
 
