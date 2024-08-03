@@ -229,6 +229,10 @@ model Cart {
   shipping        Shipping? @relation(fields: [shippingId], references: [id])
   shippingId      String? @unique
 
+  paymentIntentId String?   
+  paymentStatus  String?  
+
+
   @@map("carts")
 }
 
@@ -260,11 +264,17 @@ model Order {
   userId      String
   user        User        @relation(fields: [userId], references: [id])
   items       OrderItem[]
+  
   totalAmount Float
   status      OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt
   shippings      Shipping[]
+
+  paymentId      String?     @unique 
+  paymentStatus  String?               
+  paymentMethod  String?              
+  paymentDate    DateTime?
 
   @@map("orders")
 }

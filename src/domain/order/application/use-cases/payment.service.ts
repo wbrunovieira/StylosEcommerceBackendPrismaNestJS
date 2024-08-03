@@ -123,16 +123,34 @@ export class MercadoPagoService {
         return true;
     }
 
-    async processWebhookNotification(notification: any) {
-        console.log("Processing webhook notification:", notification);
+    async processWebhookNotification(body: any, dataId: string, type: string) {
+        console.log(
+            "Processing webhook notification with dataId:",
+            dataId,
+            "and type:",
+            type
+        );
 
-        const { action, data } = notification;
+        const action = type || body.action;
+
+        const data = body.data || { id: dataId };
+
+        if (!action || !data.id) {
+            console.error("Invalid webhook data:", body);
+            throw new Error("Invalid webhook data");
+        }
+
+        const paymentId = data.id;
+        const dateCreated = body.date_created;
+        const liveMode = body.live_mode;
+        const apiVersion = body.api_version;
+        const userId = body.user_id;
+
         if (action === "payment.created") {
             const paymentId = data.id;
             console.log(
                 `Processing payment created event for payment ID: ${paymentId}`
             );
-            // Update payment status in the database, etc.
         } else if (action === "payment.updated") {
             const paymentId = data.id;
             console.log(
