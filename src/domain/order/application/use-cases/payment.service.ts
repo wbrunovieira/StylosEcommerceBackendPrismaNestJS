@@ -4,6 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 
 import * as crypto from "crypto";
+import { PrismaCartRepository } from "@/infra/database/prisma/repositories/prisma-cart-repository";
+import { PreferenceRequest } from "mercadopago/dist/clients/preference/commonTypes";
+import { PrismaOrderRepository } from "@/infra/database/prisma/repositories/prisma-order-repository";
+import { CreateOrderUseCase } from "./create-order";
+import { OrderStatus } from "../../enterprise/entities/order-status";
 
 interface Item {
     id: string;
@@ -20,7 +25,11 @@ interface Item {
 export class MercadoPagoService {
     private client;
     private secretKey: string;
-    constructor(private configService: ConfigService<Env, true>) {
+    constructor(
+        private configService: ConfigService<Env, true>,
+        private cartRepository: PrismaCartRepository,
+        private orderUseCase: CreateOrderUseCase
+    ) {
         const accessToken = configService.get<string>(
             "MERCADO_PAGO_ACCESS_TOKEN"
         );
@@ -31,45 +40,53 @@ export class MercadoPagoService {
         this.client = new MercadoPagoConfig({ accessToken });
     }
 
-    async createPreference(items: Item[]) {
+    async createPreference(cartId: string, items: Item[]) {
         try {
-            const preference = new Preference(this.client);
-
-            console.log("payment preference", preference);
-
-            const response = await preference.create({
-                body: {
-                    payment_methods: {
-                        excluded_payment_methods: [
-                            {
-                                id: "pec",
-                            },
-                        ],
-                        excluded_payment_types: [
-                            {
-                                id: "debit_card",
-                            },
-                        ],
-                        installments: 3,
-                    },
-                    back_urls: {
-                        success:
-                            "https://wbstylosfrontend.sa.ngrok.io/pagamento-sucesso",
-                        failure:
-                            "https://wbstylosfrontend.sa.ngrok.io/pagamento-falhou",
-                        pending:
-                            "https://wbstylosfrontend.sa.ngrok.io/pagamento-pendente",
-                    },
-                    auto_return: "approved",
-                    items: items,
+            const preferenceData: PreferenceRequest = {
+                items: items.map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    currency_id: item.currency_id || "BRL",
+                    picture_url: item.picture_url,
+                    category_id: item.category_id,
+                    description: item.description,
+                })),
+                payment_methods: {
+                    excluded_payment_methods: [{ id: "pec" }],
+                    excluded_payment_types: [{ id: "debit_card" }],
+                    installments: 3,
                 },
-            });
+                back_urls: {
+                    success:
+                        "https://wbstylosfrontend.sa.ngrok.io/pagamento-sucesso",
+                    failure:
+                        "https://wbstylosfrontend.sa.ngrok.io/pagamento-falhou",
+                    pending:
+                        "https://wbstylosfrontend.sa.ngrok.io/pagamento-pendente",
+                },
+                auto_return: "approved",
+                external_reference: cartId,
+                notification_url:
+                    "https://wbstylosbackend.sa.ngrok.io/shipping/webhookpro",
+            };
 
-            console.log("payment preference create", preference);
+            const response =
+                await this.client.preference.create(preferenceData);
 
-            return response;
+            console.log("Payment preference created successfully", response);
+
+            const preferenceId = response.body.id;
+            await this.cartRepository.savePreferenceId(
+                cartId,
+                preferenceId,
+                "pending"
+            );
+
+            return response.body;
         } catch (error) {
-            console.log(error);
+            console.error("Error creating preference:", error);
             throw new Error("Error creating preference");
         }
     }
@@ -146,18 +163,50 @@ export class MercadoPagoService {
         const apiVersion = body.api_version;
         const userId = body.user_id;
 
+        let cart = await this.cartRepository.findByPreferenceId(paymentId);
+        if (!cart) {
+            console.error(`Cart not found for payment ID: ${paymentId}`);
+            throw new Error("Cart not found for the given payment ID");
+        }
+
         if (action === "payment.created") {
             const paymentId = data.id;
             console.log(
                 `Processing payment created event for payment ID: ${paymentId}`
             );
+        }
+
+        if (action === "payment.approved") {
+            console.log(
+                `
+                
+                Processing payment created event for payment ID: ${paymentId}`
+            );
+            const createOrderRequest = {
+                userId: cart.userId,
+                items: cart.items.map((item) => ({
+                    productId: item.productId,
+                    productName: item.productName,
+                    imageUrl: item.imageUrl,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+
+                status: OrderStatus.COMPLETED,
+                paymentId: paymentId,
+                paymentStatus: "APPROVED",
+                paymentMethod: body.payment_method_id,
+                paymentDate: new Date(dateCreated),
+            };
+
+            const order = await this.orderUseCase.execute(createOrderRequest);
         } else if (action === "payment.updated") {
             const paymentId = data.id;
             console.log(
                 `Processing payment updated event for payment ID: ${paymentId}`
             );
-            // Additional logic for payment updates
+            
         }
-        // Add more logic as necessary
+       
     }
 }

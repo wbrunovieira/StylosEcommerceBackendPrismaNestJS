@@ -329,4 +329,81 @@ export class PrismaCartRepository implements ICartRepository {
             return left(new ResourceNotFoundError("Failed to fetch cart"));
         }
     }
+
+    async savePreferenceId(
+        cartId: string,
+        preferenceId: string,
+        paymentStatus: string
+    ): Promise<Either<Error, void>> {
+        try {
+            console.log(
+                `Saving preferenceId for cart ${cartId} with preferenceId: ${preferenceId}`
+            );
+
+            await this.prisma.cart.update({
+                where: { id: cartId },
+                data: {
+                    paymentIntentId: preferenceId,
+                    paymentStatus: paymentStatus,
+                },
+            });
+
+            console.log(`Successfully saved preferenceId for cart ${cartId}`);
+            return right(undefined);
+        } catch (error) {
+            console.error("Error saving preferenceId:", error);
+            return left(new Error("Failed to save preferenceId"));
+        }
+    }
+
+    async findByPreferenceId(preferenceId: string): Promise<Cart | null> {
+        try {
+            const cart = await this.prisma.cart.findFirst({
+                where: { paymentIntentId: preferenceId },
+                include: { items: true },
+            });
+
+            if (!cart) {
+                console.error(
+                    `Cart not found for preference ID: ${preferenceId}`
+                );
+                return null;
+            }
+
+            const cartItems = cart.items.map((item) =>
+                CartItem.create(
+                    {
+                        cartId: item.cartId,
+                        productId: item.productId,
+                        productName: item.productName,
+                        imageUrl: item.imageUrl,
+                        quantity: item.quantity,
+                        price: item.price,
+                        height: item.height,
+                        width: item.width,
+                        length: item.length,
+                        weight: item.weight,
+                        color: item.colorId?.toString(),
+                        size: item.sizeId?.toString(),
+                        hasVariants: item.hasVariants,
+                       
+                    },
+                    new UniqueEntityID(item.id)
+                )
+            );
+
+            return Cart.create(
+                {
+                    userId: cart.userId,
+                    items: cartItems,
+                    paymentIntentId: cart.paymentIntentId || undefined, 
+                    paymentStatus: cart.paymentStatus || undefined,
+                },
+                new UniqueEntityID(cart.id)
+            );
+        } catch (error) {
+            console.error("Error finding cart by preference ID:", error);
+            throw new Error("Failed to find cart by preference ID");
+        }
+    }
 }
