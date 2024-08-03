@@ -11,6 +11,7 @@ import {
     HttpStatus,
     Headers,
     ConflictException,
+    Query,
 } from "@nestjs/common";
 import { z } from "zod";
 
@@ -90,20 +91,42 @@ export class ShippingController {
     async handleMercadoPagoWebhook(
         @Body(mercadoPagoWebhookValidationPipe) body: MercadoPagoWebhookSchema,
         @Headers("x-signature") xSignature: string,
-        @Headers("x-request-id") xRequestId: string
+        @Headers("x-request-id") xRequestId: string,
+        @Query("data.id") dataId: string, 
+        @Query("type") type: string
     ) {
         try {
             console.log("Webhook recebido:", body);
+            console.log("Query Parameters - data.id:", dataId, "type:", type);
+            const {
+                action,
+                api_version,
+                data,
+                date_created,
+                id,
+                live_mode,
+                type: bodyType,
+                user_id,
+            } = body;
+
+            console.log("Action:", action);
+           
+            console.log("Payment Data ID:", data.id);
+            
+            console.log("Webhook ID:", id);
+            console.log("Live Mode:", live_mode);
+            console.log("Type:", bodyType);
+            console.log("User ID:", user_id);
 
             await this.mercadoPagoService.validateSignature(
                 body,
                 xSignature,
                 xRequestId
             );
-            await this.mercadoPagoService.processWebhookNotification(body);
+            await this.mercadoPagoService.processWebhookNotification(body, dataId, type);
 
             return {
-                statusCode: HttpStatus.OK,
+                statusCode: HttpStatus.CREATED,
                 message: "Webhook processed successfully",
             };
         } catch (error: any) {

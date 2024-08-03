@@ -194,6 +194,8 @@ CREATE TABLE "carts" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
     "shippingId" TEXT,
+    "paymentIntentId" TEXT,
+    "paymentStatus" TEXT,
 
     CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
 );
@@ -228,6 +230,10 @@ CREATE TABLE "orders" (
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "paymentId" TEXT,
+    "paymentStatus" TEXT,
+    "paymentMethod" TEXT,
+    "paymentDate" TIMESTAMP(3),
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
@@ -288,6 +294,9 @@ CREATE UNIQUE INDEX "brands_name_key" ON "brands"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "carts_shippingId_key" ON "carts"("shippingId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "orders_paymentId_key" ON "orders"("paymentId");
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
