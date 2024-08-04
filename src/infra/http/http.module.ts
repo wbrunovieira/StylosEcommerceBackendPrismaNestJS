@@ -87,6 +87,7 @@ import { SaveShippingUseCase } from "@/domain/order/application/use-cases/create
 import { ShippingController } from "./controllers/shipping.controller";
 import { MercadoPagoService } from "@/domain/order/application/use-cases/payment.service";
 import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-order";
+import { FindCartByPreferenceIdUseCase } from "@/domain/order/application/use-cases/find-cart-bt-preferenceId";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -187,7 +188,7 @@ import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-
         CreateGoogleAccountUseCase,
 
         CreateOrderUseCase,
-        
+        FindCartByPreferenceIdUseCase,
 
         CreateAddressUseCase,
 

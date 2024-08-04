@@ -9,6 +9,7 @@ import { PreferenceRequest } from "mercadopago/dist/clients/preference/commonTyp
 import { PrismaOrderRepository } from "@/infra/database/prisma/repositories/prisma-order-repository";
 import { CreateOrderUseCase } from "./create-order";
 import { OrderStatus } from "../../enterprise/entities/order-status";
+import { FindCartByPreferenceIdUseCase } from "./find-cart-bt-preferenceId";
 
 interface Item {
     id: string;
@@ -27,7 +28,8 @@ export class MercadoPagoService {
     private secretKey: string;
     constructor(
         private configService: ConfigService<Env, true>,
-        private cartRepository: PrismaCartRepository,
+        // private cartRepository: PrismaCartRepository,
+        private findCartByPreferenceId: FindCartByPreferenceIdUseCase,
         private orderUseCase: CreateOrderUseCase
     ) {
         const accessToken = configService.get<string>(
@@ -78,10 +80,10 @@ export class MercadoPagoService {
             console.log("Payment preference created successfully", response);
 
             const preferenceId = response.body.id;
-            await this.cartRepository.savePreferenceId(
+            await this.findCartByPreferenceId.savePreferenceId(
                 cartId,
                 preferenceId,
-                "pending"
+               
             );
 
             return response.body;
@@ -163,7 +165,8 @@ export class MercadoPagoService {
         const apiVersion = body.api_version;
         const userId = body.user_id;
 
-        let cart = await this.cartRepository.findByPreferenceId(paymentId);
+        let cart = await this.findCartByPreferenceId.execute(paymentId);
+
         if (!cart) {
             console.error(`Cart not found for payment ID: ${paymentId}`);
             throw new Error("Cart not found for the given payment ID");
@@ -205,8 +208,6 @@ export class MercadoPagoService {
             console.log(
                 `Processing payment updated event for payment ID: ${paymentId}`
             );
-            
         }
-       
     }
 }
