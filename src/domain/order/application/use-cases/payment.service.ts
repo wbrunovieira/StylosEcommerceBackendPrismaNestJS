@@ -2,6 +2,7 @@ import { Env } from "@/env";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import mercadopago from "mercadopago";
 
 import * as crypto from "crypto";
 import { PrismaCartRepository } from "@/infra/database/prisma/repositories/prisma-cart-repository";
@@ -24,22 +25,31 @@ interface Item {
 
 @Injectable()
 export class MercadoPagoService {
-    private client;
     private secretKey: string;
+
+    private preference: Preference;
     constructor(
         private configService: ConfigService<Env, true>,
-        // private cartRepository: PrismaCartRepository,
+
         private findCartByPreferenceId: FindCartByPreferenceIdUseCase,
         private orderUseCase: CreateOrderUseCase
     ) {
         const accessToken = configService.get<string>(
             "MERCADO_PAGO_ACCESS_TOKEN"
         );
+        if (!accessToken) {
+            throw new Error("MERCADO_PAGO_ACCESS_TOKEN is not defined");
+        }
+
+        const client = new MercadoPagoConfig({
+            accessToken,
+            options: { timeout: 5000 },
+        });
+        this.preference = new Preference(client);
+
         this.secretKey = configService.get<string>(
             "MERCADO_PAGO_ASSINATURA_SECRETA_WEBHOOK"
         );
-
-        this.client = new MercadoPagoConfig({ accessToken });
     }
 
     async createPreference(cartId: string, items: Item[]) {
@@ -74,19 +84,19 @@ export class MercadoPagoService {
                     "https://wbstylosbackend.sa.ngrok.io/shipping/webhookpro",
             };
 
-            const response =
-                await this.client.preference.create(preferenceData);
+            const response = await this.preference.create({
+                body: preferenceData,
+            });
 
             console.log("Payment preference created successfully", response);
 
-            const preferenceId = response.body.id;
+            const preferenceId = response.id;
             await this.findCartByPreferenceId.savePreferenceId(
                 cartId,
-                preferenceId,
-               
+                preferenceId
             );
 
-            return response.body;
+            return response;
         } catch (error) {
             console.error("Error creating preference:", error);
             throw new Error("Error creating preference");
