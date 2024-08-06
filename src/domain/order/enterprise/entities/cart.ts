@@ -5,8 +5,9 @@ import { CartItem } from "./cart-item";
 interface CartProps {
     userId: string;
     items: CartItem[];
-    paymentIntentId?: string  
-    paymentStatus?:  string
+    paymentIntentId?: string;
+    paymentStatus?: string;
+    collection_id?: string;
 }
 
 export class Cart extends Entity<CartProps> {
@@ -21,18 +22,24 @@ export class Cart extends Entity<CartProps> {
     get userId(): string {
         return this.props.userId;
     }
+    get collection_id(): string | undefined {
+        return this.props.collection_id;
+    }
 
-    get paymentIntentId(): string | undefined{
+    get paymentIntentId(): string | undefined {
         return this.props.paymentIntentId;
     }
-    get paymentStatus(): string | undefined{
+    get paymentStatus(): string | undefined {
         return this.props.paymentIntentId;
     }
 
     set paymentIntentId(paymentIntentId: string) {
         this.props.paymentIntentId = paymentIntentId;
     }
-    
+    set collection_id(collection_id: string) {
+        this.props.collection_id = collection_id;
+    }
+
     set paymentStatus(paymentStatus: string) {
         this.props.paymentStatus = paymentStatus;
     }

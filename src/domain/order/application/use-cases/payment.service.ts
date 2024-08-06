@@ -91,10 +91,15 @@ export class MercadoPagoService {
             console.log("Payment preference created successfully", response);
 
             const preferenceId = response.id;
-            await this.findCartByPreferenceId.savePreferenceId(
-                cartId,
-                preferenceId
-            );
+            console.log("Payment preference preferenceId", preferenceId);
+
+            const savedPreferenceId =
+                await this.findCartByPreferenceId.savePreferenceId(
+                    cartId,
+                    preferenceId
+                );
+            console.log("PsavedPreferenceId", savedPreferenceId);
+            console.log("response", response);
 
             return response;
         } catch (error) {
@@ -103,11 +108,11 @@ export class MercadoPagoService {
         }
     }
 
-    validateSignature(
+    async validateSignature(
         payload: any,
         xSignature: string,
         xRequestId: string
-    ): boolean {
+    ): Promise<boolean> {
         if (!this.secretKey) {
             throw new Error(
                 "MERCADO_PAGO_SECRET_KEY is not set in environment variables"

@@ -22,4 +22,9 @@ export abstract class ICartRepository {
         paymentStatus: string
     ): Promise<Either<Error, void>>;
     abstract findByPreferenceId(preferenceId: string): Promise<Cart | null>;
+    abstract findByCollectionId(collection_id: string): Promise<Cart | null>;
+    abstract saveCollectionId(
+        cartId: string,
+        collection_id: string
+    ): Promise<Either<Error, void>>;
 }

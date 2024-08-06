@@ -1,5 +1,6 @@
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { SaveShippingUseCase } from "@/domain/order/application/use-cases/create-shipping";
+import { FindCartByPreferenceIdUseCase } from "@/domain/order/application/use-cases/find-cart-bt-preferenceId";
 import { MercadoPagoService } from "@/domain/order/application/use-cases/payment.service";
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 
@@ -28,6 +29,14 @@ const createShipmentSchema = z.object({
 const bodyValidationPipe = new ZodValidationsPipe(createShipmentSchema);
 type CreateShipmentBodySchema = z.infer<typeof createShipmentSchema>;
 
+const paymentSuccess = z.object({
+    collection_id: z.string(),
+    cartId: z.string(),
+});
+
+const paymentValidationBody = new ZodValidationsPipe(paymentSuccess);
+type PaymentSuccessBodySchema = z.infer<typeof paymentSuccess>;
+
 const mercadoPagoWebhookSchema = z.object({
     id: z.string(),
     live_mode: z.boolean(),
@@ -54,7 +63,8 @@ type MercadoPagoWebhookSchema = z.infer<typeof mercadoPagoWebhookSchema>;
 export class ShippingController {
     constructor(
         private readonly saveShippingUseCase: SaveShippingUseCase,
-        private mercadoPagoService: MercadoPagoService
+        private mercadoPagoService: MercadoPagoService,
+        private findCart: FindCartByPreferenceIdUseCase
     ) {}
 
     @Post("/create")
@@ -86,13 +96,47 @@ export class ShippingController {
             );
         }
     }
+    
+    @Post("/payment-success")
+    async saveIdPayment(
+        @Body(bodyValidationPipe) body: PaymentSuccessBodySchema
+    ) {
+        try {
+            console.log("epayment-success");
+            console.log("entrou no createShipment body", body);
+            const { cartId, collection_id } = body;
+            const result = await this.findCart.saveCollectionId(
+                cartId,
+                collection_id
+            );
+            console.log("entrou no createShipment body", result);
+
+            if (result.isLeft()) {
+                const error = result.value;
+                if (error instanceof ResourceNotFoundError) {
+                    throw new ConflictException(error.message);
+                }
+                throw new ConflictException("An unexpected error occurred");
+            }
+            return result.value;
+        } catch (error) {
+            console.error("Erro ao criar shipment:", error);
+            if (error instanceof ConflictException) {
+                throw error;
+            }
+            throw new HttpException(
+                "Failed to create shipment",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Post("/webhookpro")
     async handleMercadoPagoWebhook(
         @Body(mercadoPagoWebhookValidationPipe) body: MercadoPagoWebhookSchema,
         @Headers("x-signature") xSignature: string,
         @Headers("x-request-id") xRequestId: string,
-        @Query("data.id") dataId: string, 
+        @Query("data.id") dataId: string,
         @Query("type") type: string
     ) {
         try {
@@ -110,9 +154,9 @@ export class ShippingController {
             } = body;
 
             console.log("Action:", action);
-           
+
             console.log("Payment Data ID:", data.id);
-            
+
             console.log("Webhook ID:", id);
             console.log("Live Mode:", live_mode);
             console.log("Type:", bodyType);
@@ -123,7 +167,12 @@ export class ShippingController {
                 xSignature,
                 xRequestId
             );
-            await this.mercadoPagoService.processWebhookNotification(body, dataId, type);
+
+            await this.mercadoPagoService.processWebhookNotification(
+                body,
+                dataId,
+                type
+            );
 
             return {
                 statusCode: HttpStatus.CREATED,
@@ -143,6 +192,7 @@ export class ShippingController {
                     message: "Failed to process webhook",
                     details: error.message || "Unknown error occurred",
                 },
+
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }

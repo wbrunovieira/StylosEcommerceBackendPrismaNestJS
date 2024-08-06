@@ -228,6 +228,7 @@ model Cart {
   updatedAt DateTime? @updatedAt @map("updated_at")
   shipping        Shipping? @relation(fields: [shippingId], references: [id])
   shippingId      String? @unique
+  collection_id String?
 
   paymentIntentId String?   
   paymentStatus  String?  

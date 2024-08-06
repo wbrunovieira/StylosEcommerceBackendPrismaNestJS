@@ -1,0 +1,43 @@
+---
+- name: Automate local development environment
+  hosts: localhost
+  tasks:
+      - name: Start Docker Desktop
+        command: open /Applications/Docker.app
+        when: ansible_os_family == "Darwin"
+
+      - name: Wait for Docker to be ready
+        shell: |
+            while ! docker info > /dev/null 2>&1; do
+              sleep 1;
+            done
+
+      - name: Start Docker Compose for backend
+        command: docker-compose up -d
+        args:
+            chdir: /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS
+
+      - name: Wait for Docker Compose services to be ready
+        shell: |
+            while ! docker-compose exec -T app sh -c 'nc -z localhost 3333'; do
+              sleep 1;
+            done
+        args:
+            chdir: /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS
+
+      - name: Start frontend server
+        command: npm run dev
+        args:
+            chdir: /Users/bruno/projects/stylosFrontEcommerce
+        async: 60
+        poll: 0
+
+      - name: Start ngrok
+        command: ngrok start --config=ngrok.yml --all
+        args:
+            chdir: /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS
+        async: 60
+        poll: 0
+
+      - name: Open VS Code with both projects
+        command: "/Applications/Visual Studio Code 7.app/Contents/Resources/app/bin/code /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS /Users/bruno/projects/stylosFrontEcommerce"
