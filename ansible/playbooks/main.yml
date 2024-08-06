@@ -25,19 +25,33 @@
         args:
             chdir: /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS
 
-      - name: Start frontend server
-        command: npm run dev
-        args:
-            chdir: /Users/bruno/projects/stylosFrontEcommerce
+      - name: Start frontend server in a new iTerm2 tab
+        shell: |
+            osascript -e 'tell application "iTerm"
+              create window with default profile
+              tell current session of current window
+                write text "cd /Users/bruno/projects/stylosFrontEcommerce && npm run dev"
+              end tell
+            end tell'
         async: 60
         poll: 0
 
-      - name: Start ngrok
-        command: ngrok start --config=ngrok.yml --all
-        args:
-            chdir: /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS
+      - name: Start ngrok in a new iTerm2 tab
+        shell: |
+            osascript -e 'tell application "iTerm"
+              tell current window
+                create tab with default profile
+                tell current session of current tab
+                  write text "cd /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS && ngrok start --config=ngrok.yml --all"
+                end tell
+              end tell
+            end tell'
         async: 60
         poll: 0
 
       - name: Open VS Code with both projects
-        command: "/Applications/Visual Studio Code 7.app/Contents/Resources/app/bin/code /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS /Users/bruno/projects/stylosFrontEcommerce"
+        command: "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code /Users/bruno/projects/StylosEcommerceBackendPrismaNestJS /Users/bruno/projects/stylosFrontEcommerce"
+
+      - name: Send notification when environment is ready
+        shell: |
+            osascript -e 'display notification "Hey Brunão !! The local development environment is ready." with title "Development Setup"'

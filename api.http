@@ -1,7 +1,7 @@
 @BASE_URL = http://localhost:3333/api
-
 @token = "65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD"
 
+###
 
 # @name all-products-save
 GET {{BASE_URL}}/fetch-and-save
@@ -16,6 +16,7 @@ Accept: application/json
 Content-Type: application/json
 
 ###
+
 # @name create-color-and-size-from-api
 GET {{BASE_URL}}/sync-attributes
 Accept: application/json
@@ -55,10 +56,8 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 ###
 
-
-
 # @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/product/1844/supplier
+GET https://connectplug.com.br/api/v2/product/4915/supplier
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
@@ -81,7 +80,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 ###
 # @name show-atributes-s3
-https://connectplug.com.br/api/v2/product
+https://connectplug.com.br/api/v2/product?page=20
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
