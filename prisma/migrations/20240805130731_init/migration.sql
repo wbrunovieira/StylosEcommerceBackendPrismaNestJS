@@ -194,6 +194,7 @@ CREATE TABLE "carts" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
     "shippingId" TEXT,
+    "collection_id" TEXT,
     "paymentIntentId" TEXT,
     "paymentStatus" TEXT,
 
