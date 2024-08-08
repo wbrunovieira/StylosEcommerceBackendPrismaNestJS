@@ -69,6 +69,7 @@ export class Product extends Entity<ProductProps> {
     get height() {
         return this.props.height;
     }
+    
     get erpId(): string | undefined {
         return this.props.erpId;
     }

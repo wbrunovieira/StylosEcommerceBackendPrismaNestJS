@@ -10,6 +10,9 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 @Injectable()
 export class ApiGetAllProducts {
     private readonly apiUrl = "https://connectplug.com.br/api/v2/product?page=";
+    private readonly stockApiUrl =
+        "https://connectplug.com.br/api/v2/product-stock-balance";
+
     private readonly token: string;
 
     constructor(private configService: ConfigService) {
@@ -48,17 +51,16 @@ export class ApiGetAllProducts {
                     .filter((product) => {
                         const isNotDeleted =
                             product.properties.deleted_at === null;
-                        console.log(
-                            `Product ${product.id} isNotDeleted: ${isNotDeleted}`
-                        );
+
                         return isNotDeleted;
                     })
                     .map((product) => {
                         const productProps: ProductProps = {
+                            erpId: product.id,
                             name: product.properties.name,
                             description: product.properties.description || "",
                             price: product.properties.unitary_value,
-                            stock: product.stock || 0,
+                            stock: 0,
                             sku: product.sku || "",
                             slug: Slug.createFromText(product.properties.name),
                             height: product.height || 0,
@@ -83,8 +85,6 @@ export class ApiGetAllProducts {
                             new UniqueEntityID(product.id)
                         );
 
-                        console.log(`Created product:`, createdProduct);
-
                         return createdProduct;
                     });
 
@@ -102,6 +102,53 @@ export class ApiGetAllProducts {
                 console.log(`Total de produtos até agora: ${productCount}`);
 
                 page++;
+            }
+
+            try {
+                const stockResponse = await axios.get(`${this.stockApiUrl}`, {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `${this.token}`,
+                    },
+                });
+
+                const stockData = stockResponse.data;
+
+                console.log(`stockResponse.data ${stockResponse.data}`);
+                console.log(`stockResponse.data 0] ${stockResponse.data[0]}`);
+                console.log(
+                    `stockResponse.data 0].id ${stockResponse.data[0].id}`
+                );
+                console.log(
+                    `stockResponse.data 0].id ${stockResponse.data[0].bl}`
+                );
+
+                if (Array.isArray(stockData.data)) {
+                    for (const product of allProducts) {
+                        const stockInfo = stockData.data.find(
+                            (stock: { id: number }) =>
+                                stock.id.toString() === product.erpId
+                        );
+                        if (stockInfo) {
+                            const totalStock = stockInfo.bl;
+                            product.stock = totalStock;
+                            console.log(
+                                `Product ${product.erpId} stock updated: ${totalStock}`
+                            );
+                        } else {
+                            console.log(
+                                `No stock info found for product ${product.erpId}`
+                            );
+                        }
+                    }
+                } else {
+                    console.error(
+                        "stockData.data is not an array or is undefined"
+                    );
+                }
+            } catch (err: any) {
+                console.error(`Error fetching stock `, err.message);
             }
 
             const filePath = path.resolve("/app/src", "products.json");
