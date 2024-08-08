@@ -22,6 +22,7 @@ services:
               sleep 1;
             done;
             echo 'Banco de dados pronto!';
+            sleep 5;
 
             npx prisma generate
             npx prisma migrate deploy;
@@ -47,6 +48,11 @@ services:
             - ./data/pg:/data/postgres
         networks:
             - backend
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5    
 
     test:
         build: .
