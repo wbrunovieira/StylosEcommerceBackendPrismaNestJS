@@ -113,45 +113,61 @@ export class ApiGetAllProducts {
                     },
                 });
 
-                const stockData = stockResponse.data;
+                const stockData = stockResponse.data.data;
 
-                console.log(`stockResponse.data ${stockResponse.data}`);
-                console.log(`stockResponse.data 0] ${stockResponse.data[0]}`);
-                console.log(
-                    `stockResponse.data 0].id ${stockResponse.data[0].id}`
-                );
-                console.log(
-                    `stockResponse.data 0].id ${stockResponse.data[0].bl}`
-                );
-
-                if (Array.isArray(stockData.data)) {
+                console.log(`Raw stockData novinho`, stockData);
+                console.log("Before entering the loop");
+                console.log("Is stockData an array?", Array.isArray(stockData));
+                if (Array.isArray(stockData)) {
                     for (const product of allProducts) {
-                        const stockInfo = stockData.data.find(
-                            (stock: { id: number }) =>
-                                stock.id.toString() === product.erpId
-                        );
-                        if (stockInfo) {
-                            const totalStock = stockInfo.bl;
-                            product.stock = totalStock;
-                            console.log(
-                                `Product ${product.erpId} stock updated: ${totalStock}`
+                        console.log(`Checking product: ${product.erpId}`);
+                        console.log(`product aqui mesmo ${product}`);
+                        console.log(`entrou no for`);
+                        if (
+                            product.erpId !== undefined &&
+                            product.erpId !== null
+                        ) {
+                            const stockInfo = stockData.find(
+                                (stock: { id: number }) =>
+                                    stock.id === Number(product.erpId)
                             );
-                        } else {
+
                             console.log(
-                                `No stock info found for product ${product.erpId}`
+                                `stockInfo  ${JSON.stringify(stockInfo)}`
+                            );
+
+                            if (stockInfo) {
+                                const totalStock = stockInfo.bl;
+                                console.log(`totalStock  ${totalStock}`);
+                                product.stock = totalStock;
+                                console.log(
+                                    `Product ${product.erpId} stock updated: ${totalStock}`
+                                );
+                                console.log(` product.stock ${product.stock} `);
+                            } else {
+                                console.log(
+                                    `No stock info found for product ${product.erpId}`
+                                );
+                            }
+                        } else {
+                            console.warn(
+                                `product.erpId is undefined or null for product`,
+                                product
                             );
                         }
                     }
                 } else {
                     console.error(
-                        "stockData.data is not an array or is undefined"
+                        "stockData is not an array or is undefined:",
+                        stockData
                     );
                 }
             } catch (err: any) {
-                console.error(`Error fetching stock `, err.message);
+                console.error(`Error fetching stock`, err.message);
             }
 
             const filePath = path.resolve("/app/src", "products.json");
+
             await fs.writeFile(
                 filePath,
                 JSON.stringify(
