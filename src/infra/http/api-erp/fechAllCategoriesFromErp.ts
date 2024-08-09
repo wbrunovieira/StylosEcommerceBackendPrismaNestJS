@@ -131,6 +131,7 @@ export class SyncCategoriesUseCase {
                     imageUrl,
                     erpId,
                 };
+                
                 console.log("fetchCategories categoryData", categoryData);
 
                 try {
