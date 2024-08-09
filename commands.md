@@ -80,6 +80,10 @@ docker-compose exec app npx prisma migrate dev
 
 docker-compose down && docker-compose build --no-cache && docker-compose up -d
 
+docker system prune --volumes
+
+
+
 ngrok start --config=ngrok.yml --all
 
 
