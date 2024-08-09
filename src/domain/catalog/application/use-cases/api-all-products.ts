@@ -6,6 +6,8 @@ import { ConfigService } from "@nestjs/config";
 import { Product, ProductProps } from "../../enterprise/entities/product";
 import { Slug } from "../../enterprise/entities/value-objects/slug";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { ProductVariantProps } from "../../enterprise/entities/product-variant";
+import { ProductStatus } from "../../enterprise/entities/product-status";
 
 @Injectable()
 export class ApiGetAllProducts {
@@ -14,6 +16,10 @@ export class ApiGetAllProducts {
         "https://connectplug.com.br/api/v2/product-stock-balance";
     private readonly categoriesApiUrl =
         "https://wbstylosbackend.sa.ngrok.io/category/all?page=1&pageSize=80";
+    private readonly colorsApiUrl =
+        "https://wbstylosbackend.sa.ngrok.io/colors/all?page=1&pageSize=80";
+    private readonly sizesApiUrl =
+        "https://wbstylosbackend.sa.ngrok.io/size/all?page=1&pageSize=80";
 
     private readonly token: string;
 
@@ -34,11 +40,19 @@ export class ApiGetAllProducts {
 
         const categoriesResponse = await axios.get(this.categoriesApiUrl);
         const categories = categoriesResponse.data.categories;
-        console.log(`Fetched categories:aaa`, categories);
+        console.log(`Fetched categoriesss:aaa`, categories);
         console.log(
-            "Fetched categories erpId:",
+            "Fetched categories erpId:ss",
             categories.map((cat) => cat.props.erpId)
         );
+
+        const colorsResponse = await axios.get(this.colorsApiUrl);
+        const colors = colorsResponse.data.colors;
+        console.log(`Fetched colors:`, colors);
+
+        const sizesResponse = await axios.get(this.sizesApiUrl);
+        const sizes = sizesResponse.data.size;
+        console.log(`Fetched sizes:`, sizes);
 
         try {
             while (true) {
@@ -51,7 +65,7 @@ export class ApiGetAllProducts {
                 });
 
                 const products = response.data.data;
-                console.log(`Page ${page} response:`, products);
+                console.log(`Page ${page} responsess:`, products);
 
                 if (!Array.isArray(products) || products.length === 0) {
                     break;
@@ -65,31 +79,103 @@ export class ApiGetAllProducts {
                         return isNotDeleted;
                     })
                     .map((product) => {
-                        const productCategory = categories.find((category) => {
-                            const productCategoryId =
-                                product?.relationships?.category?.data?.id;
-                            if (!productCategoryId) {
-                                console.warn(
-                                    "Product does not have a valid category ID:",
-                                    product
-                                );
-                                return false;
-                            }
-                            const categoryErpId = Number(category.props.erpId);
-                            return categoryErpId === productCategoryId;
-                        });
-                        console.log(
-                            "product?.relationships?.category?.data?.id aqqui",
-                            product?.relationships?.category?.data?.id
-                        );
-                        console.log("productCategory aqui:", productCategory);
+                        const productCategoryId =
+                            product?.relationships?.category?.data?.id;
 
+                        const productCategory = productCategoryId
+                            ? categories.find((category) => {
+                                  const categoryErpId = Number(
+                                      category.props.erpId
+                                  );
+                                  return categoryErpId === productCategoryId;
+                              })
+                            : null;
+                        const productColors: {
+                            id: UniqueEntityID;
+                            name: string;
+                            hex: string;
+                        }[] = [];
+                        const productSizes: {
+                            id: UniqueEntityID;
+                            name: string;
+                        }[] = [];
+                        const productVariants: ProductVariantProps[] = [];
+
+                        if (product?.relationships?.attributes?.data) {
+                            for (const attribute of product.relationships
+                                .attributes.data) {
+                                for (const option of attribute.relationships
+                                    .options.data) {
+                                    const matchingColor = colors.find(
+                                        (c) =>
+                                            Number(c.props.erpId) === option.id
+                                    );
+
+                                    const matchingSize = sizes.find(
+                                        (s) =>
+                                            Number(s.props.erpId) === option.id
+                                    );
+
+                                    if (matchingColor) {
+                                        productColors.push({
+                                            id: new UniqueEntityID(option.id),
+                                            name: matchingColor.props.name,
+                                            hex: matchingColor.props.hex,
+                                        });
+                                    }
+
+                                    if (matchingSize) {
+                                        productSizes.push({
+                                            id: new UniqueEntityID(option.id),
+                                            name: matchingSize.props.name,
+                                        });
+                                    }
+
+                                    if (matchingColor || matchingSize) {
+                                        productVariants.push({
+                                            productId: product.id,
+                                            colorId: matchingColor
+                                                ? new UniqueEntityID(option.id)
+                                                : undefined,
+                                            sizeId: matchingSize
+                                                ? new UniqueEntityID(option.id)
+                                                : undefined,
+                                            sku: product.sku || "",
+                                            price: product.properties
+                                                .unitary_value,
+                                            stock: 0,
+                                            images: product.properties.image
+                                                ? [
+                                                      product.properties.image,
+                                                      ...(product.properties
+                                                          .additionals_photos ||
+                                                          []),
+                                                  ]
+                                                : product.properties
+                                                      .additionals_photos || [],
+                                            status: ProductStatus.ACTIVE,
+                                            createdAt: new Date(),
+                                            updatedAt: new Date(),
+                                        });
+                                    }
+                                }
+                            }
+                        }
                         const productProps: ProductProps = {
                             erpId: product.id,
                             name: product.properties.name,
                             description: product.properties.description || "",
                             price: product.properties.unitary_value,
                             stock: 0,
+                            productColors:
+                                productColors.length > 0
+                                    ? productColors
+                                    : undefined,
+                            productSizes:
+                                productSizes.length > 0
+                                    ? productSizes
+                                    : undefined,
+
                             sku: product.sku || "",
                             slug: Slug.createFromText(product.properties.name),
                             height: product.height || 0,
@@ -100,6 +186,7 @@ export class ApiGetAllProducts {
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),
                             hasVariants: product.has_variants || false,
+
                             productCategories: productCategory
                                 ? [
                                       {
@@ -125,7 +212,10 @@ export class ApiGetAllProducts {
                                   ]
                                 : product.properties.additionals_photos || [],
                         };
-                        console.log("productCategory aqqui", productCategory);
+                        console.log(
+                            "productCategory aqquisss",
+                            productCategory
+                        );
                         const createdProduct = Product.create(
                             productProps,
                             new UniqueEntityID(product.id)
@@ -135,7 +225,7 @@ export class ApiGetAllProducts {
                     });
 
                 console.log(
-                    `Filtered products on page ${page}:`,
+                    `Filtered products on pagessss ${page}:`,
                     filteredProducts
                 );
 
@@ -143,9 +233,9 @@ export class ApiGetAllProducts {
                 productCount += filteredProducts.length;
 
                 console.log(
-                    `Page ${page}: ${filteredProducts.length} produtos adicionados.`
+                    `Page ${page}: ${filteredProducts.length} produtos adicionadossss.`
                 );
-                console.log(`Total de produtos até agora: ${productCount}`);
+                console.log(`Total de produtos até agorass: ${productCount}`);
 
                 page++;
             }
@@ -161,14 +251,17 @@ export class ApiGetAllProducts {
 
                 const stockData = stockResponse.data.data;
 
-                console.log(`Raw stockData novinho`, stockData);
-                console.log("Before entering the loop");
-                console.log("Is stockData an array?", Array.isArray(stockData));
+                console.log(`Raw stockData novinhoss`, stockData);
+                console.log("Before entering the loopss");
+                console.log(
+                    "Is stockData an arrays?",
+                    Array.isArray(stockData)
+                );
                 if (Array.isArray(stockData)) {
                     for (const product of allProducts) {
-                        console.log(`Checking product: ${product.erpId}`);
-                        console.log(`product aqui mesmo ${product}`);
-                        console.log(`entrou no for`);
+                        console.log(`Checking products: ${product.erpId}`);
+                        console.log(`product aqui mesmo s${product}`);
+                        console.log(`entrou no fors`);
                         if (
                             product.erpId !== undefined &&
                             product.erpId !== null
@@ -179,37 +272,39 @@ export class ApiGetAllProducts {
                             );
 
                             console.log(
-                                `stockInfo  ${JSON.stringify(stockInfo)}`
+                                `stockInfos  ${JSON.stringify(stockInfo)}`
                             );
 
                             if (stockInfo) {
                                 const totalStock = stockInfo.bl;
-                                console.log(`totalStock  ${totalStock}`);
+                                console.log(`totalStocks  ${totalStock}`);
                                 product.stock = totalStock;
                                 console.log(
-                                    `Product ${product.erpId} stock updated: ${totalStock}`
+                                    `Product ${product.erpId} sstock updated: ${totalStock}`
                                 );
-                                console.log(` product.stock ${product.stock} `);
+                                console.log(
+                                    ` product.stocks ${product.stock} `
+                                );
                             } else {
                                 console.log(
-                                    `No stock info found for product ${product.erpId}`
+                                    `No stock info found for products ${product.erpId}`
                                 );
                             }
                         } else {
                             console.warn(
-                                `product.erpId is undefined or null for product`,
+                                `product.erpId is undefinesd or null for product`,
                                 product
                             );
                         }
                     }
                 } else {
                     console.error(
-                        "stockData is not an array or is undefined:",
+                        "stockData is not an array or is undefineds:",
                         stockData
                     );
                 }
             } catch (err: any) {
-                console.error(`Error fetching stock`, err.message);
+                console.error(`Error fetching stocks`, err.message);
             }
 
             const filePath = path.resolve("/app/src", "products.json");

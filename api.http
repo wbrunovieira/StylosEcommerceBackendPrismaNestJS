@@ -51,7 +51,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 
 # @name all-products-stock
-GET https://connectplug.com.br/api/v2/product-stock-balance/3419
+GET https://connectplug.com.br/api/v2/product-stock-balance/5001
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
