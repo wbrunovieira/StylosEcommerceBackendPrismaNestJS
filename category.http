@@ -50,7 +50,7 @@ Content-Type: application/json
 
 
 # @name get-category-all
-GET {{BASE_URL}}/category/all?page=1&pageSize=10
+GET {{BASE_URL}}/category/all?page=1&pageSize=80
 Content-Type: application/json
 
 

@@ -12,6 +12,8 @@ export class ApiGetAllProducts {
     private readonly apiUrl = "https://connectplug.com.br/api/v2/product?page=";
     private readonly stockApiUrl =
         "https://connectplug.com.br/api/v2/product-stock-balance";
+    private readonly categoriesApiUrl =
+        "https://wbstylosbackend.sa.ngrok.io/category/all?page=1&pageSize=80";
 
     private readonly token: string;
 
@@ -29,6 +31,14 @@ export class ApiGetAllProducts {
         let page = 1;
         let allProducts: Product[] = [];
         let productCount = 0;
+
+        const categoriesResponse = await axios.get(this.categoriesApiUrl);
+        const categories = categoriesResponse.data.categories;
+        console.log(`Fetched categories:aaa`, categories);
+        console.log(
+            "Fetched categories erpId:",
+            categories.map((cat) => cat.props.erpId)
+        );
 
         try {
             while (true) {
@@ -55,6 +65,25 @@ export class ApiGetAllProducts {
                         return isNotDeleted;
                     })
                     .map((product) => {
+                        const productCategory = categories.find((category) => {
+                            const productCategoryId =
+                                product?.relationships?.category?.data?.id;
+                            if (!productCategoryId) {
+                                console.warn(
+                                    "Product does not have a valid category ID:",
+                                    product
+                                );
+                                return false;
+                            }
+                            const categoryErpId = Number(category.props.erpId);
+                            return categoryErpId === productCategoryId;
+                        });
+                        console.log(
+                            "product?.relationships?.category?.data?.id aqqui",
+                            product?.relationships?.category?.data?.id
+                        );
+                        console.log("productCategory aqui:", productCategory);
+
                         const productProps: ProductProps = {
                             erpId: product.id,
                             name: product.properties.name,
@@ -71,6 +100,23 @@ export class ApiGetAllProducts {
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),
                             hasVariants: product.has_variants || false,
+                            productCategories: productCategory
+                                ? [
+                                      {
+                                          id: new UniqueEntityID(
+                                              productCategory._id.value
+                                          ),
+                                          name: productCategory.props.name,
+                                      },
+                                  ]
+                                : [
+                                      {
+                                          id: new UniqueEntityID(
+                                              "NoCategoryFromERP"
+                                          ),
+                                          name: "NoCategoryFromERP",
+                                      },
+                                  ],
                             images: product.properties.image
                                 ? [
                                       product.properties.image,
@@ -79,7 +125,7 @@ export class ApiGetAllProducts {
                                   ]
                                 : product.properties.additionals_photos || [],
                         };
-
+                        console.log("productCategory aqqui", productCategory);
                         const createdProduct = Product.create(
                             productProps,
                             new UniqueEntityID(product.id)
