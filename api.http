@@ -1,10 +1,16 @@
-@BASE_URL = http://localhost:3333/api
+@BASE_URL = https://wbstylosbackend.sa.ngrok.io
 @token = "65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD"
 
 ###
 
+# @name migration
+GET {{BASE_URL}}/migration/run
+Content-Type: application/json
+
+###
+
 # @name all-products-save
-GET {{BASE_URL}}/fetch-and-save
+GET {{BASE_URL}}/api/fetch-and-save
 Accept: application/json
 Content-Type: application/json
 
@@ -12,14 +18,14 @@ Content-Type: application/json
 
 
 # @name create-categories-from-api
-GET {{BASE_URL}}/sync-categories
+GET {{BASE_URL}}/api/sync-categories
 Accept: application/json
 Content-Type: application/json
 
 ###
 
 # @name create-color-and-size-from-api
-GET {{BASE_URL}}/sync-attributes
+GET {{BASE_URL}}/api/sync-attributes
 Accept: application/json
 Content-Type: application/json
 

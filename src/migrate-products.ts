@@ -2,13 +2,27 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "./prisma/prisma.service";
 import { Slug } from "./domain/catalog/enterprise/entities/value-objects/slug";
 import * as fs from "fs/promises";
+import { ProductStatus } from "./domain/catalog/enterprise/entities/product-status";
+import { UniqueEntityID } from "./core/entities/unique-entity-id";
+import { generateSlug } from "./domain/catalog/application/utils/generate-slug";
+import { IProductColorRepository } from "./domain/catalog/application/repositories/i-product-color-repository";
+import { IProductSizeRepository } from "./domain/catalog/application/repositories/i-product-size-repository";
 
 @Injectable()
 export class ProductMigrationService {
     private readonly logger = new Logger(ProductMigrationService.name);
 
-    constructor(private readonly prisma: PrismaService) {}
-
+    constructor(
+        private readonly prisma: PrismaService,
+        private productColorRepository: IProductColorRepository,
+        private productSizeRepository: IProductSizeRepository
+    ) {}
+    private calculateFinalPrice(price: number, discount?: number): number {
+        if (discount && discount > 0) {
+            return price - price * (discount / 100);
+        }
+        return price;
+    }
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
@@ -20,6 +34,7 @@ export class ProductMigrationService {
                 "Invalid data format: 'products' should be an array."
             );
         }
+        const brandId = "d828be47-46e3-425f-8ac8-7933b73ea026";
 
         const products = parsedData.products;
 
@@ -27,7 +42,7 @@ export class ProductMigrationService {
             const productName = product.props.name
                 ? product.props.name
                 : "NameNotFound";
-
+            const productStock = product.props.stock || 0;
             if (!productName) {
                 console.warn(
                     `Produto com ID ${product._id.value} não tem um nome definido. Pulando a migração desse produto.`
@@ -46,7 +61,11 @@ export class ProductMigrationService {
             let slug: Slug;
 
             if (productName) {
-                slug = Slug.createFromText(productName);
+                slug = generateSlug(
+                    productName,
+                    brandId,
+                    Date.now().toString()
+                );
             } else {
                 const uniqueSlug = `product-${Date.now()}`;
                 slug = Slug.create(uniqueSlug);
@@ -104,7 +123,10 @@ export class ProductMigrationService {
                     );
                 }
             }
-
+            const finalPrice = this.calculateFinalPrice(
+                productPrice,
+                product.props.discount || 0
+            );
             try {
                 if (!productName) {
                     this.logger.warn(
@@ -112,7 +134,7 @@ export class ProductMigrationService {
                     );
                     continue;
                 }
-                await this.prisma.product.create({
+                const createdProduct = await this.prisma.product.create({
                     data: {
                         name: productName,
                         description: productDescription,
@@ -120,26 +142,108 @@ export class ProductMigrationService {
                         price: productPrice,
                         stock: product.props.stock,
                         height: product.props.height,
-                        brandId: "2673221c-e71d-4d09-9206-a36ce20ea2ad",
+                        brandId,
                         slug: slug.value,
+                        finalPrice,
                         width: product.props.width,
                         length: product.props.length,
                         weight: product.props.weight,
                         images: images,
-                        productColors:
-                            productColors.length > 0
-                                ? { connect: productColors as any }
-                                : undefined,
-                        productSizes:
-                            productSizes.length > 0
-                                ? { connect: productSizes as any }
-                                : undefined,
-                        productCategories:
-                            productCategories.length > 0
-                                ? { connect: productCategories as any }
-                                : undefined,
+                        status: ProductStatus.ACTIVE,
+
+                        onSale: product.props.onSale || false,
+                        discount: product.props.discount || 0,
+                        isFeatured: product.props.isFeatured || false,
+                        isNew: product.props.isNew || false,
                     },
                 });
+                console.log("createdProduct", createdProduct);
+
+                const variants: Array<{
+                    id: string;
+                    productId: string;
+                    sizeId?: string;
+                    colorId?: string;
+                    stock: number;
+                    sku: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    price: number;
+                    status: ProductStatus;
+                    images: string[];
+                }> = [];
+
+                if (productSizes.length > 0 && productColors.length > 0) {
+                    for (const size of productSizes) {
+                        for (const color of productColors) {
+                            variants.push({
+                                id: new UniqueEntityID().toString(),
+                                productId: createdProduct.id,
+                                sizeId: size.id,
+                                colorId: color.id,
+                                stock: productStock,
+                                sku: product.sku || "",
+                                price: productPrice,
+                                status: ProductStatus.ACTIVE,
+                                images,
+                                createdAt: new Date(Date.now()),
+                                updatedAt: new Date(Date.now()),
+                            });
+                        }
+                    }
+                } else if (productSizes.length > 0) {
+                    for (const size of productSizes) {
+                        for (const sizeId of productSizes) {
+                            await this.productSizeRepository.create(
+                                product.id.toString(),
+                                size.id
+                            );
+                        }
+                        variants.push({
+                            id: new UniqueEntityID().toString(),
+                            productId: createdProduct.id,
+                            sizeId: size.id,
+                            stock: productStock,
+                            sku: product.sku || "",
+                            price: productPrice,
+                            status: ProductStatus.ACTIVE,
+                            images,
+                            createdAt: new Date(Date.now()),
+                            updatedAt: new Date(Date.now()),
+                        });
+                    }
+                } else if (productColors.length > 0) {
+                    for (const color of productColors) {
+                        for (const colorId of productColors) {
+                            await this.productColorRepository.create(
+                                product.id.toString(),
+                                color.id
+                            );
+                        }
+
+                        variants.push({
+                            id: new UniqueEntityID().toString(),
+                            productId: createdProduct.id,
+                            colorId: color.id,
+                            sku: product.sku || "",
+                            stock: productStock,
+                            price: productPrice,
+                            status: ProductStatus.ACTIVE,
+                            images,
+                            createdAt: new Date(Date.now()),
+                            updatedAt: new Date(Date.now()),
+                        });
+                    }
+                }
+                console.log("variants", variants);
+                if (variants.length > 0) {
+                    product.hasVariants = true;
+                    product.productIdVariant = product.id.toString();
+                    await this.prisma.productVariant.createMany({
+                        data: variants,
+                    });
+                }
+
                 this.logger.log(`Produto ${product.name} migrado com sucesso.`);
             } catch (error) {
                 this.logger.error(
