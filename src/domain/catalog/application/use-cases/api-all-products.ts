@@ -115,7 +115,7 @@ export class ApiGetAllProducts {
                                         (s) =>
                                             Number(s.props.erpId) === option.id
                                     );
-
+                                    console.log("matchingSize", matchingSize);
                                     if (matchingColor) {
                                         productColors.push({
                                             id: new UniqueEntityID(option.id),
@@ -123,6 +123,7 @@ export class ApiGetAllProducts {
                                             hex: matchingColor.props.hex,
                                         });
                                     }
+                                    console.log("matchingColor", matchingColor);
 
                                     if (matchingSize) {
                                         productSizes.push({
@@ -161,9 +162,10 @@ export class ApiGetAllProducts {
                                 }
                             }
                         }
+
                         const productProps: ProductProps = {
                             erpId: product.id,
-                            name: product.properties.name,
+                            name: product.properties.name || "NameNotFound",
                             description: product.properties.description || "",
                             price: product.properties.unitary_value,
                             stock: 0,
@@ -185,7 +187,11 @@ export class ApiGetAllProducts {
                             brandId: new UniqueEntityID(product.brand_id),
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),
-                            hasVariants: product.has_variants || false,
+                            hasVariants:
+                                productColors.length > 0 ||
+                                productSizes.length > 0
+                                    ? true
+                                    : false,
 
                             productCategories: productCategory
                                 ? [

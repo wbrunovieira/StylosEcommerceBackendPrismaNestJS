@@ -16,6 +16,145 @@ import { toDomainProductStatus } from "../utils/convert-product-status";
 export class PrismaProductRepository implements IProductRepository {
     constructor(private prisma: PrismaService) {}
 
+    async create(product: Product): Promise<Either<Error, void>> {
+        try {
+            const {
+                productColors,
+                productSizes,
+                productCategories,
+                name,
+                description,
+                price,
+                stock,
+                materialId,
+                brandId,
+                erpId,
+                images,
+                createdAt,
+                updatedAt,
+                slug,
+                finalPrice,
+                ...otherProps
+            } = {
+                productColors: product.productColors,
+                productSizes: product.productSizes,
+                productCategories: product.productCategories,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                stock: product.stock,
+                erpId: product.erpId,
+                materialId: product.materialId
+                    ? product.materialId.toString()
+                    : null,
+                brandId: product.brandId.toString(),
+                images: product.images,
+                createdAt: product.createdAt,
+                updatedAt: product.updatedAt,
+                slug: product.slug.toString(),
+                finalPrice: product.finalPrice,
+            };
+
+            const validColors: { id: string }[] = [];
+            const validSizes: { id: string }[] = [];
+            const validCategories: { id: string }[] = [];
+
+            if (productColors) {
+                for (const colorId of productColors) {
+                    const idAsString = colorId.toString();
+                    const colorExists = await this.prisma.color.findUnique({
+                        where: { id: idAsString },
+                    });
+                    if (colorExists) {
+                        validColors.push({ id: idAsString });
+                    }
+                }
+            }
+
+            if (productSizes) {
+                for (const sizeId of productSizes) {
+                    const idAsString = sizeId.toString();
+                    const sizeExist = await this.prisma.size.findUnique({
+                        where: { id: idAsString },
+                    });
+                    if (sizeExist) {
+                        validSizes.push({ id: idAsString });
+                    }
+                }
+            }
+            if (productCategories) {
+                for (const categoryId of productCategories) {
+                    const idAsString = categoryId.toString();
+                    const categoryExist = await this.prisma.category.findUnique(
+                        {
+                            where: { id: idAsString },
+                        }
+                    );
+                    if (categoryExist) {
+                        validCategories.push({ id: idAsString });
+                    }
+                }
+            }
+
+            let materialExist;
+            if (materialId) {
+                const materialIDAsString = materialId.toString();
+                materialExist = await this.prisma.material.findUnique({
+                    where: { id: materialIDAsString },
+                });
+                if (!materialExist) {
+                    throw new Error("Material not found.");
+                }
+            }
+
+            let brandExist;
+            if (brandId) {
+                const brandIDAsString = brandId.toString();
+
+                brandExist = await this.prisma.brand.findUnique({
+                    where: { id: brandIDAsString },
+                    select: { id: true, name: true },
+                });
+                if (!brandExist) {
+                    throw new Error("Brand not found.");
+                }
+            }
+
+            if (!brandExist || !brandExist.id) {
+                throw new Error("Brand ID is not valid");
+            }
+
+            const createdProduct = await this.prisma.product.create({
+                data: {
+                    id: product.id.toString(),
+                    name: name,
+                    images: images,
+                    description: description,
+                    createdAt: createdAt,
+                    updatedAt: updatedAt,
+                    slug: slug,
+                    price: price,
+                    stock: stock,
+                    erpId: erpId,
+                    height: product.height,
+                    width: product.width,
+                    length: product.length,
+                    weight: product.weight,
+                    material: materialExist
+                        ? { connect: { id: materialExist.id } }
+                        : undefined,
+                    brand: { connect: { id: brandExist.id } },
+                    finalPrice: finalPrice ?? undefined,
+                    ...otherProps,
+                },
+            });
+
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to create material"));
+        }
+    }
+
     async findByMaterialId(
         materialId: string
     ): Promise<Either<Error, Product[]>> {
@@ -1097,144 +1236,7 @@ export class PrismaProductRepository implements IProductRepository {
         }
     }
 
-    async create(product: Product): Promise<Either<Error, void>> {
-        try {
-            const {
-                productColors,
-                productSizes,
-                productCategories,
-                name,
-                description,
-                price,
-                stock,
-                materialId,
-                brandId,
-                erpId,
-                images,
-                createdAt,
-                updatedAt,
-                slug,
-                finalPrice,
-                ...otherProps
-            } = {
-                productColors: product.productColors,
-                productSizes: product.productSizes,
-                productCategories: product.productCategories,
-                name: product.name,
-                description: product.description,
-                price: product.price,
-                stock: product.stock,
-                erpId: product.erpId,
-                materialId: product.materialId
-                    ? product.materialId.toString()
-                    : null,
-                brandId: product.brandId.toString(),
-                images: product.images,
-                createdAt: product.createdAt,
-                updatedAt: product.updatedAt,
-                slug: product.slug.toString(),
-                finalPrice: product.finalPrice,
-            };
-
-            const validColors: { id: string }[] = [];
-            const validSizes: { id: string }[] = [];
-            const validCategories: { id: string }[] = [];
-
-            if (productColors) {
-                for (const colorId of productColors) {
-                    const idAsString = colorId.toString();
-                    const colorExists = await this.prisma.color.findUnique({
-                        where: { id: idAsString },
-                    });
-                    if (colorExists) {
-                        validColors.push({ id: idAsString });
-                    }
-                }
-            }
-
-            if (productSizes) {
-                for (const sizeId of productSizes) {
-                    const idAsString = sizeId.toString();
-                    const sizeExist = await this.prisma.size.findUnique({
-                        where: { id: idAsString },
-                    });
-                    if (sizeExist) {
-                        validSizes.push({ id: idAsString });
-                    }
-                }
-            }
-            if (productCategories) {
-                for (const categoryId of productCategories) {
-                    const idAsString = categoryId.toString();
-                    const categoryExist = await this.prisma.category.findUnique(
-                        {
-                            where: { id: idAsString },
-                        }
-                    );
-                    if (categoryExist) {
-                        validCategories.push({ id: idAsString });
-                    }
-                }
-            }
-
-            let materialExist;
-            if (materialId) {
-                const materialIDAsString = materialId.toString();
-                materialExist = await this.prisma.material.findUnique({
-                    where: { id: materialIDAsString },
-                });
-                if (!materialExist) {
-                    throw new Error("Material not found.");
-                }
-            }
-
-            let brandExist;
-            if (brandId) {
-                const brandIDAsString = brandId.toString();
-
-                brandExist = await this.prisma.brand.findUnique({
-                    where: { id: brandIDAsString },
-                    select: { id: true, name: true },
-                });
-                if (!brandExist) {
-                    throw new Error("Brand not found.");
-                }
-            }
-
-            if (!brandExist || !brandExist.id) {
-                throw new Error("Brand ID is not valid");
-            }
-
-            const createdProduct = await this.prisma.product.create({
-                data: {
-                    id: product.id.toString(),
-                    name: name,
-                    images: images,
-                    description: description,
-                    createdAt: createdAt,
-                    updatedAt: updatedAt,
-                    slug: slug,
-                    price: price,
-                    stock: stock,
-                    erpId: erpId,
-                    height: product.height,
-                    width: product.width,
-                    length: product.length,
-                    weight: product.weight,
-                    material: materialExist
-                        ? { connect: { id: materialExist.id } }
-                        : undefined,
-                    brand: { connect: { id: brandExist.id } },
-                    finalPrice: finalPrice ?? undefined,
-                    ...otherProps,
-                },
-            });
-
-            return right(undefined);
-        } catch (error) {
-            return left(new Error("Failed to create material"));
-        }
-    }
+   
 
     async save(
         productOrProductWithVariants: Product | ProductWithVariants
