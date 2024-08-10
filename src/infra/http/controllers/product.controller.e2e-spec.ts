@@ -12,7 +12,7 @@ describe("Create products (E2E)", () => {
   let authToken: string;
 
   let brandId: string;
-  let materialId: string;
+ 
   let categoryId: string;
 
   beforeAll(async () => {
@@ -40,19 +40,12 @@ describe("Create products (E2E)", () => {
   beforeEach(async () => {
     await prisma.product.deleteMany({});
     await prisma.brand.deleteMany({});
-    await prisma.material.deleteMany({});
+
     await prisma.category.deleteMany({});
 
-    const brand = await prisma.brand.create({
-      data: { name: "brand" },
-    });
-    brandId = brand.id;
+ 
     
 
-    const material = await prisma.material.create({
-      data: { name: "cotton" },
-    });
-    materialId = material.id;
    
 
     const category = await prisma.category.create({
@@ -71,7 +64,7 @@ describe("Create products (E2E)", () => {
         name: "calcinha 1",
         description: "calcinha description 1 mais texto, legal, muiito legal",
         images: ["/images/foto1.jpg"],
-        materialId: materialId,
+   
         brandId: brandId,
         price: 100,
         stock: 10,

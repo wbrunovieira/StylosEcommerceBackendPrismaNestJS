@@ -12,7 +12,7 @@ type GetProductBySlugUseCaseResponse = Either<
     ResourceNotFoundError,
     {
         product: Product;
-        materialName?: string;
+       
        
         brandName?: string;
         colors: { id: string; name: string; hex: string }[];
@@ -47,7 +47,7 @@ export class GetProductBySlugUseCase {
 
         const {
             product,
-            materialName,
+         
             brandName,
             colors,
             sizes,
@@ -58,7 +58,7 @@ export class GetProductBySlugUseCase {
 
         return right({
             product,
-            materialName,
+        
             brandName,
             colors,
             sizes,

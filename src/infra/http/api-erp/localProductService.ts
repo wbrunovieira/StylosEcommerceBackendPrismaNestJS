@@ -11,7 +11,7 @@
 //   productColors: z.array(z.string()).optional(),
 //   productSizes: z.array(z.string()).optional(),
 //   productCategories: z.array(z.string()),
-//   materialId: z.string(),
+
 //   brandId: z.string(),
 //   sku: z.string().optional(),
 //   price: z.number(),

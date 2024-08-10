@@ -19,7 +19,7 @@ describe("CartController", () => {
   let categoryId: string;
   let sizeId1: string;
   let sizeId2: string;
-  let materialId: string;
+
   let brandId: string;
   let userId;
 
@@ -102,7 +102,7 @@ describe("CartController", () => {
       .set("Authorization", `Bearer ${adminAuthToken}`)
       .send({ name: "material 7" })
       .expect(201);
-    materialId = response.body.material._id.value;
+
 
 
 
@@ -120,7 +120,7 @@ describe("CartController", () => {
         name: "Test Product",
         description: "Test Product Description",
         images: ["/images/test.jpg"],
-        materialId: materialId,
+     
         brandId: brandId,
         sku: "test-sku",
         price: 100,

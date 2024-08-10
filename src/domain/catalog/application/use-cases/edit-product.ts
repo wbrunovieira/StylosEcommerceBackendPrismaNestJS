@@ -14,7 +14,7 @@ interface EditProductUseCaseRequest {
   productSizes?: { id: string; name: string }[];
   productColors?: { id: string; name: string; hex: string }[];
   productCategories?: { id: string; name: string }[];
-  materialId?: string;
+
   sizeId?: string[];
   finalPrice?: number;
   brandId?: string;
@@ -61,7 +61,7 @@ export class EditProductUseCase {
     productSizes,
     productColors,
     productCategories,
-    materialId,
+
     sizeId,
     erpId,
     brandId,

@@ -18,7 +18,7 @@ export function makeProduct(
       sizeId: [new UniqueEntityID()],
       brandId: new UniqueEntityID(),
 
-      materialId: new UniqueEntityID(),
+   
       stock: faker.helpers.rangeToNumber(100),
       sku: faker.random.alphaNumeric(10),
       height: faker.datatype.number({ min: 1, max: 100 }),
