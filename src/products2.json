@@ -1,0 +1,462 @@
+{
+    "products": [
+        {
+            "_id": {
+                "value": 3124
+            },
+            "props": {
+                "erpId": 3124,
+                "name": "0108001 SUTIA NADADOR",
+                "description": "",
+                "price": 63.7,
+                "stock": 0,
+                "productColors": [
+                    {
+                        "id": {
+                            "value": 3
+                        },
+                        "name": "AZUL",
+                        "hex": "#0000FF"
+                    },
+                    {
+                        "id": {
+                            "value": 4
+                        },
+                        "name": "CEREJA",
+                        "hex": "#DE3163"
+                    },
+                    {
+                        "id": {
+                            "value": 5
+                        },
+                        "name": "CRISTAL",
+                        "hex": "#E0FFFF"
+                    },
+                    {
+                        "id": {
+                            "value": 346
+                        },
+                        "name": "PAPRICA",
+                        "hex": "#D94E1F"
+                    },
+                    {
+                        "id": {
+                            "value": 347
+                        },
+                        "name": "AREIA",
+                        "hex": "#C2B280"
+                    },
+                    {
+                        "id": {
+                            "value": 348
+                        },
+                        "name": "CHOCOLATE",
+                        "hex": "#7B3F00"
+                    },
+                    {
+                        "id": {
+                            "value": 6
+                        },
+                        "name": "TANGO",
+                        "hex": "#F28500"
+                    },
+                    {
+                        "id": {
+                            "value": 17
+                        },
+                        "name": "BLUSH",
+                        "hex": "#DE5D83"
+                    },
+                    {
+                        "id": {
+                            "value": 274
+                        },
+                        "name": "MALVA",
+                        "hex": "#993366"
+                    },
+                    {
+                        "id": {
+                            "value": 376
+                        },
+                        "name": "AMEIXA",
+                        "hex": "#8E4585"
+                    },
+                    {
+                        "id": {
+                            "value": 377
+                        },
+                        "name": "HIBISCO",
+                        "hex": "#B43757"
+                    }
+                ],
+                "productSizes": [
+                    {
+                        "id": {
+                            "value": 431
+                        },
+                        "name": "XL"
+                    },
+                    {
+                        "id": {
+                            "value": 10
+                        },
+                        "name": "GG"
+                    },
+                    {
+                        "id": {
+                            "value": 27
+                        },
+                        "name": "EG"
+                    },
+                    {
+                        "id": {
+                            "value": 55
+                        },
+                        "name": "XGG"
+                    },
+                    {
+                        "id": {
+                            "value": 173
+                        },
+                        "name": "G1"
+                    },
+                    {
+                        "id": {
+                            "value": 174
+                        },
+                        "name": "G2"
+                    },
+                    {
+                        "id": {
+                            "value": 175
+                        },
+                        "name": "G3"
+                    },
+                    {
+                        "id": {
+                            "value": 176
+                        },
+                        "name": "G4"
+                    },
+                    {
+                        "id": {
+                            "value": 177
+                        },
+                        "name": "G5"
+                    },
+                    {
+                        "id": {
+                            "value": 253
+                        },
+                        "name": "UNICO"
+                    },
+                    {
+                        "id": {
+                            "value": 463
+                        },
+                        "name": "SG"
+                    },
+                    {
+                        "id": {
+                            "value": 508
+                        },
+                        "name": "XXG"
+                    },
+                    {
+                        "id": {
+                            "value": 509
+                        },
+                        "name": "XXXG"
+                    }
+                ],
+                "sku": "",
+                "slug": {
+                    "value": "0108001-sutia-nadador"
+                },
+                "height": 0,
+                "width": 0,
+                "length": 0,
+                "weight": 0,
+                "brandId": {
+                    "value": "850a0111-2ca0-4b44-9cde-e25740f861a8"
+                },
+                "createdAt": "2024-08-10T10:09:38.217Z",
+                "updatedAt": "2024-08-10T10:13:17.680Z",
+                "hasVariants": false,
+                "productCategories": [
+                    {
+                        "id": {
+                            "value": "NoCategoryFromERP"
+                        },
+                        "name": "NoCategoryFromERP"
+                    }
+                ],
+                "images": []
+            }
+        },
+        {
+            "_id": {
+                "value": 3125
+            },
+            "props": {
+                "erpId": 3125,
+                "name": "100001 SUTIA REDUTOR",
+                "description": "",
+                "price": 89.9,
+                "stock": 0,
+                "productColors": [
+                    {
+                        "id": {
+                            "value": 274
+                        },
+                        "name": "MALVA",
+                        "hex": "#993366"
+                    },
+                    {
+                        "id": {
+                            "value": 346
+                        },
+                        "name": "PAPRICA",
+                        "hex": "#D94E1F"
+                    },
+                    {
+                        "id": {
+                            "value": 347
+                        },
+                        "name": "AREIA",
+                        "hex": "#C2B280"
+                    },
+                    {
+                        "id": {
+                            "value": 348
+                        },
+                        "name": "CHOCOLATE",
+                        "hex": "#7B3F00"
+                    },
+                    {
+                        "id": {
+                            "value": 3
+                        },
+                        "name": "AZUL",
+                        "hex": "#0000FF"
+                    },
+                    {
+                        "id": {
+                            "value": 4
+                        },
+                        "name": "CEREJA",
+                        "hex": "#DE3163"
+                    },
+                    {
+                        "id": {
+                            "value": 5
+                        },
+                        "name": "CRISTAL",
+                        "hex": "#E0FFFF"
+                    },
+                    {
+                        "id": {
+                            "value": 6
+                        },
+                        "name": "TANGO",
+                        "hex": "#F28500"
+                    },
+                    {
+                        "id": {
+                            "value": 17
+                        },
+                        "name": "BLUSH",
+                        "hex": "#DE5D83"
+                    },
+                    {
+                        "id": {
+                            "value": 376
+                        },
+                        "name": "AMEIXA",
+                        "hex": "#8E4585"
+                    },
+                    {
+                        "id": {
+                            "value": 377
+                        },
+                        "name": "HIBISCO",
+                        "hex": "#B43757"
+                    }
+                ],
+                "productSizes": [
+                    {
+                        "id": {
+                            "value": 431
+                        },
+                        "name": "XL"
+                    },
+                    {
+                        "id": {
+                            "value": 10
+                        },
+                        "name": "GG"
+                    },
+                    {
+                        "id": {
+                            "value": 27
+                        },
+                        "name": "EG"
+                    },
+                    {
+                        "id": {
+                            "value": 508
+                        },
+                        "name": "XXG"
+                    },
+                    {
+                        "id": {
+                            "value": 509
+                        },
+                        "name": "XXXG"
+                    },
+                    {
+                        "id": {
+                            "value": 463
+                        },
+                        "name": "SG"
+                    },
+                    {
+                        "id": {
+                            "value": 55
+                        },
+                        "name": "XGG"
+                    },
+                    {
+                        "id": {
+                            "value": 173
+                        },
+                        "name": "G1"
+                    },
+                    {
+                        "id": {
+                            "value": 174
+                        },
+                        "name": "G2"
+                    },
+                    {
+                        "id": {
+                            "value": 175
+                        },
+                        "name": "G3"
+                    },
+                    {
+                        "id": {
+                            "value": 176
+                        },
+                        "name": "G4"
+                    },
+                    {
+                        "id": {
+                            "value": 177
+                        },
+                        "name": "G5"
+                    },
+                    {
+                        "id": {
+                            "value": 253
+                        },
+                        "name": "UNICO"
+                    }
+                ],
+                "sku": "",
+                "slug": {
+                    "value": "100001-sutia-redutor"
+                },
+                "height": 0,
+                "width": 0,
+                "length": 0,
+                "weight": 0,
+                "brandId": {
+                    "value": "645dd8d0-e964-424b-82cd-b232093b813e"
+                },
+                "createdAt": "2024-08-10T10:09:38.223Z",
+                "updatedAt": "2024-08-10T10:13:17.691Z",
+                "hasVariants": false,
+                "productCategories": [
+                    {
+                        "id": {
+                            "value": "NoCategoryFromERP"
+                        },
+                        "name": "NoCategoryFromERP"
+                    }
+                ],
+                "images": []
+            }
+        },
+        {
+            "_id": {
+                "value": 3126
+            },
+            "props": {
+                "erpId": 3126,
+                "name": "050035 SUTIA TOP",
+                "description": "",
+                "price": 74.9,
+                "stock": 0,
+                "sku": "",
+                "slug": {
+                    "value": "050035-sutia-top"
+                },
+                "height": 0,
+                "width": 0,
+                "length": 0,
+                "weight": 0,
+                "brandId": {
+                    "value": "0651cfd0-fc81-4ffb-a87b-4cc84fd3ee18"
+                },
+                "createdAt": "2024-08-10T10:09:38.224Z",
+                "updatedAt": "2024-08-10T10:13:17.692Z",
+                "hasVariants": false,
+                "productCategories": [
+                    {
+                        "id": {
+                            "value": "NoCategoryFromERP"
+                        },
+                        "name": "NoCategoryFromERP"
+                    }
+                ],
+                "images": []
+            }
+        },
+        {
+            "_id": {
+                "value": 3127
+            },
+            "props": {
+                "erpId": 3127,
+                "name": "01002 CALC. RENDA",
+                "description": "",
+                "price": 49.9,
+                "stock": 0,
+                "sku": "",
+                "slug": {
+                    "value": "01002-calc-renda"
+                },
+                "height": 0,
+                "width": 0,
+                "length": 0,
+                "weight": 0,
+                "brandId": {
+                    "value": "80401596-ede1-4a46-956b-306f1936e8a7"
+                },
+                "createdAt": "2024-08-10T10:09:38.224Z",
+                "updatedAt": "2024-08-10T10:13:17.692Z",
+                "hasVariants": false,
+                "productCategories": [
+                    {
+                        "id": {
+                            "value": "NoCategoryFromERP"
+                        },
+                        "name": "NoCategoryFromERP"
+                    }
+                ],
+                "images": []
+            }
+        }
+    ]
+}

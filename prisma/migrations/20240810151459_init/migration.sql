@@ -36,7 +36,6 @@ CREATE TABLE "products" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "materialId" TEXT NOT NULL,
     "productIdVariant" TEXT,
     "slug" TEXT NOT NULL,
     "brandId" TEXT NOT NULL,
@@ -166,16 +165,6 @@ CREATE TABLE "product_categories" (
 );
 
 -- CreateTable
-CREATE TABLE "materials" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3),
-
-    CONSTRAINT "materials_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "brands" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -287,9 +276,6 @@ CREATE UNIQUE INDEX "sizes_name_key" ON "sizes"("name");
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "materials_name_key" ON "materials"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "brands_name_key" ON "brands"("name");
 
 -- CreateIndex
@@ -297,9 +283,6 @@ CREATE UNIQUE INDEX "carts_shippingId_key" ON "carts"("shippingId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_paymentId_key" ON "orders"("paymentId");
-
--- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "brands"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

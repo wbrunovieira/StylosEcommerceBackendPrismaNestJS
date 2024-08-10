@@ -26,7 +26,7 @@ export class PrismaProductRepository implements IProductRepository {
                 description,
                 price,
                 stock,
-                materialId,
+                
                 brandId,
                 erpId,
                 images,
@@ -44,9 +44,7 @@ export class PrismaProductRepository implements IProductRepository {
                 price: product.price,
                 stock: product.stock,
                 erpId: product.erpId,
-                materialId: product.materialId
-                    ? product.materialId.toString()
-                    : null,
+               
                 brandId: product.brandId.toString(),
                 images: product.images,
                 createdAt: product.createdAt,
@@ -96,16 +94,7 @@ export class PrismaProductRepository implements IProductRepository {
                 }
             }
 
-            let materialExist;
-            if (materialId) {
-                const materialIDAsString = materialId.toString();
-                materialExist = await this.prisma.material.findUnique({
-                    where: { id: materialIDAsString },
-                });
-                if (!materialExist) {
-                    throw new Error("Material not found.");
-                }
-            }
+        
 
             let brandExist;
             if (brandId) {
@@ -140,9 +129,7 @@ export class PrismaProductRepository implements IProductRepository {
                     width: product.width,
                     length: product.length,
                     weight: product.weight,
-                    material: materialExist
-                        ? { connect: { id: materialExist.id } }
-                        : undefined,
+                 
                     brand: { connect: { id: brandExist.id } },
                     finalPrice: finalPrice ?? undefined,
                     ...otherProps,
@@ -151,120 +138,11 @@ export class PrismaProductRepository implements IProductRepository {
 
             return right(undefined);
         } catch (error) {
-            return left(new Error("Failed to create material"));
+            return left(new Error("Failed to create"));
         }
     }
 
-    async findByMaterialId(
-        materialId: string
-    ): Promise<Either<Error, Product[]>> {
-        try {
-        
-            const productsData = await this.prisma.product.findMany({
-                where: {
-                    materialId: materialId,
-                },
-                include: {
-                    productColors: {
-                        include: {
-                            color: true,
-                        },
-                    },
-                    productSizes: {
-                        include: {
-                            size: true,
-                        },
-                    },
-                    productCategories: {
-                        include: {
-                            category: true,
-                        },
-                    },
-                    brand: true,
-                    material: true,
-                    productVariants: true,
-                },
-            });
-
-            if (!productsData.length) {
-                return left(
-                    new ResourceNotFoundError(
-                        `No products found for materialId: ${materialId}`
-                    )
-                );
-            }
-
-            const products = productsData.map((productData) =>
-                Product.create(
-                    {
-                        name: productData.name,
-                        description: productData.description,
-                        productSizes: productData.productSizes.map((size) => ({
-                            id: new UniqueEntityID(size.sizeId),
-                            name: size.size.name,
-                        })),
-                        productColors: productData.productColors.map(
-                            (color) => ({
-                                id: new UniqueEntityID(color.colorId),
-                                name: color.color.name,
-                                hex: color.color.hex,
-                            })
-                        ),
-                        productCategories: productData.productCategories.map(
-                            (category) => ({
-                                id: new UniqueEntityID(category.categoryId),
-                                name: category.category.name,
-                            })
-                        ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
-                        sizeId: productData.productSizes.map(
-                            (size) => new UniqueEntityID(size.sizeId)
-                        ),
-                        finalPrice: productData.finalPrice ?? undefined,
-                        brandId: new UniqueEntityID(productData.brandId),
-                        brandName: productData.brand?.name ?? "Unknown Brand",
-                        materialName:
-                            productData.material?.name ?? "Unknown Material",
-                        brandUrl:
-                            productData.brand?.imageUrl ??
-                            "Unknown Brand image",
-                        discount: productData.discount ?? undefined,
-                        price: productData.price,
-                        stock: productData.stock,
-                        sku: productData.sku ?? "ntt",
-                        height: productData.height ?? undefined,
-                        width: productData.width ?? undefined,
-                        length: productData.length ?? undefined,
-                        weight: productData.weight ?? undefined,
-                        onSale: productData.onSale ?? undefined,
-                        isFeatured: productData.isFeatured ?? undefined,
-                        hasVariants: productData.hasVariants ?? undefined,
-                        isNew: productData.isNew ?? undefined,
-                        images: productData.images ?? undefined,
-                        slug: Slug.createFromText(productData.slug),
-                        createdAt: new Date(productData.createdAt),
-                        updatedAt: productData.updatedAt
-                            ? new Date(productData.updatedAt)
-                            : undefined,
-                    },
-                    new UniqueEntityID(productData.id)
-                )
-            );
-
-            return right(products);
-        } catch (error) {
-            console.error(
-                `Failed to retrieve products for materialId: ${materialId}, Error: ${error}`
-            );
-            return left(
-                new ResourceNotFoundError(
-                    `Failed to retrieve products for materialId: ${materialId}`
-                )
-            );
-        }
-    }
+   
 
     async findByPriceRange(
         minPrice: number,
@@ -296,7 +174,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                  
                     productVariants: true,
                 },
             });
@@ -331,9 +209,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                    
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -407,7 +283,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: true,
                 },
             });
@@ -442,9 +318,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -518,7 +392,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                  
                     productVariants: true,
                 },
             });
@@ -554,9 +428,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 hex: color.color.hex,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                     
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -626,7 +498,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: true,
                 },
             });
@@ -661,9 +533,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                      
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -736,7 +606,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: true,
                 },
             });
@@ -771,9 +641,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                     
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -847,7 +715,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: true,
                 },
             });
@@ -882,9 +750,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                        materialId: productData.materialId
-                            ? new UniqueEntityID(productData.materialId)
-                            : undefined,
+                     
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -935,7 +801,7 @@ export class PrismaProductRepository implements IProductRepository {
             Error,
             {
                 product: Product;
-                materialName?: string;
+                
                 brandName?: string;
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];
@@ -974,7 +840,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: true,
                 },
             });
@@ -1004,9 +870,7 @@ export class PrismaProductRepository implements IProductRepository {
                             name: category.category.name,
                         })
                     ),
-                    materialId: productData.materialId
-                        ? new UniqueEntityID(productData.materialId)
-                        : undefined,
+                   
                     sizeId: productData.productSizes.map(
                         (size) => new UniqueEntityID(size.sizeId)
                     ),
@@ -1070,7 +934,7 @@ export class PrismaProductRepository implements IProductRepository {
             );
 
             const additionalInfo = {
-                materialName: productData.material?.name ?? undefined,
+               
                 brandName: productData.brand?.name ?? undefined,
                 colors: uniqueColors,
                 sizes: uniqueSizes,
@@ -1124,7 +988,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                    material: true,
+                   
                     productVariants: {
                         include: {
                             color: true,
@@ -1161,9 +1025,7 @@ export class PrismaProductRepository implements IProductRepository {
                             name: category.category.name,
                         })
                     ),
-                    materialId: productData.materialId
-                        ? new UniqueEntityID(productData.materialId)
-                        : undefined,
+                   
                     finalPrice: productData.finalPrice ?? undefined,
                     brandId: new UniqueEntityID(productData.brandId),
                     brandName: productData.brand?.name ?? "Unknown Brand",
@@ -1270,7 +1132,7 @@ export class PrismaProductRepository implements IProductRepository {
                 data: {
                     name: product.name,
                     description: product.description,
-                    materialId: product.materialId?.toString(),
+                   
                     brandId: product.brandId.toString(),
                     discount: product.discount,
                     price: product.price,
