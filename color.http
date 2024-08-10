@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "black",
+  "name": "black2",
   "hex":"#000",
   "erpId": "1000"
 }
