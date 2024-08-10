@@ -5,9 +5,10 @@
                 "value": "1"
             },
             "props": {
-                "name": "SUTIA NADADORss",
+                "name": "SUTIA NADADORssssasA",
                 "description": "Um sutiã confortável e de alta qualidade",
                 "price": 63.7,
+                "erpId": "3124",
                 "stock": 100,
                 "height": 10,
                 "width": 20,
@@ -56,10 +57,11 @@
                 "value": "2"
             },
             "props": {
-                "name": "CAMISETA BASICAss",
+                "name": "CAMISETA BASICAsssassA",
                 "description": "Camiseta de algodão, ideal para o dia a dia",
                 "price": 45.5,
                 "stock": 200,
+                "erpId": "3125",
                 "height": 15,
                 "width": 25,
                 "length": 35,
