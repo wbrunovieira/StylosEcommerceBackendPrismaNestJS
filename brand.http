@@ -18,9 +18,9 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "marca 112sss",
-  "imageUrl": "/icons/logo-nayne.jpeg",
-  "erpId":"1000"
+  "name": "Brand for teste",
+  "imageUrl": "/icons/no-photos.svg",
+  "erpId":"10000"
   
 }
 
