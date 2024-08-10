@@ -118,7 +118,9 @@ export class ApiGetAllProducts {
                                     console.log("matchingSize", matchingSize);
                                     if (matchingColor) {
                                         productColors.push({
-                                            id: new UniqueEntityID(option.id),
+                                            id: new UniqueEntityID(
+                                                String(option.id)
+                                            ),
                                             name: matchingColor.props.name,
                                             hex: matchingColor.props.hex,
                                         });
@@ -127,7 +129,9 @@ export class ApiGetAllProducts {
 
                                     if (matchingSize) {
                                         productSizes.push({
-                                            id: new UniqueEntityID(option.id),
+                                            id: new UniqueEntityID(
+                                                String(option.id)
+                                            ),
                                             name: matchingSize.props.name,
                                         });
                                     }
@@ -162,9 +166,10 @@ export class ApiGetAllProducts {
                                 }
                             }
                         }
+                        const brandId = "";
 
                         const productProps: ProductProps = {
-                            erpId: product.id,
+                            erpId: String(product.id),
                             name: product.properties.name || "NameNotFound",
                             description: product.properties.description || "",
                             price: product.properties.unitary_value,
@@ -184,7 +189,7 @@ export class ApiGetAllProducts {
                             width: product.width || 0,
                             length: product.length || 0,
                             weight: product.weight || 0,
-                            brandId: new UniqueEntityID(product.brand_id),
+                            brandId: new UniqueEntityID(brandId),
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),
                             hasVariants:
