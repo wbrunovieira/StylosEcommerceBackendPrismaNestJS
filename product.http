@@ -17,11 +17,6 @@ Content-Type: application/json
 ###
 
 
-# @name migration
-GET {{BASE_URL}}/migration/run
-Content-Type: application/json
-
-###
 
 # @name create-products
 POST {{BASE_URL}}/products
