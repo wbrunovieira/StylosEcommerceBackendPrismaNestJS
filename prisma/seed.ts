@@ -123,7 +123,7 @@ async function main() {
     console.log("Sizes created");
 
     // Obter IDs de materiais, marcas, categorias, cores e tamanhos
-    const materialsData = await prisma.material.findMany();
+   
     const brandsData = await prisma.brand.findMany();
     const categoriesData = await prisma.category.findMany();
     const colorsData = await prisma.color.findMany();
@@ -141,10 +141,7 @@ async function main() {
             update: {
                 description: `Descrição atualizada do produto ${i}`,
                 images: ["/images/foto1.jpg"],
-                materialId:
-                    materialsData[
-                        Math.floor(Math.random() * materialsData.length)
-                    ].id,
+             
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -164,10 +161,7 @@ async function main() {
                 name: productName,
                 description: `Descrição do produto ${i}`,
                 images: ["/images/foto1.jpg"],
-                materialId:
-                    materialsData[
-                        Math.floor(Math.random() * materialsData.length)
-                    ].id,
+             
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -255,10 +249,7 @@ async function main() {
             update: {
                 description: `Descrição atualizada do ${name}`,
                 images: ["/images/foto1.jpg"],
-                materialId:
-                    materialsData[
-                        Math.floor(Math.random() * materialsData.length)
-                    ].id,
+             
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -277,10 +268,7 @@ async function main() {
                 name,
                 description: `Descrição do ${name}`,
                 images: ["/images/foto1.jpg"],
-                materialId:
-                    materialsData[
-                        Math.floor(Math.random() * materialsData.length)
-                    ].id,
+            
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,

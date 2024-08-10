@@ -29,7 +29,7 @@
 //   productColors: z.array(z.string()).optional(),
 //   productCategories: z.array(z.string()).optional(),
 //   slug: z.array(z.string()).optional(),
-//   materialId: z.string().optional(),
+
 //   sizeId: z.array(z.string()).optional(),
 //   brandId: z.string().optional(),
 //   discount: z.number().optional(),

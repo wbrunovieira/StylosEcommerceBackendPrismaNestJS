@@ -42,7 +42,7 @@ const createProductBodySchema = z.object({
     productColors: z.array(z.string()).optional(),
     productSizes: z.array(z.string()).optional(),
     productCategories: z.array(z.string()),
-    materialId: z.string(),
+
     brandId: z.string(),
     sku: z.string().optional(),
     price: z.number(),
@@ -82,7 +82,7 @@ const editProductSchema = z.object({
         .array(z.object({ id: z.string(), name: z.string() }))
         .optional(),
     slug: z.array(z.string()).optional(),
-    materialId: z.string().optional(),
+
     sizeId: z.array(z.string()).optional(),
     brandId: z.string().optional(),
     discount: z.number().optional(),
@@ -151,7 +151,7 @@ export class ProductController {
                 productColors: body.productColors,
                 productSizes: body.productSizes,
                 productCategories: body.productCategories,
-                materialId: body.materialId || null,
+
                 brandId: body.brandId,
                 price: body.price,
                 stock: body.stock,
@@ -295,32 +295,7 @@ export class ProductController {
         } catch (error) {}
     }
 
-    @Get("/material/:materialId")
-    async allProductsByMaterial(@Param("materialId") materialId: string) {
-        try {
-            const result = await this.getAllProductsByMaterialId.execute({
-                materialId,
-            });
 
-            if (result.isLeft()) {
-                const error = result.value;
-                if (error instanceof ResourceNotFoundError) {
-                    console.error(`Products not found: ${error.message}`);
-                    throw new HttpException(
-                        error.message,
-                        HttpStatus.NOT_FOUND
-                    );
-                } else {
-                    throw new HttpException(
-                        "An unexpected error occurred.",
-                        HttpStatus.INTERNAL_SERVER_ERROR
-                    );
-                }
-            } else {
-                return result.value;
-            }
-        } catch (error) {}
-    }
 
     @Get("/color/:colorId")
     async allProductsByColor(@Param("colorId") colorId: string) {
@@ -418,7 +393,7 @@ export class ProductController {
                     },
                 },
                 brand: true,
-                material: true,
+            
                 productVariants: true,
             },
             take: 12,
@@ -494,7 +469,7 @@ export class ProductController {
             } else {
                 const {
                     product,
-                    materialName,
+              
                     brandName,
                     colors,
                     sizes,
@@ -511,7 +486,7 @@ export class ProductController {
                 return {
                     product: product,
                     slug: product.slug,
-                    materialName,
+              
                     brandName,
                     colors,
                     sizes,

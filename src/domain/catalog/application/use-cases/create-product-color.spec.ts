@@ -54,7 +54,7 @@ describe("CreateProductUseCase", () => {
   let mockProductCategoryRepository: IProductCategoryRepository;
 
   let brandId: UniqueEntityID;
-  let materialId: UniqueEntityID;
+  
   let sizeId: UniqueEntityID;
   let colorId: UniqueEntityID;
   let categoryId: UniqueEntityID;
@@ -62,17 +62,14 @@ describe("CreateProductUseCase", () => {
 
   beforeEach(() => {
     brandId = new UniqueEntityID("82a6d71c-6378-4d11-8258-4ee8732161a3");
-    materialId = new UniqueEntityID("f056524a-85bf-45a9-bf40-ebade896343c");
+    
     sizeId = new UniqueEntityID("size_id_as_string");
     colorId = new UniqueEntityID("color_id_as_string");
     categoryId = new UniqueEntityID("category_id_as_string");
     productId = new UniqueEntityID("product_id_as_string");
 
     const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
-    const consistentMaterial = makeMaterial(
-      { name: "Test Material Name" },
-      materialId
-    );
+ 
     const consistentSize = makeSize({ name: "Test Size Name" }, sizeId);
     const consistentColor = makeColor({ name: "Test Color Name" }, colorId);
 
@@ -86,7 +83,7 @@ describe("CreateProductUseCase", () => {
         onSale: false,
         discount: 0,
         brandId: brandId,
-        materialId,
+      
         price: 100.0,
         stock: 20,
         slug: productSlug,
@@ -145,13 +142,7 @@ describe("CreateProductUseCase", () => {
         : Promise.resolve(left(new ResourceNotFoundError("Brand not found")));
     });
 
-    mockMaterialRepository.findById = vi.fn((id) => {
-      return id === materialId.toString()
-        ? Promise.resolve(right(consistentMaterial))
-        : Promise.resolve(
-            left(new ResourceNotFoundError("Material not found"))
-          );
-    });
+   
 
     mockProductSizeRepository.addItem(
       new ProductSize({
@@ -261,7 +252,7 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
       productCategories: [],
-      materialId: materialId.toString(),
+     
       brandId: brandId.toString(),
       price: 200,
       stock: 20,
@@ -314,7 +305,7 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString(), anotherColorId.toString()],
       productSizes: [sizeId.toString()],
       productCategories: [],
-      materialId: materialId.toString(),
+      
       brandId: brandId.toString(),
       price: 250,
       stock: 25,
@@ -368,7 +359,7 @@ describe("CreateProductUseCase", () => {
       productSizes: [],
       productColors: [invalidColorId],
       productCategories: [],
-      materialId: materialId.toString(),
+     
       brandId: brandId.toString(),
       price: 250,
       stock: 25,
@@ -412,7 +403,7 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString(), colorId.toString()],
       productSizes: [sizeId.toString()],
       productCategories: [],
-      materialId: null,
+      
       brandId: brandId.toString(),
       price: 100,
       stock: 10,
@@ -459,7 +450,7 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString()],
       productSizes: [sizeId.toString()],
       productCategories: [],
-      materialId: null,
+      
       brandId: brandId.toString(),
       price: 100,
       stock: 10,
@@ -516,7 +507,7 @@ describe("CreateProductUseCase", () => {
       productColors: [colorId.toString(), anotherColorId.toString()],
       productSizes: [sizeId.toString(), anotherSizeId.toString()],
       productCategories: [],
-      materialId: null,
+      
       brandId: brandId.toString(),
       price: 100,
       stock: 10,

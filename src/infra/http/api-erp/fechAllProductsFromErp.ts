@@ -21,9 +21,7 @@ const createProductSchema = z.object({
   images: z
     .array(z.string().url('Invalid URL format'))
     .nonempty('Images must not be empty'),
-  materialId: z
-    .string()
-    .uuid('Invalid UUID format'),
+
   brandId: z
     .string()
     .uuid('Invalid UUID format'),
@@ -113,7 +111,7 @@ export class SyncProductsUseCase {
           name: product.properties.name,
           description: product.properties.description || '',
           images: [product.properties.image || 'http://localhost:3000/public/default-image.svg'],
-          materialId: '54ce261d-8f43-49e0-a610-658d75c9a211',  
+   
           brandId: 'bdc60ff1-29fb-460e-b9ba-e340c694c463', 
           sku: product.properties.code || '',
           price: product.properties.unitary_value,
@@ -158,7 +156,7 @@ export class SyncProductsUseCase {
     }
   }
 
-  async createProductIfNotExist(productData: { name: string; description?: string; images: string[]; materialId: string; brandId: string; sku?: string; price: number; stock: number; height: number; width: number; length: number; weight: number; productColors: string[]; productCategories: string[]; productSizes: string[]; integrationKey: string }, token: string) {
+  async createProductIfNotExist(productData: { name: string; description?: string; images: string[]; brandId: string; sku?: string; price: number; stock: number; height: number; width: number; length: number; weight: number; productColors: string[]; productCategories: string[]; productSizes: string[]; integrationKey: string }, token: string) {
     const { integrationKey } = productData;
 
     if (await this.productExists(integrationKey, token)) {
@@ -170,7 +168,7 @@ export class SyncProductsUseCase {
   }
 
   async createProduct(
-    productData: { name: string; description?: string; images: string[]; materialId: string; brandId: string; sku?: string; price: number; stock: number; height: number; width: number; length: number; weight: number; productColors: string[]; productCategories: string[]; productSizes: string[]; integrationKey: string },
+    productData: { name: string; description?: string; images: string[];  brandId: string; sku?: string; price: number; stock: number; height: number; width: number; length: number; weight: number; productColors: string[]; productCategories: string[]; productSizes: string[]; integrationKey: string },
     token: string
   ) {
     try {

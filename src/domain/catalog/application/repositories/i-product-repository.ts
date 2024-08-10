@@ -28,7 +28,7 @@ export abstract class IProductRepository {
             Error,
             {
                 product: Product;
-                materialName?: string;
+               
                 brandName?: string;
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];

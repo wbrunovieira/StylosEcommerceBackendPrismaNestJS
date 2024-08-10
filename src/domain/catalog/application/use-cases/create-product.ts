@@ -8,10 +8,10 @@ import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { IProductRepository } from "../repositories/i-product-repository";
 
 import { IBrandRepository } from "../repositories/i-brand-repository";
-import { IMaterialRepository } from "../repositories/i-material-repository";
+
 import { Injectable } from "@nestjs/common";
 
-import { Material } from "../../enterprise/entities/material";
+
 import { ISizeRepository } from "../repositories/i-size-repository";
 import { IProductSizeRepository } from "../repositories/i-product-size-repository";
 import { IColorRepository } from "../repositories/i-color-repository";
@@ -31,7 +31,7 @@ interface CreateProductUseCaseRequest {
     productColors?: string[];
     productSizes?: string[];
     productCategories?: string[];
-    materialId?: string | null;
+
     brandId: string;
     price: number;
     stock: number;
@@ -63,7 +63,7 @@ export class CreateProductUseCase {
         private productRepository: IProductRepository,
         private colorRepository: IColorRepository,
         private brandRepository: IBrandRepository,
-        private materialRepository: IMaterialRepository,
+   
         private sizeRepository: ISizeRepository,
         private categoryRepository: ICategoryRepository,
         private productSizeRepository: IProductSizeRepository,
@@ -85,7 +85,7 @@ export class CreateProductUseCase {
         productColors,
         productSizes,
         productCategories,
-        materialId = null,
+   
         brandId,
         sku = null,
         erpId,
@@ -122,18 +122,7 @@ export class CreateProductUseCase {
 
         const brand = brandOrError.value;
 
-        let materialOrError: Either<Error, Material | null> = right(null);
-        if (materialId) {
-            materialOrError =
-                await this.materialRepository.findById(materialId);
-            if (materialOrError.isLeft()) {
-                return left(new ResourceNotFoundError("Material not found"));
-            }
-        }
 
-        const material = materialOrError.isRight()
-            ? materialOrError.value
-            : null;
 
         let uniqueSizes;
         if (productSizes) {
@@ -228,9 +217,7 @@ export class CreateProductUseCase {
             const product = Product.create({
                 name,
                 description,
-                materialId: materialId
-                    ? new UniqueEntityID(materialId)
-                    : undefined,
+          
                 brandId: new UniqueEntityID(brandId),
                 price,
                 finalPrice,
