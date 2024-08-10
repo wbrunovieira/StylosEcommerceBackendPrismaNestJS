@@ -120,6 +120,7 @@ export class ProductMigrationService {
                         price: productPrice,
                         stock: product.props.stock,
                         height: product.props.height,
+                        brandId: "2673221c-e71d-4d09-9206-a36ce20ea2ad",
                         slug: slug.value,
                         width: product.props.width,
                         length: product.props.length,
