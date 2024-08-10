@@ -122,7 +122,7 @@ async function main() {
     }
     console.log("Sizes created");
 
-    // Obter IDs de materiais, marcas, categorias, cores e tamanhos
+    // Obter IDs  marcas, categorias, cores e tamanhos
    
     const brandsData = await prisma.brand.findMany();
     const categoriesData = await prisma.category.findMany();

@@ -1,6 +1,6 @@
 import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
 import { CreateProductUseCase } from "./create-product";
-import { InMemoryMaterialRepository } from "@test/repositories/in-memory-material-repository";
+
 import { InMemoryProductRepository } from "@test/repositories/in-memory-product-repository";
 import { InMemoryProductColorRepository } from "@test/repositories/in-memory-product-color-repository";
 import { InMemoryProductSizeRepository } from "@test/repositories/in-memory-product-size-repository";
@@ -9,10 +9,10 @@ import { InMemoryProductCategoryRepository } from "@test/repositories/in-memory-
 
 
 import { IProductCategoryRepository } from "../repositories/i-product-category-repository";
-import { IMaterialRepository } from "../repositories/i-material-repository";
+
 import { IBrandRepository } from "../repositories/i-brand-repository";
 import { makeBrand } from "@test/factories/make-brand";
-import { makeMaterial } from "@test/factories/make-material";
+
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { left, right } from "@/core/either";
@@ -42,7 +42,7 @@ describe("CreateProductUseCase", () => {
   let mockProductVariantRepository: IProductVariantRepository;
 
   let mockBrandRepository: IBrandRepository;
-  let mockMaterialRepository: IMaterialRepository;
+
 
   let mockSizeRepository: ISizeRepository;
   let mockProductSizeRepository: InMemoryProductSizeRepository;
@@ -104,7 +104,7 @@ describe("CreateProductUseCase", () => {
     mockProductCategoryRepository = new InMemoryProductCategoryRepository();
 
     mockBrandRepository = new InMemoryBrandRepository();
-    mockMaterialRepository = new InMemoryMaterialRepository();
+
 
     mockSizeRepository = new InMemorySizeRepository();
     mockColorRepository = new InMemoryColorRepository();
@@ -117,7 +117,7 @@ describe("CreateProductUseCase", () => {
     );
 
     mockBrandRepository.create(consistentBrand);
-    mockMaterialRepository.create(consistentMaterial);
+
     mockSizeRepository.create(consistentSize);
     mockColorRepository.create(consistentColor);
     mockCategoryRepository.create(consistentCategory);
@@ -127,7 +127,7 @@ describe("CreateProductUseCase", () => {
       mockProductRepository,
       mockColorRepository,
       mockBrandRepository,
-      mockMaterialRepository,
+    
       mockSizeRepository,
       mockCategoryRepository,
       mockProductSizeRepository,
