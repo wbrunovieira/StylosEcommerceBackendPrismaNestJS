@@ -46,22 +46,6 @@ async function main() {
         console.log("Admin user already exists");
     }
 
-    // Criar materiais
-
-    const materials = [{ name: "algodão" }, { name: "lycra" }];
-
-    for (const material of materials) {
-        await prisma.material.upsert({
-            where: { name: material.name },
-            update: {},
-            create: {
-                name: material.name,
-            },
-        });
-    }
-
-    console.log("Materials created");
-
     // Criar marcas
     const brands = [
         { name: "Liz", imageUrl: "/icons/logo-liz.svg" },
@@ -247,7 +231,11 @@ async function main() {
     console.log("Products created or updated");
 
     // Criar ou atualizar produtos sem cores, tamanhos e variantes (bolsa e oculos)
-    const productsWithoutVariants = [{ name: "bolsa 1", category: "bolsa" },{ name: "bolsa 2", category: "bolsa" },{ name: "bolsa 3", category: "bolsa" },];
+    const productsWithoutVariants = [
+        { name: "bolsa 1", category: "bolsa" },
+        { name: "bolsa 2", category: "bolsa" },
+        { name: "bolsa 3", category: "bolsa" },
+    ];
 
     for (const { name, category } of productsWithoutVariants) {
         const price = 200 + Math.floor(Math.random() * 10);

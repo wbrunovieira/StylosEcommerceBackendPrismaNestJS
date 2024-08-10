@@ -1,0 +1,97 @@
+{
+    "products": [
+      {
+        "_id": {
+          "value": "1"
+        },
+        "props": {
+          "name": "SUTIA NADADOR",
+          "description": "Um sutiã confortável e de alta qualidade",
+          "price": 63.7,
+          "stock": 100,
+          "height": 10,
+          "width": 20,
+          "length": 30,
+          "weight": 0.5,
+          "images": [
+            {
+              "url": "http://localhost:3000/public/images/product1.jpg"
+            }
+          ],
+          "productColors": [
+            {
+              "id": {
+                "value": "1"
+              }
+            },
+            {
+              "id": {
+                "value": "2"
+              }
+            }
+          ],
+          "productSizes": [
+            {
+              "id": {
+                "value": "1"
+              }
+            },
+            {
+              "id": {
+                "value": "2"
+              }
+            }
+          ],
+          "productCategories": [
+            {
+              "id": {
+                "value": "1"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "_id": {
+          "value": "2"
+        },
+        "props": {
+          "name": "CAMISETA BASICA",
+          "description": "Camiseta de algodão, ideal para o dia a dia",
+          "price": 45.5,
+          "stock": 200,
+          "height": 15,
+          "width": 25,
+          "length": 35,
+          "weight": 0.3,
+          "images": [
+            {
+              "url": "http://localhost:3000/public/images/product2.jpg"
+            }
+          ],
+          "productColors": [
+            {
+              "id": {
+                "value": "3"
+              }
+            }
+          ],
+          "productSizes": [
+            {
+              "id": {
+                "value": "3"
+              }
+            }
+          ],
+          "productCategories": [
+            {
+              "id": {
+                "value": "2"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+  

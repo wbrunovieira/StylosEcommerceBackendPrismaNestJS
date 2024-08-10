@@ -42,9 +42,9 @@ model Product {
   productColors ProductColor[]
   productSizes ProductSize[]
   productCategories  ProductCategory[]
-  materialId  String 
+  
   productIdVariant  String? 
-  material    Material?     @relation(fields: [materialId], references: [id])
+  
   slug        String        @unique 
   brandId     String
   brand       Brand?        @relation(fields: [brandId], references: [id])
@@ -196,16 +196,7 @@ model ProductCategory {
   @@map("product_categories")
 }
 
-model Material {
-  id   String @id @default(uuid())
-  name String @unique
-  products Product[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  
 
-  @@map("materials")
-}
 
 model Brand {
   id       String    @id @default(uuid())

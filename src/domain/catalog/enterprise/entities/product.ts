@@ -33,9 +33,6 @@ export interface ProductProps {
     productColors?: Color[];
     productCategories?: Category[];
 
-    materialId?: UniqueEntityID;
-    materialName?: string;
-
     sizeId?: UniqueEntityID[];
     finalPrice?: number;
     brandId: UniqueEntityID;
@@ -69,7 +66,7 @@ export class Product extends Entity<ProductProps> {
     get height() {
         return this.props.height;
     }
-    
+
     get erpId(): string | undefined {
         return this.props.erpId;
     }
@@ -167,10 +164,6 @@ export class Product extends Entity<ProductProps> {
         return this.props.brandId;
     }
 
-    get materialId(): UniqueEntityID | undefined {
-        return this.props.materialId;
-    }
-
     get sizeId(): UniqueEntityID[] | undefined {
         return this.props.sizeId;
     }
@@ -218,11 +211,6 @@ export class Product extends Entity<ProductProps> {
 
     set brandId(brandId: UniqueEntityID) {
         this.props.brandId = brandId;
-
-        this.touch();
-    }
-    set materialId(materialId: UniqueEntityID) {
-        this.props.materialId = materialId;
 
         this.touch();
     }
