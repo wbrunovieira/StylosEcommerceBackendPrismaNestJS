@@ -113,8 +113,7 @@ export class EditProductUseCase {
         name: color.name,
         hex: color.hex,
       }));
-    if (materialId !== undefined)
-      product.materialId = new UniqueEntityID(materialId);
+
     if (sizeId !== undefined)
       product.sizeId = sizeId.map((id) => new UniqueEntityID(id));
     if (brandId !== undefined) product.brandId = new UniqueEntityID(brandId);

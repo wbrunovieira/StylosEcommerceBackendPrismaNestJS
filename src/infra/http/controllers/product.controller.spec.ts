@@ -128,6 +128,11 @@ describe("ProductController", () => {
                 isFeatured: false,
                 isNew: false,
                 sku: "sku-123",
+                length: 0,
+                height: 0,
+                width: 0,
+                weight: 0,
+                hasVariants: false,
             },
             new UniqueEntityID()
         );
@@ -138,21 +143,25 @@ describe("ProductController", () => {
         vi.spyOn(createProductUseCase, "execute").mockResolvedValue(mockResult);
 
         const result = await productController.createProduct({
-            name: "ProductName",
-            description: "ProductDescription",
-            productCategories: ["category1", "category2"],
+          name: "ProductName",
+          description: "ProductDescription",
+          productCategories: ["category1", "category2"],
 
-            brandId: "brand-id",
-            price: 100,
-            stock: 10,
-            images: [],
-            onSale: false,
-            discount: 0,
-            isFeatured: false,
-            isNew: false,
-            productColors: ["color1", "color2"],
-            productSizes: ["size1", "size2"],
-            sku: "sku-123",
+          brandId: "brand-id",
+          price: 100,
+          stock: 10,
+          images: [],
+          onSale: false,
+          discount: 0,
+          isFeatured: false,
+          isNew: false,
+          productColors: ["color1", "color2"],
+          productSizes: ["size1", "size2"],
+          sku: "sku-123",
+          length: 0,
+          height: 0,
+          width: 0,
+          weight: 0
         });
 
         expect(result).toEqual({ product: mockProduct });
@@ -186,21 +195,25 @@ describe("ProductController", () => {
 
         try {
             await productController.createProduct({
-                name: "ProductWithError",
-                description: "DescriptionWithError",
-                productCategories: ["category1", "category2"],
+              name: "ProductWithError",
+              description: "DescriptionWithError",
+              productCategories: ["category1", "category2"],
 
-                brandId: "brand-id",
-                price: 100,
-                stock: 10,
-                images: [],
-                onSale: false,
-                discount: 0,
-                isFeatured: false,
-                isNew: false,
-                productColors: ["color1", "color2"],
-                productSizes: ["size1", "size2"],
-                sku: "sku-123",
+              brandId: "brand-id",
+              price: 100,
+              stock: 10,
+              images: [],
+              onSale: false,
+              discount: 0,
+              isFeatured: false,
+              isNew: false,
+              productColors: ["color1", "color2"],
+              productSizes: ["size1", "size2"],
+              sku: "sku-123",
+              length: 0,
+              height: 0,
+              width: 0,
+              weight: 0
             });
         } catch (error) {
             if (error instanceof HttpException) {

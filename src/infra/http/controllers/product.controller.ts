@@ -30,7 +30,7 @@ import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
-import { GetProductsByMaterialIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-material";
+
 import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
 import { ProductStatus } from "@prisma/client";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
@@ -130,7 +130,7 @@ export class ProductController {
         private getProductBySlug: GetProductBySlugUseCase,
         private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
         private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
-        private getAllProductsByMaterialId: GetProductsByMaterialIdUseCase,
+      
         private getAllProductsByColorId: GetProductsByColorIdUseCase,
         private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
         private getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
@@ -295,8 +295,6 @@ export class ProductController {
         } catch (error) {}
     }
 
-
-
     @Get("/color/:colorId")
     async allProductsByColor(@Param("colorId") colorId: string) {
         try {
@@ -393,7 +391,7 @@ export class ProductController {
                     },
                 },
                 brand: true,
-            
+
                 productVariants: true,
             },
             take: 12,
@@ -469,7 +467,7 @@ export class ProductController {
             } else {
                 const {
                     product,
-              
+
                     brandName,
                     colors,
                     sizes,
@@ -486,7 +484,7 @@ export class ProductController {
                 return {
                     product: product,
                     slug: product.slug,
-              
+
                     brandName,
                     colors,
                     sizes,

@@ -6,8 +6,7 @@ import { ICategoryRepository } from "@/domain/catalog/application/repositories/i
 import { PrismaCategoryRepository } from "./prisma/repositories/prisma-category-repository";
 import { IColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
 import { PrismaColorRepository } from "./prisma/repositories/prisma-color-repository";
-import { IMaterialRepository } from "@/domain/catalog/application/repositories/i-material-repository";
-import { PrismaMaterialRepository } from "./prisma/repositories/prisma-material-repository";
+
 import { IProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
 import { PrismaProductCategoryRepository } from "./prisma/repositories/prisma-product-category-repository";
 import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
@@ -50,10 +49,7 @@ import { PrismaOrderRepository } from "./prisma/repositories/prisma-order-reposi
             provide: IProductRepository,
             useClass: PrismaProductRepository,
         },
-        {
-            provide: IMaterialRepository,
-            useClass: PrismaMaterialRepository,
-        },
+       
         {
             provide: IProductCategoryRepository,
             useClass: PrismaProductCategoryRepository,
@@ -109,7 +105,7 @@ import { PrismaOrderRepository } from "./prisma/repositories/prisma-order-reposi
     exports: [
         PrismaService,
         IBrandRepository,
-        IMaterialRepository,
+       
         ICategoryRepository,
         IColorRepository,
         ISizeRepository,
