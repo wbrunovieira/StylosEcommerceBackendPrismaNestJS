@@ -1,0 +1,29 @@
+{
+    "suppliers": [
+        {
+            "id": 3,
+            "trade_name": "LIZ",
+            "company_name": "",
+            "document": "61558037000205"
+        },
+        {
+            "id": 6,
+            "trade_name": "CHENSON",
+            "company_name": "",
+            "document": "65514184000234"
+        },
+        {
+            "id": 20,
+            "trade_name": "PZAMA",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 21,
+            "trade_name": "ORLA DA PRAIA",
+            "company_name": "",
+            "document": ""
+        }
+    ],
+    "count": 4
+}

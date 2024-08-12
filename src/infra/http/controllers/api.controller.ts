@@ -2,50 +2,70 @@ import { ApiGetAllProducts } from "@/domain/catalog/application/use-cases/api-al
 import { Controller, Get, HttpException, HttpStatus } from "@nestjs/common";
 import { SyncCategoriesUseCase } from "../api-erp/fechAllCategoriesFromErp";
 import { SyncAttributesUseCase } from "../api-erp/fechAllColorESizesFromErp";
+import {
+    FetchAllSuppliersUseCase,
+    Supplier,
+} from "../api-erp/fetchAllSupplierUseCase";
 
 @Controller("api")
 export class ApiController {
-  constructor(private readonly productsService: ApiGetAllProducts,
-    private readonly syncCategoriesService: SyncCategoriesUseCase, private readonly syncAttributesService: SyncAttributesUseCase) {}
+    constructor(
+        private readonly productsService: ApiGetAllProducts,
+        private readonly syncCategoriesService: SyncCategoriesUseCase,
+        private readonly syncAttributesService: SyncAttributesUseCase,
+        private readonly fetchAllSuppliersUseCase: FetchAllSuppliersUseCase
+    ) {}
 
-  @Get("fetch-and-save")
-  async fetchAndSaveProducts() {
-    await this.productsService.fetchAndSaveProducts();
-    return { message: "Products fetched and saved successfully" };
-  }
-
-
-  @Get('sync-categories')
-  async syncCategories() {
-    try {
-      await this.syncCategoriesService.syncCategories();
-      return { message: 'Categories synced successfully' };
-    } catch (error) {
-      console.error('Error syncing categories:', (error as Error).message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Failed to sync categories',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    @Get("fetch-and-save")
+    async fetchAndSaveProducts() {
+        await this.productsService.fetchAndSaveProducts();
+        return { message: "Products fetched and saved successfully" };
     }
-  }
 
-  @Get('sync-attributes')
-  async syncAttributes() {
-    try {
-      await this.syncAttributesService.syncAttributes();
-      return { message: 'Attributes synced successfully' };
-    } catch (error) {
-      console.error('Error syncing attributes:', (error as Error).message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Failed to sync attributes',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    @Get("sync-categories")
+    async syncCategories() {
+        try {
+            await this.syncCategoriesService.syncCategories();
+            return { message: "Categories synced successfully" };
+        } catch (error) {
+            console.error(
+                "Error syncing categories:",
+                (error as Error).message
+            );
+            throw new HttpException(
+                {
+                    status: HttpStatus.INTERNAL_SERVER_ERROR,
+                    error: "Failed to sync categories",
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
-  }
+
+    @Get("sync-attributes")
+    async syncAttributes() {
+        try {
+            await this.syncAttributesService.syncAttributes();
+            return { message: "Attributes synced successfully" };
+        } catch (error) {
+            console.error(
+                "Error syncing attributes:",
+                (error as Error).message
+            );
+            throw new HttpException(
+                {
+                    status: HttpStatus.INTERNAL_SERVER_ERROR,
+                    error: "Failed to sync attributes",
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Get("fetch-suppliers")
+    async fetchSuppliers(): Promise<{ suppliers: Supplier[]; count: number }> {
+        const suppliers =
+            await this.fetchAllSuppliersUseCase.fetchAllSuppliers();
+        return { suppliers, count: suppliers.length };
+    }
 }
