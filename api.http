@@ -8,6 +8,13 @@ GET {{BASE_URL}}/migration/run
 Content-Type: application/json
 
 ###
+###
+
+# @name get-all-supplier
+GET {{BASE_URL}}/api/fetch-suppliers
+Content-Type: application/json
+
+###
 
 # @name all-products-save
 GET {{BASE_URL}}/api/fetch-and-save
@@ -65,7 +72,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/product/4915/supplier
+GET https://connectplug.com.br/api/v2/product/5002/supplier
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD

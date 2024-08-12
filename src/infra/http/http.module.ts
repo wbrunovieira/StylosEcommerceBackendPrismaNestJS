@@ -90,6 +90,7 @@ import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-
 import { FindCartByPreferenceIdUseCase } from "@/domain/order/application/use-cases/find-cart-bt-preferenceId";
 import { MigrationController } from "./controllers/migration.controller";
 import { ProductMigrationService } from "@/migrate-products";
+import { FetchAllSuppliersUseCase } from "./api-erp/fetchAllSupplierUseCase";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -112,7 +113,7 @@ import { ProductMigrationService } from "@/migrate-products";
         JwtService,
         PrismaService,
         CreateBrandUseCase,
-  
+
         CreateColorUseCase,
         CreateSizeUseCase,
         CreateCategoryUseCase,
@@ -123,7 +124,7 @@ import { ProductMigrationService } from "@/migrate-products";
         CreateProductCategoryUseCase,
 
         EditBrandUseCase,
-      
+
         EditColorUseCase,
         EditSizeUseCase,
         EditCategoryUseCase,
@@ -132,14 +133,14 @@ import { ProductMigrationService } from "@/migrate-products";
         EditAccountUseCase,
 
         DeleteBrandUseCase,
-    
+
         DeleteColorUseCase,
         DeleteSizeUseCase,
         DeleteCategoryUseCase,
         DeleteAddressUseCase,
 
         FindBrandByIdUseCase,
-    
+
         FindColorByIdUseCase,
         FindSizeByIdUseCase,
         FindCategoryByIdUseCase,
@@ -147,7 +148,7 @@ import { ProductMigrationService } from "@/migrate-products";
         FindAccountByIdUseCase,
 
         FindBrandByNameUseCase,
-   
+
         FindColorByNameUseCase,
         FindCategoryByNameUseCase,
 
@@ -159,7 +160,7 @@ import { ProductMigrationService } from "@/migrate-products";
         ForgotPasswordUseCase,
 
         GetAllBrandsUseCase,
- 
+
         GetAllColorsUseCase,
         GetAllSizesUseCase,
         GetAllCategoriesUseCase,
@@ -198,6 +199,7 @@ import { ProductMigrationService } from "@/migrate-products";
         CreateCartUseCase,
 
         ProductMigrationService,
+        FetchAllSuppliersUseCase,
     ],
 })
 export class HttpModule {}
