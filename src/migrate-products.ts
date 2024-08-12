@@ -1,4 +1,8 @@
-import { Injectable, Logger } from "@nestjs/common";
+import {
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+} from "@nestjs/common";
 import { PrismaService } from "./prisma/prisma.service";
 import { Slug } from "./domain/catalog/enterprise/entities/value-objects/slug";
 import * as fs from "fs/promises";
@@ -7,16 +11,28 @@ import { UniqueEntityID } from "./core/entities/unique-entity-id";
 import { generateSlug } from "./domain/catalog/application/utils/generate-slug";
 import { IProductColorRepository } from "./domain/catalog/application/repositories/i-product-color-repository";
 import { IProductSizeRepository } from "./domain/catalog/application/repositories/i-product-size-repository";
+import { ConfigService } from "@nestjs/config";
+import axios from "axios";
 
 @Injectable()
 export class ProductMigrationService {
     private readonly logger = new Logger(ProductMigrationService.name);
-
+    private readonly token: string;
     constructor(
+        private configService: ConfigService,
         private readonly prisma: PrismaService,
         private productColorRepository: IProductColorRepository,
         private productSizeRepository: IProductSizeRepository
-    ) {}
+    ) {
+        const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
+
+        if (!token) {
+            throw new InternalServerErrorException(
+                "TOKEN_CONNECTPLUG is not defined"
+            );
+        }
+        this.token = token;
+    }
     private calculateFinalPrice(price: number, discount?: number): number {
         if (discount && discount > 0) {
             return price - price * (discount / 100);
@@ -34,7 +50,9 @@ export class ProductMigrationService {
                 "Invalid data format: 'products' should be an array."
             );
         }
-        const brandId = "d828be47-46e3-425f-8ac8-7933b73ea026";
+
+        let supplierId = "d828be47-46e3-425f-8ac8-7933b73ea026";
+        let brandId = "d828be47-46e3-425f-8ac8-7933b73ea026";
 
         const products = parsedData.products;
 
@@ -123,6 +141,40 @@ export class ProductMigrationService {
                     );
                 }
             }
+
+            try {
+                const supplierResponse = await axios.get(
+                    `https://connectplug.com.br/api/v2/product/${product.id}/supplier`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            Authorization: this.token,
+                        },
+                    }
+                );
+
+                if (
+                    supplierResponse.data &&
+                    supplierResponse.data.data.length > 0
+                ) {
+                    const supplierErpId =
+                        supplierResponse.data.data[0].relationships.supplier
+                            .data.id;
+                    const supplier = await this.prisma.brand.findFirst({
+                        where: { erpId: supplierErpId },
+                    });
+
+                    if (supplier) {
+                        supplierId = supplier.id;
+                    }
+                }
+            } catch (error: any) {
+                this.logger.warn(
+                    `Erro ao buscar fornecedor para o produto ${productName}: ${error.message}`
+                );
+            }
+
             const finalPrice = this.calculateFinalPrice(
                 productPrice,
                 product.props.discount || 0
