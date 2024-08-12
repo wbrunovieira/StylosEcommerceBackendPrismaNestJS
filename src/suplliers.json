@@ -1,16 +1,85 @@
 {
     "suppliers": [
         {
+            "id": 2,
+            "trade_name": "NAYANE",
+            "company_name": "",
+            "document": "04472611000193"
+        },
+        {
             "id": 3,
             "trade_name": "LIZ",
             "company_name": "",
             "document": "61558037000205"
         },
         {
+            "id": 4,
+            "trade_name": "SONHART",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 5,
+            "trade_name": "LUPO",
+            "company_name": "",
+            "document": "01933349000572"
+        },
+        {
             "id": 6,
             "trade_name": "CHENSON",
             "company_name": "",
             "document": "65514184000234"
+        },
+        {
+            "id": 7,
+            "trade_name": "MASH",
+            "company_name": "",
+            "document": "03125730000107"
+        },
+        {
+            "id": 8,
+            "trade_name": "QUINTINO",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": "03125730000107"
+        },
+      
+        {
+            "id": 12,
+            "trade_name": "TRIFIL",
+            "company_name": "",
+            "document": "03125730000107"
+        },
+          
+        {
+            "id": 13,
+            "trade_name": "THAIS FERREIRA",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 16,
+            "trade_name": "DULOREN",
+            "company_name": "DULOREN",
+            "document": ""
+        },
+        {
+            "id": 17,
+            "trade_name": "BRAND",
+            "company_name": "BRAND",
+            "document": ""
+        },
+        {
+            "id": 18,
+            "trade_name": "MASH",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 19,
+            "trade_name": "BONJOUR",
+            "company_name": "BONJOUR",
+            "document": ""
         },
         {
             "id": 20,
@@ -23,7 +92,175 @@
             "trade_name": "ORLA DA PRAIA",
             "company_name": "",
             "document": ""
+        },
+        {
+            "id": 22,
+            "trade_name": "ROSEMARY",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 23,
+            "trade_name": "BOCEJINHO",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 25,
+            "trade_name": "DILADY",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 26,
+            "trade_name": "TRILHA DO SOL",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 27,
+            "trade_name": "2 RIOS",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 28,
+            "trade_name": "ANNA KOCK",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 29,
+            "trade_name": "BAVON COUROS",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 30,
+            "trade_name": "TRIUMPH",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 31,
+            "trade_name": "LOBA",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 32,
+            "trade_name": "FOFA",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 33,
+            "trade_name": "MISS FRANCE",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 36,
+            "trade_name": "JULIA MORAIS",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 38,
+            "trade_name": "SENSUAL",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 39,
+            "trade_name": "JULIAMORAES",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 40,
+            "trade_name": "FOFA",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 41,
+            "trade_name": "PODIUN",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 42,
+            "trade_name": "BEL SONHOS",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 43,
+            "trade_name": "LU MODAS E SO DELLAS",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 44,
+            "trade_name": "DOLCI",
+            "logo nao localizado":"",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 45,
+            "trade_name": "STYLOS",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 46,
+            "trade_name": "SEGREDO DA PAIXAO",
+            "company_name": "",
+            "document": "09486714000126"
+        },
+        {
+            "id": 47,
+            "trade_name": "De Millus",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 48,
+            "trade_name": "TORP",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 49,
+            "trade_name": "TESTE API",
+            "company_name": "TESTE API",
+            "document": ""
+        },
+        {
+            "id": 50,
+            "trade_name": "IMPORTADOS",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 51,
+            "trade_name": "MARY KAY",
+            "company_name": "",
+            "document": ""
+        },
+        {
+            "id": 52,
+            "trade_name": "PLIE",
+            "company_name": "",
+            "document": ""
         }
-    ],
-    "count": 4
+    ]
 }

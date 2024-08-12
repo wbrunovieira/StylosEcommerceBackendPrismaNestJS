@@ -48,8 +48,247 @@ async function main() {
 
     // Criar marcas
     const brands = [
-        { name: "Liz", imageUrl: "/icons/logo-liz.svg" },
-        { name: "Nayane", imageUrl: "/icons/logo-nayne.jpeg" },
+        {
+            name: "Nao identificado 1",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "1",
+        },
+        { name: "Nayane", imageUrl: "/images/brands/nayne.jpeg", erpId: "2" },
+        { name: "Liz", imageUrl: "/images/brands/liz.svg", erpId: "3" },
+        { name: "SONHART", imageUrl: "/images/brands/sonhart.png", erpId: "4" },
+        { name: "Lupo", imageUrl: "/images/brands/luppo.svg", erpId: "5" },
+        {
+            name: "CHENSON",
+            imageUrl: "/images/brands/chenson.webp",
+            erpId: "6",
+        },
+        { name: "MASH", imageUrl: "/images/brands/mash.svg", erpId: "7" },
+        {
+            name: "QUINTINO",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "8",
+        },
+        {
+            name: "Nao identificado 9",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "9",
+        },
+        {
+            name: "Nao identificado 10",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "10",
+        },
+        {
+            name: "Nao identificado 11",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "11",
+        },
+        { name: "TRIFIL", imageUrl: "/images/brands/trifil.svg", erpId: "12" },
+        {
+            name: "THAIS FERREIRA",
+            imageUrl: "/images/brands/thais-ferreira.png",
+            erpId: "13",
+        },
+        {
+            name: "Nao identificado 14",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "14",
+        },
+        {
+            name: "Nao identificado 15",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "15",
+        },
+        {
+            name: "DULOREN",
+            imageUrl: "/images/brands/duloren.png",
+            erpId: "16",
+        },
+        {
+            name: "BRAND",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "17",
+        },
+        {
+            name: "MASH",
+            imageUrl: "/images/brands/mash.svg",
+            erpId: "18",
+        },
+        {
+            name: "BONJOUR",
+            imageUrl: "/images/brands/bonjour.jpeg",
+            erpId: "19",
+        },
+        {
+            name: "Nao identificado 20",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "20",
+        },
+        {
+            name: "ORLA DA PRAIA",
+            imageUrl: "/images/brands/orla-da-praia.png",
+            erpId: "21",
+        },
+        {
+            name: "ROSEMARY",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "22",
+        },
+        {
+            name: "BOCEJINHO",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "23",
+        },
+        {
+            name: "Nao identificado 24",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "24",
+        },
+        {
+            name: "DILADY",
+            imageUrl: "/images/brands/dilady.png",
+            erpId: "25",
+        },
+        {
+            name: "TRILHA DO SOL",
+            imageUrl: "/images/brands/trilha-do-sol.png",
+            erpId: "26",
+        },
+        {
+            name: "2 RIOS",
+            imageUrl: "/images/brands/2-rios.png",
+            erpId: "27",
+        },
+        {
+            name: "ANNA KOCK",
+            imageUrl: "/images/brands/anna-kock.svg",
+            erpId: "28",
+        },
+        {
+            name: "BAVON COUROS",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "29",
+        },
+        {
+            name: "TRIUMPH",
+            imageUrl: "/images/brands/triumph.svg",
+            erpId: "30",
+        },
+        {
+            name: "Nao identificado 31",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "31",
+        },
+        {
+            name: "FOFA",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "32",
+        },
+        {
+            name: "MISS FRANCE",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "33",
+        },
+        {
+            name: "Nao identificado 34",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "34",
+        },
+        {
+            name: "Nao identificado 35",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "35",
+        },
+        {
+            name: "JULIA MORAIS",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "36",
+        },
+        {
+            name: "Nao identificado 37",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "37",
+        },
+        {
+            name: "SENSUAL",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "38",
+        },
+        {
+            name: "JULIAMORAES",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "39",
+        },
+        {
+            name: "FOFA",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "40",
+        },
+        {
+            name: "PODIUN",
+            imageUrl: "/images/brands/nayne.jpeg",
+            erpId: "41",
+        },
+        {
+            name: "BEL SONHOS",
+            imageUrl: "/images/brands/podium.png",
+            erpId: "42",
+        },
+        {
+            name: "LU MODAS E SO DELLAS",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "43",
+        },
+        {
+            name: "DOLCI",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "44",
+        },
+        {
+            name: "STYLOS",
+            imageUrl: "/images/brands/LogoStylos.svg",
+            erpId: "45",
+        },
+        {
+            name: "SEGREDO DA PAIXAO",
+            imageUrl: "/images/brands/segredo-da-paixao.png",
+            erpId: "46",
+        },
+        {
+            name: "De Millus",
+            imageUrl: "/images/brands/demillus.png",
+            erpId: "47",
+        },
+        {
+            name: "TORP",
+            imageUrl: "/images/brands/torp.png",
+            erpId: "48",
+        },
+        {
+            name: "Nao identificado 49",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "49",
+        },
+        {
+            name: "IMPORTADOS",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "50",
+        },
+        {
+            name: "MARY KAY",
+            imageUrl: "/images/brands/mary-kay.svg",
+            erpId: "51",
+        },
+        {
+            name: "PLIE",
+            imageUrl: "/images/brands/plie.svg",
+            erpId: "52",
+        },
+        {
+            name: "Nao identificado 53",
+            imageUrl: "/images/brands/no-photos.svg",
+            erpId: "53",
+        },
     ];
 
     for (const brand of brands) {
@@ -59,6 +298,7 @@ async function main() {
             create: {
                 name: brand.name,
                 imageUrl: brand.imageUrl,
+                erpId: brand.erpId,
             },
         });
     }
@@ -123,7 +363,7 @@ async function main() {
     console.log("Sizes created");
 
     // Obter IDs  marcas, categorias, cores e tamanhos
-   
+
     const brandsData = await prisma.brand.findMany();
     const categoriesData = await prisma.category.findMany();
     const colorsData = await prisma.color.findMany();
@@ -141,7 +381,7 @@ async function main() {
             update: {
                 description: `Descrição atualizada do produto ${i}`,
                 images: ["/images/foto1.jpg"],
-             
+
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -161,7 +401,7 @@ async function main() {
                 name: productName,
                 description: `Descrição do produto ${i}`,
                 images: ["/images/foto1.jpg"],
-             
+
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -249,7 +489,7 @@ async function main() {
             update: {
                 description: `Descrição atualizada do ${name}`,
                 images: ["/images/foto1.jpg"],
-             
+
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,
@@ -268,7 +508,7 @@ async function main() {
                 name,
                 description: `Descrição do ${name}`,
                 images: ["/images/foto1.jpg"],
-            
+
                 brandId:
                     brandsData[Math.floor(Math.random() * brandsData.length)]
                         .id,

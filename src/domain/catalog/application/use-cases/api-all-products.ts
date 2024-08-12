@@ -79,6 +79,8 @@ export class ApiGetAllProducts {
                         return isNotDeleted;
                     })
                     .map((product) => {
+
+                        
                         const productCategoryId =
                             product?.relationships?.category?.data?.id;
 
