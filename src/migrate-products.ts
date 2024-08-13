@@ -53,6 +53,7 @@ export class ProductMigrationService {
 
         let supplierId = "d828be47-46e3-425f-8ac8-7933b73ea026";
         let brandId = "d828be47-46e3-425f-8ac8-7933b73ea026";
+        let productIdString;
 
         const products = parsedData.products;
 
@@ -143,8 +144,9 @@ export class ProductMigrationService {
             }
 
             try {
+                productIdString = String(product.props.erpId);
                 const supplierResponse = await axios.get(
-                    `https://connectplug.com.br/api/v2/product/${product.id}/supplier`,
+                    `https://connectplug.com.br/api/v2/product/${productIdString}/supplier`,
                     {
                         headers: {
                             Accept: "application/json",
@@ -153,20 +155,25 @@ export class ProductMigrationService {
                         },
                     }
                 );
+                console.log("supplierResponse", supplierResponse.data);
+                console.log("productIdString", productIdString);
 
                 if (
                     supplierResponse.data &&
                     supplierResponse.data.data.length > 0
                 ) {
-                    const supplierErpId =
+                    const supplierErpId = String(
                         supplierResponse.data.data[0].relationships.supplier
-                            .data.id;
+                            .data.id
+                    );
                     const supplier = await this.prisma.brand.findFirst({
                         where: { erpId: supplierErpId },
                     });
 
                     if (supplier) {
                         supplierId = supplier.id;
+                        console.log("supplierId", supplierId);
+                        console.log("supplier", supplier);
                     }
                 }
             } catch (error: any) {
@@ -195,7 +202,7 @@ export class ProductMigrationService {
                         stock: product.props.stock,
                         height: product.props.height,
                         brandId,
-                        erpId: product.props.erpId,
+                        erpId: productIdString,
                         slug: slug.value,
                         finalPrice,
                         width: product.props.width,
@@ -297,10 +304,10 @@ export class ProductMigrationService {
                     });
                 }
 
-                this.logger.log(`Produto ${product.name} migrado com sucesso.`);
+                this.logger.log(`Produto ${productName} migrado com sucesso.`);
             } catch (error) {
                 this.logger.error(
-                    `Erro ao migrar o produto ${product.name}:`,
+                    `Erro ao migrar o produto ${productName}:`,
                     error
                 );
             }

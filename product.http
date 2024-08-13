@@ -118,10 +118,9 @@ Content-Type: application/json
 
 
 
-
 ###
 # @name get-product-by-brandId
-GET {{BASE_URL}}/products/brand/ca1968a0-ba06-4585-bcfb-83ec0527ab00
+GET {{BASE_URL}}/products/brand/d828be47-46e3-425f-8ac8-7933b73ea026
 Content-Type: application/json
 
 
