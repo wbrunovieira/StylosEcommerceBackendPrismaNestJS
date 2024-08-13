@@ -23,8 +23,8 @@ export class ApiGetAllProducts {
 
     private readonly token: string;
 
-    private readonly startPage = 98;
-    private readonly endPage = 99;
+    private readonly startPage = 95;
+    private readonly endPage = 97;
 
     constructor(private configService: ConfigService) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
@@ -324,7 +324,7 @@ export class ApiGetAllProducts {
                 console.error(`Error fetching stocks`, err.message);
             }
 
-            const filePath = path.resolve("/app/src", "products2.json");
+            const filePath = path.resolve("/app/src", "products.json");
 
             await fs.writeFile(
                 filePath,

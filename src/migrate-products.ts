@@ -78,7 +78,7 @@ export class ProductMigrationService {
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
-        const data = await fs.readFile("./src/products2.json", "utf-8");
+        const data = await fs.readFile("./src/products.json", "utf-8");
         const parsedData = JSON.parse(data);
 
         if (!Array.isArray(parsedData.products)) {
