@@ -23,8 +23,8 @@ export class ApiGetAllProducts {
 
     private readonly token: string;
 
-    private readonly startPage = 40;
-    private readonly endPage = 57;
+    private readonly startPage = 1;
+    private readonly endPage = 39;
 
     constructor(private configService: ConfigService) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
