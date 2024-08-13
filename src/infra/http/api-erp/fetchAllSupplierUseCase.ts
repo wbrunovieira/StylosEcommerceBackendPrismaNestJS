@@ -24,11 +24,11 @@ export class FetchAllSuppliersUseCase {
     async fetchAllSuppliers(): Promise<Supplier[]> {
         const suppliersMap: Record<number, Supplier> = {};
 
-        let productId = 3500;
+        let productId = 1;
         let delayTime = this.initialDelayTime;
 
         // IDs para busca: 1 a 414, 4800 a 4900, 5020 a 5026, 4900 a 5019, 4500 a 4799,4000 A 4499
-        while (productId <= 3999) {
+        while (productId <= 2) {
             let attempts = 0;
             let success = false;
 

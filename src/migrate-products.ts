@@ -201,7 +201,7 @@ export class ProductMigrationService {
                         price: productPrice,
                         stock: product.props.stock,
                         height: product.props.height,
-                        brandId,
+                        brandId: supplierId || brandId,
                         erpId: productIdString,
                         slug: slug.value,
                         finalPrice,
@@ -297,8 +297,14 @@ export class ProductMigrationService {
                 }
                 console.log("variants", variants);
                 if (variants.length > 0) {
-                    product.hasVariants = true;
-                    product.productIdVariant = product.id;
+                    await this.prisma.product.update({
+                        where: { id: createdProduct.id },
+                        data: {
+                            hasVariants: true,
+                            productIdVariant: createdProduct.id,
+                        },
+                    });
+                
                     await this.prisma.productVariant.createMany({
                         data: variants,
                     });
