@@ -23,6 +23,9 @@ export class ApiGetAllProducts {
 
     private readonly token: string;
 
+    private readonly startPage = 98;
+    private readonly endPage = 99;
+
     constructor(private configService: ConfigService) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
         if (!token) {
@@ -34,7 +37,7 @@ export class ApiGetAllProducts {
     }
 
     async fetchAndSaveProducts() {
-        let page = 100;
+        let page = this.startPage;
         let allProducts: Product[] = [];
         let productCount = 0;
         let categoryErpId;
@@ -56,7 +59,7 @@ export class ApiGetAllProducts {
         console.log(`Fetched sizes:`, sizes);
 
         try {
-            while (true) {
+            while (page <= this.endPage) {
                 const response = await axios.get(`${this.apiUrl}${page}`, {
                     headers: {
                         Accept: "application/json",
@@ -321,7 +324,7 @@ export class ApiGetAllProducts {
                 console.error(`Error fetching stocks`, err.message);
             }
 
-            const filePath = path.resolve("/app/src", "products.json");
+            const filePath = path.resolve("/app/src", "products2.json");
 
             await fs.writeFile(
                 filePath,
