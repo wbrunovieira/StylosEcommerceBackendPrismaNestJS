@@ -18,6 +18,7 @@ import axios from "axios";
 export class ProductMigrationService {
     private readonly logger = new Logger(ProductMigrationService.name);
     private readonly token: string;
+
     constructor(
         private configService: ConfigService,
         private readonly prisma: PrismaService,
@@ -33,16 +34,52 @@ export class ProductMigrationService {
         }
         this.token = token;
     }
+
     private calculateFinalPrice(price: number, discount?: number): number {
         if (discount && discount > 0) {
             return price - price * (discount / 100);
         }
         return price;
     }
+
+    async getDefaultBrandId(): Promise<string> {
+        try {
+            const response = await axios.get(
+                "https://wbstylosbackend.sa.ngrok.io/brands/name?name=BRAND"
+            );
+
+            if (
+                response.data &&
+                response.data.brand &&
+                response.data.brand._id &&
+                response.data.brand._id.value
+            ) {
+                return response.data.brand._id.value;
+            } else {
+                // If the brand is not found, create a new one
+                const newBrandResponse = await this.prisma.brand.create({
+                    data: {
+                        name: "BRAND",
+                        imageUrl: "/images/brands/no-photos.svg",
+                        erpId: "17", // Replace with the correct ERP ID if necessary
+                    },
+                });
+                return newBrandResponse.id;
+            }
+        } catch (error: any) {
+            this.logger.error(
+                `Error fetching or creating default brand: ${error.message}`
+            );
+            throw new InternalServerErrorException(
+                "Error fetching or creating default brand"
+            );
+        }
+    }
+
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
-        const data = await fs.readFile("./src/products3.json", "utf-8");
+        const data = await fs.readFile("./src/products.json", "utf-8");
         const parsedData = JSON.parse(data);
 
         if (!Array.isArray(parsedData.products)) {
@@ -51,31 +88,25 @@ export class ProductMigrationService {
             );
         }
 
-        let supplierId = "d828be47-46e3-425f-8ac8-7933b73ea026";
-        let brandId = "d828be47-46e3-425f-8ac8-7933b73ea026";
-        let productIdString;
+        let brandId = await this.getDefaultBrandId();
+        let supplierId = brandId;
 
         const products = parsedData.products;
 
         for (const product of products) {
-            const productName = product.props.name
-                ? product.props.name
-                : "NameNotFound";
+            const productName = product.props?.name || "NameNotFound";
             const productStock = product.props.stock || 0;
+
             if (!productName) {
-                console.warn(
-                    `Produto com ID ${product._id.value} não tem um nome definido. Pulando a migração desse produto.`
+                this.logger.warn(
+                    `Product with ID ${product._id.value} has no defined name. Skipping migration for this product.`
                 );
                 continue;
             }
 
-            const productDescription = product.props.description
-                ? product.props.description
-                : "DescriptionNotFound";
-
-            const productPrice = product.props.price
-                ? product.props.price
-                : "priceNotFound";
+            const productDescription =
+                product.props.description || "DescriptionNotFound";
+            const productPrice = product.props.price || "priceNotFound";
 
             let slug: Slug;
 
@@ -89,19 +120,21 @@ export class ProductMigrationService {
                 const uniqueSlug = `product-${Date.now()}`;
                 slug = Slug.create(uniqueSlug);
                 this.logger.warn(
-                    `Produto com ID ${product._id.value} não tem um nome definido. Usando slug único: ${slug.value}`
+                    `Product with ID ${product._id.value} has no defined name. Using unique slug: ${slug.value}`
                 );
             }
 
             const images =
                 Array.isArray(product.props.images) &&
                 product.props.images.length > 0
-                    ? product.props.images.map((image) => image.url)
+                    ? product.props.images
+                          .map((image) => image.url)
+                          .filter((url) => url !== undefined && url !== null)
                     : ["http://localhost:3000/public/images/LogoStylos.svg"];
 
             const productColors: { id: string }[] = [];
             for (const color of product.props.productColors || []) {
-                const erpIdAsString = String(color.id.value);
+                const erpIdAsString = String(color.id?.value);
                 const realColor = await this.prisma.color.findFirst({
                     where: { erpId: erpIdAsString },
                 });
@@ -109,14 +142,14 @@ export class ProductMigrationService {
                     productColors.push({ id: realColor.id });
                 } else {
                     this.logger.warn(
-                        `Cor com erpId ${color.id.value} não encontrada.`
+                        `Color with erpId ${color.id.value} not found.`
                     );
                 }
             }
 
             const productSizes: { id: string }[] = [];
-            for (const size of product.props.productSizes || []) {
-                const erpIdAsString = String(size.id.value);
+            for (const size of product.props?.productSizes || []) {
+                const erpIdAsString = String(size.id?.value);
                 const realSize = await this.prisma.size.findFirst({
                     where: { erpId: erpIdAsString },
                 });
@@ -124,27 +157,29 @@ export class ProductMigrationService {
                     productSizes.push({ id: realSize.id });
                 } else {
                     this.logger.warn(
-                        `Tamanho com erpId ${size.id.value} não encontrado.`
+                        `Size with erpId ${size.id.value} not found.`
                     );
                 }
             }
 
             const productCategories: { id: string }[] = [];
-            for (const category of product.props.productCategories || []) {
+            const categoryErpId = product.categoryErpId;
+
+            if (categoryErpId) {
                 const realCategory = await this.prisma.category.findFirst({
-                    where: { erpId: category.id.value },
+                    where: { erpId: String(categoryErpId) },
                 });
                 if (realCategory) {
                     productCategories.push({ id: realCategory.id });
                 } else {
                     this.logger.warn(
-                        `Categoria com erpId ${category.id.value} não encontrada.`
+                        `Category with erpId ${categoryErpId} not found. Using default category.`
                     );
                 }
             }
 
             try {
-                productIdString = String(product.props.erpId);
+                const productIdString = String(product.props?.erpId);
                 const supplierResponse = await axios.get(
                     `https://connectplug.com.br/api/v2/product/${productIdString}/supplier`,
                     {
@@ -155,8 +190,6 @@ export class ProductMigrationService {
                         },
                     }
                 );
-                console.log("supplierResponse", supplierResponse.data);
-                console.log("productIdString", productIdString);
 
                 if (
                     supplierResponse.data &&
@@ -172,52 +205,71 @@ export class ProductMigrationService {
 
                     if (supplier) {
                         supplierId = supplier.id;
-                        console.log("supplierId", supplierId);
-                        console.log("supplier", supplier);
                     }
                 }
             } catch (error: any) {
                 this.logger.warn(
-                    `Erro ao buscar fornecedor para o produto ${productName}: ${error.message}`
+                    `Error fetching supplier for product ${productName}: ${error.message}`
                 );
             }
 
             const finalPrice = this.calculateFinalPrice(
                 productPrice,
-                product.props.discount || 0
+                product.props?.discount || 0
             );
+
             try {
-                if (!productName) {
-                    this.logger.warn(
-                        `Produto com ID ${product._id.value} não tem um nome definido. Pulando a migração desse produto.`
-                    );
-                    continue;
-                }
                 const createdProduct = await this.prisma.product.create({
                     data: {
                         name: productName,
                         description: productDescription,
-                        sku: product.sku,
+                        sku: product.sku || "default-sku",
                         price: productPrice,
-                        stock: product.props.stock,
-                        height: product.props.height,
+                        stock: product.props?.stock,
+                        height: product.props?.height || 0,
                         brandId: supplierId || brandId,
-                        erpId: productIdString,
+                        erpId: String(product.props?.erpId),
                         slug: slug.value,
                         finalPrice,
-                        width: product.props.width,
-                        length: product.props.length,
-                        weight: product.props.weight,
+                        width: product.props?.width || 0,
+                        length: product.props?.length || 0,
+                        weight: product.props?.weight || 0,
                         images: images,
                         status: ProductStatus.ACTIVE,
-
                         onSale: product.props.onSale || false,
                         discount: product.props.discount || 0,
                         isFeatured: product.props.isFeatured || false,
                         isNew: product.props.isNew || false,
+                        productCategories: {
+                            create: productCategories.map((category) => ({
+                                category: {
+                                    connect: { id: category.id },
+                                },
+                            })),
+                        },
+                    },
+                    include: {
+                        productCategories: true,
                     },
                 });
-                console.log("createdProduct", createdProduct);
+
+                for (const color of productColors) {
+                    await this.prisma.productColor.create({
+                        data: {
+                            productId: createdProduct.id,
+                            colorId: color.id,
+                        },
+                    });
+                }
+
+                for (const size of productSizes) {
+                    await this.prisma.productSize.create({
+                        data: {
+                            productId: createdProduct.id,
+                            sizeId: size.id,
+                        },
+                    });
+                }
 
                 const variants: Array<{
                     id: string;
@@ -232,6 +284,23 @@ export class ProductMigrationService {
                     status: ProductStatus;
                     images: string[];
                 }> = [];
+
+                for (const category of productCategories) {
+                    const exists = await this.prisma.productCategory.findFirst({
+                        where: {
+                            productId: createdProduct.id,
+                            categoryId: category.id,
+                        },
+                    });
+                    if (!exists) {
+                        await this.prisma.productCategory.create({
+                            data: {
+                                productId: createdProduct.id,
+                                categoryId: category.id,
+                            },
+                        });
+                    }
+                }
 
                 if (productSizes.length > 0 && productColors.length > 0) {
                     for (const size of productSizes) {
@@ -253,12 +322,6 @@ export class ProductMigrationService {
                     }
                 } else if (productSizes.length > 0) {
                     for (const size of productSizes) {
-                        for (const sizeId of productSizes) {
-                            await this.productSizeRepository.create(
-                                product.id.toString(),
-                                size.id
-                            );
-                        }
                         variants.push({
                             id: new UniqueEntityID().toString(),
                             productId: createdProduct.id,
@@ -274,13 +337,6 @@ export class ProductMigrationService {
                     }
                 } else if (productColors.length > 0) {
                     for (const color of productColors) {
-                        for (const colorId of productColors) {
-                            await this.productColorRepository.create(
-                                product.id.toString(),
-                                color.id
-                            );
-                        }
-
                         variants.push({
                             id: new UniqueEntityID().toString(),
                             productId: createdProduct.id,
@@ -295,7 +351,7 @@ export class ProductMigrationService {
                         });
                     }
                 }
-                console.log("variants", variants);
+
                 if (variants.length > 0) {
                     await this.prisma.product.update({
                         where: { id: createdProduct.id },
@@ -304,16 +360,18 @@ export class ProductMigrationService {
                             productIdVariant: createdProduct.id,
                         },
                     });
-                
+
                     await this.prisma.productVariant.createMany({
                         data: variants,
                     });
                 }
 
-                this.logger.log(`Produto ${productName} migrado com sucesso.`);
+                this.logger.log(
+                    `Product ${productName} migrated successfully.`
+                );
             } catch (error) {
                 this.logger.error(
-                    `Erro ao migrar o produto ${productName}:`,
+                    `Error migrating product ${productName}:`,
                     error
                 );
             }
@@ -322,3 +380,4 @@ export class ProductMigrationService {
         await this.prisma.onModuleDestroy();
     }
 }
+

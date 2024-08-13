@@ -21,6 +21,7 @@ export class FindBrandByNameUseCase {
     name,
   }: FindBrandByNameUseCaseRequest): Promise<FindBrandByNameUseCaseResponse> {
     const brandResult = await this.brandsRepository.findByName(name);
+    console.log('FindBrandByNameUseCaseRequest name',name)
 
     if (brandResult.isLeft()) {
       return left(new ResourceNotFoundError("Brand not found"));
