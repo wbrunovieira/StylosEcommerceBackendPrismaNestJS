@@ -34,13 +34,14 @@ export class ApiGetAllProducts {
     }
 
     async fetchAndSaveProducts() {
-        let page = 1;
+        let page = 100;
         let allProducts: Product[] = [];
         let productCount = 0;
+        let categoryErpId;
 
         const categoriesResponse = await axios.get(this.categoriesApiUrl);
         const categories = categoriesResponse.data.categories;
-        console.log(`Fetched categoriesss:aaa`, categories);
+        console.log(`Fetched categories:`, categories);
         console.log(
             "Fetched categories erpId:ss",
             categories.map((cat) => cat.props.erpId)
@@ -79,16 +80,13 @@ export class ApiGetAllProducts {
                         return isNotDeleted;
                     })
                     .map((product) => {
-
-                        
                         const productCategoryId =
                             product?.relationships?.category?.data?.id;
 
                         const productCategory = productCategoryId
                             ? categories.find((category) => {
-                                  const categoryErpId = Number(
-                                      category.props.erpId
-                                  );
+                                  categoryErpId = Number(category.props.erpId);
+
                                   return categoryErpId === productCategoryId;
                               })
                             : null;
@@ -233,6 +231,9 @@ export class ApiGetAllProducts {
                             productProps,
                             new UniqueEntityID(product.id)
                         );
+                        (createdProduct as any).categoryErpId = productCategory
+                            ? productCategory.props.erpId
+                            : null;
 
                         return createdProduct;
                     });
@@ -325,7 +326,10 @@ export class ApiGetAllProducts {
             await fs.writeFile(
                 filePath,
                 JSON.stringify(
-                    { products: allProducts, count: productCount },
+                    {
+                        products: allProducts,
+                        count: productCount,
+                    },
                     null,
                     2
                 )
