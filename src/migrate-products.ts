@@ -56,12 +56,11 @@ export class ProductMigrationService {
             ) {
                 return response.data.brand._id.value;
             } else {
-                // If the brand is not found, create a new one
                 const newBrandResponse = await this.prisma.brand.create({
                     data: {
                         name: "BRAND",
                         imageUrl: "/images/brands/no-photos.svg",
-                        erpId: "17", // Replace with the correct ERP ID if necessary
+                        erpId: "17",
                     },
                 });
                 return newBrandResponse.id;
@@ -79,7 +78,7 @@ export class ProductMigrationService {
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
-        const data = await fs.readFile("./src/products.json", "utf-8");
+        const data = await fs.readFile("./src/products2.json", "utf-8");
         const parsedData = JSON.parse(data);
 
         if (!Array.isArray(parsedData.products)) {
@@ -380,4 +379,3 @@ export class ProductMigrationService {
         await this.prisma.onModuleDestroy();
     }
 }
-
