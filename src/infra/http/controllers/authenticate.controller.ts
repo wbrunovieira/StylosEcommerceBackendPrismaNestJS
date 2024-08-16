@@ -131,7 +131,7 @@ export class AuthenticateController {
         const authUrl = this.authMelhorEnvioUseCase.generateAuthUrl();
         console.log(" authUrl", authUrl);
         return { authUrl };
-    }
+}
 
     @Post("refresh-token")
     async refreshToken(@Body("refresh_token") refresh_token: string) {

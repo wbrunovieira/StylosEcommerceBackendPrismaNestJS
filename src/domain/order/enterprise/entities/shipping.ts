@@ -5,7 +5,7 @@ interface ShippingProps {
     userId: string;
     name: string;
     orderId?: string;
-
+    cartId: string;
     service?: string;
     trackingCode?: string;
     shippingCost: number;
@@ -29,9 +29,21 @@ export class Shipping extends Entity<ShippingProps> {
         return new Shipping(props, id);
     }
 
+    update(props: Partial<ShippingProps>): void {
+        this.props = {
+            ...this.props,
+            ...props,
+        };
+    }
+
     get userId(): string {
         return this.props.userId;
     }
+
+    get cartId(): string {
+        return this.props.cartId;
+    }
+
     get name(): string {
         return this.props.name;
     }
