@@ -78,7 +78,7 @@ export class ProductMigrationService {
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
-        const data = await fs.readFile("./src/products.json", "utf-8");
+        const data = await fs.readFile("./src/products100up.json", "utf-8");
         const parsedData = JSON.parse(data);
 
         if (!Array.isArray(parsedData.products)) {
@@ -123,13 +123,46 @@ export class ProductMigrationService {
                 );
             }
 
-            const images =
-                Array.isArray(product.props.images) &&
-                product.props.images.length > 0
-                    ? product.props.images
-                          .map((image) => image.url)
-                          .filter((url) => url !== undefined && url !== null)
-                    : ["http://localhost:3000/public/images/LogoStylos.svg"];
+            const images = (() => {
+                if (!product.props.images) {
+                    this.logger.warn(
+                        `No images property for product ${productName} (erpId: ${product.props.erpId})`
+                    );
+                    return [
+                        "http://localhost:3000/public/images/LogoStylos.svg",
+                    ];
+                }
+                if (!Array.isArray(product.props.images)) {
+                    this.logger.warn(
+                        `Images is not an array for product ${productName} (erpId: ${product.props.erpId})`
+                    );
+                    return [
+                        "http://localhost:3000/public/images/LogoStylos.svg",
+                    ];
+                }
+                const processedImages = product.props.images
+                    .map((image) => {
+                        if (typeof image === "string") return image;
+                        if (
+                            image &&
+                            typeof image === "object" &&
+                            "url" in image
+                        )
+                            return image.url;
+                        return null;
+                    })
+                    .filter((url) => url !== null && url !== undefined);
+
+                if (processedImages.length === 0) {
+                    this.logger.warn(
+                        `No valid images found for product ${productName} (erpId: ${product.props.erpId})`
+                    );
+                    return [
+                        "http://localhost:3000/public/images/LogoStylos.svg",
+                    ];
+                }
+                return processedImages;
+            })();
 
             const productColors: { id: string }[] = [];
             for (const color of product.props.productColors || []) {
