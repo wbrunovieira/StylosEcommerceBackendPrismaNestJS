@@ -292,7 +292,7 @@ model Shipping {
   userId         String
   name           String
   orderId        String?
-  
+  cartId         String 
   service        String?
   trackingCode   String?
   shippingCost   Float

@@ -13,6 +13,7 @@ export const envSchema = z.object({
     MELHOR_ENVIO_SECRET_TEST: z.string(),
     MELHOR_ENVIO_API_URL_TEST: z.string().url(),
     MELHOR_ENVIO_API_URL_CALLBACK_TEST: z.string().url(),
+    MELHOR_ENVIO_API_URL_TOKEN_TEST: z.string(),
 
     MERCADO_PAGO_ACCESS_TOKEN: z.string(),
     MERCADO_PAGO_ASSINATURA_SECRETA_WEBHOOK: z.string(),

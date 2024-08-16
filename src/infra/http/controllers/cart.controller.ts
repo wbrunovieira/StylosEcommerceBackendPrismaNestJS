@@ -81,7 +81,6 @@ const updateItemQuantityValidationPipe = new ZodValidationsPipe(
 type UpdateItemQuantityBodySchema = z.infer<typeof updateItemQuantitySchema>;
 
 const calculateShipmentSchema = z.object({
-    token: z.string(),
     cartItems: z.array(
         z.object({
             id: z.string(),
@@ -307,15 +306,15 @@ export class CartController {
     @Post("/calculate-shipment")
     async calculateShipment(@Body() body: CalculateShipmentSchema) {
         console.log('@Post("/calculate-shipment bateu');
-        const { token, cartItems, selectedAddress } = body;
+        const { cartItems, selectedAddress } = body;
         console.log(
-            '@Post("/calculate-shipment token, cartItems, selectedAddress',
-            token,
+            '@Post("/calculate-shipment , cartItems, selectedAddress',
+
             cartItems,
             selectedAddress
         );
 
-        if (!token || !cartItems.length || !selectedAddress) {
+        if (!cartItems.length || !selectedAddress) {
             throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
         }
 
@@ -348,10 +347,7 @@ export class CartController {
         };
         console.log('@Post("/calculate-shipment shipmentData', shipmentData);
 
-        const result = this.calculateshipment.calculateShipment(
-            shipmentData,
-            token
-        );
+        const result = this.calculateshipment.calculateShipment(shipmentData);
         console.log('@Post("/calculate-shipment result ', result);
 
         return result;
@@ -377,7 +373,7 @@ export class CartController {
                 body.cartId,
                 items
             );
-            
+
             console.log("entrou /create-preference response", response);
             return response;
         } catch (error) {

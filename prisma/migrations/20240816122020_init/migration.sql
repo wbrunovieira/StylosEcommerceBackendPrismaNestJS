@@ -246,6 +246,7 @@ CREATE TABLE "shippings" (
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "orderId" TEXT,
+    "cartId" TEXT NOT NULL,
     "service" TEXT,
     "trackingCode" TEXT,
     "shippingCost" DOUBLE PRECISION NOT NULL,

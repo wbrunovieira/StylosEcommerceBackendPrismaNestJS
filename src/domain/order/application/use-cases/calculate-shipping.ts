@@ -31,6 +31,7 @@ export class CalculateShipmentUseCase {
     private readonly clientId;
     private readonly clientSecret;
     private readonly urlCallBack;
+    private readonly tokenMelhorEnvio;
     constructor(private configService: ConfigService<Env, true>) {
         this.configService = configService;
         let url = configService.get("MELHOR_ENVIO_API_URL_TEST");
@@ -39,9 +40,12 @@ export class CalculateShipmentUseCase {
         );
         this.clientId = configService.get("MELHOR_ENVIO_CLIENTID_TEST");
         this.clientSecret = configService.get("MELHOR_ENVIO_SECRET_TEST");
+        this.tokenMelhorEnvio = configService.get(
+            "MELHOR_ENVIO_API_URL_TOKEN_TEST"
+        );
     }
 
-    async calculateShipment(data: any, token: string) {
+    async calculateShipment(data: any) {
         console.log(" calculateShipment use case data", data);
         const url =
             "https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate";
@@ -49,11 +53,13 @@ export class CalculateShipmentUseCase {
             "Content-Type": "application/json",
 
             "User-Agent": "StylosTeste3 (bruno@wbdigitalsolutions.com)",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${this.tokenMelhorEnvio}`,
             Accept: "application/json",
         };
 
         try {
+            
+
             const response = await axios.post(url, data, { headers });
             console.log(" calculateShipment use case response", response);
             return response.data;

@@ -18,6 +18,7 @@ import { z } from "zod";
 
 const createShipmentSchema = z.object({
     userId: z.string(),
+    cartId: z.string(),
     orderId: z.string().optional(),
     name: z.string(),
     service: z.string().optional(),
@@ -96,7 +97,7 @@ export class ShippingController {
             );
         }
     }
-    
+
     @Post("/payment-success")
     async saveIdPayment(
         @Body(bodyValidationPipe) body: PaymentSuccessBodySchema
