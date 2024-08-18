@@ -82,10 +82,7 @@ docker-compose down && docker-compose build --no-cache && docker-compose up -d
 
 docker system prune --volumes
 
-
-
 ngrok start --config=ngrok.yml --all
-
 
 docker compose exec app npx prisma migrate reset
 docker compose exec app npx prisma migrate dev --name init  
@@ -97,6 +94,15 @@ docker compose exec app npm run test -- src/domain/catalog/application/use-cases
 docker compose exec app npm run test:e2e -- src/controllers/create-colors.controller.e2e-spec.ts
 docker compose exec app npm run test:e2e -- src/controllers/create-brand.controller.e2e-spec.ts
 
+UPDATE public.products
+SET "isFeatured" = true
+WHERE "erpId" IN ('4977', '5028', '5029', '5027', '4979', '4956','4955');
+
+UPDATE public.products
+SET height = 10,
+width = 10,
+length = 10,
+weight = 0.3;
 
 docker compose exec app npx ts-node prisma/seed.ts
 

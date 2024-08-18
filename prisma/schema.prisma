@@ -220,6 +220,7 @@ model Cart {
   shipping        Shipping? @relation(fields: [shippingId], references: [id])
   shippingId      String? @unique
   collection_id String?
+  merchant_order_id String?
 
   paymentIntentId String?   
   paymentStatus  String?  
@@ -247,6 +248,7 @@ model CartItem {
   colorId     String?
   sizeId      String?
   hasVariants Boolean   @default(false)
+  
 
   @@map("cart_items")
 }

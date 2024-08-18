@@ -184,6 +184,7 @@ CREATE TABLE "carts" (
     "updated_at" TIMESTAMP(3),
     "shippingId" TEXT,
     "collection_id" TEXT,
+    "merchant_order_id" TEXT,
     "paymentIntentId" TEXT,
     "paymentStatus" TEXT,
 

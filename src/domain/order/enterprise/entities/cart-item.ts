@@ -26,6 +26,7 @@ export class CartItem extends Entity<CartItemProps> {
     get productId(): string {
         return this.props.productId;
     }
+
     get productName(): string {
         return this.props.productName;
     }
@@ -92,6 +93,7 @@ export class CartItem extends Entity<CartItemProps> {
             cartId: this.cartId,
             imageUrl: this.imageUrl,
             productName: this.productName,
+
             quantity: this.quantity,
             price: this.price,
             height: this.height,

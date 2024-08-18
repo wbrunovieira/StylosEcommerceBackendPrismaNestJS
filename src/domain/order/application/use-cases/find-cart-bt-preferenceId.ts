@@ -5,8 +5,8 @@ import { ICartRepository } from "../repositories/i-cart-repository";
 @Injectable()
 export class FindCartByPreferenceIdUseCase {
     constructor(private readonly cartRepository: ICartRepository) {}
-    async execute(paymentId) {
-        let cart = await this.cartRepository.findByCollectionId(paymentId);
+    async execute(merchant_order_id) {
+        let cart = await this.cartRepository.findByMerchantId(merchant_order_id);
 
         return cart;
     }
@@ -18,13 +18,11 @@ export class FindCartByPreferenceIdUseCase {
             "pending"
         );
     }
-    async saveCollectionId(cartId, collection_id) {
+    async saveCollectionId(cartId, collection_id, merchant_order_id) {
         return await this.cartRepository.saveCollectionId(
             cartId,
             collection_id,
-           
+            merchant_order_id
         );
     }
-
-
 }

@@ -1,5 +1,5 @@
 import { Env } from "@/env";
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import mercadopago from "mercadopago";
@@ -26,6 +26,7 @@ interface Item {
 @Injectable()
 export class MercadoPagoService {
     private secretKey: string;
+    private readonly logger = new Logger(MercadoPagoService.name);
 
     private preference: Preference;
     constructor(
@@ -91,6 +92,7 @@ export class MercadoPagoService {
             console.log("Payment preference created successfully", response);
 
             const preferenceId = response.id;
+
             console.log("Payment preference preferenceId", preferenceId);
 
             const savedPreferenceId =
@@ -181,6 +183,8 @@ export class MercadoPagoService {
         const userId = body.user_id;
 
         let cart = await this.findCartByPreferenceId.execute(paymentId);
+        console.log("processWebhookNotification cart", cart);
+        console.log("processWebhookNotification paymentId", paymentId);
 
         if (!cart) {
             console.error(`Cart not found for payment ID: ${paymentId}`);

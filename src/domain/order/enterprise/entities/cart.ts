@@ -8,6 +8,7 @@ interface CartProps {
     paymentIntentId?: string;
     paymentStatus?: string;
     collection_id?: string;
+    merchant_order_id?:string
 }
 
 export class Cart extends Entity<CartProps> {
@@ -21,6 +22,9 @@ export class Cart extends Entity<CartProps> {
 
     get userId(): string {
         return this.props.userId;
+    }
+    get merchant_order_id(): string | undefined {
+        return this.props.merchant_order_id;
     }
     get collection_id(): string | undefined {
         return this.props.collection_id;
