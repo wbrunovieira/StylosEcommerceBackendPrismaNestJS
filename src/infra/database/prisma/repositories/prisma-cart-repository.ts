@@ -358,7 +358,8 @@ export class PrismaCartRepository implements ICartRepository {
 
     async saveCollectionId(
         cartId: string,
-        collection_id: string
+        collection_id: string,
+        merchant_order_id: string
     ): Promise<Either<Error, void>> {
         try {
             console.log(
@@ -371,6 +372,12 @@ export class PrismaCartRepository implements ICartRepository {
                     collection_id: collection_id,
                 },
             });
+            await this.prisma.cart.update({
+                where: { id: cartId },
+                data: {
+                    merchant_order_id: merchant_order_id,
+                },
+            });
 
             console.log(`Successfully saved preferenceId for cart ${cartId}`);
             return right(undefined);
@@ -380,16 +387,16 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
-    async findByPreferenceId(preferenceId: string): Promise<Cart | null> {
+    async findByMerchantId(merchant_order_id: string): Promise<Cart | null> {
         try {
             const cart = await this.prisma.cart.findFirst({
-                where: { paymentIntentId: preferenceId },
+                where: { merchant_order_id: merchant_order_id },
                 include: { items: true },
             });
 
             if (!cart) {
                 console.error(
-                    `Cart not found for preference ID: ${preferenceId}`
+                    `Cart not found for preference ID: ${merchant_order_id}`
                 );
                 return null;
             }
@@ -406,6 +413,7 @@ export class PrismaCartRepository implements ICartRepository {
                         height: item.height,
                         width: item.width,
                         length: item.length,
+                        
                         weight: item.weight,
                         color: item.colorId?.toString(),
                         size: item.sizeId?.toString(),
@@ -429,54 +437,5 @@ export class PrismaCartRepository implements ICartRepository {
             throw new Error("Failed to find cart by preference ID");
         }
     }
-    async findByCollectionId(collection_id: string): Promise<Cart | null> {
-        try {
-            const cart = await this.prisma.cart.findFirst({
-                where: { paymentIntentId: collection_id },
-                include: { items: true },
-            });
 
-            if (!cart) {
-                console.error(
-                    `Cart not found for preference ID: ${collection_id}`
-                );
-                return null;
-            }
-
-            const cartItems = cart.items.map((item) =>
-                CartItem.create(
-                    {
-                        cartId: item.cartId,
-                        productId: item.productId,
-                        productName: item.productName,
-                        imageUrl: item.imageUrl,
-                        quantity: item.quantity,
-                        price: item.price,
-                        height: item.height,
-                        width: item.width,
-                        length: item.length,
-                        weight: item.weight,
-                        color: item.colorId?.toString(),
-                        size: item.sizeId?.toString(),
-                        hasVariants: item.hasVariants,
-                    },
-                    new UniqueEntityID(item.id)
-                )
-            );
-
-            return Cart.create(
-                {
-                    userId: cart.userId,
-                    items: cartItems,
-                    paymentIntentId: cart.paymentIntentId || undefined,
-                    paymentStatus: cart.paymentStatus || undefined,
-                    collection_id: cart.collection_id || undefined,
-                },
-                new UniqueEntityID(cart.id)
-            );
-        } catch (error) {
-            console.error("Error finding cart by preference ID:", error);
-            throw new Error("Failed to find cart by preference ID");
-        }
-    }
 }

@@ -21,10 +21,11 @@ export abstract class ICartRepository {
         preferenceId: string,
         paymentStatus: string
     ): Promise<Either<Error, void>>;
-    abstract findByPreferenceId(preferenceId: string): Promise<Cart | null>;
-    abstract findByCollectionId(collection_id: string): Promise<Cart | null>;
+    abstract findByMerchantId(merchant_order_id: string): Promise<Cart | null>;
+
     abstract saveCollectionId(
         cartId: string,
-        collection_id: string
+        collection_id: string,
+        merchant_order_id: string
     ): Promise<Either<Error, void>>;
 }

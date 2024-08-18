@@ -33,26 +33,25 @@ type CreateShipmentBodySchema = z.infer<typeof createShipmentSchema>;
 const paymentSuccess = z.object({
     collection_id: z.string(),
     cartId: z.string(),
+    merchant_order_id: z.string(),
 });
 
 const paymentValidationBody = new ZodValidationsPipe(paymentSuccess);
 type PaymentSuccessBodySchema = z.infer<typeof paymentSuccess>;
 
 const mercadoPagoWebhookSchema = z.object({
-    id: z.string(),
-    live_mode: z.boolean(),
-    type: z.string(),
-    date_created: z.string().refine((val) => !isNaN(Date.parse(val)), {
-        message: "Invalid date format",
-    }),
-    application_id: z.string().nullable().optional(),
-    user_id: z.union([z.string(), z.number()]),
-    version: z.string().optional(),
-    api_version: z.string(),
     action: z.string(),
+    api_version: z.string(),
     data: z.object({
         id: z.string(),
     }),
+    date_created: z.string().refine((val) => !isNaN(Date.parse(val)), {
+        message: "Invalid date format",
+    }),
+    id: z.number(),
+    live_mode: z.boolean(),
+    type: z.string(),
+    user_id: z.string(),
 });
 
 const mercadoPagoWebhookValidationPipe = new ZodValidationsPipe(
@@ -68,7 +67,7 @@ export class ShippingController {
         private findCart: FindCartByPreferenceIdUseCase
     ) {}
 
-    @Post("/create")
+    @Post("create")
     async createShipment(
         @Body(bodyValidationPipe) body: CreateShipmentBodySchema
     ) {
@@ -100,17 +99,18 @@ export class ShippingController {
 
     @Post("/payment-success")
     async saveIdPayment(
-        @Body(bodyValidationPipe) body: PaymentSuccessBodySchema
+        @Body(paymentValidationBody) body: PaymentSuccessBodySchema
     ) {
         try {
             console.log("epayment-success");
-            console.log("entrou no createShipment body", body);
-            const { cartId, collection_id } = body;
+            console.log("entrou payment-success body", body);
+            const { cartId, collection_id,merchant_order_id } = body;
             const result = await this.findCart.saveCollectionId(
                 cartId,
-                collection_id
+                collection_id,
+                merchant_order_id
             );
-            console.log("entrou no createShipment body", result);
+            console.log("entrou no payment-success result", result);
 
             if (result.isLeft()) {
                 const error = result.value;
@@ -135,14 +135,28 @@ export class ShippingController {
     @Post("/webhookpro")
     async handleMercadoPagoWebhook(
         @Body(mercadoPagoWebhookValidationPipe) body: MercadoPagoWebhookSchema,
+        // @Body() body,
         @Headers("x-signature") xSignature: string,
         @Headers("x-request-id") xRequestId: string,
-        @Query("data.id") dataId: string,
-        @Query("type") type: string
+        @Query("data.id") queryDataId: string,
+        @Query("type") queryType: string
     ) {
         try {
             console.log("Webhook recebido:", body);
-            console.log("Query Parameters - data.id:", dataId, "type:", type);
+            console.log(
+                "Query Parameters - data.id:",
+                queryDataId,
+                "type:",
+                queryType
+            );
+            console.log("Webhook recebido:", body);
+            console.log(
+                "Query Parameters - data.id:",
+                queryDataId,
+                "type:",
+                queryType
+            );
+
             const {
                 action,
                 api_version,
@@ -154,13 +168,20 @@ export class ShippingController {
                 user_id,
             } = body;
 
+            const dataId = queryDataId || (data && data.id);
+            const type = queryType || bodyType;
+
+            if (!dataId || !type) {
+                throw new HttpException('Missing required parameters', HttpStatus.BAD_REQUEST);
+            }
+
             console.log("Action:", action);
 
-            console.log("Payment Data ID:", data.id);
+            console.log("Payment Data ID:", dataId);
 
             console.log("Webhook ID:", id);
             console.log("Live Mode:", live_mode);
-            console.log("Type:", bodyType);
+            console.log("Type:", type);
             console.log("User ID:", user_id);
 
             await this.mercadoPagoService.validateSignature(
