@@ -320,7 +320,7 @@ export class PrismaCartRepository implements ICartRepository {
                 {
                     userId: cartData.userId,
                     items: cartItems,
-                }, 
+                },
                 new UniqueEntityID(cartData.id)
             );
 
@@ -413,7 +413,7 @@ export class PrismaCartRepository implements ICartRepository {
                         height: item.height,
                         width: item.width,
                         length: item.length,
-                        
+
                         weight: item.weight,
                         color: item.colorId?.toString(),
                         size: item.sizeId?.toString(),
@@ -438,4 +438,19 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
+    async deleteCartById(cartId: string): Promise<Either<Error, void>> {
+        try {
+            await this.prisma.cartItem.deleteMany({
+                where: { cartId },
+            });
+
+            await this.prisma.cart.delete({
+                where: { id: cartId },
+            });
+
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to delete cart"));
+        }
+    }
 }

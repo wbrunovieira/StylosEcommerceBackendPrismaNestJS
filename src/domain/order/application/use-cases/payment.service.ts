@@ -11,6 +11,12 @@ import { PrismaOrderRepository } from "@/infra/database/prisma/repositories/pris
 import { CreateOrderUseCase } from "./create-order";
 import { OrderStatus } from "../../enterprise/entities/order-status";
 import { FindCartByPreferenceIdUseCase } from "./find-cart-bt-preferenceId";
+import {
+    ArchiveCartRequest,
+    ArchiveCartUseCase,
+    mapCartToArchiveCartRequest,
+} from "./archiveCart";
+import { DeleteCartUseCase } from "./delete-cart";
 
 interface Item {
     id: string;
@@ -34,7 +40,8 @@ export class MercadoPagoService {
 
     constructor(
         private configService: ConfigService<Env, true>,
-
+        private archiveCartUseCase: ArchiveCartUseCase,
+        private deleteCartUseCase: DeleteCartUseCase,
         private findCartByPreferenceId: FindCartByPreferenceIdUseCase,
         private orderUseCase: CreateOrderUseCase
     ) {
@@ -240,6 +247,25 @@ export class MercadoPagoService {
                 const order =
                     await this.orderUseCase.execute(createOrderRequest);
                 console.log("Order created successfully:", order);
+
+                const archivedCart = mapCartToArchiveCartRequest(cart);
+                const archiveCartRequest: ArchiveCartRequest = {
+                    archivedCart: archivedCart,
+                };
+
+                const result =
+                    this.archiveCartUseCase.execute(archiveCartRequest);
+                console.log("archiveCartUseCase result:", result);
+
+                if (!cartId) {
+                    console.error(`cartId not fn: ${cartId}`);
+                    throw new Error("Cart not found for the given payment ID");
+                }
+
+                const deletedCart = this.deleteCartUseCase.execute({
+                    cartId: cartId,
+                });
+                console.log("archiveCartUseCase deletedCart:", deletedCart);
             } else {
                 console.log(
                     `Payment status (${status}) for payment ID: ${dataId}`
