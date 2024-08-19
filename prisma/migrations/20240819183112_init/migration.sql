@@ -261,6 +261,41 @@ CREATE TABLE "shippings" (
     CONSTRAINT "shippings_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "archived_carts" (
+    "id" TEXT NOT NULL,
+    "cartId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "archivedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "paymentIntentId" TEXT,
+    "paymentStatus" TEXT,
+    "collection_id" TEXT,
+    "merchant_order_id" TEXT,
+
+    CONSTRAINT "archived_carts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "archived_cart_items" (
+    "id" TEXT NOT NULL,
+    "productName" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
+    "cartId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "height" DOUBLE PRECISION NOT NULL,
+    "width" DOUBLE PRECISION NOT NULL,
+    "length" DOUBLE PRECISION NOT NULL,
+    "weight" DOUBLE PRECISION NOT NULL,
+    "colorId" TEXT,
+    "sizeId" TEXT,
+    "hasVariants" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "archived_cart_items_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -347,3 +382,9 @@ ALTER TABLE "shippings" ADD CONSTRAINT "shippings_userId_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "shippings" ADD CONSTRAINT "shippings_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "archived_carts" ADD CONSTRAINT "archived_carts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "archived_cart_items" ADD CONSTRAINT "archived_cart_items_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "archived_carts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

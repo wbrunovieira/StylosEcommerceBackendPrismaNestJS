@@ -28,4 +28,6 @@ export abstract class ICartRepository {
         collection_id: string,
         merchant_order_id: string
     ): Promise<Either<Error, void>>;
+
+    abstract deleteCartById(cartId: string): Promise<Either<Error, void>>
 }

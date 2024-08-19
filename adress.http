@@ -13,12 +13,12 @@ Content-Type: application/json
 ###
 
 # @name create-adress
-POST {{BASE_URL}}/adress/43b0d772-9f68-478d-8361-95c8ebdbbad0/addresses
+POST {{BASE_URL}}/adress/0e57489a-1f0a-422d-8549-59b40ca3ca8d/addresses
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "userId": "43b0d772-9f68-478d-8361-95c8ebdbbad0",
+  "userId": "0e57489a-1f0a-422d-8549-59b40ca3ca8d",
   "street": "Rua de aqui mesmo essa e outa" ,
   "number": 20,
   "complement": "Bloco de cima ap 222",

@@ -91,6 +91,8 @@ import { FindCartByPreferenceIdUseCase } from "@/domain/order/application/use-ca
 import { MigrationController } from "./controllers/migration.controller";
 import { ProductMigrationService } from "@/migrate-products";
 import { FetchAllSuppliersUseCase } from "./api-erp/fetchAllSupplierUseCase";
+import { ArchiveCartUseCase } from "@/domain/order/application/use-cases/archiveCart";
+import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-cart";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -138,6 +140,7 @@ import { FetchAllSuppliersUseCase } from "./api-erp/fetchAllSupplierUseCase";
         DeleteSizeUseCase,
         DeleteCategoryUseCase,
         DeleteAddressUseCase,
+        DeleteCartUseCase,
 
         FindBrandByIdUseCase,
 
@@ -197,6 +200,7 @@ import { FetchAllSuppliersUseCase } from "./api-erp/fetchAllSupplierUseCase";
         CreateAddressUseCase,
 
         CreateCartUseCase,
+        ArchiveCartUseCase,
 
         ProductMigrationService,
         FetchAllSuppliersUseCase,
