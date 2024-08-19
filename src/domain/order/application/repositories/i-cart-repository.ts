@@ -21,7 +21,7 @@ export abstract class ICartRepository {
         preferenceId: string,
         paymentStatus: string
     ): Promise<Either<Error, void>>;
-    abstract findByMerchantId(merchant_order_id: string): Promise<Cart | null>;
+    abstract findByPreferenceId(preference_id: string): Promise<Cart | null>;
 
     abstract saveCollectionId(
         cartId: string,
