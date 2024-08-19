@@ -1,7 +1,7 @@
 import { Env } from "@/env";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MercadoPagoConfig, Preference } from "mercadopago";
+import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import mercadopago from "mercadopago";
 
 import * as crypto from "crypto";
@@ -27,8 +27,11 @@ interface Item {
 export class MercadoPagoService {
     private secretKey: string;
     private readonly logger = new Logger(MercadoPagoService.name);
+    private readonly client: MercadoPagoConfig;
 
     private preference: Preference;
+    mercadopago: any;
+
     constructor(
         private configService: ConfigService<Env, true>,
 
@@ -42,11 +45,12 @@ export class MercadoPagoService {
             throw new Error("MERCADO_PAGO_ACCESS_TOKEN is not defined");
         }
 
-        const client = new MercadoPagoConfig({
+        this.client = new MercadoPagoConfig({
             accessToken,
             options: { timeout: 5000 },
         });
-        this.preference = new Preference(client);
+
+        this.preference = new Preference(this.client);
 
         this.secretKey = configService.get<string>(
             "MERCADO_PAGO_ASSINATURA_SECRETA_WEBHOOK"
@@ -100,8 +104,8 @@ export class MercadoPagoService {
                     cartId,
                     preferenceId
                 );
-            console.log("PsavedPreferenceId", savedPreferenceId);
-            console.log("response", response);
+
+            console.log("savedPreferenceId", savedPreferenceId);
 
             return response;
         } catch (error) {
@@ -166,10 +170,23 @@ export class MercadoPagoService {
             "and type:",
             type
         );
+        const payment = new Payment(this.client);
+        const paymentDetails = await payment.get({ id: dataId });
+        console.log("payment processWebhookNotification", payment);
+        console.log("payment processWebhookNotification", payment);
+
+        const { external_reference, status } = paymentDetails;
+
+        console.log("paymentDetails external_reference", external_reference);
+        console.log("paymentDetails status", status);
+
+        const cartId = external_reference;
 
         const action = type || body.action;
+        console.log("paymentDetails status", status);
 
         const data = body.data || { id: dataId };
+        console.log("dataaa", data);
 
         if (!action || !data.id) {
             console.error("Invalid webhook data:", body);
@@ -182,12 +199,13 @@ export class MercadoPagoService {
         const apiVersion = body.api_version;
         const userId = body.user_id;
 
-        let cart = await this.findCartByPreferenceId.execute(paymentId);
-        console.log("processWebhookNotification cart", cart);
-        console.log("processWebhookNotification paymentId", paymentId);
+        let cartResult = await this.findCartByPreferenceId.execute(cartId);
 
-        if (!cart) {
-            console.error(`Cart not found for payment ID: ${paymentId}`);
+        console.log("processWebhookNotification cart", cartResult);
+        console.log("processWebhookNotification cartId", cartId);
+
+        if (!cartResult) {
+            console.error(`Cart not found for payment ID: ${cartId}`);
             throw new Error("Cart not found for the given payment ID");
         }
 
@@ -198,34 +216,41 @@ export class MercadoPagoService {
             );
         }
 
-        if (action === "payment.approved") {
-            console.log(
-                `
-                
-                Processing payment created event for payment ID: ${paymentId}`
-            );
-            const createOrderRequest = {
-                userId: cart.userId,
-                items: cart.items.map((item) => ({
-                    productId: item.productId,
-                    productName: item.productName,
-                    imageUrl: item.imageUrl,
-                    quantity: item.quantity,
-                    price: item.price,
-                })),
+        if (cartResult.isRight()) {
+            const cart = cartResult.value;
 
-                status: OrderStatus.COMPLETED,
-                paymentId: paymentId,
-                paymentStatus: "APPROVED",
-                paymentMethod: body.payment_method_id,
-                paymentDate: new Date(dateCreated),
-            };
+            if (status === "approved") {
+                const createOrderRequest = {
+                    userId: cart.userId,
+                    items: cart.items.map((item) => ({
+                        productId: item.productId,
+                        productName: item.productName,
+                        imageUrl: item.imageUrl,
+                        quantity: item.quantity,
+                        price: item.price,
+                    })),
+                    status: OrderStatus.COMPLETED,
+                    paymentId: paymentId,
+                    paymentStatus: "APPROVED",
+                    paymentMethod: paymentDetails.payment_method_id,
+                    paymentDate: new Date(dateCreated),
+                };
+                console.log("createOrderRequest", createOrderRequest);
 
-            const order = await this.orderUseCase.execute(createOrderRequest);
-        } else if (action === "payment.updated") {
-            const paymentId = data.id;
-            console.log(
-                `Processing payment updated event for payment ID: ${paymentId}`
+                const order =
+                    await this.orderUseCase.execute(createOrderRequest);
+                console.log("Order created successfully:", order);
+            } else {
+                console.log(
+                    `Payment status (${status}) for payment ID: ${dataId}`
+                );
+            }
+        } else {
+            const error = cartResult.value;
+            console.error(`Failed to find cart for ID ${cartId}:`, error);
+            throw new HttpException(
+                "Cart not found or another error occurred",
+                HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }

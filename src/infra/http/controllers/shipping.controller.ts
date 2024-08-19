@@ -135,7 +135,7 @@ export class ShippingController {
     @Post("/webhookpro")
     async handleMercadoPagoWebhook(
         @Body(mercadoPagoWebhookValidationPipe) body: MercadoPagoWebhookSchema,
-        // @Body() body,
+       
         @Headers("x-signature") xSignature: string,
         @Headers("x-request-id") xRequestId: string,
         @Query("data.id") queryDataId: string,

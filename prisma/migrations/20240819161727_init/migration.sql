@@ -232,7 +232,9 @@ CREATE TABLE "orders" (
 CREATE TABLE "order_items" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
+    "productName" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

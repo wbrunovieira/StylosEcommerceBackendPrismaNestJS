@@ -320,7 +320,7 @@ export class PrismaCartRepository implements ICartRepository {
                 {
                     userId: cartData.userId,
                     items: cartItems,
-                },
+                }, 
                 new UniqueEntityID(cartData.id)
             );
 
@@ -387,16 +387,16 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
-    async findByMerchantId(merchant_order_id: string): Promise<Cart | null> {
+    async findByPreferenceId(preference_id: string): Promise<Cart | null> {
         try {
             const cart = await this.prisma.cart.findFirst({
-                where: { merchant_order_id: merchant_order_id },
+                where: { paymentIntentId: preference_id },
                 include: { items: true },
             });
 
             if (!cart) {
                 console.error(
-                    `Cart not found for preference ID: ${merchant_order_id}`
+                    `Cart not found for collection_id ID: ${preference_id}`
                 );
                 return null;
             }

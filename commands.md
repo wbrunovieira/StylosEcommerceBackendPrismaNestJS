@@ -99,10 +99,13 @@ SET "isFeatured" = true
 WHERE "erpId" IN ('4977', '5028', '5029', '5027', '4979', '4956','4955');
 
 UPDATE public.products
-SET height = 10,
+SET height = 11,
 width = 10,
-length = 10,
-weight = 0.3;
+length = 12,
+weight = 1;
+
+UPDATE public.products
+SET "stock" = 10;
 
 docker compose exec app npx ts-node prisma/seed.ts
 
