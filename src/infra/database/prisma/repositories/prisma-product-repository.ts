@@ -143,7 +143,6 @@ export class PrismaProductRepository implements IProductRepository {
     }
 
    
-
     async findByPriceRange(
         minPrice: number,
         maxPrice: number

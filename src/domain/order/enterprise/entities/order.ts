@@ -6,7 +6,7 @@ import { OrderStatus } from "./order-status";
 interface OrderProps {
     userId: string;
     items: OrderItem[];
-   
+
     status: OrderStatus;
     paymentId?: string;
     paymentStatus?: string;
@@ -26,14 +26,13 @@ export class Order extends Entity<OrderProps> {
     get userId(): string {
         return this.props.userId;
     }
-  
+
+    get status(): OrderStatus {
+        return this.props.status ;
+    }
 
     get items(): OrderItem[] {
         return this.props.items;
-    }
-
-    get status(): string {
-        return this.props.status || "PENDING";
     }
 
     get paymentId(): string | undefined {
@@ -61,7 +60,7 @@ export class Order extends Entity<OrderProps> {
             id: this.id.toString(),
             userId: this.userId,
             items: this.items.map((item) => item.toObject()),
-           
+
             status: this.status,
             paymentId: this.paymentId,
             paymentStatus: this.paymentStatus,
@@ -89,7 +88,7 @@ export class Order extends Entity<OrderProps> {
             {
                 userId: orderData.userId,
                 items: items,
-               
+
                 status: orderData.status,
                 paymentId: orderData.paymentId,
                 paymentStatus: orderData.paymentStatus,

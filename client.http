@@ -44,8 +44,8 @@ POST {{BASE_URL}}/accounts
 Content-Type: application/json
 
 {
-  "name": "bruno",
-  "email": "bruno@bruno.com",
+  "name": "Walter Bruno Prado Vieira",
+  "email": "wbrunovieira@yahoo.com.br",
   "password":"123456aA@"
 }
 
