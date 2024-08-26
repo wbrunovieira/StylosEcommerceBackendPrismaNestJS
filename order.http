@@ -1,0 +1,17 @@
+@BASE_URL = https://wbstylosbackend.sa.ngrok.io
+@AUTH_TOKEN = {{authenticate.response.body.access_token}}
+
+# @name authenticate
+POST {{BASE_URL}}/sessions/
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Adminpassword@8"
+}
+
+###
+
+# @name get-orders-all
+GET {{BASE_URL}}/orders/all?
+Content-Type: application/json

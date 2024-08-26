@@ -93,6 +93,8 @@ import { ProductMigrationService } from "@/migrate-products";
 import { FetchAllSuppliersUseCase } from "./api-erp/fetchAllSupplierUseCase";
 import { ArchiveCartUseCase } from "@/domain/order/application/use-cases/archiveCart";
 import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-cart";
+import { OrderController } from "./controllers/order.controller";
+import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -110,6 +112,7 @@ import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-c
         AddressController,
         ShippingController,
         MigrationController,
+        OrderController
     ],
     providers: [
         JwtService,
@@ -204,6 +207,8 @@ import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-c
 
         ProductMigrationService,
         FetchAllSuppliersUseCase,
+
+        ListAllOrdersUseCase
     ],
 })
 export class HttpModule {}

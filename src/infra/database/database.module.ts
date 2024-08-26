@@ -101,6 +101,10 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
             provide: IArchivedCartRepository,
             useClass: PrismaArchivedCartRepository,
         },
+        {
+            provide: IOrderRepository,
+            useClass: PrismaOrderRepository,
+        },
 
         PrismaColorRepository,
         PrismaSizeRepository,
@@ -126,6 +130,7 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
         IAddressRepository,
         IShippingRepository,
         IOrderRepository,
+        
     ],
 })
 export class DatabaseModule {}
