@@ -531,13 +531,14 @@ export class ProductController {
         };
     }
 
-    @Put(":id")
+    @Put("save/:id")
     async editProduct(@Param("id") id: string, @Body() body: any) {
+        console.log('bateu no save/:id',id)
         const result = await this.editProductUseCase.execute({
             productId: id,
             ...body,
         });
-
+        console.log('save/ result',result)
         if (result.isLeft()) {
             throw new HttpException(
                 "Failed to update product",
