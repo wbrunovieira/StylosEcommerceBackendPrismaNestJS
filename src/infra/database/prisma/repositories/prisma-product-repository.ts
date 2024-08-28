@@ -26,7 +26,7 @@ export class PrismaProductRepository implements IProductRepository {
                 description,
                 price,
                 stock,
-                
+
                 brandId,
                 erpId,
                 images,
@@ -44,7 +44,7 @@ export class PrismaProductRepository implements IProductRepository {
                 price: product.price,
                 stock: product.stock,
                 erpId: product.erpId,
-               
+
                 brandId: product.brandId.toString(),
                 images: product.images,
                 createdAt: product.createdAt,
@@ -94,8 +94,6 @@ export class PrismaProductRepository implements IProductRepository {
                 }
             }
 
-        
-
             let brandExist;
             if (brandId) {
                 const brandIDAsString = brandId.toString();
@@ -129,7 +127,7 @@ export class PrismaProductRepository implements IProductRepository {
                     width: product.width,
                     length: product.length,
                     weight: product.weight,
-                 
+
                     brand: { connect: { id: brandExist.id } },
                     finalPrice: finalPrice ?? undefined,
                     ...otherProps,
@@ -142,13 +140,11 @@ export class PrismaProductRepository implements IProductRepository {
         }
     }
 
-   
     async findByPriceRange(
         minPrice: number,
         maxPrice: number
     ): Promise<Either<Error, Product[]>> {
         try {
-          
             const productsData = await this.prisma.product.findMany({
                 where: {
                     finalPrice: {
@@ -173,7 +169,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                  
+
                     productVariants: true,
                 },
             });
@@ -208,7 +204,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                    
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -256,7 +252,6 @@ export class PrismaProductRepository implements IProductRepository {
 
     async findBySizeId(sizeId: string): Promise<Either<Error, Product[]>> {
         try {
-        
             const productsData = await this.prisma.product.findMany({
                 where: {
                     productSizes: {
@@ -282,7 +277,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: true,
                 },
             });
@@ -317,7 +312,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -365,7 +360,6 @@ export class PrismaProductRepository implements IProductRepository {
 
     async findByColorId(colorId: string): Promise<Either<Error, Product[]>> {
         try {
-      
             const productsData = await this.prisma.product.findMany({
                 where: {
                     productColors: {
@@ -391,7 +385,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                  
+
                     productVariants: true,
                 },
             });
@@ -427,7 +421,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 hex: color.color.hex,
                             })
                         ),
-                     
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -475,7 +469,6 @@ export class PrismaProductRepository implements IProductRepository {
 
     async findByBrandId(brandId: string): Promise<Either<Error, Product[]>> {
         try {
-          
             const productsData = await this.prisma.product.findMany({
                 where: {
                     brandId: brandId,
@@ -497,7 +490,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: true,
                 },
             });
@@ -532,7 +525,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                      
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -580,7 +573,6 @@ export class PrismaProductRepository implements IProductRepository {
 
     async findByName(name: string): Promise<Either<Error, Product[]>> {
         try {
-         
             const productsData = await this.prisma.product.findMany({
                 where: {
                     name: {
@@ -605,7 +597,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: true,
                 },
             });
@@ -640,7 +632,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                     
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -688,7 +680,6 @@ export class PrismaProductRepository implements IProductRepository {
         categoryId: string
     ): Promise<Either<Error, Product[]>> {
         try {
-          
             const productsData = await this.prisma.product.findMany({
                 where: {
                     productCategories: {
@@ -714,7 +705,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: true,
                 },
             });
@@ -749,7 +740,7 @@ export class PrismaProductRepository implements IProductRepository {
                                 name: category.category.name,
                             })
                         ),
-                     
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -800,7 +791,7 @@ export class PrismaProductRepository implements IProductRepository {
             Error,
             {
                 product: Product;
-                
+
                 brandName?: string;
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];
@@ -819,7 +810,6 @@ export class PrismaProductRepository implements IProductRepository {
         >
     > {
         try {
-          
             const productData = await this.prisma.product.findUnique({
                 where: { slug: slug },
                 include: {
@@ -839,7 +829,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: true,
                 },
             });
@@ -869,7 +859,7 @@ export class PrismaProductRepository implements IProductRepository {
                             name: category.category.name,
                         })
                     ),
-                   
+
                     sizeId: productData.productSizes.map(
                         (size) => new UniqueEntityID(size.sizeId)
                     ),
@@ -885,7 +875,7 @@ export class PrismaProductRepository implements IProductRepository {
                     length: productData.length ?? undefined,
                     weight: productData.weight ?? undefined,
                     onSale: productData.onSale ?? undefined,
-                    productIdVariant:productData.productIdVariant ?? undefined,
+                    productIdVariant: productData.productIdVariant ?? undefined,
                     isFeatured: productData.isFeatured ?? undefined,
                     hasVariants: productData.hasVariants ?? undefined,
                     isNew: productData.isNew ?? undefined,
@@ -897,7 +887,6 @@ export class PrismaProductRepository implements IProductRepository {
                 },
                 new UniqueEntityID(productData.id)
             );
-
 
             const uniqueColors = Array.from(
                 new Map(
@@ -933,7 +922,6 @@ export class PrismaProductRepository implements IProductRepository {
             );
 
             const additionalInfo = {
-               
                 brandName: productData.brand?.name ?? undefined,
                 colors: uniqueColors,
                 sizes: uniqueSizes,
@@ -948,7 +936,7 @@ export class PrismaProductRepository implements IProductRepository {
                     sku: variant.sku,
                 })),
             };
-         
+
             return right({ product, ...additionalInfo });
         } catch (error) {
             console.error(
@@ -964,8 +952,6 @@ export class PrismaProductRepository implements IProductRepository {
         productId: string
     ): Promise<Either<Error, ProductWithVariants>> {
         try {
-         
-
             const productData = await this.prisma.product.findUnique({
                 where: {
                     id: productId,
@@ -987,7 +973,7 @@ export class PrismaProductRepository implements IProductRepository {
                         },
                     },
                     brand: true,
-                   
+
                     productVariants: {
                         include: {
                             color: true,
@@ -1024,7 +1010,7 @@ export class PrismaProductRepository implements IProductRepository {
                             name: category.category.name,
                         })
                     ),
-                   
+
                     finalPrice: productData.finalPrice ?? undefined,
                     brandId: new UniqueEntityID(productData.brandId),
                     brandName: productData.brand?.name ?? "Unknown Brand",
@@ -1052,7 +1038,6 @@ export class PrismaProductRepository implements IProductRepository {
                 },
                 new UniqueEntityID(productData.id)
             );
-          
 
             const productVariants = productData.productVariants.map((variant) =>
                 ProductVariant.create(
@@ -1074,10 +1059,8 @@ export class PrismaProductRepository implements IProductRepository {
                         updatedAt: variant.updatedAt ?? undefined,
                     },
                     new UniqueEntityID(variant.id)
-                    
                 )
             );
-         
 
             return right(
                 ProductWithVariants.create({
@@ -1097,11 +1080,14 @@ export class PrismaProductRepository implements IProductRepository {
         }
     }
 
-   
-
     async save(
         productOrProductWithVariants: Product | ProductWithVariants
     ): Promise<Either<ResourceNotFoundError, void>> {
+        console.log(
+            "bateu no prisma product save Product productOrProductWithVariants",
+            Product,
+            productOrProductWithVariants
+        );
         try {
             let product: Product;
             let variants: Array<{
@@ -1126,12 +1112,12 @@ export class PrismaProductRepository implements IProductRepository {
                 variants = productOrProductWithVariants.variants;
             }
 
-            await this.prisma.product.update({
+            const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
                 data: {
                     name: product.name,
                     description: product.description,
-                   
+                    
                     brandId: product.brandId.toString(),
                     discount: product.discount,
                     price: product.price,
@@ -1152,14 +1138,16 @@ export class PrismaProductRepository implements IProductRepository {
                 },
             });
 
-            await Promise.all(
+            console.log("updatedProduct", updatedProduct);
+
+            const variantsSaved = await Promise.all(
                 variants.map(async (variant) => {
                     await this.prisma.productVariant.update({
                         where: { id: variant.id.toString() },
                         data: {
                             productId: variant.productId.toString(),
-                            colorId: variant.colorId?.toString(),
-                            sizeId: variant.sizeId?.toString(),
+                            colorId: variant.colorId?.toString() ?? null,
+                            sizeId: variant.sizeId?.toString() ?? null,
                             sku: variant.sku,
                             upc: variant.upc,
                             stock: variant.stock,
@@ -1171,6 +1159,7 @@ export class PrismaProductRepository implements IProductRepository {
                     });
                 })
             );
+            console.log("variants", variantsSaved);
 
             return right(undefined);
         } catch (error) {

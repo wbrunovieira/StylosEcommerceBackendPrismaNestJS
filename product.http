@@ -51,13 +51,20 @@ Content-Type: application/json
 
 ###
 
+
 # @name edit-products
-PUT {{BASE_URL}}/products/save/9108357c-2b18-444c-a061-c180f4d3695a
+PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "price": 10030
+  "name": "010045 SUTIA B LARGA REG",
+  "description": "DescriptionNotFound",
+  "price": 10030,
+  "stock": 50,
+  "erpId": "some-erp-id",
+  "images": ["image1.png", "image2.png"]
 }
+
 ###
 
 # @name edit-products-variants
@@ -91,7 +98,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/497c8732-e1ec-4964-89d5-bf6aaaef6def
+GET {{BASE_URL}}/products/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 
