@@ -76,7 +76,7 @@ export class InMemoryBrandRepository implements IBrandRepository {
     return right(undefined);
   }
 
-  async addItems(...brand: Brand[]): Promise<void> {
-    this.items.push(...brand);
+  async addItems(...brands: Brand[]): Promise<void> {
+    this.items.push(...brands);
   }
 }

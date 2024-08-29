@@ -950,7 +950,7 @@ export class PrismaProductRepository implements IProductRepository {
 
     async findById(
         productId: string
-    ): Promise<Either<Error, ProductWithVariants>> {
+    ): Promise<Either<Error, Product>> {
         try {
             const productData = await this.prisma.product.findUnique({
                 where: {
@@ -1062,12 +1062,8 @@ export class PrismaProductRepository implements IProductRepository {
                 )
             );
 
-            return right(
-                ProductWithVariants.create({
-                    product,
-                    variants: productVariants,
-                })
-            );
+            return right(product);
+
         } catch (error) {
             console.error(
                 `Failed to retrieve product for id: ${productId}, Error: ${error}`
@@ -1109,7 +1105,7 @@ export class PrismaProductRepository implements IProductRepository {
                 product = productOrProductWithVariants;
             } else {
                 product = productOrProductWithVariants.product;
-                variants = productOrProductWithVariants.variants;
+                variants = productOrProductWithVariants.productVariants;
             }
 
             const updatedProduct = await this.prisma.product.update({
