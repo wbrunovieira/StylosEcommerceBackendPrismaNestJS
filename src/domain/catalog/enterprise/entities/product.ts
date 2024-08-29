@@ -5,6 +5,7 @@ import { Optional } from "@/core/types/optional";
 
 import dayjs from "dayjs";
 import { Entity } from "@/core/entities/entity";
+import { ProductStatus } from "./product-status";
 
 interface Category {
     id: UniqueEntityID;
@@ -26,13 +27,26 @@ interface Size {
     name: string;
 }
 
+interface ProductVariant {
+    id: UniqueEntityID;
+    productId: UniqueEntityID;
+    colorId?: UniqueEntityID;
+    sizeId?: UniqueEntityID;
+    sku: string;
+    upc?: string;
+    stock: number;
+    price: number;
+    images: string[];
+    status: ProductStatus;
+}
+
 export interface ProductProps {
     name: string;
     description: string;
     productSizes?: Size[];
     productColors?: Color[];
     productCategories?: Category[];
-
+    productVariants?: ProductVariant[];
     sizeId?: UniqueEntityID[];
     finalPrice?: number;
     brandId: UniqueEntityID;
@@ -61,6 +75,15 @@ export interface ProductProps {
 export class Product extends Entity<ProductProps> {
     private touch() {
         this.props.updatedAt = new Date();
+    }
+
+    get productVariants(): ProductVariant[] | undefined {
+        return this.props.productVariants;
+    }
+
+    set productVariants(variants: ProductVariant[]) {
+        this.props.productVariants = variants;
+        this.touch();
     }
 
     get height() {

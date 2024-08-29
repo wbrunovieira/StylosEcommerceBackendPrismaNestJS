@@ -3,7 +3,8 @@ import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { IProductRepository } from "../repositories/i-product-repository";
 import { Injectable } from "@nestjs/common";
-import { ProductWithVariants } from "../../enterprise/entities/productWithVariants";
+
+import { Product } from "../../enterprise/entities/product";
 
 interface GetAllProductsByIdUseCaseRequest {
   productId: string;
@@ -11,7 +12,7 @@ interface GetAllProductsByIdUseCaseRequest {
 
 type GetAllProductsByIdUseCaseResponse = Either<
   ResourceNotFoundError,
-  ProductWithVariants
+  Product
 >;
 
 @Injectable()

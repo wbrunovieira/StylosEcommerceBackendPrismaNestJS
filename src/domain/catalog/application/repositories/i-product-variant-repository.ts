@@ -7,6 +7,7 @@ export abstract class IProductVariantRepository {
   abstract findByProductId(
     productId: string
   ): Promise<Either<ResourceNotFoundError, ProductVariant[]>>;
+  
   abstract findByProductIds(productIds: string[]): Promise<ProductVariant[]>;
   abstract findById(
     id: string

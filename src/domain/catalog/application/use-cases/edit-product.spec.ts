@@ -4,19 +4,20 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { makeProduct } from "@test/factories/make-product";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { left } from "@/core/either";
-import { ProductProps } from "../../enterprise/entities/product";
-import { IBrandRepository } from "../repositories/i-brand-repository";
+
 import { makeBrand } from "@test/factories/make-brand";
+import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
 
 describe("EditProductUseCase", () => {
     let useCase: EditProductUseCase;
     let mockProductRepository: InMemoryProductRepository;
-    let mockBrandRepository: IBrandRepository;
+    let mockBrandRepository: InMemoryBrandRepository;
     let productId: UniqueEntityID;
     let brandId: UniqueEntityID;
 
     beforeEach(() => {
         mockProductRepository = new InMemoryProductRepository();
+        mockBrandRepository = new InMemoryBrandRepository();
         useCase = new EditProductUseCase(
             mockProductRepository,
             mockBrandRepository
@@ -25,8 +26,9 @@ describe("EditProductUseCase", () => {
         productId = new UniqueEntityID("test_product_id");
 
         const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
+        mockBrandRepository.create(consistentBrand);
 
-        const existingProduct = makeProduct(
+        const existingProductWithVariants = makeProduct(
             {
                 name: "Existing Product",
                 brandId: brandId,
@@ -38,7 +40,7 @@ describe("EditProductUseCase", () => {
             productId
         );
 
-        mockProductRepository.create(existingProduct);
+        mockProductRepository.create(existingProductWithVariants);
     });
 
     it("should edit a product successfully", async () => {
@@ -194,7 +196,7 @@ describe("EditProductUseCase", () => {
 
     it("should correctly handle unique constraint on slug", async () => {
         const anotherProductId = new UniqueEntityID("another_test_product_id");
-        const anotherProduct = makeProduct(
+        const anotherProductWithVariants = makeProduct(
             {
                 name: "Existing Product",
                 description: "Another existing product description",
@@ -206,7 +208,7 @@ describe("EditProductUseCase", () => {
             anotherProductId
         );
 
-        await mockProductRepository.create(anotherProduct);
+        await mockProductRepository.create(anotherProductWithVariants);
 
         const result = await useCase.execute({
             productId: productId.toString(),

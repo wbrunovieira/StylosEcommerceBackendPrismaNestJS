@@ -5,13 +5,13 @@ import { ResourceNotFoundError } from "../use-cases/errors/resource-not-found-er
 import { ProductVariant } from "../../enterprise/entities/product-variant";
 
 export abstract class IProductRepository {
-    abstract create(product: Product): Promise<Either<Error, void>>;
+    abstract create(product: Product): Promise<Either<Error, Product>>;
     abstract findByColorId(colorId: string): Promise<Either<Error, Product[]>>;
     abstract delete(product: Product): Promise<void>;
     abstract findByName(name: string): Promise<Either<Error, Product[]>>;
     abstract findById(
         productId: string
-    ): Promise<Either<Error, ProductWithVariants>>;
+    ): Promise<Either<Error, Product>>;
     abstract findByCategoryId(
         categoryId: string
     ): Promise<Either<Error, Product[]>>;
@@ -28,7 +28,7 @@ export abstract class IProductRepository {
             Error,
             {
                 product: Product;
-               
+
                 brandName?: string;
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];

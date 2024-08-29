@@ -11,7 +11,6 @@ import { IBrandRepository } from "../repositories/i-brand-repository";
 
 import { Injectable } from "@nestjs/common";
 
-
 import { ISizeRepository } from "../repositories/i-size-repository";
 import { IProductSizeRepository } from "../repositories/i-product-size-repository";
 import { IColorRepository } from "../repositories/i-color-repository";
@@ -63,7 +62,7 @@ export class CreateProductUseCase {
         private productRepository: IProductRepository,
         private colorRepository: IColorRepository,
         private brandRepository: IBrandRepository,
-   
+
         private sizeRepository: ISizeRepository,
         private categoryRepository: ICategoryRepository,
         private productSizeRepository: IProductSizeRepository,
@@ -85,7 +84,7 @@ export class CreateProductUseCase {
         productColors,
         productSizes,
         productCategories,
-   
+
         brandId,
         sku = null,
         erpId,
@@ -115,14 +114,23 @@ export class CreateProductUseCase {
             return left(new ResourceNotFoundError("Price cannot be negative"));
         }
 
+        // console.log("name", name);
+        // const sameName = await this.productRepository.findByName(name);
+        // console.log("sameName", sameName);
+
+        // if (sameName.isLeft()) {
+        //     return left(
+        //         new ResourceNotFoundError("Product same name already exist")
+        //     );
+        // }
+
         const brandOrError = await this.brandRepository.findById(brandId);
         if (brandOrError.isLeft()) {
             return left(new ResourceNotFoundError("Brand not found"));
         }
+        console.log("brandOrError", brandOrError);
 
         const brand = brandOrError.value;
-
-
 
         let uniqueSizes;
         if (productSizes) {
@@ -147,6 +155,8 @@ export class CreateProductUseCase {
                 }
             }
         }
+
+        console.log("uniqueSizes", uniqueSizes);
 
         let uniqueColors;
 
@@ -175,6 +185,8 @@ export class CreateProductUseCase {
                 }
             }
         }
+
+        console.log("productColors", productColors);
 
         if (productCategories) {
             const uniqueCategory = new Set<string>();
@@ -205,6 +217,7 @@ export class CreateProductUseCase {
                 }
             }
         }
+        console.log("productCategories", productCategories);
 
         try {
             const provisionalSlug = generateSlug(
@@ -213,11 +226,12 @@ export class CreateProductUseCase {
                 Date.now().toString()
             );
             const finalPrice = this.calculateFinalPrice(price, discount);
+            console.log("provisionalSlug", provisionalSlug);
 
             const product = Product.create({
                 name,
                 description,
-          
+
                 brandId: new UniqueEntityID(brandId),
                 price,
                 finalPrice,
@@ -241,7 +255,17 @@ export class CreateProductUseCase {
                 slug: provisionalSlug,
             });
 
+            console.log(
+                "CreateProductUseCase mandar para o repo product",
+                product
+            );
             const result = await this.productRepository.create(product);
+            console.log("CreateProductUseCase result", result);
+
+            if (result.isLeft()) {
+                console.error(result.value);
+                return left(result.value);
+            }
 
             const finalSlug = generateSlug(
                 name,
@@ -253,9 +277,12 @@ export class CreateProductUseCase {
             product.productIdVariant = product.id.toString();
             const productWithVariants = ProductWithVariants.create({
                 product,
-                variants: [],
+                productVariants: [],
             });
-            await this.productRepository.save(productWithVariants);
+
+            const productSaved =
+                await this.productRepository.save(productWithVariants);
+            console.log("CreateProductUseCase productSaved", productSaved);
 
             if (productColors) {
                 for (const colorId of productColors) {
@@ -358,13 +385,14 @@ export class CreateProductUseCase {
             for (const variant of variants) {
                 await this.productVariantRepository.create(variant);
             }
+            console.log("create product usecase product", product);
 
             return right({
-                product,
+                product: result.value,
             });
         } catch (error) {
             console.error("Error creating product:", error);
-            return left(error as Error);
+            return left(new Error("Failed to create product"));
         }
     }
 }

@@ -1,25 +1,31 @@
-import { faker } from "@faker-js/faker";
-
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import {
-    Product,
     ProductProps,
+    Product,
 } from "@/domain/catalog/enterprise/entities/product";
+import { ProductWithVariants } from "@/domain/catalog/enterprise/entities/productWithVariants";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { ProductVariant } from "@/domain/catalog/enterprise/entities/product-variant";
+import { faker } from "@faker-js/faker";
+import { ProductStatus } from "@/domain/catalog/enterprise/entities/product-status";
 
 export function makeProduct(
-    override: Partial<ProductProps> = {},
+    overrides: Partial<ProductProps> = {},
     id?: UniqueEntityID
-) {
+): ProductWithVariants {
     const product = Product.create(
         {
             name: faker.commerce.productName(),
             description: faker.commerce.productDescription(),
-            price: Number(faker.commerce.price()),
-            sizeId: [new UniqueEntityID()],
+            price: faker.datatype.number({ min: 1, max: 1000 }),
+            productSizes: [],
+            productColors: [],
+            productCategories: [],
+            sizeId: [],
             brandId: new UniqueEntityID(),
-
-            stock: faker.helpers.rangeToNumber(100),
-            sku: faker.random.alphaNumeric(10),
+            discount: 0,
+            finalPrice: 0,
+            stock: faker.datatype.number({ min: 0, max: 100 }),
+            sku: faker.random.alphaNumeric(8),
             height: faker.datatype.number({ min: 1, max: 100 }),
             width: faker.datatype.number({ min: 1, max: 100 }),
             length: faker.datatype.number({ min: 1, max: 100 }),
@@ -27,14 +33,30 @@ export function makeProduct(
             onSale: faker.datatype.boolean(),
             isFeatured: faker.datatype.boolean(),
             isNew: faker.datatype.boolean(),
-            images: [faker.image.dataUri()],
+            images: [],
             createdAt: new Date(),
             updatedAt: new Date(),
-
-            ...override,
+            hasVariants: true,
+            ...overrides,
         },
         id
     );
 
-    return product;
+    const variant = ProductVariant.create({
+        productId: product.id,
+        stock: faker.number.int({ min: 1, max: 100 }),
+        price: product.price,
+        images: [],
+        status: ProductStatus.ACTIVE,
+    });
+
+    const uniqueId = id ?? new UniqueEntityID();
+
+    return ProductWithVariants.create(
+        {
+            product,
+            variants: [variant],
+        },
+        uniqueId
+    );
 }
