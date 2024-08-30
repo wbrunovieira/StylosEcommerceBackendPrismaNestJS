@@ -340,7 +340,7 @@ export class CreateProductUseCase {
                                 colorId: new UniqueEntityID(colorId),
                                 stock,
                                 sku: sku || "",
-                                price,
+                                price: finalPrice,
                                 status: ProductStatus.ACTIVE,
                                 images,
                             })
@@ -360,7 +360,7 @@ export class CreateProductUseCase {
                             sizeId: new UniqueEntityID(sizeId),
                             stock,
                             sku: sku || "",
-                            price,
+                            price: finalPrice,
                             status: ProductStatus.ACTIVE,
                             images,
                         })
@@ -376,7 +376,7 @@ export class CreateProductUseCase {
                             colorId: new UniqueEntityID(colorId),
                             sku: sku || "",
                             stock,
-                            price,
+                            price: finalPrice,
                             status: ProductStatus.ACTIVE,
                             images,
                         })
@@ -393,7 +393,7 @@ export class CreateProductUseCase {
                         productId: product.id,
                         sku: sku || "",
                         stock,
-                        price,
+                        price: finalPrice,
                         status: ProductStatus.ACTIVE,
                         images,
                     })
