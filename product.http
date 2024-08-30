@@ -24,7 +24,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "saia 15 aaa",
+  "name": "saia 15 aaaaaa",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
  "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
@@ -36,15 +36,14 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "width":17,
   "length":11,
   "weight":0.3
-  
- 
-  
+    
 }
 
 ###
  "productColors": ["247b00b5-0b96-4713-a17c-8d05cf89fead"],
   "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
   "productSizes": [ "f4051ddb-e807-4f8f-8f50-6f3f06d7795d"]
+###
 
 # @name get-all-products
 GET {{BASE_URL}}/products/all
@@ -52,17 +51,27 @@ Content-Type: application/json
 
 ###
 
-
 # @name edit-products
 PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "name": "010045 SUTIA B LARGA REG",
-  "description": "DescriptionNotFound",
-  "price": 10030,
+  "name": "010045 SUTIA B LARGA REG updated",
+  "description": "DescriptionNotFound 2",
+  
+  "brandId":"00d203ac-41d1-4fd6-908d-940b294ebd4f",
+"discount": 20,
+"price": 100,
+"height": 15,
+ "width": 12,
+  "length": 12,
+   "weight": 12,
+   "onSale":true,
+ "isFeatured":false,
+  //  "isNew": true,
   "stock": 50,
   "erpId": "some-erp-id",
+
   "images": ["image1.png", "image2.png"]
 }
 
