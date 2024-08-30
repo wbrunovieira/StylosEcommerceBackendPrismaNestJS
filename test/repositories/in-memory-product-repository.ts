@@ -146,6 +146,7 @@ export class InMemoryProductRepository implements IProductRepository {
     }
 
     async findById(productId: string): Promise<Either<Error, Product>> {
+        console.log("async findById repo memo productId", productId);
         const product = this.items.find(
             (product) => product.id.toString() === productId
         );
@@ -240,7 +241,7 @@ export class InMemoryProductRepository implements IProductRepository {
     }
 
     async save(product: Product): Promise<Either<ResourceNotFoundError, void>> {
-        console.log('async save(product: Product): bateu')
+        console.log("async save(product: Product): bateu");
         const index = this.items.findIndex(
             (item) => item.id.toString() === product.id.toString()
         );

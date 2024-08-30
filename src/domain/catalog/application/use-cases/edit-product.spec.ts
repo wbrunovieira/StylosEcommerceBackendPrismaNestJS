@@ -7,18 +7,22 @@ import { left } from "@/core/either";
 
 import { makeBrand } from "@test/factories/make-brand";
 import { InMemoryBrandRepository } from "@test/repositories/in-memory-brand-repository";
+import { IProductVariantRepository } from "../repositories/i-product-variant-repository";
 
 describe("EditProductUseCase", () => {
-    let useCase: EditProductUseCase;
+    let editProductUseCase: EditProductUseCase;
     let mockProductRepository: InMemoryProductRepository;
+    let mockProductVariantRepository: IProductVariantRepository;
     let mockBrandRepository: InMemoryBrandRepository;
     let productId: UniqueEntityID;
     let brandId: UniqueEntityID;
 
     beforeEach(() => {
-        mockProductRepository = new InMemoryProductRepository();
+        mockProductRepository = new InMemoryProductRepository(
+            mockProductVariantRepository
+        );
         mockBrandRepository = new InMemoryBrandRepository();
-        useCase = new EditProductUseCase(
+        editProductUseCase = new EditProductUseCase(
             mockProductRepository,
             mockBrandRepository
         );
@@ -28,7 +32,7 @@ describe("EditProductUseCase", () => {
         const consistentBrand = makeBrand({ name: "Test Brand Name" }, brandId);
         mockBrandRepository.create(consistentBrand);
 
-        const existingProductWithVariants = makeProduct(
+        const existingProduct = makeProduct(
             {
                 name: "Existing Product",
                 brandId: brandId,
@@ -40,11 +44,11 @@ describe("EditProductUseCase", () => {
             productId
         );
 
-        mockProductRepository.create(existingProductWithVariants);
+        mockProductRepository.create(existingProduct.product);
     });
 
     it("should edit a product successfully", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             name: "Updated Product",
             description: "Updated product description",
@@ -58,7 +62,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
             expect(updatedProduct.name).toBe("Updated Product");
             expect(updatedProduct.description).toBe(
                 "Updated product description"
@@ -70,7 +74,7 @@ describe("EditProductUseCase", () => {
     });
 
     it("should return an error if product is not found", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: "non_existing_product_id",
             name: "Updated Product",
             description: "Updated product description",
@@ -94,7 +98,7 @@ describe("EditProductUseCase", () => {
     });
 
     it("should edit multiple fields of a product", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             name: "Updated Product",
             description: "Updated product description",
@@ -105,7 +109,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
             expect(updatedProduct.name).toBe("Updated Product");
             expect(updatedProduct.description).toBe(
                 "Updated product description"
@@ -118,7 +122,7 @@ describe("EditProductUseCase", () => {
     });
 
     it("should correctly calculate the final price when discount is provided", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             price: 200,
             discount: 10, // 10% discount
@@ -127,7 +131,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
             expect(updatedProduct.price).toBe(200);
             expect(updatedProduct.discount).toBe(10);
             expect(updatedProduct.finalPrice).toBe(180); // 200 - 10%
@@ -141,7 +145,7 @@ describe("EditProductUseCase", () => {
             Promise.resolve(left(new Error("Save error")))
         );
 
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             name: "Updated Product",
             description: "Updated product description",
@@ -161,7 +165,7 @@ describe("EditProductUseCase", () => {
     });
 
     it("should correctly calculate the final price when discount is changed", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             discount: 20,
         });
@@ -169,7 +173,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
             expect(updatedProduct.discount).toBe(20);
             expect(updatedProduct.finalPrice).toBe(80); // 100 - 20%
         } else {
@@ -178,7 +182,7 @@ describe("EditProductUseCase", () => {
     });
 
     it("should correctly calculate the final price when price is changed", async () => {
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             price: 200, // Changing price to 200
         });
@@ -186,7 +190,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
             expect(updatedProduct.price).toBe(200);
             expect(updatedProduct.finalPrice).toBe(180); // 200 - 10%
         } else {
@@ -208,9 +212,9 @@ describe("EditProductUseCase", () => {
             anotherProductId
         );
 
-        await mockProductRepository.create(anotherProductWithVariants);
+        await mockProductRepository.create(anotherProductWithVariants.product);
 
-        const result = await useCase.execute({
+        const result = await editProductUseCase.execute({
             productId: productId.toString(),
             name: "Existing Product",
             description: "Updated product description",
@@ -219,7 +223,7 @@ describe("EditProductUseCase", () => {
         expect(result.isRight()).toBeTruthy();
 
         if (result.isRight()) {
-            const updatedProduct = result.value.product;
+            const updatedProduct = result.value;
 
             expect(updatedProduct.slug.value).not.toBe("existing-product");
             expect(updatedProduct.slug.value).toMatch(/existing-product-\d+/);

@@ -55,7 +55,7 @@ export function makeProduct(
     return ProductWithVariants.create(
         {
             product,
-            variants: [variant],
+            productVariants: [variant],
         },
         uniqueId
     );
