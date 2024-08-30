@@ -1049,37 +1049,70 @@ export class PrismaProductRepository implements IProductRepository {
 
             if (productOrProductWithVariants instanceof Product) {
                 product = productOrProductWithVariants;
+                console.log(" try no prisma product  1 product", product);
             } else {
                 product = productOrProductWithVariants.product;
                 variants = productOrProductWithVariants.productVariants;
+                console.log(" try no prisma product  2 product", product);
             }
+
+            console.log(
+                "depois do try no prisma product save Product productOrProductWithVariants",
+                Product,
+                productOrProductWithVariants
+            );
+            console.log(" try no prisma product product", product);
+            console.log(
+                " try no product.brandId.toString()",
+                product.brandId.toString()
+            );
+            console.log(" try no product.isNew", product.isNew);
+            console.log(" try no product.isFeatured", product.isFeatured);
+
+            // const updatedProduct = await this.prisma.product.update({
+            //     where: { id: product.id.toString() },
+            //     data: {
+            //         name: product.name,
+            //         description: product.description,
+
+            //         brandId: product.brandId.toString(),
+            //         discount: product.discount,
+            //         price: product.price,
+            //         finalPrice: product.finalPrice,
+            //         height: product.height,
+            //         width: product.width,
+            //         length: product.length,
+            //         weight: product.weight,
+            //         onSale: product.onSale,
+            //         isFeatured: product.isFeatured,
+            //         isNew: product.isNew,
+            //         images: product.images,
+            //         stock: product.stock,
+            //         sku: product.sku,
+            //         erpId: product.erpId,
+            //         slug: product.slug.toString(),
+            //         updatedAt: new Date(),
+            //     },
+            // });
+
+            // console.log("updatedProduct", updatedProduct);
 
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
                 data: {
                     name: product.name,
                     description: product.description,
-
                     brandId: product.brandId.toString(),
                     discount: product.discount,
                     price: product.price,
-                    finalPrice: product.finalPrice,
                     height: product.height,
                     width: product.width,
                     length: product.length,
                     weight: product.weight,
                     onSale: product.onSale,
-                    isFeatured: product.isFeatured,
-                    isNew: product.isNew,
-                    images: product.images,
-                    stock: product.stock,
-                    sku: product.sku,
-                    erpId: product.erpId,
-                    slug: product.slug.toString(),
-                    updatedAt: new Date(),
+                    isFeatured: product.isFeatured ?? false,
                 },
             });
-
             console.log("updatedProduct", updatedProduct);
 
             const variantsSaved = await Promise.all(

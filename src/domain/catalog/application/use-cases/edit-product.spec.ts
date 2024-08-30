@@ -231,4 +231,20 @@ describe("EditProductUseCase", () => {
             throw new Error("Expected product to be updated successfully");
         }
     });
+
+    it("should correctly update the isFeatured field", async () => {
+        const result = await editProductUseCase.execute({
+            productId: productId.toString(),
+            isFeatured: true,
+        });
+
+        expect(result.isRight()).toBeTruthy();
+
+        if (result.isRight()) {
+            const updatedProduct = result.value;
+            expect(updatedProduct.isFeatured).toBe(true);
+        } else {
+            throw new Error("Expected product to be updated successfully");
+        }
+    });
 });

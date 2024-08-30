@@ -77,6 +77,7 @@ export class EditProductUseCase {
         images,
     }: EditProductUseCaseRequest): Promise<EditProductUseCaseResponse> {
         console.log("bateu no EditProductUseCaseRequest productId", productId);
+        console.log("edit quando chega usecase isFeatured", isFeatured);
 
         const productResult = await this.productRepository.findById(productId);
         console.log("EditProductUseCaseRequest productResult", productResult);
@@ -92,7 +93,7 @@ export class EditProductUseCase {
                 new ResourceNotFoundError("Product not found in variants")
             );
         }
-        
+
         let priceChanged = false;
         let discountChanged = false;
         let nameChanged = false;
@@ -142,6 +143,7 @@ export class EditProductUseCase {
         if (weight !== undefined) product.weight = weight;
         if (onSale !== undefined) product.onSale = onSale;
         if (isFeatured !== undefined) product.isFeatured = isFeatured;
+        console.log("edit usecase isFeatured 2", isFeatured);
         if (isNew !== undefined) product.isNew = isNew;
         if (images !== undefined) product.images = images;
 
