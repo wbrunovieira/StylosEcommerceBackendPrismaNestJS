@@ -239,49 +239,77 @@ export class InMemoryProductRepository implements IProductRepository {
         }
     }
 
-    async save(
-        productWithVariants: ProductWithVariants
-    ): Promise<Either<ResourceNotFoundError, void>> {
+    async save(product: Product): Promise<Either<ResourceNotFoundError, void>> {
+        console.log('async save(product: Product): bateu')
         const index = this.items.findIndex(
-            (item) =>
-                item.id.toString() === productWithVariants.product.id.toString()
+            (item) => item.id.toString() === product.id.toString()
         );
 
         if (index === -1) {
             return left(new ResourceNotFoundError("Product not found"));
         }
 
-        const baseSlug = productWithVariants.product.slug.value;
-        const uniqueSlug = await this.generateUniqueSlug(
-            baseSlug,
-            productWithVariants.product.id.toString()
-        );
+        try {
+            // Ensure the product and its slug are not undefined
+            if (!product || !product.slug) {
+                throw new Error("Product or its slug is undefined");
+            }
 
-        productWithVariants.product.slug.value = uniqueSlug;
+            // Ensure that the slug's value is defined before proceeding
+            if (!product.slug.value) {
+                throw new Error("Product slug value is undefined");
+            }
 
-        const updatedProduct = Product.create(
-            {
-                ...productWithVariants.product,
-                productVariants: productWithVariants.productVariants || [],
-                createdAt: this.items[index].createdAt,
-                updatedAt: new Date(),
-                length: productWithVariants.product.length,
-                name: productWithVariants.product.name,
-                description: productWithVariants.product.description,
-                brandId: productWithVariants.product.brandId,
-                price: productWithVariants.product.price,
-                stock: productWithVariants.product.stock,
-                sku: productWithVariants.product.sku || "",
-                height: productWithVariants.product.height,
-                width: productWithVariants.product.width,
-                weight: productWithVariants.product.weight,
-                hasVariants: productWithVariants.product.hasVariants,
-            },
-            productWithVariants.product.id
-        );
-        this.items[index] = updatedProduct;
+            // Generate a unique slug for the product
+            const baseSlug = product.slug.value;
+            const uniqueSlug = await this.generateUniqueSlug(
+                baseSlug,
+                product.id.toString()
+            );
+            console.log("baseSlug insave", baseSlug);
+            console.log("uniqueSlug insave", uniqueSlug);
 
-        return right(undefined);
+            // Update the product's slug
+            product.slug.value = uniqueSlug;
+            console.log("product.slug.value insave", product.slug.value);
+            console.log("product.slug insave", product.slug);
+
+            // Update other properties as needed (this part assumes correct handling of all props)
+            const updatedProduct = Product.create(
+                {
+                    name: product.name,
+                    description: product.description,
+                    brandId: product.brandId,
+                    price: product.price,
+                    finalPrice: product.finalPrice ?? 0,
+                    stock: product.stock,
+                    sku: product.sku || "",
+                    erpId: product.erpId,
+                    height: product.height,
+                    width: product.width,
+                    length: product.length,
+                    weight: product.weight,
+                    onSale: product.onSale,
+                    discount: product.discount,
+                    isFeatured: product.isFeatured,
+                    isNew: product.isNew,
+                    hasVariants: product.hasVariants,
+                    images: product.images || [],
+                    slug: product.slug,
+                    createdAt: this.items[index].createdAt,
+                    updatedAt: new Date(),
+                },
+                product.id
+            );
+
+            // Replace the old product with the updated one
+            this.items[index] = updatedProduct;
+
+            return right(undefined);
+        } catch (error) {
+            console.error("Error in save method:", error);
+            return left(new Error("Failed to save product"));
+        }
     }
 
     async delete(product: Product): Promise<void> {

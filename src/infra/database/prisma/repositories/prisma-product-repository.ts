@@ -16,127 +16,76 @@ import { toDomainProductStatus } from "../utils/convert-product-status";
 export class PrismaProductRepository implements IProductRepository {
     constructor(private prisma: PrismaService) {}
 
-    async create(product: Product): Promise<Either<Error, void>> {
+    async create(product: Product): Promise<Either<Error, Product>> {
         try {
             const {
-                productColors,
-                productSizes,
-                productCategories,
                 name,
                 description,
+                sizeId,
+                finalPrice,
+                brandId,
+                discount,
                 price,
                 stock,
-
-                brandId,
+                sku,
+                productIdVariant,
                 erpId,
+                slug,
+                height,
+                width,
+                length,
+                weight,
+                onSale,
+                isFeatured,
+                isNew,
                 images,
+                hasVariants,
                 createdAt,
                 updatedAt,
-                slug,
-                finalPrice,
-                ...otherProps
-            } = {
-                productColors: product.productColors,
-                productSizes: product.productSizes,
-                productCategories: product.productCategories,
-                name: product.name,
-                description: product.description,
-                price: product.price,
-                stock: product.stock,
-                erpId: product.erpId,
+            } = product;
 
-                brandId: product.brandId.toString(),
-                images: product.images,
-                createdAt: product.createdAt,
-                updatedAt: product.updatedAt,
-                slug: product.slug.toString(),
-                finalPrice: product.finalPrice,
-            };
+            // Verificação da existência da marca
+            const brandExist = await this.prisma.brand.findUnique({
+                where: { id: brandId.toString() },
+                select: { id: true, name: true },
+            });
 
-            const validColors: { id: string }[] = [];
-            const validSizes: { id: string }[] = [];
-            const validCategories: { id: string }[] = [];
-
-            if (productColors) {
-                for (const colorId of productColors) {
-                    const idAsString = colorId.toString();
-                    const colorExists = await this.prisma.color.findUnique({
-                        where: { id: idAsString },
-                    });
-                    if (colorExists) {
-                        validColors.push({ id: idAsString });
-                    }
-                }
+            if (!brandExist) {
+                throw new Error("Brand not found.");
             }
 
-            if (productSizes) {
-                for (const sizeId of productSizes) {
-                    const idAsString = sizeId.toString();
-                    const sizeExist = await this.prisma.size.findUnique({
-                        where: { id: idAsString },
-                    });
-                    if (sizeExist) {
-                        validSizes.push({ id: idAsString });
-                    }
-                }
-            }
-            if (productCategories) {
-                for (const categoryId of productCategories) {
-                    const idAsString = categoryId.toString();
-                    const categoryExist = await this.prisma.category.findUnique(
-                        {
-                            where: { id: idAsString },
-                        }
-                    );
-                    if (categoryExist) {
-                        validCategories.push({ id: idAsString });
-                    }
-                }
-            }
-
-            let brandExist;
-            if (brandId) {
-                const brandIDAsString = brandId.toString();
-
-                brandExist = await this.prisma.brand.findUnique({
-                    where: { id: brandIDAsString },
-                    select: { id: true, name: true },
-                });
-                if (!brandExist) {
-                    throw new Error("Brand not found.");
-                }
-            }
-
-            if (!brandExist || !brandExist.id) {
-                throw new Error("Brand ID is not valid");
-            }
-
+            // Map Domain Entity to Prisma Model
             const createdProduct = await this.prisma.product.create({
                 data: {
-                    id: product.id.toString(),
-                    name: name,
-                    images: images,
-                    description: description,
-                    createdAt: createdAt,
-                    updatedAt: updatedAt,
-                    slug: slug,
-                    price: price,
-                    stock: stock,
-                    erpId: erpId,
-                    height: product.height,
-                    width: product.width,
-                    length: product.length,
-                    weight: product.weight,
+                    name,
+                    description,
 
-                    brand: { connect: { id: brandExist.id } },
                     finalPrice: finalPrice ?? undefined,
-                    ...otherProps,
+                    brandId: brandExist.id,
+                    discount: discount ?? undefined,
+                    price,
+                    stock,
+                    sku,
+                    productIdVariant: productIdVariant ?? undefined,
+                    erpId: erpId ?? undefined,
+                    slug: slug.toString(),
+                    height,
+                    width,
+                    length,
+                    weight,
+                    onSale: onSale ?? undefined,
+                    isFeatured: isFeatured ?? undefined,
+                    isNew: isNew ?? undefined,
+                    images: images ?? [],
+                    hasVariants,
+                    createdAt,
+                    updatedAt,
                 },
             });
 
-            return right(undefined);
+            return right(createdProduct as unknown as Product);
         } catch (error) {
-            return left(new Error("Failed to create"));
+            return left(new Error("Failed to create product"));
         }
     }
 
@@ -948,9 +897,7 @@ export class PrismaProductRepository implements IProductRepository {
         }
     }
 
-    async findById(
-        productId: string
-    ): Promise<Either<Error, Product>> {
+    async findById(productId: string): Promise<Either<Error, Product>> {
         try {
             const productData = await this.prisma.product.findUnique({
                 where: {
@@ -1063,7 +1010,6 @@ export class PrismaProductRepository implements IProductRepository {
             );
 
             return right(product);
-
         } catch (error) {
             console.error(
                 `Failed to retrieve product for id: ${productId}, Error: ${error}`
@@ -1113,7 +1059,7 @@ export class PrismaProductRepository implements IProductRepository {
                 data: {
                     name: product.name,
                     description: product.description,
-                    
+
                     brandId: product.brandId.toString(),
                     discount: product.discount,
                     price: product.price,

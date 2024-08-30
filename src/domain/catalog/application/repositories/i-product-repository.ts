@@ -46,6 +46,6 @@ export abstract class IProductRepository {
         >
     >;
     abstract save(
-        productWithVariants: ProductWithVariants
+        product: Product
     ): Promise<Either<ResourceNotFoundError, void>>;
 }
