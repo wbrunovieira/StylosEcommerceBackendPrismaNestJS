@@ -244,526 +244,527 @@ describe("CreateProductUseCase", () => {
         }
     });
 
-    // it("should return an error if brandId is invalid", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should return an error if brandId is invalid", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: "invalid_brand_id",
-    //         price: 100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     });
+            brandId: "invalid_brand_id",
+            price: 100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        });
 
-    //     expect(result.isLeft()).toBeTruthy();
+        expect(result.isLeft()).toBeTruthy();
 
-    //     if (result.isLeft()) {
-    //         const error = result.value;
-    //         if (error !== null) {
-    //             expect(error).toBeInstanceOf(ResourceNotFoundError);
-    //             expect(error.message).toMatch(
-    //                 /Brand not found/
-    //             );
-    //         } else {
-    //             throw new Error("Expected ResourceNotFoundError but got null");
-    //         }
-    //     }
-    // });
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error !== null) {
+                expect(error).toBeInstanceOf(ResourceNotFoundError);
+                expect(error.message).toMatch(/Brand not found/);
+            } else {
+                throw new Error("Expected ResourceNotFoundError but got null");
+            }
+        }
+    });
 
-    // it("should fail if required name fields are missing", async () => {
-    //     const request = {
-    //         name: "",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should fail if required name fields are missing", async () => {
+        const request = {
+            name: "",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: "1",
-    //         price: 100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     };
-    //     const result = await useCase.execute(request);
-    //     expect(result.isLeft()).toBeTruthy();
-    //     if (result.isLeft()) {
-    //         const errorMessage = result.value?.message || "";
-    //         expect(errorMessage).toBe("Product name is required");
-    //     }
-    // });
+            brandId: "1",
+            price: 100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        };
+        const result = await createProductUseCase.execute(request);
+        expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            const errorMessage = result.value?.message || "";
+            expect(errorMessage).toBe("Product name is required");
+        }
+    });
 
-    // it("should not allow negative stock values", async () => {
-    //     const request = {
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should not allow negative stock values", async () => {
+        const request = {
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: "1",
-    //         price: 100,
-    //         stock: -1,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     };
+            brandId: "1",
+            price: 100,
+            stock: -1,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        };
 
-    //     const result = await useCase.execute(request);
+        const result = await createProductUseCase.execute(request);
 
-    //     expect(result.isLeft()).toBeTruthy();
+        expect(result.isLeft()).toBeTruthy();
 
-    //     if (result.isLeft()) {
-    //         const errorMessage = result.value?.message || "";
-    //         expect(errorMessage).toBe("Stock cannot be negative");
-    //     }
-    // });
+        if (result.isLeft()) {
+            const errorMessage = result.value?.message || "";
+            expect(errorMessage).toBe("Stock cannot be negative");
+        }
+    });
 
-    // it("should return an error if price is negative", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should return an error if price is negative", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: brandId.toString(),
-    //         price: -100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     });
+            brandId: brandId.toString(),
+            price: -100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        });
 
-    //     expect(result.isLeft()).toBeTruthy();
+        expect(result.isLeft()).toBeTruthy();
 
-    //     if (result.isLeft()) {
-    //         const errorMessage = result.value?.message || "";
-    //         expect(errorMessage).toBe("Price cannot be negative");
-    //     }
-    // });
+        if (result.isLeft()) {
+            const errorMessage = result.value?.message || "";
+            expect(errorMessage).toBe("Price cannot be negative");
+        }
+    });
 
-    // it("should handle errors when fetching brand data", async () => {
-    //     const request = {
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should handle errors when fetching brand data", async () => {
+        const request = {
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: "wrong id",
-    //         price: 100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     };
+            brandId: "wrong id",
+            price: 100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        };
 
-    //     const result = await useCase.execute(request);
+        const result = await createProductUseCase.execute(request);
 
-    //     expect(result.isLeft()).toBeTruthy();
-    //     if (result.isLeft()) {
-    //         const errorMessage = result.value?.message || "";
-    //         expect(errorMessage).toBe("Brand not found");
-    //     }
-    // });
+        expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            const errorMessage = result.value?.message || "";
+            expect(errorMessage).toBe("Brand not found");
+        }
+    });
 
-    // it("should create a product with a valid brandId ", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product with valid Brand",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
+    it("should create a product with a valid brandId ", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product with valid Brand",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
 
-    //         brandId: brandId.toString(),
-    //         price: 100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     });
+            brandId: brandId.toString(),
+            price: 100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        });
 
-    //     if (result.isLeft()) {
-    //         throw new Error("Expected product to be created successfully");
-    //     }
-    //     const product = result.value.product;
-    //     const productId = product.id.toString();
+        if (result.isLeft()) {
+            throw new Error("Expected product to be created successfully");
+        }
+        const product = result.value.product;
+        const productId = product.id.toString();
 
-    //     const variants =
-    //         await mockProductVariantRepository.findByProductId(productId);
-    //     expect(variants).toHaveLength(1);
+        const variants =
+            await mockProductVariantRepository.findByProductId(productId);
+        expect(variants).toHaveLength(1);
 
-    //     expect(result.isRight()).toBeTruthy();
-    //     if (result.isRight()) {
-    //         const createdProduct = result.value.product;
-    //         expect(createdProduct.brandId.toString()).toBe(brandId.toString());
+        expect(result.isRight()).toBeTruthy();
+        if (result.isRight()) {
+            const createdProduct = result.value.product;
+            expect(createdProduct.brandId.toString()).toBe(brandId.toString());
+        } else {
+            fail("Expected a Right with the created product but got Left");
+        }
+    });
 
-    //     } else {
-    //         fail("Expected a Right with the created product but got Left");
-    //     }
-    // });
+    it("should create a product with all fields provided", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Complete Test Product",
+            description: "A complete test product description",
+            productColors: [
+                new UniqueEntityID("color_id_as_string").toString(),
+            ],
+            productSizes: [new UniqueEntityID("size_id_as_string").toString()],
+            productCategories: [],
 
-    // it("should create a product with all fields provided", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Complete Test Product",
-    //         description: "A complete test product description",
-    //         productColors: [
-    //             new UniqueEntityID("color_id_as_string").toString(),
-    //         ],
-    //         productSizes: [new UniqueEntityID("size_id_as_string").toString()],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 250,
+            stock: 50,
+            height: 10,
+            width: 5,
+            length: 15,
+            weight: 20,
+            onSale: true,
+            discount: 20,
+            isFeatured: true,
+            isNew: true,
+            images: ["image1.jpg", "image2.jpg"],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 250,
-    //         stock: 50,
-    //         height: 10,
-    //         width: 5,
-    //         length: 15,
-    //         weight: 20,
-    //         onSale: true,
-    //         discount: 20,
-    //         isFeatured: true,
-    //         isNew: true,
-    //         images: ["image1.jpg", "image2.jpg"],
-    //     });
+        if (result.isLeft()) {
+            throw new Error("Expected product to be created successfully");
+        }
+        const product = result.value.product;
+        const productId = product.id.toString();
+        const colors = await mockProductColorRepository.findByProductId(
+            productId.toString()
+        );
+        expect(colors).toHaveLength(1);
+        expect(colors[0].colorId?.toString()).toBe(colorId.toString());
 
-    //     if (result.isLeft()) {
-    //         throw new Error("Expected product to be created successfully");
-    //     }
-    //     const product = result.value.product;
-    //     const productId = product.id.toString();
-    //     const colors = await mockProductColorRepository.findByProductId(
-    //         productId.toString()
-    //     );
-    //     expect(colors).toHaveLength(1);
-    //     expect(colors[0].colorId?.toString()).toBe(colorId.toString());
+        const sizes = await mockProductSizeRepository.findByProductId(
+            productId.toString()
+        );
+        expect(sizes).toHaveLength(1);
+        expect(sizes[0].sizeId?.toString()).toBe(sizeId.toString());
 
-    //     const sizes = await mockProductSizeRepository.findByProductId(
-    //         productId.toString()
-    //     );
-    //     expect(sizes).toHaveLength(1);
-    //     expect(sizes[0].sizeId?.toString()).toBe(sizeId.toString());
+        expect(result.isRight()).toBeTruthy();
+        if (result.isRight()) {
+            const createdProduct = result.value.product;
+            expect(createdProduct.name).toBe("Complete Test Product");
+            expect(createdProduct.description).toBe(
+                "A complete test product description"
+            );
 
-    //     expect(result.isRight()).toBeTruthy();
-    //     if (result.isRight()) {
-    //         const createdProduct = result.value.product;
-    //         expect(createdProduct.name).toBe("Complete Test Product");
-    //         expect(createdProduct.description).toBe(
-    //             "A complete test product description"
-    //         );
+            const variants =
+                await mockProductVariantRepository.findByProductId(productId);
+            expect(variants).toHaveLength(1);
+            expect(variants[0].colorId?.toString()).toBe(colorId.toString());
+            expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
 
-    //         const variants =
-    //             await mockProductVariantRepository.findByProductId(productId);
-    //         expect(variants).toHaveLength(1);
-    //         expect(variants[0].colorId?.toString()).toBe(colorId.toString());
-    //         expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
+            expect(colors).toHaveLength(1);
+            expect(colors[0].colorId?.toString()).toBe(colorId.toString());
+            expect(createdProduct.price).toBe(250);
+            expect(createdProduct.stock).toBe(50);
+            expect(createdProduct.height).toBe(10);
+            expect(createdProduct.width).toBe(5);
+            expect(createdProduct.length).toBe(15);
+            expect(createdProduct.weight).toBe(20);
+            expect(createdProduct.onSale).toBe(true);
+            expect(createdProduct.discount).toBe(20);
+            expect(createdProduct.isFeatured).toBe(true);
+            expect(createdProduct.isNew).toBe(true);
+            expect(createdProduct.images).toEqual(["image1.jpg", "image2.jpg"]);
+        } else {
+            fail("Expected a Right with the created product but got Left");
+        }
+    });
 
-    //         expect(colors).toHaveLength(1);
-    //         expect(colors[0].colorId?.toString()).toBe(colorId.toString());
-    //         expect(createdProduct.price).toBe(250);
-    //         expect(createdProduct.stock).toBe(50);
-    //         expect(createdProduct.height).toBe(10);
-    //         expect(createdProduct.width).toBe(5);
-    //         expect(createdProduct.length).toBe(15);
-    //         expect(createdProduct.weight).toBe(20);
-    //         expect(createdProduct.onSale).toBe(true);
-    //         expect(createdProduct.discount).toBe(20);
-    //         expect(createdProduct.isFeatured).toBe(true);
-    //         expect(createdProduct.isNew).toBe(true);
-    //         expect(createdProduct.images).toEqual(["image1.jpg", "image2.jpg"]);
-    //     } else {
-    //         fail("Expected a Right with the created product but got Left");
-    //     }
-    // });
+    it("should return an error if  brandId  are invalid", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [],
+            productCategories: [],
+            brandId: "invalid_brand_id",
+            price: 100,
+            stock: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+        });
 
-    // it("should return an error if  brandId  are invalid", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [],
-    //         productCategories: [],
-    //         brandId: "invalid_brand_id",
-    //         price: 100,
-    //         stock: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //     });
+        expect(result.isLeft()).toBeTruthy();
 
-    //     expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error !== null) {
+                expect(error).toBeInstanceOf(ResourceNotFoundError);
+                expect(error.message).toMatch(/Brand not found/);
+            } else {
+                throw new Error("Expected ResourceNotFoundError but got null");
+            }
+        }
+    });
 
-    //     if (result.isLeft()) {
-    //         const error = result.value;
-    //         if (error !== null) {
-    //             expect(error).toBeInstanceOf(ResourceNotFoundError);
-    //             expect(error.message).toMatch(
-    //                 /Brand not found/
-    //             );
-    //         } else {
-    //             throw new Error("Expected ResourceNotFoundError but got null");
-    //         }
-    //     }
-    // });
+    it("should create a product with a valid sizeId", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product with Size",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [sizeId.toString()],
+            productCategories: [],
 
-    // it("should create a product with a valid sizeId", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product with Size",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [sizeId.toString()],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 200,
+            stock: 20,
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+            onSale: true,
+            discount: 10,
+            isFeatured: true,
+            isNew: true,
+            images: ["image1.jpg", "image2.jpg"],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 200,
-    //         stock: 20,
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //         onSale: true,
-    //         discount: 10,
-    //         isFeatured: true,
-    //         isNew: true,
-    //         images: ["image1.jpg", "image2.jpg"],
-    //     });
+        expect(result.isRight()).toBeTruthy();
 
-    //     expect(result.isRight()).toBeTruthy();
+        if (result.isRight()) {
+            const createdProduct = result.value.product;
+            const productId = createdProduct.id.toString();
 
-    //     if (result.isRight()) {
-    //         const createdProduct = result.value.product;
-    //         const productId = createdProduct.id.toString();
+            const sizes = await mockProductSizeRepository.findByProductId(
+                createdProduct.id.toString()
+            );
 
-    //         const sizes = await mockProductSizeRepository.findByProductId(
-    //             createdProduct.id.toString()
-    //         );
+            expect(sizes).toHaveLength(1);
+            expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
 
-    //         expect(sizes).toHaveLength(1);
-    //         expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
+            const variants =
+                await mockProductVariantRepository.findByProductId(productId);
+            expect(variants).toHaveLength(1);
 
-    //         const variants =
-    //             await mockProductVariantRepository.findByProductId(productId);
-    //         expect(variants).toHaveLength(1);
+            expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
+        } else {
+            fail("Expected a Right with the created product but got Left");
+        }
+    });
 
-    //         expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
-    //     } else {
-    //         fail("Expected a Right with the created product but got Left");
-    //     }
-    // });
+    it("should create a product with multiple valid sizeIds", async () => {
+        const anotherSizeId = new UniqueEntityID("another_size_id_as_string");
+        const anotherConsistentSize = makeSize(
+            { name: "Another Test Size Name" },
+            anotherSizeId
+        );
+        mockSizeRepository.create(anotherConsistentSize);
 
-    // it("should create a product with multiple valid sizeIds", async () => {
-    //     const anotherSizeId = new UniqueEntityID("another_size_id_as_string");
-    //     const anotherConsistentSize = makeSize(
-    //         { name: "Another Test Size Name" },
-    //         anotherSizeId
-    //     );
-    //     mockSizeRepository.create(anotherConsistentSize);
+        const result = await createProductUseCase.execute({
+            name: "Test Product with Multiple Sizes",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [sizeId.toString(), anotherSizeId.toString()],
+            productCategories: [],
 
-    //     const result = await useCase.execute({
-    //         name: "Test Product with Multiple Sizes",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [sizeId.toString(), anotherSizeId.toString()],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 250,
+            stock: 25,
+            height: 3,
+            width: 3,
+            length: 3,
+            weight: 3,
+            onSale: true,
+            discount: 15,
+            isFeatured: true,
+            isNew: true,
+            images: ["image1.jpg", "image2.jpg"],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 250,
-    //         stock: 25,
-    //         height: 3,
-    //         width: 3,
-    //         length: 3,
-    //         weight: 3,
-    //         onSale: true,
-    //         discount: 15,
-    //         isFeatured: true,
-    //         isNew: true,
-    //         images: ["image1.jpg", "image2.jpg"],
-    //     });
+        expect(result.isRight()).toBeTruthy();
 
-    //     expect(result.isRight()).toBeTruthy();
+        if (result.isLeft()) {
+            throw new Error("Expected product to be created successfully");
+        }
+        const product = result.value.product;
+        const productId = product.id.toString();
 
-    //     if (result.isLeft()) {
-    //         throw new Error("Expected product to be created successfully");
-    //     }
-    //     const product = result.value.product;
-    //     const productId = product.id.toString();
+        const variants =
+            await mockProductVariantRepository.findByProductId(productId);
+        expect(variants).toHaveLength(2);
 
-    //     const variants =
-    //         await mockProductVariantRepository.findByProductId(productId);
-    //     expect(variants).toHaveLength(2);
+        if (result.isRight()) {
+            const createdProduct = result.value.product;
+            const sizes = mockProductSizeRepository.items.filter(
+                (item) =>
+                    item.productId.toString() === createdProduct.id.toString()
+            );
+            expect(sizes).toHaveLength(2);
+            expect(sizes.map((size) => size.sizeId.toString())).toEqual(
+                expect.arrayContaining([
+                    sizeId.toString(),
+                    anotherSizeId.toString(),
+                ])
+            );
+        } else {
+            fail("Expected a Right with the created product but got Left");
+        }
+    });
 
-    //     if (result.isRight()) {
-    //         const createdProduct = result.value.product;
-    //         const sizes = mockProductSizeRepository.items.filter(
-    //             (item) =>
-    //                 item.productId.toString() === createdProduct.id.toString()
-    //         );
-    //         expect(sizes).toHaveLength(2);
-    //         expect(sizes.map((size) => size.sizeId.toString())).toEqual(
-    //             expect.arrayContaining([
-    //                 sizeId.toString(),
-    //                 anotherSizeId.toString(),
-    //             ])
-    //         );
-    //     } else {
-    //         fail("Expected a Right with the created product but got Left");
-    //     }
-    // });
+    it("should not allow creating a ProductSize with invalid sizeId", async () => {
+        const invalidSizeId = "invalid_size_id";
+        const result = await createProductUseCase.execute({
+            name: "Test Product with Multiple Sizes",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [invalidSizeId],
+            productCategories: [],
 
-    // it("should not allow creating a ProductSize with invalid sizeId", async () => {
-    //     const invalidSizeId = "invalid_size_id";
-    //     const result = await useCase.execute({
-    //         name: "Test Product with Multiple Sizes",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [invalidSizeId],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 250,
+            stock: 25,
+            height: 3,
+            width: 3,
+            length: 3,
+            weight: 3,
+            onSale: true,
+            discount: 15,
+            isFeatured: true,
+            isNew: true,
+            images: ["image1.jpg", "image2.jpg"],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 250,
-    //         stock: 25,
-    //         height: 3,
-    //         width: 3,
-    //         length: 3,
-    //         weight: 3,
-    //         onSale: true,
-    //         discount: 15,
-    //         isFeatured: true,
-    //         isNew: true,
-    //         images: ["image1.jpg", "image2.jpg"],
-    //     });
+        expect(result.isLeft()).toBeTruthy();
 
-    //     expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error !== null) {
+                expect(error).toBeInstanceOf(ResourceNotFoundError);
+                expect(error.message).toBe(`Size not found: ${invalidSizeId}`);
+            } else {
+                throw new Error("Expected ResourceNotFoundError but got null");
+            }
+        }
+    });
 
-    //     if (result.isLeft()) {
-    //         const error = result.value;
-    //         if (error !== null) {
-    //             expect(error).toBeInstanceOf(ResourceNotFoundError);
-    //             expect(error.message).toBe(`Size not found: ${invalidSizeId}`);
-    //         } else {
-    //             throw new Error("Expected ResourceNotFoundError but got null");
-    //         }
-    //     }
-    // });
+    it("should not allow duplicate sizes for the same product", async () => {
+        const result = await createProductUseCase.execute({
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [sizeId.toString(), sizeId.toString()],
+            productCategories: [],
 
-    // it("should not allow duplicate sizes for the same product", async () => {
-    //     const result = await useCase.execute({
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [sizeId.toString(), sizeId.toString()],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 100,
+            stock: 10,
+            height: 10,
+            width: 10,
+            length: 10,
+            weight: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 100,
-    //         stock: 10,
-    //         height: 10,
-    //         width: 10,
-    //         length: 10,
-    //         weight: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //     });
+        expect(result.isLeft()).toBeTruthy();
 
-    //     expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error !== null) {
+                expect(error).toBeInstanceOf(ResourceNotFoundError);
+                expect(error.message).toBe(
+                    `Duplicate size: ${sizeId.toString()}`
+                );
+            } else {
+                throw new Error("Expected ResourceNotFoundError but got null");
+            }
+        }
+    });
 
-    //     if (result.isLeft()) {
-    //         const error = result.value;
-    //         if (error !== null) {
-    //             expect(error).toBeInstanceOf(ResourceNotFoundError);
-    //             expect(error.message).toBe(
-    //                 `Duplicate size: ${sizeId.toString()}`
-    //             );
-    //         } else {
-    //             throw new Error("Expected ResourceNotFoundError but got null");
-    //         }
-    //     }
-    // });
+    it("should list all sizes for a given product", async () => {
+        const createResult = await createProductUseCase.execute({
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [],
+            productSizes: [sizeId.toString()],
+            productCategories: [],
 
-    // it("should list all sizes for a given product", async () => {
-    //     const createResult = await useCase.execute({
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [],
-    //         productSizes: [sizeId.toString()],
-    //         productCategories: [],
+            brandId: brandId.toString(),
+            price: 100,
+            stock: 10,
+            height: 10,
+            width: 10,
+            length: 10,
+            weight: 10,
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            images: [],
+        });
 
-    //         brandId: brandId.toString(),
-    //         price: 100,
-    //         stock: 10,
-    //         height: 10,
-    //         width: 10,
-    //         length: 10,
-    //         weight: 10,
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //         images: [],
-    //     });
+        if (createResult.isLeft()) {
+            throw new Error("Expected product to be created successfully");
+        }
 
-    //     if (createResult.isLeft()) {
-    //         throw new Error("Expected product to be created successfully");
-    //     }
+        const product = createResult.value.product;
+        const productId = product.id.toString();
 
-    //     const product = createResult.value.product;
-    //     const productId = product.id.toString();
+        const variantResult =
+            await mockProductVariantRepository.findByProductId(productId);
 
-    //     const variants =
-    //         await mockProductVariantRepository.findByProductId(productId);
-    //     const sizes = variants.map((variant) => variant.sizeId);
+        if (variantResult.isLeft()) {
+            throw new Error("Expected to find product variants successfully");
+        }
 
-    //     expect(sizes).toContainEqual(sizeId);
-    // });
+        const variants = variantResult.value; // Access the ProductVariant[] array
+        const sizes = variants.map((variant) => variant.sizeId);
+
+        expect(sizes).toContainEqual(sizeId);
+    });
 });
