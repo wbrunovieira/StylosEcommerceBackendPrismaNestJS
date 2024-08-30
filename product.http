@@ -24,26 +24,27 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "saia 15",
+  "name": "saia 15 aaa",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
- 
-  "brandId": "bdc60ff1-29fb-460e-b9ba-e340c694c463",
+ "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
+  "brandId": "fc3d91eb-1198-49d6-9017-fbf9179d1737",
   "sku":"12121212aa",
   "price": 100,
   "stock": 10,
   "height":11,
   "width":17,
   "length":11,
-  "weight":0.3,
+  "weight":0.3
   
-  "productColors": ["247b00b5-0b96-4713-a17c-8d05cf89fead"],
-  "productCategories": ["b745e76b-4cbb-48ee-b3db-a6f1610dd572"],
-  "productSizes": [ "f4051ddb-e807-4f8f-8f50-6f3f06d7795d"]
+ 
   
 }
 
 ###
+ "productColors": ["247b00b5-0b96-4713-a17c-8d05cf89fead"],
+  "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
+  "productSizes": [ "f4051ddb-e807-4f8f-8f50-6f3f06d7795d"]
 
 # @name get-all-products
 GET {{BASE_URL}}/products/all

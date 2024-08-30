@@ -1,20 +1,21 @@
-import { faker } from '@faker-js/faker';
+import { faker } from "@faker-js/faker";
 
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Color, ColorProps } from '@/domain/catalog/enterprise/entities/color';
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Color, ColorProps } from "@/domain/catalog/enterprise/entities/color";
 
 export function makeColor(
-  override: Partial<ColorProps> = {},
-  id?: UniqueEntityID
+    override: Partial<ColorProps> = {},
+    id?: UniqueEntityID
 ) {
-  const color = Color.create(
-    {
-      name: faker.commerce.productName(),
+    const color = Color.create(
+        {
+            name: faker.commerce.productName(),
+            hex: faker.string.alphanumeric(),
 
-      ...override,
-    },
-    id
-  );
+            ...override,
+        },
+        id
+    );
 
-  return color;
+    return color;
 }

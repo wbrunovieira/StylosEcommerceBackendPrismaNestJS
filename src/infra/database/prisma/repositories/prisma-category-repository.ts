@@ -10,119 +10,136 @@ import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "../../../../domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 function normalizeName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, " ");
+    return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
-  constructor(private prisma: PrismaService) {}
-  addItems(...categories: Category[]): void {
-    throw new Error("Method not implemented.");
-  }
-
-  async findById(id: string): Promise<Either<Error, Category>> {
-    try {
-      const categoryData = await this.prisma.category.findUnique({
-        where: { id },
-      });
-      if (!categoryData)
-        return left(new ResourceNotFoundError("Category not found"));
-
-      const category = Category.create(
-        { name: categoryData.name, imageUrl: categoryData.imageUrl, erpId: categoryData.erpId || '' },
-        new UniqueEntityID(categoryData.id)
-      );
-
-      return right(category);
-    } catch (error) {
-      return left(new Error("Database error"));
+    constructor(private prisma: PrismaService) {}
+    addItems(...categories: Category[]): void {
+        throw new Error("Method not implemented.");
     }
-  }
 
-  async save(category: Category): Promise<Either<Error, void>> {
-    try {
-      await this.prisma.category.update({
-        where: {
-          id: category.id.toString(),
-        },
-        data: {
-          name: category.name,
-          imageUrl: category.imageUrl,
-          updatedAt: new Date(),
-        },
-      });
-      return right(undefined);
-    } catch (error) {
-      return left(new Error("Failed to update category"));
+    async findById(id: string): Promise<Either<Error, Category>> {
+        try {
+            const categoryData = await this.prisma.category.findUnique({
+                where: { id },
+            });
+            if (!categoryData)
+                return left(new ResourceNotFoundError("Category not found"));
+
+            const category = Category.create(
+                {
+                    name: categoryData.name,
+                    imageUrl: categoryData.imageUrl,
+                    erpId: categoryData.erpId || "",
+                },
+                new UniqueEntityID(categoryData.id)
+            );
+
+            return right(category);
+        } catch (error) {
+            return left(new Error("Database error"));
+        }
     }
-  }
 
-  async create(category: Category): Promise<Either<Error, void>> {
-    try {
-      await this.prisma.category.create({
-        data: {
-          id: category.id.toString(),
-          name: category.name,
-          imageUrl: category.imageUrl,
-          erpId: category.erpId,
-          createdAt: category.createdAt,
-          updatedAt: category.updatedAt,
-        },
-      });
-      return right(undefined);
-    } catch (error) {
-      return left(new Error("Failed to create category"));
+    async save(category: Category): Promise<Either<Error, void>> {
+        try {
+            await this.prisma.category.update({
+                where: {
+                    id: category.id.toString(),
+                },
+                data: {
+                    name: category.name,
+                    imageUrl: category.imageUrl,
+                    updatedAt: new Date(),
+                },
+            });
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to update category"));
+        }
     }
-  }
 
-  async delete(category: Category): Promise<Either<Error, void>> {
-    try {
-      const result = await this.prisma.category.delete({
-        where: {
-          id: category.id.toString(),
-        },
-      });
-      return right(undefined);
-    } catch (error) {
-      return left(new Error("Failed to delete category"));
+    async create(category: Category): Promise<Either<Error, void>> {
+        try {
+            await this.prisma.category.create({
+                data: {
+                    id: category.id.toString(),
+                    name: category.name,
+                    imageUrl: category.imageUrl,
+                    erpId: category.erpId,
+                    createdAt: category.createdAt,
+                    updatedAt: category.updatedAt,
+                },
+            });
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to create category"));
+        }
     }
-  }
 
-  async findByName(name: string): Promise<Either<Error, Category>> {
-    const normalizedName = normalizeName(name);
-    try {
-      const categoryData = await this.prisma.category.findFirst({
-        where: { name: normalizedName },
-      });
-
-      if (!categoryData)
-        return left(new ResourceNotFoundError("Category not found"));
-
-      const category = Category.create(
-        { name: categoryData.name , imageUrl: categoryData.imageUrl, erpId: categoryData.erpId || ''},
-        new UniqueEntityID(categoryData.id)
-      );
-
-      return right(category);
-    } catch (error) {
-      return left(new Error("Database error"));
+    async delete(category: Category): Promise<Either<Error, void>> {
+        try {
+            const result = await this.prisma.category.delete({
+                where: {
+                    id: category.id.toString(),
+                },
+            });
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to delete category"));
+        }
     }
-  }
 
-  async findAll(params: PaginationParams): Promise<Either<Error, Category[]>> {
-    try {
-      const category = await this.prisma.category.findMany({
-        skip: (params.page - 1) * params.pageSize,
-        take: params.pageSize,
-      });
+    async findByName(name: string): Promise<Either<Error, Category>> {
+        const normalizedName = normalizeName(name);
+        try {
+            const categoryData = await this.prisma.category.findFirst({
+                where: { name: normalizedName },
+            });
 
-      const convertedCategory = category.map((b) =>
-        Category.create({ name: b.name , imageUrl: b.imageUrl, erpId: b.erpId || ''}, new UniqueEntityID(b.id))
-      );
+            if (!categoryData)
+                return left(new ResourceNotFoundError("Category not found"));
 
-      return right(convertedCategory);
-    } catch (error) {
-      return left(new Error("Failed to find categories"));
+            const category = Category.create(
+                {
+                    name: categoryData.name,
+                    imageUrl: categoryData.imageUrl,
+                    erpId: categoryData.erpId || "",
+                },
+                new UniqueEntityID(categoryData.id)
+            );
+
+            return right(category);
+        } catch (error) {
+            return left(new Error("Database error"));
+        }
     }
-  }
+
+    async findAll(
+        params: PaginationParams
+    ): Promise<Either<Error, Category[]>> {
+        try {
+            const category = await this.prisma.category.findMany({
+                skip: (params.page - 1) * params.pageSize,
+                take: params.pageSize,
+            });
+
+            const convertedCategory = category.map((b) =>
+                Category.create(
+                    {
+                        name: b.name,
+                        imageUrl: b.imageUrl,
+                        erpId: b.erpId || "",
+                    },
+                    new UniqueEntityID(b.id)
+                )
+            );
+
+            return right(convertedCategory);
+        } catch (error) {
+            return left(new Error("Failed to find categories"));
+        }
+    }
 }

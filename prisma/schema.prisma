@@ -202,7 +202,7 @@ model ProductCategory {
 model Brand {
   id       String    @id @default(uuid())
   name     String     @unique
-  imageUrl  String
+  imageUrl  String?
   erpId      String?
   products Product[]
   createdAt DateTime @default(now()) @map("created_at")

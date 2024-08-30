@@ -1,20 +1,20 @@
-import { faker } from '@faker-js/faker';
+import { faker } from "@faker-js/faker";
 
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Size, SizeProps } from '@/domain/catalog/enterprise/entities/size';
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Size, SizeProps } from "@/domain/catalog/enterprise/entities/size";
 
 export function makeSize(
-  override: Partial<SizeProps> = {},
-  id?: UniqueEntityID
+    override: Partial<SizeProps> = {},
+    id?: UniqueEntityID
 ) {
-  const size = Size.create(
-    {
-      name: faker.commerce.productName(),
+    const size = Size.create(
+        {
+            name: faker.commerce.productName(),
 
-      ...override,
-    },
-    id
-  );
+            ...override,
+        },
+        id
+    );
 
-  return size;
+    return size;
 }

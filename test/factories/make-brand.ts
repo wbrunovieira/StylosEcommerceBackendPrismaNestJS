@@ -4,17 +4,18 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Brand, BrandProps } from "@/domain/catalog/enterprise/entities/brand";
 
 export function makeBrand(
-  override: Partial<BrandProps> = {},
-  id?: UniqueEntityID
+    override: Partial<BrandProps> = {},
+    id?: UniqueEntityID
 ) {
-  const brand = Brand.create(
-    {
-      name: faker.commerce.productName(),
+    const brand = Brand.create(
+        {
+            name: faker.commerce.productName(),
+            erpId: faker.random.alphaNumeric(10),
 
-      ...override,
-    },
-    id
-  );
+            ...override,
+        },
+        id
+    );
 
-  return brand;
+    return brand;
 }
