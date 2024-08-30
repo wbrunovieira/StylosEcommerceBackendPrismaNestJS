@@ -270,14 +270,29 @@ export class CreateProductUseCase {
                 product.id.toString()
             );
             product.slug = finalSlug;
+
             const checkHasVariants = !!(
                 productColors?.length || productSizes?.length
             );
-            product.hasVariants = hasVariants;
 
-            product.hasVariants = checkHasVariants;
+            console.log(
+                "CreateProductUseCase checkHasVariants",
+                checkHasVariants
+            );
+            console.log(
+                "CreateProductUseCase  product.hasVariants antes",
+                product.hasVariants
+            );
+
+            product.hasVariants = hasVariants === true || checkHasVariants;
+
+            console.log(
+                "CreateProductUseCase product.hasVariants",
+                product.hasVariants
+            );
 
             product.productIdVariant = product.id.toString();
+
             const productWithVariants = ProductWithVariants.create({
                 product,
                 productVariants: [],
@@ -388,7 +403,7 @@ export class CreateProductUseCase {
             for (const variant of variants) {
                 await this.productVariantRepository.create(variant);
             }
-            
+
             console.log("create product usecase product", product);
 
             return right({

@@ -90,6 +90,10 @@ export class Product extends Entity<ProductProps> {
         return this.props.height;
     }
 
+    get hasVariants(): boolean {
+        return this.props.hasVariants;
+    }
+
     get erpId(): string | undefined {
         return this.props.erpId;
     }
@@ -128,10 +132,14 @@ export class Product extends Entity<ProductProps> {
         this.props.onSale = onSale;
         this.touch();
     }
+
     set hasVariants(hasVariants: boolean) {
+
         this.props.hasVariants = hasVariants;
         this.touch();
+       
     }
+
     set isFeatured(isFeatured: boolean) {
         this.props.isFeatured = isFeatured;
         this.touch();
