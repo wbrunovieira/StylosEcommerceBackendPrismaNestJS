@@ -235,10 +235,7 @@ export class CreateProductUseCase {
                 brandId: new UniqueEntityID(brandId),
                 price,
                 finalPrice,
-                stock:
-                    uniqueColors.length === 0 && uniqueSizes.length === 0
-                        ? stock
-                        : 0,
+                stock,
                 sku: sku || "",
                 erpId,
                 height,
@@ -280,8 +277,8 @@ export class CreateProductUseCase {
                 productVariants: [],
             });
 
-            const productSaved =
-                await this.productRepository.save(productWithVariants);
+            const productSaved = await this.productRepository.save(product);
+
             console.log("CreateProductUseCase productSaved", productSaved);
 
             if (productColors) {
@@ -388,7 +385,7 @@ export class CreateProductUseCase {
             console.log("create product usecase product", product);
 
             return right({
-                product: result.value,
+                product,
             });
         } catch (error) {
             console.error("Error creating product:", error);

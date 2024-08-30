@@ -163,6 +163,7 @@ describe("CreateProductUseCase", () => {
     });
 
     it("should create a product", async () => {
+       
         const result = await createProductUseCase.execute({
             name: "Test Product",
             description: "A test product description",
