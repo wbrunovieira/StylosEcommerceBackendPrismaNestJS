@@ -163,7 +163,6 @@ describe("CreateProductUseCase", () => {
     });
 
     it("should create a product", async () => {
-       
         const result = await createProductUseCase.execute({
             name: "Test Product",
             description: "A test product description",
@@ -182,7 +181,6 @@ describe("CreateProductUseCase", () => {
             width: 100,
             length: 100,
             weight: 100,
-            hasVariants: false,
         });
         console.log("create prod test result", result);
         if (result.isLeft()) {
@@ -199,53 +197,52 @@ describe("CreateProductUseCase", () => {
         expect(product.stock).toEqual(10);
     });
 
-    // it("should create a product with Brands repo and fields", async () => {
-    //     const request = {
-    //         name: "Test Product",
-    //         description: "A test product description",
-    //         productColors: [
-    //             new UniqueEntityID("color_id_as_string").toString(),
-    //         ],
-    //         productSizes: [new UniqueEntityID("size_id_as_string").toString()],
-    //         productCategories: [],
+    it("should create a product with Brands repo and fields", async () => {
+        const request = {
+            name: "Test Product",
+            description: "A test product description",
+            productColors: [
+                new UniqueEntityID("color_id_as_string").toString(),
+            ],
+            productSizes: [new UniqueEntityID("size_id_as_string").toString()],
+            productCategories: [],
 
-    //         brandId: brandId.toString(),
-    //         price: 200,
-    //         stock: 20,
-    //         height: 2,
-    //         width: 2,
-    //         length: 2,
-    //         weight: 2,
-    //         onSale: true,
-    //         discount: 10,
-    //         isFeatured: true,
-    //         isNew: true,
-    //         images: ["image1.jpg", "image2.jpg"],
-    //     };
+            brandId: brandId.toString(),
+            price: 200,
+            stock: 20,
+            height: 2,
+            width: 2,
+            length: 2,
+            weight: 2,
+            onSale: true,
+            discount: 10,
+            isFeatured: true,
+            isNew: true,
+            images: ["image1.jpg", "image2.jpg"],
+            hasVariants: false,
+        };
 
-    //     const result = await useCase.execute(request);
+        const result = await createProductUseCase.execute(request);
 
-    //     if (result.isLeft()) {
-    //         const error = result.value;
-    //         if (error !== null) {
-    //             expect(error).toBeInstanceOf(ResourceNotFoundError);
-    //             expect(error.message).toMatch(
-    //                 /Brand not found/
-    //             );
-    //         } else {
-    //             throw new Error("Expected ResourceNotFoundError but got null");
-    //         }
-    //     } else {
-    //         const product = result.value.product;
-    //         const productId = product.id.toString();
+        if (result.isLeft()) {
+            const error = result.value;
+            if (error !== null) {
+                expect(error).toBeInstanceOf(ResourceNotFoundError);
+                expect(error.message).toMatch(/Brand not found/);
+            } else {
+                throw new Error("Expected ResourceNotFoundError but got null");
+            }
+        } else {
+            const product = result.value.product;
+            const productId = product.id.toString();
 
-    //         const variants =
-    //             await mockProductVariantRepository.findByProductId(productId);
-    //         expect(variants).toHaveLength(1);
+            const variants =
+                await mockProductVariantRepository.findByProductId(productId);
+            expect(variants).toHaveLength(1);
 
-    //         expect(result.isRight()).toBeTruthy();
-    //     }
-    // });
+            expect(result.isRight()).toBeTruthy();
+        }
+    });
 
     // it("should return an error if brandId is invalid", async () => {
     //     const result = await useCase.execute({
