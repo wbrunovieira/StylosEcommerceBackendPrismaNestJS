@@ -43,7 +43,7 @@ interface CreateProductUseCaseRequest {
     onSale?: boolean;
     discount?: number;
     isFeatured?: boolean;
-    hasVariants: boolean;
+    hasVariants?: boolean;
     isNew?: boolean;
     images?: string[];
     productIdVariant?: string;
@@ -96,7 +96,7 @@ export class CreateProductUseCase {
         length,
         weight,
         onSale = false,
-        hasVariants,
+        hasVariants = false,
         discount = 0,
         isFeatured = false,
         isNew = false,
@@ -270,7 +270,13 @@ export class CreateProductUseCase {
                 product.id.toString()
             );
             product.slug = finalSlug;
-            product.hasVariants = true;
+            const checkHasVariants = !!(
+                productColors?.length || productSizes?.length
+            );
+            product.hasVariants = hasVariants;
+
+            product.hasVariants = checkHasVariants;
+
             product.productIdVariant = product.id.toString();
             const productWithVariants = ProductWithVariants.create({
                 product,
