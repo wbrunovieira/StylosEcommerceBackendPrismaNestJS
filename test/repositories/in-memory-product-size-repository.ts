@@ -20,6 +20,8 @@ export class InMemoryProductSizeRepository implements IProductSizeRepository {
     const productSize = new ProductSize({
       productId: productIdUnique,
       sizeId: sizeIdUnique,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     this.items.push(productSize);

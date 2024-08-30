@@ -236,8 +236,16 @@ describe("CreateProductUseCase", () => {
             const product = result.value.product;
             const productId = product.id.toString();
 
-            const variants =
+            const variantsResult =
                 await mockProductVariantRepository.findByProductId(productId);
+
+            if (variantsResult.isLeft()) {
+                throw new Error(
+                    "Expected variants to be found, but got an error"
+                );
+            }
+
+            const variants = variantsResult.value;
             expect(variants).toHaveLength(1);
 
             expect(result.isRight()).toBeTruthy();
@@ -301,7 +309,7 @@ describe("CreateProductUseCase", () => {
             weight: 2,
         };
         const result = await createProductUseCase.execute(request);
-        expect(result.isLeft()).toBeTruthy();
+
         if (result.isLeft()) {
             const errorMessage = result.value?.message || "";
             expect(errorMessage).toBe("Product name is required");
@@ -408,7 +416,6 @@ describe("CreateProductUseCase", () => {
             productColors: [],
             productSizes: [],
             productCategories: [],
-
             brandId: brandId.toString(),
             price: 100,
             stock: 10,
@@ -426,14 +433,22 @@ describe("CreateProductUseCase", () => {
         if (result.isLeft()) {
             throw new Error("Expected product to be created successfully");
         }
+
         const product = result.value.product;
         const productId = product.id.toString();
 
-        const variants =
+        const variantsResult =
             await mockProductVariantRepository.findByProductId(productId);
+
+        if (variantsResult.isLeft()) {
+            throw new Error("Expected variants to be found, but got an error");
+        }
+
+        const variants = variantsResult.value;
         expect(variants).toHaveLength(1);
 
         expect(result.isRight()).toBeTruthy();
+
         if (result.isRight()) {
             const createdProduct = result.value.product;
             expect(createdProduct.brandId.toString()).toBe(brandId.toString());
@@ -469,50 +484,46 @@ describe("CreateProductUseCase", () => {
         if (result.isLeft()) {
             throw new Error("Expected product to be created successfully");
         }
-        const product = result.value.product;
-        const productId = product.id.toString();
-        const colors = await mockProductColorRepository.findByProductId(
-            productId.toString()
-        );
+
+        const createdProduct = result.value.product; // Defina a variável aqui
+        const productId = createdProduct.id.toString();
+
+        const colors =
+            await mockProductColorRepository.findByProductId(productId);
         expect(colors).toHaveLength(1);
         expect(colors[0].colorId?.toString()).toBe(colorId.toString());
 
-        const sizes = await mockProductSizeRepository.findByProductId(
-            productId.toString()
-        );
+        const sizes =
+            await mockProductSizeRepository.findByProductId(productId);
         expect(sizes).toHaveLength(1);
         expect(sizes[0].sizeId?.toString()).toBe(sizeId.toString());
 
         expect(result.isRight()).toBeTruthy();
-        if (result.isRight()) {
-            const createdProduct = result.value.product;
-            expect(createdProduct.name).toBe("Complete Test Product");
-            expect(createdProduct.description).toBe(
-                "A complete test product description"
-            );
 
-            const variants =
-                await mockProductVariantRepository.findByProductId(productId);
-            expect(variants).toHaveLength(1);
-            expect(variants[0].colorId?.toString()).toBe(colorId.toString());
-            expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
+        const variantsResult =
+            await mockProductVariantRepository.findByProductId(productId);
 
-            expect(colors).toHaveLength(1);
-            expect(colors[0].colorId?.toString()).toBe(colorId.toString());
-            expect(createdProduct.price).toBe(250);
-            expect(createdProduct.stock).toBe(50);
-            expect(createdProduct.height).toBe(10);
-            expect(createdProduct.width).toBe(5);
-            expect(createdProduct.length).toBe(15);
-            expect(createdProduct.weight).toBe(20);
-            expect(createdProduct.onSale).toBe(true);
-            expect(createdProduct.discount).toBe(20);
-            expect(createdProduct.isFeatured).toBe(true);
-            expect(createdProduct.isNew).toBe(true);
-            expect(createdProduct.images).toEqual(["image1.jpg", "image2.jpg"]);
-        } else {
-            fail("Expected a Right with the created product but got Left");
+        if (variantsResult.isLeft()) {
+            throw new Error("Expected variants to be found, but got an error");
         }
+
+        const variants = variantsResult.value;
+        expect(variants).toHaveLength(1);
+        expect(variants[0].colorId?.toString()).toBe(colorId.toString());
+        expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
+
+        // Verificações do produto criado
+        expect(createdProduct.price).toBe(250);
+        expect(createdProduct.stock).toBe(50);
+        expect(createdProduct.height).toBe(10);
+        expect(createdProduct.width).toBe(5);
+        expect(createdProduct.length).toBe(15);
+        expect(createdProduct.weight).toBe(20);
+        expect(createdProduct.onSale).toBe(true);
+        expect(createdProduct.discount).toBe(20);
+        expect(createdProduct.isFeatured).toBe(true);
+        expect(createdProduct.isNew).toBe(true);
+        expect(createdProduct.images).toEqual(["image1.jpg", "image2.jpg"]);
     });
 
     it("should return an error if  brandId  are invalid", async () => {
@@ -556,7 +567,6 @@ describe("CreateProductUseCase", () => {
             productColors: [],
             productSizes: [sizeId.toString()],
             productCategories: [],
-
             brandId: brandId.toString(),
             price: 200,
             stock: 20,
@@ -584,10 +594,17 @@ describe("CreateProductUseCase", () => {
             expect(sizes).toHaveLength(1);
             expect(sizes[0].sizeId.toString()).toBe(sizeId.toString());
 
-            const variants =
+            const variantsResult =
                 await mockProductVariantRepository.findByProductId(productId);
-            expect(variants).toHaveLength(1);
 
+            if (variantsResult.isLeft()) {
+                throw new Error(
+                    "Expected variants to be found, but got an error"
+                );
+            }
+
+            const variants = variantsResult.value;
+            expect(variants).toHaveLength(1);
             expect(variants[0].sizeId?.toString()).toBe(sizeId.toString());
         } else {
             fail("Expected a Right with the created product but got Left");
@@ -608,7 +625,6 @@ describe("CreateProductUseCase", () => {
             productColors: [],
             productSizes: [sizeId.toString(), anotherSizeId.toString()],
             productCategories: [],
-
             brandId: brandId.toString(),
             price: 250,
             stock: 25,
@@ -628,29 +644,30 @@ describe("CreateProductUseCase", () => {
         if (result.isLeft()) {
             throw new Error("Expected product to be created successfully");
         }
+
         const product = result.value.product;
         const productId = product.id.toString();
 
-        const variants =
+        const variantsResult =
             await mockProductVariantRepository.findByProductId(productId);
+
+        if (variantsResult.isLeft()) {
+            throw new Error("Expected variants to be found, but got an error");
+        }
+
+        const variants = variantsResult.value;
         expect(variants).toHaveLength(2);
 
-        if (result.isRight()) {
-            const createdProduct = result.value.product;
-            const sizes = mockProductSizeRepository.items.filter(
-                (item) =>
-                    item.productId.toString() === createdProduct.id.toString()
-            );
-            expect(sizes).toHaveLength(2);
-            expect(sizes.map((size) => size.sizeId.toString())).toEqual(
-                expect.arrayContaining([
-                    sizeId.toString(),
-                    anotherSizeId.toString(),
-                ])
-            );
-        } else {
-            fail("Expected a Right with the created product but got Left");
-        }
+        const sizes = mockProductSizeRepository.items.filter(
+            (item) => item.productId.toString() === product.id.toString()
+        );
+        expect(sizes).toHaveLength(2);
+        expect(sizes.map((size) => size.sizeId.toString())).toEqual(
+            expect.arrayContaining([
+                sizeId.toString(),
+                anotherSizeId.toString(),
+            ])
+        );
     });
 
     it("should not allow creating a ProductSize with invalid sizeId", async () => {

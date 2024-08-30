@@ -5,7 +5,7 @@ import { Optional } from "@/core/types/optional";
 export interface ColorProps {
   name: string;
   hex: string;
-  erpId: string
+  erpId?: string
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,7 +14,7 @@ export class Color extends Entity<ColorProps> {
   get name(): string {
     return this.props.name;
   }
-  get erpId(): string {
+  get erpId(): string | undefined{
     return this.props.erpId;
   }
   get hex(): string {

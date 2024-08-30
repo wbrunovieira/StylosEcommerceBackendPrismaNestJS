@@ -388,6 +388,7 @@ export class CreateProductUseCase {
             for (const variant of variants) {
                 await this.productVariantRepository.create(variant);
             }
+            
             console.log("create product usecase product", product);
 
             return right({

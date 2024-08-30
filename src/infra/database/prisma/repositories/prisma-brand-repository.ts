@@ -23,7 +23,7 @@ export class PrismaBrandRepository implements IBrandRepository {
                     id: brand.id.toString(),
                     name: brand.name,
                     erpId: brand.erpId,
-                    imageUrl: brand.imageUrl,
+                    imageUrl: brand.imageUrl ?? undefined,
                     createdAt: brand.createdAt,
                     updatedAt: brand.updatedAt,
                 },
@@ -45,7 +45,7 @@ export class PrismaBrandRepository implements IBrandRepository {
             const brand = Brand.create(
                 {
                     name: brandData.name,
-                    imageUrl: brandData.imageUrl,
+                    imageUrl: brandData.imageUrl ?? undefined,
                     erpId: brandData.erpId || "",
                 },
                 new UniqueEntityID(brandData.id)
@@ -74,7 +74,7 @@ export class PrismaBrandRepository implements IBrandRepository {
             const brand = Brand.create(
                 {
                     name: brandData.name,
-                    imageUrl: brandData.imageUrl,
+                    imageUrl: brandData.imageUrl ?? undefined,
                     erpId: brandData.erpId || "",
                 },
                 new UniqueEntityID(brandData.id)
@@ -130,7 +130,7 @@ export class PrismaBrandRepository implements IBrandRepository {
                 Brand.create(
                     {
                         name: b.name,
-                        imageUrl: b.imageUrl,
+                        imageUrl: b.imageUrl ?? undefined,
                         erpId: b.erpId || "",
                     },
                     new UniqueEntityID(b.id)
