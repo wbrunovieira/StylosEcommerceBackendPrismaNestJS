@@ -21,7 +21,7 @@ import { CreateProductUseCase } from "@/domain/catalog/application/use-cases/cre
 import { RolesGuard } from "@/auth/roles.guard";
 import { Roles } from "@/auth/roles.decorator";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
-// import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
+ import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
 import { PrismaService } from "@/prisma/prisma.service";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
@@ -126,7 +126,7 @@ export class ProductController {
     constructor(
         private createProductUseCase: CreateProductUseCase,
         private prisma: PrismaService,
-        // private editProductUseCase: EditProductUseCase,
+       private editProductUseCase: EditProductUseCase,
         private getProductBySlug: GetProductBySlugUseCase,
         private getAllProductsByCategoryId: GetProductsByCategoryIdUseCase,
         private getAllProductsByBrandId: GetProductsByBrandIdUseCase,
@@ -531,22 +531,23 @@ export class ProductController {
         };
     }
 
-    // @Put("save/:id")
-    // async editProduct(@Param("id") id: string, @Body() body: any) {
-    //     console.log('bateu no save/:id',id)
-    //     const result = await this.editProductUseCase.execute({
-    //         productId: id,
-    //         ...body,
-    //     // });
-    //     console.log('save/ result',result)
-    //     if (result.isLeft()) {
-    //         throw new HttpException(
-    //             "Failed to update product",
-    //             HttpStatus.BAD_REQUEST
-    //         );
-    //     }
+    @Put("save/:id")
+    async editProduct(@Param("id") id: string, @Body() body: any) {
+        console.log('bateu no save/:id',id)
+        const result = await this.editProductUseCase.execute({
+            productId: id,
+            ...body,
+        });
+        console.log('save/ result',result)
+        
+        if (result.isLeft()) {
+            throw new HttpException(
+                "Failed to update product",
+                HttpStatus.BAD_REQUEST
+            );
+        }
 
-    //     const productWithVariants = result.value;
-    //     return { product: productWithVariants };
-    // }
+        const productWithVariants = result.value;
+        return { product: productWithVariants };
+    }
 }
