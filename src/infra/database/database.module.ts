@@ -112,6 +112,7 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
         PrismaAccountRepository,
         PrismaOrderRepository,
         PrismaArchivedCartRepository,
+        PrismaProductColorRepository,
     ],
     exports: [
         PrismaService,
@@ -130,7 +131,6 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
         IAddressRepository,
         IShippingRepository,
         IOrderRepository,
-        
     ],
 })
 export class DatabaseModule {}

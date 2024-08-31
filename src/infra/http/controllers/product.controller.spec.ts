@@ -26,6 +26,7 @@ import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cas
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
+import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
 
 describe("ProductController", () => {
     let productController: ProductController;
