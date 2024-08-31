@@ -432,19 +432,26 @@ export class ProductController {
 
     @Get(":id")
     async getProduct(@Param("id") id: string) {
-        const result = await this.getAllProductsByIdUseCase.execute({
-            productId: id,
-        });
+        try {
+            const result = await this.getAllProductsByIdUseCase.execute({
+                productId: id,
+            });
 
-        if (result.isLeft()) {
+            if (result.isLeft()) {
+                throw new HttpException(
+                    "Failed to find product",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+
+            const productWithVariants = result.value;
+            return { product: productWithVariants };
+        } catch (error) {
             throw new HttpException(
-                "Produto não encontrado",
-                HttpStatus.NOT_FOUND
+                "Failed to find product",
+                HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-
-        const productWithVariants = result.value;
-        return { product: productWithVariants };
     }
 
     @Get("slug/:slug")

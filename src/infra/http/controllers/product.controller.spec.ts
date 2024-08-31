@@ -34,6 +34,7 @@ describe("ProductController", () => {
     let findProductByIdUseCase: GetAllProductsByIdUseCase;
     let getProductBySlugUseCase: GetProductBySlugUseCase;
     let getProductsByCategoryIdUseCase: GetProductsByCategoryIdUseCase;
+    let getAllProductsUseCase: GetAllProductsUseCase;
     let getProductsByBrandIdUseCase: GetProductsByBrandIdUseCase;
     let getProductsByColorIdUseCase: GetProductsByColorIdUseCase;
     let getProductsBySizeIdUseCase: GetProductsBySizeIdUseCase;
@@ -318,104 +319,127 @@ describe("ProductController", () => {
         }
     });
 
-    //   it("should find a product by id successfully", async () => {
-    //     const mockProduct = Product.create(
-    //       {
-    //         name: "ProductName",
-    //         description: "ProductDescription",
-    //         brandId: new UniqueEntityID("brand-1"),
-    //         price: 100,
-    //         stock: 10,
-    //         images: [],
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //       },
-    //       new UniqueEntityID("product-1")
-    //     );
-    //     const mockResult = right({ product: mockProduct }) as Either<
-    //       ResourceNotFoundError,
-    //       { product: Product }
-    //     >;
-    //     vi.spyOn(findProductByIdUseCase, "execute").mockResolvedValue(mockResult);
+    it("should find a product by id successfully", async () => {
+        const mockProduct = Product.create(
+            {
+                name: "ProductName",
+                description: "ProductDescription",
+                brandId: new UniqueEntityID(),
+                price: 100,
+                stock: 10,
+                images: [],
+                onSale: false,
+                discount: 0,
+                isFeatured: false,
+                isNew: false,
+                sku: "sku-123",
+                length: 10,
+                height: 10,
+                width: 10,
+                weight: 10,
+                hasVariants: false,
+            },
+            new UniqueEntityID("product-1")
+        );
 
-    //     const result = await productController.findProductById("product-1");
+        const mockResult = right(mockProduct) as Either<
+            ResourceNotFoundError,
+            Product
+        >;
 
-    //     expect(result).toEqual(mockResult.value);
-    //     expect(findProductByIdUseCase.execute).toHaveBeenCalledWith({
-    //       id: "product-1",
-    //     });
-    //   });
+        vi.spyOn(findProductByIdUseCase, "execute").mockResolvedValue(
+            mockResult
+        );
 
-    //   it("should handle errors thrown by FindProductByIdUseCase", async () => {
-    //     vi.spyOn(findProductByIdUseCase, "execute").mockImplementation(() => {
-    //       throw new Error("FindProductByIdUseCase error");
-    //     });
+        const result = await productController.getProduct("product-1");
 
-    //     try {
-    //       await productController.findProductById("ProductWithError");
-    //     } catch (error) {
-    //       if (error instanceof HttpException) {
-    //         expect(error.message).toBe("Failed to find product");
-    //         expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-    //       } else {
-    //         throw new Error("Expected HttpException");
-    //       }
-    //     }
-    //   });
+        expect(result).toEqual({ product: mockProduct });
+        expect(findProductByIdUseCase.execute).toHaveBeenCalledWith({
+            productId: "product-1",
+        });
+    });
 
-    //   it("should get all products successfully", async () => {
-    //     const mockProduct1 = Product.create(
-    //       {
-    //         name: "Product1",
-    //         description: "Description1",
-    //         brandId: new UniqueEntityID("brand-1"),
-    //         price: 100,
-    //         stock: 10,
-    //         images: [],
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //       },
-    //       new UniqueEntityID("product-1")
-    //     );
+    it("should handle errors thrown by FindProductByIdUseCase", async () => {
+        vi.spyOn(findProductByIdUseCase, "execute").mockImplementation(() => {
+            throw new Error("FindProductByIdUseCase error");
+        });
 
-    //     const mockProduct2 = Product.create(
-    //       {
-    //         name: "Product2",
-    //         description: "Description2",
-    //         brandId: new UniqueEntityID("brand-2"),
-    //         price: 200,
-    //         stock: 20,
-    //         images: [],
-    //         onSale: false,
-    //         discount: 0,
-    //         isFeatured: false,
-    //         isNew: false,
-    //       },
-    //       new UniqueEntityID("product-2")
-    //     );
+        try {
+            await productController.getProduct("ProductWithError");
+        } catch (error) {
+            if (error instanceof HttpException) {
+                expect(error.message).toBe("Failed to find product");
+                expect(error.getStatus()).toBe(
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            } else {
+                throw new Error("Expected HttpException");
+            }
+        }
+    });
 
-    //     const mockResult = right([mockProduct1, mockProduct2]) as Either<
-    //       ResourceNotFoundError,
-    //       Product[]
-    //     >;
+      it("should get all products successfully", async () => {
+        const mockProduct1 = Product.create(
+            {
+                name: "ProductName1",
+                description: "ProductDescription1",
+                brandId: new UniqueEntityID(),
+                price: 100,
+                stock: 10,
+                images: [],
+                onSale: false,
+                discount: 0,
+                isFeatured: false,
+                isNew: false,
+                sku: "sku-123",
+                length: 10,
+                height: 10,
+                width: 10,
+                weight: 10,
+                hasVariants: false,
+            },
+            new UniqueEntityID()
+        );
 
-    //     vi.spyOn(getAllProductsUseCase, "execute").mockResolvedValue(mockResult);
+        const mockProduct2 = Product.create(
+            {
+                name: "ProductName2",
+                description: "ProductDescription2",
+                brandId: new UniqueEntityID(),
+                price: 100,
+                stock: 10,
+                images: [],
+                onSale: false,
+                discount: 0,
+                isFeatured: false,
+                isNew: false,
+                sku: "sku-123",
+                length: 10,
+                height: 10,
+                width: 10,
+                weight: 10,
+                hasVariants: false,
+            },
+            new UniqueEntityID()
+        );
+        const mockResult = right([mockProduct1, mockProduct2]) as Either<
+          ResourceNotFoundError,
+          Product[]
+        >;
 
-    //     const result = await productController.getAllProducts({
-    //       page: 1,
-    //       pageSize: 10,
-    //     });
+        vi.spyOn(getAllProductsUseCase, "execute").mockResolvedValue(mockResult);
 
-    //     expect(result).toEqual({ products: mockResult.value });
-    //     expect(getAllProductsUseCase.execute).toHaveBeenCalledWith({
-    //       page: 1,
-    //       pageSize: 10,
-    //     });
-    //   });
+        const result = await productController.getAllProducts({
+          page: 1,
+          pageSize: 10,
+        });
+
+        expect(result).toEqual({ products: mockResult.value });
+        expect(getAllProductsUseCase.execute).toHaveBeenCalledWith({
+          page: 1,
+          pageSize: 10,
+        });
+      });
 
     //   it("should handle errors thrown by GetAllProductsUseCase", async () => {
     //     vi.spyOn(getAllProductsUseCase, "execute").mockImplementation(() => {
