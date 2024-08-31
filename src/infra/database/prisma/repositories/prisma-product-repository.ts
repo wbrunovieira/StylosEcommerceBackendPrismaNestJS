@@ -1061,13 +1061,21 @@ export class PrismaProductRepository implements IProductRepository {
                 Product,
                 productOrProductWithVariants
             );
-            console.log(" try no prisma product product", product);
+            console.log("try no prisma product product", product);
             console.log(
                 " try no product.brandId.toString()",
                 product.brandId.toString()
             );
-            console.log(" try no product.isNew", product.isNew);
-            console.log(" try no product.isFeatured", product.isFeatured);
+            console.log("try no product.isNew", product.isNew);
+            console.log("try no product.isFeatured", product.isFeatured);
+
+            const updatedProduct = await this.prisma.product.update({
+                where: { id: product.id.toString() },
+                data: {
+                    name: product.name,
+                },
+            });
+            console.log("updatedProduct", updatedProduct);
 
             // const updatedProduct = await this.prisma.product.update({
             //     where: { id: product.id.toString() },
@@ -1096,24 +1104,6 @@ export class PrismaProductRepository implements IProductRepository {
             // });
 
             // console.log("updatedProduct", updatedProduct);
-
-            const updatedProduct = await this.prisma.product.update({
-                where: { id: product.id.toString() },
-                data: {
-                    name: product.name,
-                    description: product.description,
-                    brandId: product.brandId.toString(),
-                    discount: product.discount,
-                    price: product.price,
-                    height: product.height,
-                    width: product.width,
-                    length: product.length,
-                    weight: product.weight,
-                    onSale: product.onSale,
-                    isFeatured: product.isFeatured ?? false,
-                },
-            });
-            console.log("updatedProduct", updatedProduct);
 
             const variantsSaved = await Promise.all(
                 variants.map(async (variant) => {

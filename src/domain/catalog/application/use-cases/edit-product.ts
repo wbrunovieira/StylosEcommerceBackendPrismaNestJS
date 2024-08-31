@@ -87,6 +87,7 @@ export class EditProductUseCase {
         }
 
         const product = productResult.value;
+        console.log("usecase product", product);
 
         if (!product) {
             return left(
@@ -164,6 +165,7 @@ export class EditProductUseCase {
         }
 
         const brand = brandOrError.value;
+        console.log("aqui brand", brand);
         let newSlug;
 
         if (nameChanged) {
@@ -174,6 +176,8 @@ export class EditProductUseCase {
             );
             product.slug = newSlug;
         }
+        console.log("aqui newSlug", newSlug);
+
         console.log(
             "edit product usecase productWithVariants json",
             JSON.stringify(product, null, 2)

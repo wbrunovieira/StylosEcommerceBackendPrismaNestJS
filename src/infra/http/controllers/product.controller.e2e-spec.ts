@@ -6,85 +6,78 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 describe("Create products (E2E)", () => {
-  let app: INestApplication;
-  let prisma: PrismaService;
+    let app: INestApplication;
+    let prisma: PrismaService;
 
-  let authToken: string;
+    let authToken: string;
 
-  let brandId: string;
- 
-  let categoryId: string;
+    let brandId: string;
 
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    let categoryId: string;
 
-    app = moduleRef.createNestApplication();
+    beforeAll(async () => {
+        const moduleRef = await Test.createTestingModule({
+            imports: [AppModule],
+        }).compile();
 
-    prisma = moduleRef.get(PrismaService);
+        app = moduleRef.createNestApplication();
 
-    await app.init();
+        prisma = moduleRef.get(PrismaService);
 
-    const response = await request(app.getHttpServer())
-      .post("/sessions")
-      .send({ email: "admin@example.com", password: "Adminpassword@8" });
+        await app.init();
 
-    authToken = response.body.access_token;
+        const response = await request(app.getHttpServer())
+            .post("/sessions")
+            .send({ email: "admin@example.com", password: "Adminpassword@8" });
 
-    if (!authToken) {
-      throw new Error("Authentication failed: No token received");
-    }
-  });
+        authToken = response.body.access_token;
 
-  beforeEach(async () => {
-    await prisma.product.deleteMany({});
-    await prisma.brand.deleteMany({});
-
-    await prisma.category.deleteMany({});
-
- 
-    
-
-   
-
-    const category = await prisma.category.create({
-      data: { name: "categoria teste" },
+        if (!authToken) {
+            throw new Error("Authentication failed: No token received");
+        }
     });
 
-    categoryId = category.id;
-    
-  });
+    beforeEach(async () => {
+        await prisma.product.deleteMany({});
+        await prisma.brand.deleteMany({});
 
-  test("[POST] /products", async () => {
-    const response = await request(app.getHttpServer())
-      .post("/products")
-      .set("Authorization", `Bearer ${authToken}`)
-      .send({
-        name: "calcinha 1",
-        description: "calcinha description 1 mais texto, legal, muiito legal",
-        images: ["/images/foto1.jpg"],
-   
-        brandId: brandId,
-        price: 100,
-        stock: 10,
-        productCategories: [categoryId],
-      });
+        await prisma.category.deleteMany({});
 
-    const productResponse = response.body.product.props;
+        const category = await prisma.category.create({
+            data: { name: "categoria teste", imageUrl: "urlteste" },
+        });
 
-   
+        categoryId = category.id;
+    });
 
-    expect(response.statusCode).toBe(201);
+    test("[POST] /products", async () => {
+        const response = await request(app.getHttpServer())
+            .post("/products")
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                name: "calcinha 1",
+                description:
+                    "calcinha description 1 mais texto, legal, muiito legal",
+                images: ["/images/foto1.jpg"],
 
-    expect(response.body).toHaveProperty("product");
-    expect(response.body.product).toHaveProperty("props");
-    expect(productResponse.name).toEqual("calcinha 1");
-    expect(productResponse).toHaveProperty("createdAt");
-    expect(productResponse).toHaveProperty("updatedAt");
-  });
+                brandId: brandId,
+                price: 100,
+                stock: 10,
+                productCategories: [categoryId],
+            });
 
-  afterAll(async () => {
-    await app.close();
-  });
+        const productResponse = response.body.product;
+
+        expect(response.statusCode).toBe(201);
+
+        expect(response.body).toHaveProperty("product");
+        expect(response.body.product).toHaveProperty("props");
+        expect(productResponse.name).toEqual("calcinha 1");
+        expect(productResponse).toHaveProperty("createdAt");
+        expect(productResponse).toHaveProperty("updatedAt");
+    });
+
+    afterAll(async () => {
+        await app.close();
+    });
 });
