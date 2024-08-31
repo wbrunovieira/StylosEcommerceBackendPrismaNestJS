@@ -55,7 +55,7 @@ import { CartController } from "./controllers/cart.controller";
 import { CreateCartUseCase } from "@/domain/order/application/use-cases/create-cart";
 import { AuthModule } from "@/auth/auth.module";
 
- import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
+import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
 import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
@@ -95,6 +95,7 @@ import { ArchiveCartUseCase } from "@/domain/order/application/use-cases/archive
 import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-cart";
 import { OrderController } from "./controllers/order.controller";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
+import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -112,7 +113,7 @@ import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-a
         AddressController,
         ShippingController,
         MigrationController,
-        OrderController
+        OrderController,
     ],
     providers: [
         JwtService,
@@ -170,6 +171,7 @@ import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-a
         GetAllColorsUseCase,
         GetAllSizesUseCase,
         GetAllCategoriesUseCase,
+        GetAllProductsUseCase,
         GetProductsByCategoryIdUseCase,
         GetProductsByBrandIdUseCase,
         GetProductsByColorIdUseCase,
@@ -208,7 +210,7 @@ import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-a
         ProductMigrationService,
         FetchAllSuppliersUseCase,
 
-        ListAllOrdersUseCase
+        ListAllOrdersUseCase,
     ],
 })
 export class HttpModule {}

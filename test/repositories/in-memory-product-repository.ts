@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 
 import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
+
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { IProductVariantRepository } from "@/domain/catalog/application/repositories/i-product-variant-repository";
-import { ProductWithVariants } from "@/domain/catalog/enterprise/entities/productWithVariants";
-import { Entity } from "@/core/entities/entity";
+
+
 
 @Injectable()
 export class InMemoryProductRepository implements IProductRepository {
@@ -18,6 +19,7 @@ export class InMemoryProductRepository implements IProductRepository {
         this.variantRepository = variantRepository;
         this.items = [];
     }
+
     private async generateUniqueSlug(
         baseSlug: string,
         productId?: string
@@ -39,6 +41,14 @@ export class InMemoryProductRepository implements IProductRepository {
         } while (existingProduct);
 
         return slug;
+    }
+
+    async getAllProducts(): Promise<Either<Error, Product[]>> {
+        console.log("bateu no async getAllProducts");
+        if (this.items.length === 0) {
+            return left(new ResourceNotFoundError("No products found"));
+        }
+        return right(this.items);
     }
 
     async create(product: Product): Promise<Either<Error, Product>> {
@@ -275,7 +285,6 @@ export class InMemoryProductRepository implements IProductRepository {
             console.log("product.slug.value insave", product.slug.value);
             console.log("product.slug insave", product.slug);
 
-            // Update other properties as needed (this part assumes correct handling of all props)
             const updatedProduct = Product.create(
                 {
                     name: product.name,
