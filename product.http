@@ -24,7 +24,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "saia 15 aaaaaa",
+  "name": "saia 15 aaaaaaaa",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
  "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
@@ -51,31 +51,21 @@ Content-Type: application/json
 
 ###
 
+
 # @name edit-products
 PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "name": "010045 SUTIA B LARGA REG updated",
-  "description": "DescriptionNotFound 2",
-  
-  "brandId":"00d203ac-41d1-4fd6-908d-940b294ebd4f",
-"discount": 20,
-"price": 100,
-"height": 15,
- "width": 12,
-  "length": 12,
-   "weight": 12,
-   "onSale":true,
- "isFeatured":false,
-  //  "isNew": true,
-  "stock": 50,
-  "erpId": "some-erp-id",
+  "name": "010045 SUTIA B LARGA REG updated"
 
-  "images": ["image1.png", "image2.png"]
 }
 
 ###
+   "onSale":true,
+  "stock": 50,
+  "erpId": "some-erp-id",
+ "images": ["image1.png", "image2.png"]
 
 # @name edit-products-variants
 PATCH {{BASE_URL}}/products/update/variant/2fac9f52-b6a2-4677-a6e4-dfa15ecccd5d

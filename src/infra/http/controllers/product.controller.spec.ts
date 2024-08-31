@@ -16,10 +16,30 @@ import { CreateProductUseCase } from "@/domain/catalog/application/use-cases/cre
 import { ProductController } from "./product.controller";
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 import { PrismaService } from "@/prisma/prisma.service";
+import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
+import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
+import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
+import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-brand";
+import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-color";
+import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
+import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
+import { FindProductByNameUseCase } from "@/domain/catalog/application/use-cases/find-all-products-by-name";
+import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 
 describe("ProductController", () => {
     let productController: ProductController;
     let createProductUseCase: CreateProductUseCase;
+    let editProductUseCase: EditProductUseCase;
+    let findProductByIdUseCase: GetAllProductsByIdUseCase;
+    let getProductBySlugUseCase: GetProductBySlugUseCase;
+    let getProductsByCategoryIdUseCase: GetProductsByCategoryIdUseCase;
+    let getProductsByBrandIdUseCase: GetProductsByBrandIdUseCase;
+    let getProductsByColorIdUseCase: GetProductsByColorIdUseCase;
+    let getProductsBySizeIdUseCase: GetProductsBySizeIdUseCase;
+    let updateProductVariantUseCase: UpdateProductVariantUseCase;
+    let findProductByNameUseCase: FindProductByNameUseCase;
+    let getProductsByPriceRangeUseCase: GetProductsByPriceRangeUseCase;
     let prismaService: PrismaService;
 
     let consoleErrorSpy: any;
@@ -40,24 +60,67 @@ describe("ProductController", () => {
                     },
                 },
 
-                // {
-                //   provide: EditProductUseCase,
-                //   useValue: {
-                //     execute: vi.fn(),
-                //   },
-                // },
-                // {
-                //   provide: FindProductByIdUseCase,
-                //   useValue: {
-                //     execute: vi.fn(),
-                //   },
-                // },
-                // {
-                //   provide: GetAllProductsUseCase,
-                //   useValue: {
-                //     execute: vi.fn(),
-                //   },
-                // },
+                {
+                    provide: EditProductUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetAllProductsByIdUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductBySlugUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductsByCategoryIdUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductsByBrandIdUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductsByColorIdUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductsBySizeIdUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: UpdateProductVariantUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: FindProductByNameUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+                {
+                    provide: GetProductsByPriceRangeUseCase,
+                    useValue: {
+                        execute: vi.fn(),
+                    },
+                },
+
                 // {
                 //   provide: DeleteProductUseCase,
                 //   useValue: {
@@ -99,13 +162,37 @@ describe("ProductController", () => {
         createProductUseCase =
             module.get<CreateProductUseCase>(CreateProductUseCase);
         prismaService = module.get<PrismaService>(PrismaService);
-        // editProductUseCase = module.get<EditProductUseCase>(EditProductUseCase);
-        // findProductByIdUseCase = module.get<FindProductByIdUseCase>(
-        //   FindProductByIdUseCase
-        // );
-        // getAllProductsUseCase = module.get<GetAllProductsUseCase>(
-        //   GetAllProductsUseCase
-        // );
+        editProductUseCase = module.get<EditProductUseCase>(EditProductUseCase);
+        findProductByIdUseCase = module.get<GetAllProductsByIdUseCase>(
+            GetAllProductsByIdUseCase
+        );
+        getProductBySlugUseCase = module.get<GetProductBySlugUseCase>(
+            GetProductBySlugUseCase
+        );
+        getProductsByCategoryIdUseCase =
+            module.get<GetProductsByCategoryIdUseCase>(
+                GetProductsByCategoryIdUseCase
+            );
+        getProductsByBrandIdUseCase = module.get<GetProductsByBrandIdUseCase>(
+            GetProductsByBrandIdUseCase
+        );
+        getProductsByColorIdUseCase = module.get<GetProductsByColorIdUseCase>(
+            GetProductsByColorIdUseCase
+        );
+        getProductsBySizeIdUseCase = module.get<GetProductsBySizeIdUseCase>(
+            GetProductsBySizeIdUseCase
+        );
+        updateProductVariantUseCase = module.get<UpdateProductVariantUseCase>(
+            UpdateProductVariantUseCase
+        );
+        findProductByNameUseCase = module.get<FindProductByNameUseCase>(
+            FindProductByNameUseCase
+        );
+        getProductsByPriceRangeUseCase =
+            module.get<GetProductsByPriceRangeUseCase>(
+                GetProductsByPriceRangeUseCase
+            );
+
         // deleteProductUseCase =
         //   module.get<DeleteProductUseCase>(DeleteProductUseCase);
     });
@@ -128,40 +215,43 @@ describe("ProductController", () => {
                 isFeatured: false,
                 isNew: false,
                 sku: "sku-123",
-                length: 0,
-                height: 0,
-                width: 0,
-                weight: 0,
+                length: 10,
+                height: 10,
+                width: 10,
+                weight: 10,
                 hasVariants: false,
             },
             new UniqueEntityID()
         );
+
         const mockResult = right({ product: mockProduct }) as Either<
             ResourceNotFoundError,
             { product: Product }
         >;
+
         vi.spyOn(createProductUseCase, "execute").mockResolvedValue(mockResult);
 
         const result = await productController.createProduct({
-          name: "ProductName",
-          description: "ProductDescription",
-          productCategories: ["category1", "category2"],
-
-          brandId: "brand-id",
-          price: 100,
-          stock: 10,
-          images: [],
-          onSale: false,
-          discount: 0,
-          isFeatured: false,
-          isNew: false,
-          productColors: ["color1", "color2"],
-          productSizes: ["size1", "size2"],
-          sku: "sku-123",
-          length: 0,
-          height: 0,
-          width: 0,
-          weight: 0
+            name: "ProductName",
+            description: "ProductDescription",
+            productCategories: ["category1", "category2"],
+            brandId: "brand-id",
+            price: 100,
+            stock: 10,
+            images: [],
+            onSale: false,
+            discount: 0,
+            isFeatured: false,
+            isNew: false,
+            length: 10,
+            height: 10,
+            width: 10,
+            weight: 10,
+            hasVariants: false,
+            sku: "sku text",
+            erpId: undefined,
+            productColors: undefined,
+            productSizes: undefined,
         });
 
         expect(result).toEqual({ product: mockProduct });
@@ -176,15 +266,16 @@ describe("ProductController", () => {
             discount: 0,
             isFeatured: false,
             isNew: false,
+            length: 10,
+            height: 10,
+            width: 10,
+            weight: 10,
+            sku: "sku text",
+            erpId: undefined,
+            productColors: undefined,
+            productSizes: undefined,
             productCategories: ["category1", "category2"],
-
-            productColors: ["color1", "color2"],
-            productSizes: ["size1", "size2"],
-            height: null,
-            width: null,
-            length: null,
-            weight: null,
-            sku: "sku-123",
+            hasVariants: false,
         });
     });
 
@@ -195,25 +286,25 @@ describe("ProductController", () => {
 
         try {
             await productController.createProduct({
-              name: "ProductWithError",
-              description: "DescriptionWithError",
-              productCategories: ["category1", "category2"],
+                name: "ProductWithError",
+                description: "DescriptionWithError",
+                productCategories: ["category1", "category2"],
 
-              brandId: "brand-id",
-              price: 100,
-              stock: 10,
-              images: [],
-              onSale: false,
-              discount: 0,
-              isFeatured: false,
-              isNew: false,
-              productColors: ["color1", "color2"],
-              productSizes: ["size1", "size2"],
-              sku: "sku-123",
-              length: 0,
-              height: 0,
-              width: 0,
-              weight: 0
+                brandId: "brand-id",
+                price: 100,
+                stock: 10,
+                images: [],
+                onSale: false,
+                discount: 0,
+                isFeatured: false,
+                isNew: false,
+                productColors: ["color1", "color2"],
+                productSizes: ["size1", "size2"],
+                sku: "sku-123",
+                length: 0,
+                height: 0,
+                width: 0,
+                weight: 0,
             });
         } catch (error) {
             if (error instanceof HttpException) {
