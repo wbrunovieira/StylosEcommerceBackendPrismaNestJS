@@ -1037,6 +1037,7 @@ export class PrismaProductRepository implements IProductRepository {
                 productId: UniqueEntityID;
                 colorId?: UniqueEntityID;
                 sizeId?: UniqueEntityID;
+
                 sku: string;
                 upc?: string;
                 stock: number;
@@ -1057,8 +1058,12 @@ export class PrismaProductRepository implements IProductRepository {
             }
 
             console.log(
-                "depois do try no prisma product save Product productOrProductWithVariants",
-                Product,
+                "depois do try no prisma product save Product ",
+                Product
+            );
+            console.log(
+                "depois do try no prisma product save productOrProductWithVariants",
+
                 productOrProductWithVariants
             );
             console.log("try no prisma product product", product);
@@ -1066,13 +1071,31 @@ export class PrismaProductRepository implements IProductRepository {
                 " try no product.brandId.toString()",
                 product.brandId.toString()
             );
-            console.log("try no product.isNew", product.isNew);
-            console.log("try no product.isFeatured", product.isFeatured);
+
+            // console.log("try no this.prisma", this.prisma);
+            // console.log("try no this.prisma", this.prisma.product);
+            // console.log("try no this.prismaupdate", this.prisma.product.update);
 
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
                 data: {
                     name: product.name,
+                    description: product.description,
+                    brandId: product.brandId.toString(),
+                    discount: product.discount,
+                    price: product.price,
+                    height: product.height,
+                    width: product.width,
+                    length: product.length,
+                    weight: product.weight,
+                    onSale: product.onSale,
+                    isFeatured: product.isFeatured,
+                    images: product.images,
+                    stock: product.stock,
+                    sku: product.sku,
+                    erpId: product.erpId,
+                    updatedAt: new Date(),
+                   
                 },
             });
             console.log("updatedProduct", updatedProduct);
@@ -1213,13 +1236,11 @@ export class PrismaProductRepository implements IProductRepository {
                     productVariants: true,
                 },
             });
-    
+
             if (!productsData.length) {
-                return left(
-                    new ResourceNotFoundError(`No products found`)
-                );
+                return left(new ResourceNotFoundError(`No products found`));
             }
-    
+
             const products = productsData.map((productData) =>
                 Product.create(
                     {
@@ -1271,12 +1292,11 @@ export class PrismaProductRepository implements IProductRepository {
                     new UniqueEntityID(productData.id)
                 )
             );
-    
+
             return right(products);
         } catch (error) {
             console.error(`Failed to retrieve all products, Error: ${error}`);
             return left(new Error(`Failed to retrieve all products`));
         }
     }
-    
 }
