@@ -4,6 +4,8 @@ import { IProductRepository } from "../../application/repositories/i-product-rep
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 
+
+
 @Injectable()
 export class GetAllProductsUseCase {
     constructor(private productRepository: IProductRepository) {}
@@ -16,18 +18,14 @@ export class GetAllProductsUseCase {
         
         if (productsOrError.isLeft()) {
             
-            console.error(
-                "Error while fetching all products:",
-                productsOrError.value
-            );
-
-            return left(new ResourceNotFoundError("No products found"));
+                   return left(new ResourceNotFoundError("No products found"));
         }
         
         const products = productsOrError.value;
+
         console.log("GetAllProductsUseCase products", products);
 
-        if (!products.length) {
+        if (products.length === 0) {
             return left(new ResourceNotFoundError("No products found"));
         }
 
