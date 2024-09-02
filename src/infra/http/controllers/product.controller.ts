@@ -140,7 +140,7 @@ export class ProductController {
         private updateProductVariantUseCase: UpdateProductVariantUseCase,
         private findProductByName: FindProductByNameUseCase,
         private getProductsByPriceRange: GetProductsByPriceRangeUseCase,
-        private getAllProductsUseCase : GetAllProductsUseCase
+        private getAllProductsUseCase: GetAllProductsUseCase
     ) {}
 
     @Post()
@@ -320,9 +320,8 @@ export class ProductController {
                         HttpStatus.INTERNAL_SERVER_ERROR
                     );
                 }
-            } else {
-                return result.value;
             }
+            return result.value;
         } catch (error) {}
     }
 
@@ -407,25 +406,42 @@ export class ProductController {
         return { products };
     }
 
-    // @Get("all")
-    // async handle(
-    //     @Query("page", queryValidationPipe) page: PageQueryParamSchema
-    // ) {
-        
-    //     try {
-            
-    // const result = await this.getAllProductsUseCase.execute()
+    @Get("all")
+    async handle(@Query("page") page: PageQueryParamSchema) {
+        try {
+            const result = await this.getAllProductsUseCase.execute();
 
+            if (result.isLeft()) {
+                const error = result.value;
 
+                if (error instanceof ResourceNotFoundError) {
+                    throw new HttpException(
+                        error.message,
+                        HttpStatus.NOT_FOUND
+                    );
+                }
 
-    //     } catch (error) {
-            
-    //     }
+                throw new HttpException(
+                    "Unexpected error occurred",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
 
-        
+            // Se chegarmos aqui, significa que result é um `Right`
+            const products = result.value;
 
-    //     return { products };
-    // }
+            return { products };
+        } catch (error) {
+            console.error(
+                "An error occurred while processing the request",
+                error
+            );
+            throw new HttpException(
+                "An internal server error occurred",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Get(":id")
     async getProduct(@Param("id") id: string) {
