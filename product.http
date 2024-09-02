@@ -57,7 +57,29 @@ PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "name": "010045 SUTIA B LARGA REG updated"
+  "name": "010045 SUTIA B LARGA REG updated8",
+   "description": "DescriptionNotFound 5",
+   "brandId": "00e92aee-a6bf-44d3-a35c-d77a952a8994",
+   "brandName": "PLIE",
+   "discount": 10,
+   "price": 90,
+   "height": 15,
+     "width": 15,
+      "length": 15,
+      "weight": 15,
+      "onSale": false,
+      "isFeatured": true,
+        "images": [
+        "http://localhost:3000/public/images/LogoStylos.svg"
+      ],
+      "stock": 100,
+       "sku": "default-sku",
+       "erpId": "teste",
+         "slug": {
+        "value": "010045-sutia-b-larga-reg-b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae-1724092863831-mais teste"
+      }
+     
+
 
 }
 
@@ -98,7 +120,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
+GET {{BASE_URL}}/products/084f28a4-06a4-441d-be58-d47904094ee5
 Content-Type: application/json
 
 
