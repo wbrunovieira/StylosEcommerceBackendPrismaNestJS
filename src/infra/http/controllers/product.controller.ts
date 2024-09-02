@@ -35,6 +35,7 @@ import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-case
 import { ProductStatus } from "@prisma/client";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { toDomainProductStatus } from "@/infra/database/prisma/utils/convert-product-status";
+import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
 
 const createProductBodySchema = z.object({
     name: z.string(),
@@ -138,7 +139,8 @@ export class ProductController {
         private getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
         private updateProductVariantUseCase: UpdateProductVariantUseCase,
         private findProductByName: FindProductByNameUseCase,
-        private getProductsByPriceRange: GetProductsByPriceRangeUseCase
+        private getProductsByPriceRange: GetProductsByPriceRangeUseCase,
+        private getAllProductsUseCase : GetAllProductsUseCase
     ) {}
 
     @Post()
@@ -405,30 +407,25 @@ export class ProductController {
         return { products };
     }
 
-    @Get("all")
-    async handle(
-        @Query("page", queryValidationPipe) page: PageQueryParamSchema
-    ) {
-        const perPage = 10;
+    // @Get("all")
+    // async handle(
+    //     @Query("page", queryValidationPipe) page: PageQueryParamSchema
+    // ) {
+        
+    //     try {
+            
+    // const result = await this.getAllProductsUseCase.execute()
 
-        const products = await this.prisma.product.findMany({
-            take: perPage,
-            skip: (page - 1) * perPage,
-            orderBy: {
-                name: "asc",
-            },
-            include: {
-                productCategories: {
-                    include: {
-                        category: true,
-                    },
-                },
-                productVariants: {},
-            },
-        });
 
-        return { products };
-    }
+
+    //     } catch (error) {
+            
+    //     }
+
+        
+
+    //     return { products };
+    // }
 
     @Get(":id")
     async getProduct(@Param("id") id: string) {
