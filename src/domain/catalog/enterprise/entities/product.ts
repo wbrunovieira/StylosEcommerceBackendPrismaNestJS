@@ -3,7 +3,8 @@ import { Slug } from "./value-objects/slug";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 
-import dayjs from "dayjs";
+import dayjs = require("dayjs");
+
 import { Entity } from "@/core/entities/entity";
 import { ProductStatus } from "./product-status";
 
@@ -134,10 +135,8 @@ export class Product extends Entity<ProductProps> {
     }
 
     set hasVariants(hasVariants: boolean) {
-
         this.props.hasVariants = hasVariants;
         this.touch();
-       
     }
 
     set isFeatured(isFeatured: boolean) {
@@ -220,8 +219,12 @@ export class Product extends Entity<ProductProps> {
     }
 
     get isNew(): boolean {
-        return dayjs().diff(this.createdAt, "days") <= 30;
+        const daysSinceCreation = dayjs().diff(this.createdAt, "day");
+        return daysSinceCreation <= 30; // Considera "novo" se foi criado nos últimos 30 dias
     }
+    // get isNew(): boolean {
+    //     return dayjs().diff(this.createdAt, "days") <= 30;
+    // }
 
     get excerpt() {
         return this.description.substring(0, 120).trimEnd().concat("...");
@@ -357,10 +360,9 @@ export class Product extends Entity<ProductProps> {
                 id: category.id.toValue(),
                 name: category.name,
             })),
-           
         };
     }
-    
+
     static create(
         props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
         id?: UniqueEntityID
