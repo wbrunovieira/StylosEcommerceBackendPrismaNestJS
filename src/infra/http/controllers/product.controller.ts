@@ -35,7 +35,10 @@ import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-case
 import { ProductStatus } from "@prisma/client";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { toDomainProductStatus } from "@/infra/database/prisma/utils/convert-product-status";
-import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
+import {
+    GetAllProductsUseCase,
+    ProductObject,
+} from "@/domain/catalog/application/use-cases/get-all-products";
 
 const createProductBodySchema = z.object({
     name: z.string(),
@@ -407,7 +410,9 @@ export class ProductController {
     }
 
     @Get("all")
-    async handle(@Query("page") page: PageQueryParamSchema) {
+    async getAll(
+        @Query("page") page: PageQueryParamSchema
+    ): Promise<{ products: ProductObject[] }> {
         try {
             const result = await this.getAllProductsUseCase.execute();
 
@@ -427,7 +432,6 @@ export class ProductController {
                 );
             }
 
-            // Se chegarmos aqui, significa que result é um `Right`
             const products = result.value;
 
             return { products };

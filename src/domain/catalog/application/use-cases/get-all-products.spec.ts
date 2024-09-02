@@ -55,8 +55,8 @@ describe("GetAllProductsUseCase", () => {
         if (result.isRight()) {
             const products = result.value;
             expect(products).toHaveLength(2);
-            expect(products[0].id).toEqual(productId1);
-            expect(products[1].id).toEqual(productId2);
+            expect(products[0].id).toEqual(productId1.toValue());
+            expect(products[1].id).toEqual(productId2.toValue());
         } else {
             throw new Error("Expected to retrieve products successfully");
         }

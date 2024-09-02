@@ -331,6 +331,36 @@ export class Product extends Entity<ProductProps> {
         this.touch();
     }
 
+    toObject() {
+        return {
+            id: this.id.toValue(),
+            name: this.name,
+            description: this.description,
+            price: this.price,
+            finalPrice: this.finalPrice,
+            stock: this.stock,
+            brandName: this.props.brandName,
+            brandUrl: this.props.brandUrl,
+            discount: this.discount,
+            height: this.height,
+            width: this.width,
+            length: this.length,
+            weight: this.weight,
+            onSale: this.onSale,
+            isFeatured: this.isFeatured,
+            isNew: this.isNew,
+            images: this.images,
+            slug: this.slug.value,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
+            productCategories: this.productCategories?.map((category) => ({
+                id: category.id.toValue(),
+                name: category.name,
+            })),
+           
+        };
+    }
+    
     static create(
         props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
         id?: UniqueEntityID
