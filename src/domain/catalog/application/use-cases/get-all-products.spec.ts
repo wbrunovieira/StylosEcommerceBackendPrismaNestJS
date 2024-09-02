@@ -99,4 +99,26 @@ describe("GetAllProductsUseCase", () => {
             );
         }
     });
+
+    it("should correctly convert Product to ProductObject", () => {
+        const productId = new UniqueEntityID("product_id_test");
+
+        const product = makeProduct(
+            {
+                name: "Test Product",
+                description: "Test Description",
+                price: 100,
+                stock: 10,
+            },
+            productId
+        );
+
+        const productObject = product.product.toObject();
+        console.log("Converted ProductObject:", productObject);
+
+        expect(productObject).toHaveProperty("id", productId.toValue());
+        expect(productObject).toHaveProperty("name", "Test Product");
+        expect(productObject).toHaveProperty("price", 100);
+        // Adicione mais asserções conforme necessário
+    });
 });
