@@ -38,6 +38,12 @@ interface EditProductUseCaseRequest {
 
 type EditProductUseCaseResponse = Either<ResourceNotFoundError, Product>;
 
+function isBrandIdObject(brandId: any): brandId is { value: string } {
+    return (
+        typeof brandId === "object" && brandId !== null && "value" in brandId
+    );
+}
+
 @Injectable()
 export class EditProductUseCase {
     constructor(
@@ -125,26 +131,64 @@ export class EditProductUseCase {
 
         if (sizeId !== undefined)
             product.sizeId = sizeId.map((id) => new UniqueEntityID(id));
-        if (brandId !== undefined)
-            product.brandId = new UniqueEntityID(brandId);
+        if (brandId !== undefined) {
+            let brandIdValue: string;
+
+            if (isBrandIdObject(brandId)) {
+                brandIdValue = brandId.value;
+            } else {
+                brandIdValue = brandId;
+            }
+
+            product.brandId = new UniqueEntityID(brandIdValue);
+        }
+
         if (discount !== undefined) {
             product.discount = discount;
             discountChanged = true;
         }
+
         if (price !== undefined) {
-            product.price = price;
+            product.price =
+                typeof price === "string" ? parseFloat(price) : price;
             priceChanged = true;
         }
-        if (stock !== undefined) product.stock = stock;
+
+        if (stock !== undefined) {
+            product.stock =
+                typeof stock === "string" ? parseFloat(stock) : stock;
+        }
         if (erpId !== undefined) product.erpId = erpId;
         if (sku !== undefined) product.sku = sku;
-        if (height !== undefined) product.height = height;
-        if (width !== undefined) product.width = width;
-        if (length !== undefined) product.length = length;
-        if (weight !== undefined) product.weight = weight;
+
+        if (height !== undefined) {
+            product.height =
+                typeof height === "string" ? parseFloat(height) : height;
+        }
+
+        if (width !== undefined) {
+            product.width =
+                typeof width === "string" ? parseFloat(width) : width;
+        }
+
+        if (length !== undefined) {
+            product.length =
+                typeof length === "string" ? parseFloat(length) : length;
+        }
+
+        if (weight !== undefined) {
+            product.weight =
+                typeof weight === "string" ? parseFloat(weight) : weight;
+        }
         if (onSale !== undefined) product.onSale = onSale;
+        if (typeof onSale === "string") {
+            product.onSale = onSale === "on";
+        }
         if (isFeatured !== undefined) product.isFeatured = isFeatured;
-        console.log("edit usecase isFeatured 2", isFeatured);
+        if (typeof isFeatured === "string") {
+            product.isFeatured = isFeatured === "on";
+        }
+
         if (isNew !== undefined) product.isNew = isNew;
         if (images !== undefined) product.images = images;
 
@@ -157,9 +201,16 @@ export class EditProductUseCase {
             product.setFinalPrice(finalPrice);
         }
 
-        const brandOrError = await this.brandRepository.findById(
-            product.brandId.toString()
+        const brandIdTeste = new UniqueEntityID(
+            "b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae"
         );
+
+        console.log("brandIdTeste", brandIdTeste);
+        console.log("product.brandId", product.brandId);
+        const brandIdString = product.brandId.toValue();
+        console.log("brandIdString", brandIdString);
+
+        const brandOrError = await this.brandRepository.findById(brandIdString);
         if (brandOrError.isLeft()) {
             return left(new ResourceNotFoundError("Brand not found"));
         }

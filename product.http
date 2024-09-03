@@ -45,7 +45,6 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "productSizes": [ "f4051ddb-e807-4f8f-8f50-6f3f06d7795d"]
 ###
 
-
 # @name get-all-products
 GET {{BASE_URL}}/products/all
 Content-Type: application/json
