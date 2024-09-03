@@ -1072,9 +1072,6 @@ export class PrismaProductRepository implements IProductRepository {
                 product.brandId.toString()
             );
 
-            // console.log("try no this.prisma", this.prisma);
-            // console.log("try no this.prisma", this.prisma.product);
-            // console.log("try no this.prismaupdate", this.prisma.product.update);
 
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
