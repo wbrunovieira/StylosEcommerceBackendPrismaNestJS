@@ -8,8 +8,6 @@ import { Product } from "@/domain/catalog/enterprise/entities/product";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { IProductVariantRepository } from "@/domain/catalog/application/repositories/i-product-variant-repository";
 
-
-
 @Injectable()
 export class InMemoryProductRepository implements IProductRepository {
     variantRepository: IProductVariantRepository;
@@ -251,27 +249,27 @@ export class InMemoryProductRepository implements IProductRepository {
     }
 
     async save(product: Product): Promise<Either<ResourceNotFoundError, void>> {
-        console.log("async save(product: Product): bateu");
-        const index = this.items.findIndex(
-            (item) => item.id.toString() === product.id.toString()
-        );
-
-        if (index === -1) {
-            return left(new ResourceNotFoundError("Product not found"));
-        }
-
         try {
-            // Ensure the product and its slug are not undefined
+            console.log("async save(product: Product): bateu");
+            console.log("save(product: Product product save1", product);
+
+            const index = this.items.findIndex(
+                (item) => item.id.toString() === product.id.toString()
+            );
+            console.log("save(product: Product product index", index);
+            console.log("save(product: Product product product2", product);
+
+            if (index === -1) {
+                return left(new ResourceNotFoundError("Product not found"));
+            }
             if (!product || !product.slug) {
                 throw new Error("Product or its slug is undefined");
             }
 
-            // Ensure that the slug's value is defined before proceeding
             if (!product.slug.value) {
                 throw new Error("Product slug value is undefined");
             }
 
-            // Generate a unique slug for the product
             const baseSlug = product.slug.value;
             const uniqueSlug = await this.generateUniqueSlug(
                 baseSlug,
@@ -280,10 +278,14 @@ export class InMemoryProductRepository implements IProductRepository {
             console.log("baseSlug insave", baseSlug);
             console.log("uniqueSlug insave", uniqueSlug);
 
-            // Update the product's slug
             product.slug.value = uniqueSlug;
             console.log("product.slug.value insave", product.slug.value);
+            console.log("product la embaixo insave", product);
             console.log("product.slug insave", product.slug);
+            console.log(
+                "product.productCategories insave",
+                product.productCategories
+            );
 
             const updatedProduct = Product.create(
                 {
@@ -291,6 +293,7 @@ export class InMemoryProductRepository implements IProductRepository {
                     description: product.description,
                     brandId: product.brandId,
                     price: product.price,
+                    productCategories: product.productCategories || [],
                     finalPrice: product.finalPrice ?? 0,
                     stock: product.stock,
                     sku: product.sku || "",
@@ -312,8 +315,15 @@ export class InMemoryProductRepository implements IProductRepository {
                 product.id
             );
 
-            // Replace the old product with the updated one
+            console.log(
+                "InMemoryProductRepository save updatedProduct",
+                updatedProduct
+            );
             this.items[index] = updatedProduct;
+            console.log(
+                "InMemoryProductRepository save updatedProduct2",
+                updatedProduct
+            );
 
             return right(undefined);
         } catch (error) {
