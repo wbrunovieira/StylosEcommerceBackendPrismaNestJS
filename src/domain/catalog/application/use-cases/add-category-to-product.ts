@@ -44,27 +44,51 @@ export class AddCategoriesToProductUseCase {
         const product = productOrError.value;
 
         const uniqueCategories = new Set<string>();
+        console.log(
+            "AddCategoriesToProductUseCase uniqueCategories new",
+            uniqueCategories
+        );
 
         for (const categoryId of categories) {
-            if (!categoryId) {
+            console.log(
+                "AddCategoriesToProductUseCase for (const categoryId of categories categoryId",
+                categoryId
+            );
+            console.log(
+                "AddCategoriesToProductUseCase for (const categoryId of categories uniqueCategories",
+                uniqueCategories
+            );
+            const validCategoryId = Array.isArray(categoryId)
+                ? categoryId[0]
+                : categoryId;
+
+            console.log(
+                "AddCategoriesToProductUseCase for (const categoryId of categories validCategoryId",
+                validCategoryId
+            );
+         
+            if (!validCategoryId) {
                 return left(new Error("InvalidCategoryError"));
             }
 
-            if (uniqueCategories.has(categoryId)) {
+            
+
+            if (uniqueCategories.has(validCategoryId)) {
                 return left(
                     new ResourceNotFoundError(
-                        `Duplicate category: ${categoryId}`
+                        `Duplicate category: ${validCategoryId}`
                     )
                 );
             }
-            uniqueCategories.add(categoryId);
+
+            uniqueCategories.add(validCategoryId);
             console.log(
                 "AddCategoriesToProductUseCase uniqueCategories",
                 uniqueCategories
             );
 
             const categoryExists =
-                await this.categoryRepository.findById(categoryId);
+                await this.categoryRepository.findById(validCategoryId);
             console.log(
                 "AddCategoriesToProductUseCase categoryExists",
                 categoryExists
@@ -72,7 +96,7 @@ export class AddCategoriesToProductUseCase {
             if (categoryExists.isLeft()) {
                 return left(
                     new ResourceNotFoundError(
-                        `Category not found: ${categoryId}`
+                        `Category not found: ${validCategoryId}`
                     )
                 );
             }
@@ -81,7 +105,7 @@ export class AddCategoriesToProductUseCase {
             const createdCategoryProduct =
                 await this.productCategoryRepository.create(
                     productId,
-                    categoryId
+                    validCategoryId
                 );
 
             console.log(
@@ -99,18 +123,6 @@ export class AddCategoriesToProductUseCase {
         }
 
         try {
-            for (const categoryId of uniqueCategories) {
-                const productCategoryCreatedFor =
-                    await this.productCategoryRepository.create(
-                        productId,
-                        categoryId
-                    );
-                console.log(
-                    "AddCategoriesToProductUseCase productCategoryCreatedFor",
-                    productCategoryCreatedFor
-                );
-            }
-
             console.log("AddCategoriesToProductUseCase product", product);
 
             const finalProduct = await this.productRepository.save(product);
