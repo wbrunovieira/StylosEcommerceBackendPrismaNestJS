@@ -3,7 +3,7 @@ import { Slug } from "./value-objects/slug";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 
-import dayjs = require("dayjs");
+import dayjs from "dayjs";
 
 import { Entity } from "@/core/entities/entity";
 import { ProductStatus } from "./product-status";
@@ -370,14 +370,14 @@ export class Product extends Entity<ProductProps> {
         const product = new Product(
             {
                 ...props,
-
+                productCategories: props.productCategories || [],
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 slug: props.slug ?? Slug.createFromText(props.name),
             },
             id
         );
-
+        console.log("entity product product", product);
         return product;
     }
 }

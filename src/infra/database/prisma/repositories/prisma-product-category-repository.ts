@@ -22,6 +22,10 @@ export class PrismaProductCategoryRepository
       if (catergoryExists.isLeft()) {
         return left(new Error("Category not found"));
       }
+      console.log(
+        "PrismaProductCategoryRepository create catergoryExists",
+        catergoryExists
+    );
 
       const productExists = await this.prisma.product.findUnique({
         where: { id: productId },
