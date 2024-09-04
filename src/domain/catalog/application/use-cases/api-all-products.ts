@@ -192,6 +192,7 @@ export class ApiGetAllProducts {
                             width: product.width || 0,
                             length: product.length || 0,
                             weight: product.weight || 0,
+                            showInSite: product.showInSite || true,
                             brandId: new UniqueEntityID(brandId),
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),

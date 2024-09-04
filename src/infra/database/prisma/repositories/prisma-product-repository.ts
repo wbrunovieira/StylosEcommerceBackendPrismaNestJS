@@ -37,6 +37,7 @@ export class PrismaProductRepository implements IProductRepository {
                 weight,
                 onSale,
                 isFeatured,
+                showInSite,
                 isNew,
                 images,
                 hasVariants,
@@ -44,7 +45,6 @@ export class PrismaProductRepository implements IProductRepository {
                 updatedAt,
             } = product;
 
-            // Verificação da existência da marca
             const brandExist = await this.prisma.brand.findUnique({
                 where: { id: brandId.toString() },
                 select: { id: true, name: true },
@@ -54,7 +54,8 @@ export class PrismaProductRepository implements IProductRepository {
                 throw new Error("Brand not found.");
             }
 
-            // Map Domain Entity to Prisma Model
+            console.log("slug.toString()", slug.toString());
+            console.log("slug.toString()", slug.value);
             const createdProduct = await this.prisma.product.create({
                 data: {
                     name,
@@ -68,13 +69,14 @@ export class PrismaProductRepository implements IProductRepository {
                     sku,
                     productIdVariant: productIdVariant ?? undefined,
                     erpId: erpId ?? undefined,
-                    slug: slug.toString(),
+                    slug: slug.value,
                     height,
                     width,
                     length,
                     weight,
                     onSale: onSale ?? undefined,
                     isFeatured: isFeatured ?? undefined,
+                    showInSite: showInSite ?? undefined,
                     isNew: isNew ?? undefined,
                     images: images ?? [],
                     hasVariants,
@@ -175,6 +177,7 @@ export class PrismaProductRepository implements IProductRepository {
                         isFeatured: productData.isFeatured ?? undefined,
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
+                        showInSite: productData.showInSite,
                         images: productData.images ?? undefined,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),
@@ -282,6 +285,7 @@ export class PrismaProductRepository implements IProductRepository {
                         onSale: productData.onSale ?? undefined,
                         isFeatured: productData.isFeatured ?? undefined,
                         hasVariants: productData.hasVariants ?? undefined,
+                        showInSite: productData.showInSite,
                         isNew: productData.isNew ?? undefined,
                         images: productData.images ?? undefined,
                         slug: Slug.createFromText(productData.slug),
@@ -393,6 +397,7 @@ export class PrismaProductRepository implements IProductRepository {
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
                         images: productData.images ?? undefined,
+                        showInSite: productData.showInSite,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),
                         updatedAt: productData.updatedAt
@@ -497,6 +502,7 @@ export class PrismaProductRepository implements IProductRepository {
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
                         images: productData.images ?? undefined,
+                        showInSite: productData.showInSite,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),
                         updatedAt: productData.updatedAt
@@ -601,6 +607,7 @@ export class PrismaProductRepository implements IProductRepository {
                         isFeatured: productData.isFeatured ?? undefined,
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
+                        showInSite: productData.showInSite,
                         images: productData.images ?? undefined,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),
@@ -711,6 +718,7 @@ export class PrismaProductRepository implements IProductRepository {
                         isFeatured: productData.isFeatured ?? undefined,
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
+                        showInSite: productData.showInSite,
                         images: productData.images ?? undefined,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),
@@ -825,6 +833,7 @@ export class PrismaProductRepository implements IProductRepository {
                     weight: productData.weight ?? undefined,
                     onSale: productData.onSale ?? undefined,
                     productIdVariant: productData.productIdVariant ?? undefined,
+                    showInSite: productData.showInSite,
                     isFeatured: productData.isFeatured ?? undefined,
                     hasVariants: productData.hasVariants ?? undefined,
                     isNew: productData.isNew ?? undefined,
@@ -976,6 +985,7 @@ export class PrismaProductRepository implements IProductRepository {
                     hasVariants: productData.hasVariants ?? undefined,
                     productIdVariant: productData.productIdVariant ?? undefined,
                     isNew: productData.isNew ?? undefined,
+                    showInSite: productData.showInSite,
                     images: productData.images ?? undefined,
                     slug: Slug.createFromText(productData.slug),
                     createdAt: new Date(productData.createdAt),
@@ -1072,7 +1082,6 @@ export class PrismaProductRepository implements IProductRepository {
                 product.brandId.toString()
             );
 
-
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
                 data: {
@@ -1092,38 +1101,9 @@ export class PrismaProductRepository implements IProductRepository {
                     sku: product.sku,
                     erpId: product.erpId,
                     updatedAt: new Date(),
-                   
                 },
             });
             console.log("updatedProduct", updatedProduct);
-
-            // const updatedProduct = await this.prisma.product.update({
-            //     where: { id: product.id.toString() },
-            //     data: {
-            //         name: product.name,
-            //         description: product.description,
-
-            //         brandId: product.brandId.toString(),
-            //         discount: product.discount,
-            //         price: product.price,
-            //         finalPrice: product.finalPrice,
-            //         height: product.height,
-            //         width: product.width,
-            //         length: product.length,
-            //         weight: product.weight,
-            //         onSale: product.onSale,
-            //         isFeatured: product.isFeatured,
-            //         isNew: product.isNew,
-            //         images: product.images,
-            //         stock: product.stock,
-            //         sku: product.sku,
-            //         erpId: product.erpId,
-            //         slug: product.slug.toString(),
-            //         updatedAt: new Date(),
-            //     },
-            // });
-
-            // console.log("updatedProduct", updatedProduct);
 
             const variantsSaved = await Promise.all(
                 variants.map(async (variant) => {
@@ -1279,6 +1259,7 @@ export class PrismaProductRepository implements IProductRepository {
                         isFeatured: productData.isFeatured ?? undefined,
                         hasVariants: productData.hasVariants ?? undefined,
                         isNew: productData.isNew ?? undefined,
+                        showInSite: productData.showInSite,
                         images: productData.images ?? undefined,
                         slug: Slug.createFromText(productData.slug),
                         createdAt: new Date(productData.createdAt),

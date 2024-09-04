@@ -24,7 +24,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "saia 15 aaaaaaaa",
+  "name": "blusa testes2",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
  "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
@@ -36,6 +36,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
   "width":17,
   "length":11,
   "weight":0.3
+ 
     
 }
 
@@ -135,7 +136,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/084f28a4-06a4-441d-be58-d47904094ee5
+GET {{BASE_URL}}/products/afe06e49-071f-439f-a2e3-507f1e5ea8a3
 Content-Type: application/json
 
 
@@ -189,7 +190,7 @@ GET {{BASE_URL}}/products/slug/produto-12-484fc45f-5b0d-432a-a60e-16a6a4253f7a-c
 ###
 
 # @name get-product-by-name
-GET {{BASE_URL}}/products/search?name=produto
+GET {{BASE_URL}}/products/search?name=blusa testes
 Content-Type: application/json
 
 ###

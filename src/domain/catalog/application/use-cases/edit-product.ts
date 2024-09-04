@@ -30,6 +30,7 @@ interface EditProductUseCaseRequest {
     weight?: number;
     onSale?: boolean;
     isFeatured?: boolean;
+    showInSite: boolean;
     isNew?: boolean;
     images?: string[];
     createdAt?: Date;
@@ -79,6 +80,7 @@ export class EditProductUseCase {
         weight,
         onSale,
         isFeatured,
+        showInSite,
         isNew,
         images,
     }: EditProductUseCaseRequest): Promise<EditProductUseCaseResponse> {
@@ -187,6 +189,10 @@ export class EditProductUseCase {
         if (isFeatured !== undefined) product.isFeatured = isFeatured;
         if (typeof isFeatured === "string") {
             product.isFeatured = isFeatured === "on";
+        }
+        if (showInSite !== undefined) product.showInSite = showInSite;
+        if (typeof showInSite === "string") {
+            product.showInSite = showInSite === "on";
         }
 
         if (isNew !== undefined) product.isNew = isNew;

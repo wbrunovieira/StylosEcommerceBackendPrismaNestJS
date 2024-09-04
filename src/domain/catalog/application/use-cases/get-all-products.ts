@@ -26,6 +26,7 @@ export interface ProductObject {
     isNew?: boolean;
     images?: string[];
     slug: string;
+    showInSite: boolean;
     createdAt: Date;
     updatedAt: Date;
     productCategories?: { id: string; name: string }[];

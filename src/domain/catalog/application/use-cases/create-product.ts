@@ -45,6 +45,7 @@ interface CreateProductUseCaseRequest {
     isFeatured?: boolean;
     hasVariants?: boolean;
     isNew?: boolean;
+    showInSite: boolean;
     images?: string[];
     productIdVariant?: string;
 }
@@ -99,6 +100,7 @@ export class CreateProductUseCase {
         hasVariants = false,
         discount = 0,
         isFeatured = false,
+        showInSite = true,
         isNew = false,
         images = [],
     }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
@@ -246,6 +248,7 @@ export class CreateProductUseCase {
                 onSale,
                 discount,
                 isFeatured,
+                showInSite,
                 isNew,
                 hasVariants,
                 images,
@@ -269,7 +272,9 @@ export class CreateProductUseCase {
                 brand.name,
                 product.id.toString()
             );
+            console.log("CreateProductUseCase finalSlug", finalSlug);
             product.slug = finalSlug;
+            console.log("CreateProductUseCase product.slug", product.slug);
 
             const checkHasVariants = !!(
                 productColors?.length || productSizes?.length
@@ -297,8 +302,19 @@ export class CreateProductUseCase {
                 product,
                 productVariants: [],
             });
+            productWithVariants.product.slug = finalSlug;
+            console.log(
+                "CreateProductUseCase productWithVariants.product.slug",
+                productWithVariants.product.slug
+            );
 
-            const productSaved = await this.productRepository.save(product);
+            console.log(
+                "CreateProductUseCase product quase",
+                productWithVariants.product
+            );
+            const productSaved = await this.productRepository.save(
+                productWithVariants.product
+            );
 
             console.log("CreateProductUseCase productSaved", productSaved);
 
