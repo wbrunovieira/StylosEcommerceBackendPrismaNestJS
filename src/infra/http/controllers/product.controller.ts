@@ -39,6 +39,7 @@ import {
     GetAllProductsUseCase,
     ProductObject,
 } from "@/domain/catalog/application/use-cases/get-all-products";
+import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 
 const createProductBodySchema = z.object({
     name: z.string(),
@@ -143,7 +144,8 @@ export class ProductController {
         private updateProductVariantUseCase: UpdateProductVariantUseCase,
         private findProductByName: FindProductByNameUseCase,
         private getProductsByPriceRange: GetProductsByPriceRangeUseCase,
-        private getAllProductsUseCase: GetAllProductsUseCase
+        private getAllProductsUseCase: GetAllProductsUseCase,
+        private addCategoriesToProductUseCase: AddCategoriesToProductUseCase
     ) {}
 
     @Post()
@@ -577,4 +579,44 @@ export class ProductController {
         const productWithVariants = result.value;
         return { product: productWithVariants };
     }
+
+    @Post("/add-categories/:productId")
+    @Roles("admin")
+    async addCategoryToProduct(
+        @Param("productId") productId: string,
+        @Body() body: { categories: string[] } 
+    ) {
+        try {
+            const result = await this.addCategoriesToProductUseCase.execute({
+                productId,
+                categories: body.categories,
+            });
+
+            if (result.isLeft()) {
+                const error = result.value;
+                if (error instanceof ResourceNotFoundError) {
+                    throw new HttpException(
+                        error.message,
+                        HttpStatus.NOT_FOUND
+                    );
+                }
+                throw new HttpException(
+                    "Failed to add categories to product",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+
+            return {
+                message: "Categories added successfully",
+                product: result.value.product,
+            };
+        } catch (error) {
+            console.error("Error adding categories to product:", error);
+            throw new HttpException(
+                "An error occurred while adding categories",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 }

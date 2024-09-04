@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import * as sgMail from "@sendgrid/mail";
+
+import sgMail from "@sendgrid/mail";
 import { Env } from "src/env";
 
 @Injectable()
@@ -89,5 +90,4 @@ export class MailerService {
             );
         }
     }
-
 }

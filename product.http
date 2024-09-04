@@ -39,6 +39,19 @@ Authorization: Bearer {{AUTH_TOKEN}}
     
 }
 
+
+###
+
+# @name add-category-to-product
+POST {{BASE_URL}}/products/add-categories/1dd451a5-fdef-4e1a-b988-0a5090845571
+Content-Type: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+  "categories": ["02ef4079-963a-4d92-849d-eae7a1cc41d3", "04be678e-df6d-43bb-b82b-f1c06648bac0"]
+}
+
+
 ###
  "productColors": ["247b00b5-0b96-4713-a17c-8d05cf89fead"],
   "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
@@ -48,6 +61,8 @@ Authorization: Bearer {{AUTH_TOKEN}}
 # @name get-all-products
 GET {{BASE_URL}}/products/all
 Content-Type: application/json
+
+
 
 ###
 
