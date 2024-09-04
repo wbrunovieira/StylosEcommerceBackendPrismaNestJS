@@ -69,6 +69,7 @@ export interface ProductProps {
     isNew?: boolean;
     images?: string[];
     hasVariants: boolean;
+    showInSite: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -91,6 +92,9 @@ export class Product extends Entity<ProductProps> {
         return this.props.height;
     }
 
+    get showInSite(): boolean {
+        return this.props.showInSite;
+    }
     get hasVariants(): boolean {
         return this.props.hasVariants;
     }
@@ -122,6 +126,11 @@ export class Product extends Entity<ProductProps> {
     }
     set length(length: number) {
         this.props.length = length;
+        this.touch();
+    }
+
+    set showInSite(showInSite: boolean) {
+        this.props.showInSite = showInSite;
         this.touch();
     }
 
@@ -351,6 +360,7 @@ export class Product extends Entity<ProductProps> {
             weight: this.weight,
             onSale: this.onSale,
             isFeatured: this.isFeatured,
+            showInSite: this.showInSite,
             isNew: this.isNew,
             images: this.images,
             slug: this.slug.value,

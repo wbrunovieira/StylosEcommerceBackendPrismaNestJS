@@ -305,6 +305,7 @@ export class InMemoryProductRepository implements IProductRepository {
                     onSale: product.onSale,
                     discount: product.discount,
                     isFeatured: product.isFeatured,
+                    showInSite: product.showInSite,
                     isNew: product.isNew,
                     hasVariants: product.hasVariants,
                     images: product.images || [],
