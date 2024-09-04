@@ -5,7 +5,7 @@ import { IProductRepository } from "../../application/repositories/i-product-rep
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 
-import dayjs = require("dayjs");
+import dayjs from "dayjs";
 
 export interface ProductObject {
     id: string;

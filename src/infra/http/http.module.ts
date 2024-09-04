@@ -214,6 +214,7 @@ import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-
         AddCategoriesToProductUseCase,
 
         ListAllOrdersUseCase,
+        
     ],
 })
 export class HttpModule {}

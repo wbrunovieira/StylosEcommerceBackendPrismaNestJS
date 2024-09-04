@@ -22,9 +22,13 @@ export class PrismaCategoryRepository implements ICategoryRepository {
 
     async findById(id: string): Promise<Either<Error, Category>> {
         try {
+            console.log("primsa category findById id", id);
+
             const categoryData = await this.prisma.category.findUnique({
-                where: { id },
+                where: { id: id },
             });
+
+            console.log("primsa category findById categoryData", categoryData);
             if (!categoryData)
                 return left(new ResourceNotFoundError("Category not found"));
 
