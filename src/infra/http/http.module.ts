@@ -96,6 +96,7 @@ import { DeleteCartUseCase } from "@/domain/order/application/use-cases/delete-c
 import { OrderController } from "./controllers/order.controller";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
+import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -209,6 +210,8 @@ import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/ge
 
         ProductMigrationService,
         FetchAllSuppliersUseCase,
+
+        AddCategoriesToProductUseCase,
 
         ListAllOrdersUseCase,
     ],
