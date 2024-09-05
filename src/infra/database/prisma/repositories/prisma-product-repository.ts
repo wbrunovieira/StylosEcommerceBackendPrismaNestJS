@@ -1096,6 +1096,7 @@ export class PrismaProductRepository implements IProductRepository {
                     weight: product.weight,
                     onSale: product.onSale,
                     isFeatured: product.isFeatured,
+                    showInSite: product.showInSite,
                     images: product.images,
                     stock: product.stock,
                     sku: product.sku,
