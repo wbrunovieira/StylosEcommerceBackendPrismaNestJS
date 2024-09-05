@@ -41,18 +41,27 @@ export class GetAllProductsUseCase {
     constructor(private productRepository: IProductRepository) {}
 
     async execute(): Promise<GetAllProductsUseCaseResponse> {
-        const productsOrError = await this.productRepository.getAllProducts();
+        const result = await this.productRepository.getAllProducts();
 
-        console.log("GetAllProductsUseCase productsOrError", productsOrError);
+        console.log("GetAllProductsUseCase result", result);
 
-        if (productsOrError.isLeft()) {
+        if (result.isLeft()) {
             return left(new ResourceNotFoundError("No products found"));
         }
 
         const now = dayjs();
         console.log("Current date using dayjs:", now.format());
 
-        const products = productsOrError.value;
+        const products = result.value.filter((product) => product.showInSite);
+
+        if (products.length === 0) {
+            return left(
+                new ResourceNotFoundError(
+                    "No available products for this brand"
+                )
+            );
+        }
+
         console.log("Products before mapping:", products);
 
         const productsObject = products.map((product) => {

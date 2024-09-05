@@ -229,11 +229,8 @@ export class Product extends Entity<ProductProps> {
 
     get isNew(): boolean {
         const daysSinceCreation = dayjs().diff(this.createdAt, "day");
-        return daysSinceCreation <= 30; // Considera "novo" se foi criado nos últimos 30 dias
+        return daysSinceCreation <= 30;
     }
-    // get isNew(): boolean {
-    //     return dayjs().diff(this.createdAt, "days") <= 30;
-    // }
 
     get excerpt() {
         return this.description.substring(0, 120).trimEnd().concat("...");
@@ -374,7 +371,10 @@ export class Product extends Entity<ProductProps> {
     }
 
     static create(
-        props: Optional<ProductProps, "createdAt" | "slug" | "updatedAt">,
+        props: Optional<
+            ProductProps,
+            "createdAt" | "slug" | "updatedAt" | "showInSite"
+        >,
         id?: UniqueEntityID
     ): Product {
         const product = new Product(
@@ -384,10 +384,11 @@ export class Product extends Entity<ProductProps> {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 slug: props.slug ?? Slug.createFromText(props.name),
+                showInSite: props.showInSite ?? true,
             },
             id
         );
-        console.log("entity product product", product);
+        
         return product;
     }
 }

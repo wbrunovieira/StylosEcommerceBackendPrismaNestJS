@@ -56,6 +56,10 @@ export class GetProductBySlugUseCase {
            
         } = result.value;
 
+        if (!product.showInSite) {
+            return left(new ResourceNotFoundError("Product not available for sale"));
+        }
+
         return right({
             product,
         

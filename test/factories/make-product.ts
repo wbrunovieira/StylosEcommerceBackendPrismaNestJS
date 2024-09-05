@@ -12,6 +12,7 @@ export function makeProduct(
     overrides: Partial<ProductProps> = {},
     id?: UniqueEntityID
 ): ProductWithVariants {
+    console.log("Overrides passed:", overrides);
     const product = Product.create(
         {
             name: faker.commerce.productName(),
@@ -32,7 +33,10 @@ export function makeProduct(
             weight: faker.number.int({ min: 1, max: 100 }),
             onSale: faker.datatype.boolean(),
             isFeatured: faker.datatype.boolean(),
-
+            showInSite:
+                overrides.showInSite !== undefined
+                    ? overrides.showInSite
+                    : true,
             images: [],
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -41,6 +45,8 @@ export function makeProduct(
         },
         id
     );
+    console.log("showInSite value:", overrides.showInSite ?? true);
+    console.log("showInSite value after creation:", product.showInSite);
 
     const variant = ProductVariant.create({
         productId: product.id,
