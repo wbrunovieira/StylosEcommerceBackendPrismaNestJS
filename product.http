@@ -166,7 +166,7 @@ Content-Type: application/json
 
 ###
 # @name get-product-by-brandId
-GET {{BASE_URL}}/products/brand/fd115188-b9de-4841-ae0c-8eeeaeedc0a2
+GET {{BASE_URL}}/products/brand/00e92aee-a6bf-44d3-a35c-d77a952a8994
 Content-Type: application/json
 
 

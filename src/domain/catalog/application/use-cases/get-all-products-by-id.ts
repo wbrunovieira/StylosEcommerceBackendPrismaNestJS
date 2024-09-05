@@ -30,8 +30,12 @@ export class GetAllProductsByIdUseCase {
       return left(new ResourceNotFoundError("Product not found"));
     }
 
-    const productWithVariants = result.value;
+    const product = result.value;
+   
+    if (!product.showInSite) {
+      return left(new ResourceNotFoundError("Product not available for display"));
+    }
 
-    return right(productWithVariants);
+    return right(product);
   }
 }

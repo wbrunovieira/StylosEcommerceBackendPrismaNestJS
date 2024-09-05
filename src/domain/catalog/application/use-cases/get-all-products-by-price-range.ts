@@ -31,8 +31,16 @@ export class GetProductsByPriceRangeUseCase {
       return left(new ResourceNotFoundError("Products not found within the specified price range"));
     }
 
-    const products = result.value;
+    const products = result.value.filter((product) => product.showInSite);
+   
 
+    if (products.length === 0) {
+        return left(
+            new ResourceNotFoundError(
+                "No available products for this brand"
+            )
+        );
+    }
     return right(products);
   }
 }

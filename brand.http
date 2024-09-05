@@ -40,7 +40,7 @@ Content-Type: application/json
 ###
 
 # @name find-brands-by-name
-GET  {{BASE_URL}}/brands/name?name=BRAND
+GET  {{BASE_URL}}/brands/name?name=PLIE
 Content-Type: application/json
 
 
