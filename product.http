@@ -24,7 +24,7 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "blusa testes2",
+  "name": "blusa testes6",
   "description": "calcinha description 1 mais texto, legal, muiito legal" ,
   "images": ["/images/foto1.jpg"],
  "productCategories": ["fde0cc9e-076e-4082-b15d-0647b2ade093"],
@@ -73,7 +73,7 @@ PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "name": "010045 SUTIA B LARGA REG updated8",
+  "name": "010045 SUTIA B LARGA REG updated9",
    "description": "DescriptionNotFound 5",
    "brandId": "00e92aee-a6bf-44d3-a35c-d77a952a8994",
    "brandName": "PLIE",
@@ -85,7 +85,8 @@ Content-Type: application/json
       "weight": 15,
       "onSale": false,
       "isFeatured": true,
-        "images": [
+      "showInSite": false,
+      "images": [
         "http://localhost:3000/public/images/LogoStylos.svg"
       ],
       "stock": 100,

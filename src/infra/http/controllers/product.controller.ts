@@ -104,6 +104,7 @@ const editProductSchema = z.object({
     weight: z.number().optional(),
     onSale: z.boolean().optional(),
     isFeatured: z.boolean().optional(),
+    showInSite: z.boolean().optional(),
     isNew: z.boolean().optional(),
     images: z.array(z.string()).optional(),
 });
