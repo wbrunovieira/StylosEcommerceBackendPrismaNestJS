@@ -49,4 +49,6 @@ export abstract class IProductRepository {
     ): Promise<Either<ResourceNotFoundError, void>>;
 
     abstract getFeaturedProducts(): Promise<Product[]> 
+
+    abstract nameAlreadyExists(name: string): Promise<boolean> 
 }

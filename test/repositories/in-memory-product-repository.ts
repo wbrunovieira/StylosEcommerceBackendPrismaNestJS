@@ -17,6 +17,9 @@ export class InMemoryProductRepository implements IProductRepository {
         this.variantRepository = variantRepository;
         this.items = [];
     }
+    nameAlreadyExists(name: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
 
     private async generateUniqueSlug(
         baseSlug: string,

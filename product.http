@@ -74,7 +74,11 @@ PUT {{BASE_URL}}/products/save/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 
 {
-  "name": "010045 SUTIA B LARGA REG updated18",
+  "name": "010045 SUTIA B LARGA REG updated19"
+
+}
+
+###
    "description": "DescriptionNotFound 5",
    "brandId": "00e92aee-a6bf-44d3-a35c-d77a952a8994",
    "brandName": "PLIE",
@@ -93,13 +97,6 @@ Content-Type: application/json
       "stock": 100,
        "sku": "default-sku",
        "erpId": "teste"
-         
-     
-
-
-}
-
-###
    "onSale":true,
   "stock": 50,
   "erpId": "some-erp-id",
@@ -129,7 +126,7 @@ Content-Type: application/json
 ###
 
 # @name delete-product
-DELETE {{BASE_URL}}/products/06e0dcdb-2843-4412-b1e9-950dc2a1b98f
+DELETE {{BASE_URL}}/products/c022b6ef-9c8e-41a8-8555-9d7d4ef44c1c
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 

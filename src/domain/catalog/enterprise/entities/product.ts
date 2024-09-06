@@ -10,7 +10,6 @@ import { ProductStatus } from "./product-status";
 import { SizeProps } from "./size";
 
 interface Category {
-    
     id: UniqueEntityID;
     name: string;
 }
@@ -21,13 +20,11 @@ interface Brand {
 }
 
 interface Color {
-   
     id: UniqueEntityID;
     name: string;
     hex: string;
 }
 interface Size {
-    
     id: UniqueEntityID;
     name: string;
 }
@@ -243,7 +240,7 @@ export class Product extends Entity<ProductProps> {
 
     set name(name: string) {
         this.props.name = name;
-        this.props.slug = Slug.createFromText(name);
+        // this.props.slug = Slug.createFromText(name);
 
         this.touch();
     }

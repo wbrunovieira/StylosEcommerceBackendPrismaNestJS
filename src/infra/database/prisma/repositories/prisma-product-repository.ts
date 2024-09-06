@@ -631,6 +631,26 @@ export class PrismaProductRepository implements IProductRepository {
             );
         }
     }
+    async nameAlreadyExists(name: string): Promise<boolean> {
+        try {
+            const productsData = await this.prisma.product.findMany({
+                where: {
+                    name: {
+                        contains: name,
+                        mode: "insensitive",
+                    },
+                },
+            });
+
+            return productsData.length > 0;
+        } catch (error) {
+            console.error(
+                `Failed to check if product name exists: ${name}, Error: ${error}`
+            );
+
+            return false;
+        }
+    }
 
     async findByCategoryId(
         categoryId: string
@@ -1086,8 +1106,19 @@ export class PrismaProductRepository implements IProductRepository {
                 "product.slug.value.toString()",
                 product.slug.value.toString()
             );
-          
-            const NewSlug = product.slug.toString();
+
+            const newSlug = product.slug.value.toString();
+            const existingProduct = await this.prisma.product.findUnique({
+                where: { slug: newSlug },
+            });
+
+            if (
+                existingProduct &&
+                existingProduct.id !== product.id.toString()
+            ) {
+                console.log(`Slug already in use: ${newSlug}`);
+                return left(new ResourceNotFoundError("Slug already in use"));
+            }
 
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
@@ -1102,7 +1133,7 @@ export class PrismaProductRepository implements IProductRepository {
                     length: product.length,
                     weight: product.weight,
                     onSale: product.onSale,
-                    slug: product.slug.toString(),
+                    slug: newSlug,
                     isFeatured: product.isFeatured,
                     showInSite: product.showInSite,
                     images: product.images,
@@ -1239,19 +1270,20 @@ export class PrismaProductRepository implements IProductRepository {
                         })),
                         productColors: productData.productColors.map(
                             (color) => ({
-                              id: new UniqueEntityID(color.colorId),
-                              name: color.color.name,
-                              hex: color.color.hex,
-                              color: color.color, // 
+                                id: new UniqueEntityID(color.colorId),
+                                name: color.color.name,
+                                hex: color.color.hex,
+                                color: color.color, //
                             })
-                          ),
-                          productCategories: productData.productCategories.map(
+                        ),
+                        productCategories: productData.productCategories.map(
                             (category) => ({
-                              id: new UniqueEntityID(category.categoryId),
-                              name: category.category.name,
-                              category: category.category,  
-                            })),
-                          
+                                id: new UniqueEntityID(category.categoryId),
+                                name: category.category.name,
+                                category: category.category,
+                            })
+                        ),
+
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -1290,8 +1322,7 @@ export class PrismaProductRepository implements IProductRepository {
         }
     }
 
-    async getFeaturedProducts(): Promise<any[]> {  
-        
+    async getFeaturedProducts(): Promise<any[]> {
         const products = await this.prisma.product.findMany({
             where: {
                 isFeatured: true,
@@ -1321,9 +1352,6 @@ export class PrismaProductRepository implements IProductRepository {
             },
         });
 
-        return products;  
+        return products;
     }
 }
-
-    
-

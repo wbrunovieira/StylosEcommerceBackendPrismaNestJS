@@ -108,6 +108,13 @@ export class EditProductUseCase {
         let nameChanged = false;
 
         if (name !== undefined && name !== product.name) {
+            const nameExists = await this.productRepository.nameAlreadyExists(name);
+
+            if (nameExists) {
+                return left(new ResourceNotFoundError("Product name already in use"));
+            }
+        
+          
             product.name = name;
             nameChanged = true;
         }
@@ -227,12 +234,26 @@ export class EditProductUseCase {
 
         if (nameChanged) {
             console.log("entrou no if (nameChanged)");
+
             newSlug = generateSlug(
                 product.name,
                 brand.name,
                 product.id.toString()
             );
-            product.slug = newSlug;
+            const existingProductWithSameSlug =
+                await this.productRepository.findBySlug(newSlug.value);
+
+            if (existingProductWithSameSlug.isRight()) {
+                const existingProduct =
+                    existingProductWithSameSlug.value.product;
+
+                if (
+                    existingProduct &&
+                    existingProduct.id.toString() !== product.id.toString()
+                ) {
+                    newSlug.value = `${newSlug.value}-${Date.now()}`;
+                }
+            }
             console.log(
                 "entrou no if (nameChanged) product.slug",
                 product.slug
@@ -245,6 +266,7 @@ export class EditProductUseCase {
                 "entrou no if (nameChanged) newSlug.value",
                 newSlug.value
             );
+            product.slug = newSlug;
         }
         console.log("aqui newSlug", newSlug);
         console.log("aqui product.slug ", product.slug);
@@ -255,6 +277,7 @@ export class EditProductUseCase {
             JSON.stringify(product, null, 2)
         );
 
+        console.log("edit product product.name", product.name);
         const saveResult = await this.productRepository.save(product);
         console.log("edit product usecasesaveResult", saveResult);
 
