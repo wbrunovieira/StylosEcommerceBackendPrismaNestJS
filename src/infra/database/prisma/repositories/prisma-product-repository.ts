@@ -1081,6 +1081,13 @@ export class PrismaProductRepository implements IProductRepository {
                 " try no product.brandId.toString()",
                 product.brandId.toString()
             );
+            console.log("slug.toString()", product.slug.toString());
+            console.log(
+                "product.slug.value.toString()",
+                product.slug.value.toString()
+            );
+          
+            const NewSlug = product.slug.toString();
 
             const updatedProduct = await this.prisma.product.update({
                 where: { id: product.id.toString() },
@@ -1095,6 +1102,7 @@ export class PrismaProductRepository implements IProductRepository {
                     length: product.length,
                     weight: product.weight,
                     onSale: product.onSale,
+                    slug: product.slug.toString(),
                     isFeatured: product.isFeatured,
                     showInSite: product.showInSite,
                     images: product.images,
@@ -1227,20 +1235,23 @@ export class PrismaProductRepository implements IProductRepository {
                         productSizes: productData.productSizes.map((size) => ({
                             id: new UniqueEntityID(size.sizeId),
                             name: size.size.name,
+                            size: size.size,
                         })),
                         productColors: productData.productColors.map(
                             (color) => ({
-                                id: new UniqueEntityID(color.colorId),
-                                name: color.color.name,
-                                hex: color.color.hex,
+                              id: new UniqueEntityID(color.colorId),
+                              name: color.color.name,
+                              hex: color.color.hex,
+                              color: color.color, // 
                             })
-                        ),
-                        productCategories: productData.productCategories.map(
+                          ),
+                          productCategories: productData.productCategories.map(
                             (category) => ({
-                                id: new UniqueEntityID(category.categoryId),
-                                name: category.category.name,
-                            })
-                        ),
+                              id: new UniqueEntityID(category.categoryId),
+                              name: category.category.name,
+                              category: category.category,  
+                            })),
+                          
                         sizeId: productData.productSizes.map(
                             (size) => new UniqueEntityID(size.sizeId)
                         ),
@@ -1278,4 +1289,41 @@ export class PrismaProductRepository implements IProductRepository {
             return left(new Error(`Failed to retrieve all products`));
         }
     }
+
+    async getFeaturedProducts(): Promise<any[]> {  
+        
+        const products = await this.prisma.product.findMany({
+            where: {
+                isFeatured: true,
+            },
+            include: {
+                productColors: {
+                    include: {
+                        color: true,
+                    },
+                },
+                productSizes: {
+                    include: {
+                        size: true,
+                    },
+                },
+                productCategories: {
+                    include: {
+                        category: true,
+                    },
+                },
+                brand: true,
+                productVariants: true,
+            },
+            take: 12,
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        return products;  
+    }
 }
+
+    
+

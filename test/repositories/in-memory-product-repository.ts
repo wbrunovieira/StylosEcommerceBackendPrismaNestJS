@@ -41,6 +41,15 @@ export class InMemoryProductRepository implements IProductRepository {
         return slug;
     }
 
+    async getFeaturedProducts(): Promise<Product[]> {
+        const featuredProducts = this.items
+            .filter((product) => product.isFeatured)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(0, 12);
+
+        return featuredProducts;
+    }
+
     async getAllProducts(): Promise<Either<Error, Product[]>> {
         console.log("bateu no async getAllProducts");
         if (this.items.length === 0) {
