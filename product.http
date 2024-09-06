@@ -133,7 +133,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/afe06e49-071f-439f-a2e3-507f1e5ea8a3
+GET {{BASE_URL}}/products/fed0369d-0673-41de-8dae-008704ddc050
 Content-Type: application/json
 
 

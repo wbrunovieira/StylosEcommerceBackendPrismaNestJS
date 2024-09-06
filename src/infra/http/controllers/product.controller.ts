@@ -7,10 +7,11 @@ import {
     Param,
     Get,
     Post,
-    UseGuards,
+    Request,
     Query,
     Put,
     Patch,
+    UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/jwt-auth.guard";
 
@@ -31,7 +32,7 @@ import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 
-import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { GetProductByIdUseCase } from "@/domain/catalog/application/use-cases/get-product-by-id";
 import { ProductStatus } from "@prisma/client";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { toDomainProductStatus } from "@/infra/database/prisma/utils/convert-product-status";
@@ -41,6 +42,7 @@ import {
 } from "@/domain/catalog/application/use-cases/get-all-products";
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
+
 
 const createProductBodySchema = z.object({
     name: z.string(),
@@ -143,7 +145,7 @@ export class ProductController {
 
         private getAllProductsByColorId: GetProductsByColorIdUseCase,
         private getAllProductsBySizeId: GetProductsBySizeIdUseCase,
-        private getAllProductsByIdUseCase: GetAllProductsByIdUseCase,
+        private getAllProductsByIdUseCase: GetProductByIdUseCase,
         private updateProductVariantUseCase: UpdateProductVariantUseCase,
         private findProductByName: FindProductByNameUseCase,
         private getProductsByPriceRange: GetProductsByPriceRangeUseCase,
@@ -431,11 +433,19 @@ export class ProductController {
         }
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles("admin")
     @Get(":id")
-    async getProduct(@Param("id") id: string) {
+    async getProduct(@Param("id") id: string, @Request() req: any) {
         try {
+            const isAdmin = req.user?.role === "admin";
+            console.log("isAdmin", isAdmin);
+            console.log("req.user?.role", req.user?.role);
+            console.log("req.user", req.user);
+
             const result = await this.getAllProductsByIdUseCase.execute({
                 productId: id,
+                isAdminContext: isAdmin,
             });
 
             if (result.isLeft()) {
