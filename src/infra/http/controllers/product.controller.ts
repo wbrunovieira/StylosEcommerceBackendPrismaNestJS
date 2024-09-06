@@ -40,6 +40,7 @@ import {
     ProductObject,
 } from "@/domain/catalog/application/use-cases/get-all-products";
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
+import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
 
 const createProductBodySchema = z.object({
     name: z.string(),
@@ -147,7 +148,8 @@ export class ProductController {
         private findProductByName: FindProductByNameUseCase,
         private getProductsByPriceRange: GetProductsByPriceRangeUseCase,
         private getAllProductsUseCase: GetAllProductsUseCase,
-        private addCategoriesToProductUseCase: AddCategoriesToProductUseCase
+        private addCategoriesToProductUseCase: AddCategoriesToProductUseCase,
+        private readonly getFeaturedProductsUseCase: GetFeaturedProductsUseCase
     ) {}
 
     @Post()
@@ -381,37 +383,14 @@ export class ProductController {
 
     @Get("/featured-products")
     async feature() {
-        const products = await this.prisma.product.findMany({
-            where: {
-                isFeatured: true,
-            },
-            include: {
-                productColors: {
-                    include: {
-                        color: true,
-                    },
-                },
-                productSizes: {
-                    include: {
-                        size: true,
-                    },
-                },
-                productCategories: {
-                    include: {
-                        category: true,
-                    },
-                },
-                brand: true,
+        try {
+            const products = await this.getFeaturedProductsUseCase.execute();
 
-                productVariants: true,
-            },
-            take: 12,
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
-
-        return { products };
+            return { products };
+        } catch (error) {
+            console.error("Erro ao buscar produtos em destaque:", error);
+            throw error;
+        }
     }
 
     @Get("all")
@@ -587,7 +566,7 @@ export class ProductController {
     @Roles("admin")
     async addCategoryToProduct(
         @Param("productId") productId: string,
-        @Body() body: { categories: string[] } 
+        @Body() body: { categories: string[] }
     ) {
         try {
             const result = await this.addCategoriesToProductUseCase.execute({
@@ -621,5 +600,4 @@ export class ProductController {
             );
         }
     }
-
 }

@@ -22,7 +22,7 @@ export function makeProduct(
             productColors: [],
             productCategories: [],
             sizeId: [],
-            brandId: new UniqueEntityID(),
+            brandId: overrides.brandId || new UniqueEntityID(),
             discount: 0,
             finalPrice: 0,
             stock: faker.number.int({ min: 0, max: 100 }),

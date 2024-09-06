@@ -30,7 +30,7 @@ interface EditProductUseCaseRequest {
     weight?: number;
     onSale?: boolean;
     isFeatured?: boolean;
-    showInSite: boolean;
+    showInSite?: boolean;
     isNew?: boolean;
     images?: string[];
     createdAt?: Date;
@@ -226,14 +226,29 @@ export class EditProductUseCase {
         let newSlug;
 
         if (nameChanged) {
+            console.log("entrou no if (nameChanged)");
             newSlug = generateSlug(
                 product.name,
                 brand.name,
                 product.id.toString()
             );
             product.slug = newSlug;
+            console.log(
+                "entrou no if (nameChanged) product.slug",
+                product.slug
+            );
+            console.log(
+                "entrou no if (nameChanged) product.slug.value",
+                product.slug.value
+            );
+            console.log(
+                "entrou no if (nameChanged) newSlug.value",
+                newSlug.value
+            );
         }
         console.log("aqui newSlug", newSlug);
+        console.log("aqui product.slug ", product.slug);
+        console.log("aqui product.slug.value ", product.slug.value);
 
         console.log(
             "edit product usecase productWithVariants json",

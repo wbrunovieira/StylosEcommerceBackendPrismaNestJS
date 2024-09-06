@@ -7,8 +7,10 @@ import dayjs from "dayjs";
 
 import { Entity } from "@/core/entities/entity";
 import { ProductStatus } from "./product-status";
+import { SizeProps } from "./size";
 
 interface Category {
+    
     id: UniqueEntityID;
     name: string;
 }
@@ -19,11 +21,13 @@ interface Brand {
 }
 
 interface Color {
+   
     id: UniqueEntityID;
     name: string;
     hex: string;
 }
 interface Size {
+    
     id: UniqueEntityID;
     name: string;
 }
@@ -75,6 +79,7 @@ export interface ProductProps {
 }
 
 export class Product extends Entity<ProductProps> {
+    brand: any;
     private touch() {
         this.props.updatedAt = new Date();
     }
@@ -388,7 +393,7 @@ export class Product extends Entity<ProductProps> {
             },
             id
         );
-        
+
         return product;
     }
 }

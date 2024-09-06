@@ -47,4 +47,6 @@ export abstract class IProductRepository {
     abstract save(
         product: Product
     ): Promise<Either<ResourceNotFoundError, void>>;
+
+    abstract getFeaturedProducts(): Promise<Product[]> 
 }

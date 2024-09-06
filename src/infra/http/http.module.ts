@@ -97,6 +97,7 @@ import { OrderController } from "./controllers/order.controller";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
+import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -178,6 +179,7 @@ import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-
         GetProductsByColorIdUseCase,
         GetProductsBySizeIdUseCase,
         GetProductsByPriceRangeUseCase,
+        GetFeaturedProductsUseCase,
 
         GetAllProductsByIdUseCase,
         FindProductByNameUseCase,
@@ -214,7 +216,6 @@ import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-
         AddCategoriesToProductUseCase,
 
         ListAllOrdersUseCase,
-        
     ],
 })
 export class HttpModule {}
