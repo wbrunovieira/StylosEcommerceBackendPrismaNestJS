@@ -17,7 +17,7 @@ import { ProductController } from "./product.controller";
 import { Product } from "@/domain/catalog/enterprise/entities/product";
 import { PrismaService } from "@/prisma/prisma.service";
 import { EditProductUseCase } from "@/domain/catalog/application/use-cases/edit-product";
-import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-product-by-id";
 import { GetProductBySlugUseCase } from "@/domain/catalog/application/use-cases/get-product-by-slug";
 import { GetProductsByCategoryIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-category";
 import { GetProductsByBrandIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-brand";
@@ -379,7 +379,7 @@ describe("ProductController", () => {
         }
     });
 
-      it("should get all products successfully", async () => {
+    it("should get all products successfully", async () => {
         const mockProduct1 = Product.create(
             {
                 name: "ProductName1",
@@ -424,23 +424,25 @@ describe("ProductController", () => {
             new UniqueEntityID()
         );
         const mockResult = right([mockProduct1, mockProduct2]) as Either<
-          ResourceNotFoundError,
-          Product[]
+            ResourceNotFoundError,
+            Product[]
         >;
 
-        vi.spyOn(getAllProductsUseCase, "execute").mockResolvedValue(mockResult);
+        vi.spyOn(getAllProductsUseCase, "execute").mockResolvedValue(
+            mockResult
+        );
 
         const result = await productController.getAllProducts({
-          page: 1,
-          pageSize: 10,
+            page: 1,
+            pageSize: 10,
         });
 
         expect(result).toEqual({ products: mockResult.value });
         expect(getAllProductsUseCase.execute).toHaveBeenCalledWith({
-          page: 1,
-          pageSize: 10,
+            page: 1,
+            pageSize: 10,
         });
-      });
+    });
 
     //   it("should handle errors thrown by GetAllProductsUseCase", async () => {
     //     vi.spyOn(getAllProductsUseCase, "execute").mockImplementation(() => {

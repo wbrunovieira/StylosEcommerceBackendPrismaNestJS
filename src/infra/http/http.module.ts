@@ -64,7 +64,7 @@ import { GetProductsByColorIdUseCase } from "@/domain/catalog/application/use-ca
 import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-size";
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 
-import { GetAllProductsByIdUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-id";
+import { GetProductByIdUseCase } from "@/domain/catalog/application/use-cases/get-product-by-id";
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { EditAddressUseCase } from "@/domain/auth/application/use-cases/edit-adress";
 import { FindAddressesByUserIdUseCase } from "@/domain/auth/application/use-cases/get-adress-by-user-id";
@@ -181,7 +181,7 @@ import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cas
         GetProductsByPriceRangeUseCase,
         GetFeaturedProductsUseCase,
 
-        GetAllProductsByIdUseCase,
+        GetProductByIdUseCase,
         FindProductByNameUseCase,
         UpdateProductVariantUseCase,
 
