@@ -146,4 +146,41 @@ export class PrismaCategoryRepository implements ICategoryRepository {
             return left(new Error("Failed to find categories"));
         }
     }
+
+    async findCategoriesWithProducts(): Promise<Either<Error, Category[]>> {
+        try {
+            const categories = await this.prisma.category.findMany({
+                where: {
+                    productCategories: {
+                        some: {}, 
+                    },
+                },
+                include: {
+                    productCategories: true, 
+                },
+            });
+    
+            if (categories.length === 0) {
+                return left(new ResourceNotFoundError("No categories with products found"));
+            }
+    
+            const convertedCategories = categories.map((category) =>
+                Category.create(
+                    {
+                        name: category.name,
+                        imageUrl: category.imageUrl,
+                        erpId: category.erpId || "",
+                    },
+                    new UniqueEntityID(category.id)
+                )
+            );
+    
+            return right(convertedCategories);
+        } catch (error) {
+            return left(new Error("Failed to find categories with products"));
+        }
+    }
+    
+
+    
 }
