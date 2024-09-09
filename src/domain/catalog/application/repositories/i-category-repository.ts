@@ -10,4 +10,5 @@ export abstract class ICategoryRepository {
   abstract delete(category: Category): Promise<Either<Error, void>>;
   abstract save(category: Category): Promise<Either<Error, void>>;
   abstract addItems(...categories: Category[]): void;
+  abstract findCategoriesWithProducts(): Promise<Either<Error, Category[]>> 
 }

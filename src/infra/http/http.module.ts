@@ -98,6 +98,7 @@ import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-a
 import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-products";
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
+import { GetCategoriesWithProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-categories-with-product";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -173,6 +174,7 @@ import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cas
         GetAllColorsUseCase,
         GetAllSizesUseCase,
         GetAllCategoriesUseCase,
+        GetCategoriesWithProductsUseCase,
         GetAllProductsUseCase,
         GetProductsByCategoryIdUseCase,
         GetProductsByBrandIdUseCase,
