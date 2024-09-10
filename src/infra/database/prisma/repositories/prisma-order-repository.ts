@@ -13,6 +13,49 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
+    async findOrderById(orderId: string): Promise<Either<Error, Order>> {
+        try {
+            const order = await this.prisma.order.findUnique({
+                where: {
+                    id: orderId,
+                },
+                include: {
+                    items: true, 
+                },
+            });
+
+            if (!order) {
+                return left(new Error("Order not found"));
+            }
+
+            const orderEntity = Order.create(
+                {
+                    userId: order.userId,
+                    items: order.items.map((item) =>
+                        OrderItem.create({
+                            orderId: item.orderId,
+                            productId: item.productId,
+                            productName: item.productName,
+                            imageUrl: item.imageUrl,
+                            quantity: item.quantity,
+                            price: item.price,
+                        })
+                    ),
+                    status: order.status as OrderStatus,
+                    paymentId: order.paymentId || undefined,
+                    paymentStatus: order.paymentStatus || undefined,
+                    paymentMethod: order.paymentMethod || undefined,
+                    paymentDate: order.paymentDate || undefined,
+                },
+                new UniqueEntityID(order.id)
+            );
+
+            return right(orderEntity);
+        } catch (error) {
+            return left(new Error("Failed to find order"));
+        }
+    }
+
     async create(order: Order): Promise<Either<Error, void>> {
         try {
             const orderData = order.toObject();
@@ -124,4 +167,6 @@ export class PrismaOrderRepository implements IOrderRepository {
             return left(new Error("Failed to list orders for user"));
         }
     }
+
+    
 }

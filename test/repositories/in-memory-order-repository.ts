@@ -27,4 +27,14 @@ export class InMemoryOrderRepository implements IOrderRepository {
         }
         return right(this.orders);
     }
+
+    async findOrderById(orderId: string): Promise<Either<Error, Order>> {
+        const order = this.orders.find(order => order.id.toString() === orderId);
+
+        if (!order) {
+            return left(new Error("Order not found"));
+        }
+
+        return right(order);
+    }
 }
