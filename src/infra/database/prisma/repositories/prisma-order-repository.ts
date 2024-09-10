@@ -83,4 +83,45 @@ export class PrismaOrderRepository implements IOrderRepository {
             return left(new Error("Failed to list orders"));
         }
     }
+
+    async listOrdersByUserId(userId: string): Promise<Either<Error, Order[]>> {
+        try {
+            const orders = await this.prisma.order.findMany({
+                where: {
+                    userId: userId,
+                },
+                include: {
+                    items: true,
+                },
+            });
+
+            const orderEntities = orders.map((order) =>
+                Order.create(
+                    {
+                        userId: order.userId,
+                        items: order.items.map((item) =>
+                            OrderItem.create({
+                                orderId: item.orderId,
+                                productId: item.productId,
+                                productName: item.productName,
+                                imageUrl: item.imageUrl,
+                                quantity: item.quantity,
+                                price: item.price,
+                            })
+                        ),
+                        status: OrderStatus.PENDING,
+                        paymentId: order.paymentId || undefined,
+                        paymentStatus: order.paymentStatus || undefined,
+                        paymentMethod: order.paymentMethod || undefined,
+                        paymentDate: order.paymentDate || undefined,
+                    },
+                    new UniqueEntityID(order.id)
+                )
+            );
+
+            return right(orderEntities);
+        } catch (error) {
+            return left(new Error("Failed to list orders for user"));
+        }
+    }
 }
