@@ -23,3 +23,8 @@ Content-Type: application/json
 GET {{BASE_URL}}/orders/user/0e57489a-1f0a-422d-8549-59b40ca3ca8d
 Content-Type: application/json
 
+###
+
+# @name get-orders-by-id
+GET {{BASE_URL}}/orders/order/490c5f9a-4980-4ad3-98e7-83483017a3e4
+Content-Type: application/json
