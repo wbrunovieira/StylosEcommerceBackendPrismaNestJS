@@ -15,3 +15,11 @@ Content-Type: application/json
 # @name get-orders-all
 GET {{BASE_URL}}/orders/all?
 Content-Type: application/json
+
+
+###
+
+# @name get-orders-all
+GET {{BASE_URL}}/orders/user/0e57489a-1f0a-422d-8549-59b40ca3ca8d
+Content-Type: application/json
+

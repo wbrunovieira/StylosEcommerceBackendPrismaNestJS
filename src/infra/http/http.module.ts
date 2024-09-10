@@ -99,6 +99,7 @@ import { GetAllProductsUseCase } from "@/domain/catalog/application/use-cases/ge
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
 import { GetCategoriesWithProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-categories-with-product";
+import { ListOrdersByUserUseCase } from "@/domain/order/application/use-cases/list-order-by-user";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -218,6 +219,7 @@ import { GetCategoriesWithProductsUseCase } from "@/domain/catalog/application/u
         AddCategoriesToProductUseCase,
 
         ListAllOrdersUseCase,
+        ListOrdersByUserUseCase,
     ],
 })
 export class HttpModule {}
