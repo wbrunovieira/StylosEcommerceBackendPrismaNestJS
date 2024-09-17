@@ -60,41 +60,50 @@ export class PrismaCartRepository implements ICartRepository {
             });
             console.log(" prisma findCartByUser userId ", cartRecord);
 
+            let cart: Cart;
+
             if (!cartRecord) {
-                return left(new Error("Cart not found"));
-            }
-
-            const cartItems = cartRecord.items.map((item) =>
-                CartItem.create(
+                cart = Cart.create(
                     {
-                        cartId: item.cartId,
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        price: item.price,
-                        hasVariants: item.hasVariants,
-                        imageUrl: item.imageUrl,
-                        productName: item.productName,
-                        height: item.height,
-                        width: item.width,
-                        length: item.length,
-                        weight: item.weight,
-                        color: item.colorId
-                            ? item.colorId.toString()
-                            : undefined,
-                        size: item.sizeId ? item.sizeId.toString() : undefined,
+                        userId,
+                        items: [],
                     },
-                    new UniqueEntityID(item.id)
-                )
-            );
-            console.log(" prisma findCartByUser cartItems ", cartItems);
+                    new UniqueEntityID()
+                );
+            } else {
+                const cartItems = cartRecord.items.map((item) =>
+                    CartItem.create(
+                        {
+                            cartId: item.cartId,
+                            productId: item.productId,
+                            quantity: item.quantity,
+                            price: item.price,
+                            hasVariants: item.hasVariants,
+                            imageUrl: item.imageUrl,
+                            productName: item.productName,
+                            height: item.height,
+                            width: item.width,
+                            length: item.length,
+                            weight: item.weight,
+                            color: item.colorId
+                                ? item.colorId.toString()
+                                : undefined,
+                            size: item.sizeId
+                                ? item.sizeId.toString()
+                                : undefined,
+                        },
+                        new UniqueEntityID(item.id)
+                    )
+                );
 
-            const cart = Cart.create(
-                {
-                    userId: cartRecord.userId,
-                    items: cartItems,
-                },
-                new UniqueEntityID(cartRecord.id)
-            );
+                cart = Cart.create(
+                    {
+                        userId: cartRecord.userId,
+                        items: cartItems,
+                    },
+                    new UniqueEntityID(cartRecord.id)
+                );
+            }
 
             console.log(" prisma findCartByUser cart ", cart);
             return right(cart);
