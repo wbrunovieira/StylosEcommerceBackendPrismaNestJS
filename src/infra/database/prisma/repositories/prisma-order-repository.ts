@@ -58,13 +58,23 @@ export class PrismaOrderRepository implements IOrderRepository {
 
     async create(order: Order): Promise<Either<Error, void>> {
         try {
+
             const orderData = order.toObject();
 
+            const customer = await this.prisma.customer.findUnique({
+                where: { userId: orderData.userId },
+            })
+
+            if (!customer) {
+                return left(new Error("Customer not found"));
+            }
+
             const createdOrder = await this.prisma.order.create({
+                
                 data: {
                     id: orderData.id.toString(),
                     userId: orderData.userId,
-
+                    customerId: customer.id,
                     status: orderData.status as OrderStatus,
                     paymentId: orderData.paymentId,
                     paymentStatus: orderData.paymentStatus,

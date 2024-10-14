@@ -101,6 +101,10 @@ import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cas
 import { GetCategoriesWithProductsUseCase } from "@/domain/catalog/application/use-cases/get-all-categories-with-product";
 import { ListOrdersByUserUseCase } from "@/domain/order/application/use-cases/list-order-by-user";
 import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-order-by-id";
+import { CustomerController } from "./controllers/customer-controller";
+import { ListAllCustomersUseCase } from "@/domain/costumer/apllication/use-cases/list-all-customers";
+import { FindCustomerByIdUseCase } from "@/domain/costumer/apllication/use-cases/find-customer-by-id";
+import { CreateCustomerUseCase } from "@/domain/costumer/apllication/use-cases/create-customer";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -119,6 +123,7 @@ import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-
         ShippingController,
         MigrationController,
         OrderController,
+        CustomerController,
     ],
     providers: [
         JwtService,
@@ -222,6 +227,10 @@ import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-
         ListAllOrdersUseCase,
         ListOrdersByUserUseCase,
         FindOrderByIdUseCase,
+
+        ListAllCustomersUseCase,
+        FindCustomerByIdUseCase,
+        CreateCustomerUseCase,
     ],
 })
 export class HttpModule {}
