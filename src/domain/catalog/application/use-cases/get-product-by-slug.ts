@@ -12,12 +12,11 @@ type GetProductBySlugUseCaseResponse = Either<
     ResourceNotFoundError,
     {
         product: Product;
-       
-       
+
         brandName?: string;
         colors: { id: string; name: string; hex: string }[];
         sizes: { id: string; name: string }[];
-        categories: { id: string; name: string }[];
+        categories: { imageUrl: any; id: string; name: string }[]
         variants: {
             id: string;
             sizeId?: string;
@@ -37,8 +36,6 @@ export class GetProductBySlugUseCase {
     async execute({
         slug,
     }: GetProductBySlugUseCaseRequest): Promise<GetProductBySlugUseCaseResponse> {
-      
-
         const result = await this.productRepository.findBySlug(slug);
 
         if (result.isLeft()) {
@@ -47,28 +44,36 @@ export class GetProductBySlugUseCase {
 
         const {
             product,
-         
-            brandName,
-            colors,
-            sizes,
-            categories,
-            variants,
-           
+            brandName = "Unknown Brand",
+            colors = [],
+            sizes = [],
+            categories = [],
+            variants = [],
         } = result.value;
 
         if (!product.showInSite) {
-            return left(new ResourceNotFoundError("Product not available for sale"));
+            return left(
+                new ResourceNotFoundError("Product not available for sale")
+            );
         }
+
+        const formattedCategories = categories && categories.length > 0 
+        ? categories.map((category) => ({
+            id: category.id,
+            name: category.name,
+            imageUrl: category.imageUrl || 'default-image-url.png',
+        }))
+        : [];
+    
 
         return right({
             product,
-        
+
             brandName,
             colors,
             sizes,
-            categories,
+            categories: formattedCategories,
             variants,
-           
         });
     }
 }

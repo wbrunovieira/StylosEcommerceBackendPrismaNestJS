@@ -67,7 +67,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 
 # @name all-products-stock
-GET https://connectplug.com.br/api/v2/product-stock-balance/5001
+GET https://connectplug.com.br/api/v2/product-stock-balance/4968
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
@@ -75,7 +75,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-suplyer
-GET https://connectplug.com.br/api/v2/product/3124/supplier
+GET https://connectplug.com.br/api/v2/product/4968/supplier
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
@@ -83,7 +83,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-product-attribute-by-id
-GET https://connectplug.com.br/api/v2/product-attribute/5002
+GET https://connectplug.com.br/api/v2/product-attribute/4968
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
@@ -100,7 +100,7 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 ###
 
 # @name show-atributes-and-stock
-GET https://connectplug.com.br/api/v2/product-stock-balance/4002
+GET https://connectplug.com.br/api/v2/product-stock-balance/4968
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
@@ -118,6 +118,17 @@ Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
 
 # @name show-product-category-all
 GET https://connectplug.com.br/api/v2/product-category
+Accept: application/json
+Content-Type: application/json
+Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD
+
+
+###
+###
+
+
+# @name show-product-attribute-option-component
+GET https://connectplug.com.br/api/v2/attribute-option-component/4968
 Accept: application/json
 Content-Type: application/json
 Authorization: 65d3bc42ea3d7-8052265b337c9144768ddc1bded35f2f-amTP6Vio44e8GQfDD

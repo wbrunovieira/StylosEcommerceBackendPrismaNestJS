@@ -133,7 +133,8 @@ Authorization: Bearer {{AUTH_TOKEN}}
 ###
 
 # @name get-product-by-id
-GET {{BASE_URL}}/products/fed0369d-0673-41de-8dae-008704ddc050
+GET {{BASE_URL}}/products/a5af81cc-e30a-4ce3-8437-1b90a285dc41
+Authorization: Bearer {{AUTH_TOKEN}}
 Content-Type: application/json
 
 
@@ -175,13 +176,13 @@ Content-Type: application/json
 
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/oculos-1-857c0787-7d33-414b-b6e0-f186c1666e38-18e58daf-e48e-4f4d-8e8d-ec7eeb6be9ee
+GET {{BASE_URL}}/products/slug/020002-fio-pluss-duplo-b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae-1724092866248
 
 
 ###
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/produto-12-484fc45f-5b0d-432a-a60e-16a6a4253f7a-c3bfec14-dbd5-40a7-913b-8db25ccaa8fe
+GET {{BASE_URL}}/products/slug/404-cinta-esbelt-body-b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae-1724092890426
 
 
 ###
