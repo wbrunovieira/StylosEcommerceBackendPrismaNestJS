@@ -31,6 +31,8 @@ import { IOrderRepository } from "@/domain/order/application/repositories/i-orde
 import { PrismaOrderRepository } from "./prisma/repositories/prisma-order-repository";
 import { IArchivedCartRepository } from "@/domain/order/application/repositories/i-archived-cart";
 import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archived-cart-repository";
+import { ICustomerRepository } from "@/domain/costumer/apllication/repositories/i-customer-repositor";
+import { PrismaCustomerRepository } from "@/domain/costumer/apllication/repositories/prisma-customer-repository";
 
 @Module({
     providers: [
@@ -105,12 +107,17 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
             provide: IOrderRepository,
             useClass: PrismaOrderRepository,
         },
+        {
+            provide: ICustomerRepository,
+            useClass: PrismaCustomerRepository,
+        },
 
         PrismaColorRepository,
         PrismaSizeRepository,
         PrismaCategoryRepository,
         PrismaAccountRepository,
         PrismaOrderRepository,
+        PrismaCustomerRepository,
         PrismaArchivedCartRepository,
         PrismaProductColorRepository,
     ],
@@ -131,6 +138,7 @@ import { PrismaArchivedCartRepository } from "./prisma/repositories/prisma-archi
         IAddressRepository,
         IShippingRepository,
         IOrderRepository,
+        ICustomerRepository
     ],
 })
 export class DatabaseModule {}

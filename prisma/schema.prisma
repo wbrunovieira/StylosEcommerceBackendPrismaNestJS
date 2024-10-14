@@ -23,7 +23,9 @@ model User {
   lastLogin            DateTime?
   accountStatus        String? 
   isVerified    Boolean  @default(false)
-   shippings       Shipping[]
+  isCustomer      Boolean   @default(false)
+  customer        Customer?
+  shippings       Shipping[]
   marketingPreferences Json? 
   addresses       Address[]
   carts           Cart[]
@@ -35,6 +37,18 @@ model User {
 
   @@map("users")
 }
+
+model Customer {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  firstOrderDate DateTime? 
+  customerSince  DateTime @default(now())
+  orders         Order[]  
+
+  @@map("customer")
+}
+
 
 model Product {
   id          String    @id @default(uuid())
@@ -258,17 +272,16 @@ model Order {
   id          String      @id @default(uuid())
   userId      String
   user        User        @relation(fields: [userId], references: [id])
+  customerId  String?
+  customer    Customer?   @relation(fields: [customerId], references: [id]) 
   items       OrderItem[]
-  
- 
   status      OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt
-  shippings      Shipping[]
-
-  paymentId      String?     @unique 
-  paymentStatus  String?               
-  paymentMethod  String?              
+  shippings   Shipping[]
+  paymentId      String?  @unique 
+  paymentStatus  String?             
+  paymentMethod  String?             
   paymentDate    DateTime?
 
   @@map("orders")
