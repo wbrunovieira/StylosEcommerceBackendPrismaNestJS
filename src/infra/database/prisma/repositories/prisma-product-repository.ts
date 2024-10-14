@@ -857,6 +857,7 @@ export class PrismaProductRepository implements IProductRepository {
                     showInSite: productData.showInSite,
                     isFeatured: productData.isFeatured ?? undefined,
                     hasVariants: productData.hasVariants ?? undefined,
+                    erpId: productData.erpId ?? undefined,
                     isNew: productData.isNew ?? undefined,
                     images: productData.images ?? undefined,
                     createdAt: new Date(productData.createdAt),
@@ -1017,6 +1018,7 @@ export class PrismaProductRepository implements IProductRepository {
                     showInSite: productData.showInSite,
                     images: productData.images ?? undefined,
                     slug: Slug.createFromText(productData.slug),
+                    erpId: productData.erpId ?? undefined,
                     createdAt: new Date(productData.createdAt),
                     updatedAt: productData.updatedAt
                         ? new Date(productData.updatedAt)
