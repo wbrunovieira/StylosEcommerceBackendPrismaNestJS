@@ -772,7 +772,7 @@ export class PrismaProductRepository implements IProductRepository {
                 brandName?: string;
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];
-                categories: { id: string; name: string }[];
+                categories: { imageUrl: any; id: string; name: string }[];
 
                 variants: {
                     id: string;
@@ -834,6 +834,7 @@ export class PrismaProductRepository implements IProductRepository {
                         (category) => ({
                             id: new UniqueEntityID(category.categoryId),
                             name: category.category.name,
+                            imageUrl: category.category.imageUrl ?? "default-image-url.png",
                         })
                     ),
 
@@ -894,9 +895,17 @@ export class PrismaProductRepository implements IProductRepository {
                         {
                             id: category.category.id,
                             name: category.category.name,
+                            imageUrl:
+                                category.category.imageUrl ??
+                                "default-image-url.png",
                         },
                     ])
                 ).values()
+            );
+
+            console.log(
+                "async findBySlug(slug: string) uniqueCategory",
+                uniqueCategory
             );
 
             const additionalInfo = {

@@ -485,14 +485,14 @@ export class ProductController {
                     );
                 }
             } else {
+                
                 const {
                     product,
-
-                    brandName,
-                    colors,
-                    sizes,
-                    categories,
-                    variants,
+                    brandName = "Unknown Brand",
+                    colors = [],
+                    sizes = [],
+                    categories = [],
+                    variants = [],
                 } = result.value;
 
                 if (!product) {
