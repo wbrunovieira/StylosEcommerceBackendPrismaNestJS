@@ -1,8 +1,16 @@
+import { Roles } from "@/auth/roles.decorator";
 import { CreateCustomerUseCase } from "@/domain/costumer/apllication/use-cases/create-customer";
 import { FindCustomerByIdUseCase } from "@/domain/costumer/apllication/use-cases/find-customer-by-id";
 import { ListAllCustomersUseCase } from "@/domain/costumer/apllication/use-cases/list-all-customers";
-import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from "@nestjs/common";
-
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Param,
+    HttpException,
+    HttpStatus,
+} from "@nestjs/common";
 
 @Controller("customers")
 export class CustomerController {
@@ -13,6 +21,7 @@ export class CustomerController {
     ) {}
 
     @Get("all")
+    @Roles("admin")
     async listAllCustomers() {
         try {
             const result = await this.listAllCustomersUseCase.execute();
@@ -33,6 +42,7 @@ export class CustomerController {
         }
     }
 
+    @Roles("admin")
     @Get(":id")
     async findCustomerById(@Param("id") id: string) {
         try {
@@ -54,8 +64,15 @@ export class CustomerController {
         }
     }
 
-    @Post()
-    async createCustomer(@Body() body: { userId: string; firstOrderDate?: Date; customerSince: Date }) {
+    @Post("create")
+    async createCustomer(
+        @Body()
+        body: {
+            userId: string;
+            firstOrderDate?: Date;
+            customerSince: Date;
+        }
+    ) {
         try {
             const result = await this.createCustomerUseCase.execute(body);
 
