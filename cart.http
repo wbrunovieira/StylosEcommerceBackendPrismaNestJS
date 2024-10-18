@@ -90,7 +90,7 @@ Authorization: Bearer {{AUTH_TOKEN}}
 
 ###
 # @name check-cart-exist
-GET {{BASE_URL}}/cart/c775386f-cfc3-427a-ad34-fed0f8687147/exists
+GET {{BASE_URL}}/cart/82e87865-6ca8-46c9-887c-a883f1723624/exists
 Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 

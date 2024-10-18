@@ -7,15 +7,15 @@
 POST {{BASE_URL}}/sessions
 Content-Type: application/json
 
-# {
-#   "email": "wbrunovieira@yahoo.com.br",
-#   "password": ")2hjk8)fcr4cPK0zx%*N"
-# }
-
 {
-  "email": "admin@example.com",
-  "password": "Adminpassword@8"
+  "email": "wbrunovieira@yahoo.com.br",
+  "password": "123456aA@"
 }
+
+# {
+#   "email": "admin@example.com",
+#   "password": "Adminpassword@8"
+# }
 
 ###
 # @name get-uri-melhor-envio
@@ -83,7 +83,7 @@ Content-Type: application/json
 ###
 ###
 # @name verify-email
-GET {{BASE_URL}}/accounts/verify/2rxnxnzlvmc 
+GET {{BASE_URL}}/accounts/verify/yhn5xpv2h2q 
 Content-Type: application/json
 
 

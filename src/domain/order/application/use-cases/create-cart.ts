@@ -38,7 +38,6 @@ export class CreateCartUseCase {
         private productRepository: IProductRepository,
         private variantRepository: IProductVariantRepository
     ) {}
-    
 
     async execute({
         userId,
@@ -197,8 +196,10 @@ export class CreateCartUseCase {
                     productResult = await this.productRepository.findById(
                         item.productId
                     );
+                    console.log("nao tem variant productResult", productResult);
 
-                    const { product, variants } = productResult.value;
+                    const product = productResult.value;
+                    console.log("nao tem variant product", product);
 
                     if (productResult.isLeft()) {
                         return left(
@@ -207,6 +208,8 @@ export class CreateCartUseCase {
                             )
                         );
                     }
+
+                    console.log("nao tem variant product.stock", product.stock);
 
                     if (product.stock < item.quantity) {
                         return left(

@@ -1,4 +1,3 @@
-// src/domain/customer/enterprise/entities/customer.ts
 
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
@@ -55,7 +54,7 @@ export class Customer extends Entity<CustomerProps> {
 
   public toObject() {
     return {
-      id: this.id.toString(), // Agora usando o getter público
+      id: this.id.toString(), 
       userId: this.userId.toString(),
       firstOrderDate: this.firstOrderDate,
       customerSince: this.customerSince,
