@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 
 import { IAccountRepository } from "../repositories/i-account-repository";
 import { hash } from "bcryptjs";
-import { User } from "../../enterprise/entities/user";
+import { User, UserProps } from "../../enterprise/entities/user";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { MailerService } from "./mailer.service";
 
@@ -17,9 +17,10 @@ interface CreateAccountUseCaseRequest {
 type CreateAccountUseCaseResponse = Either<
     ResourceNotFoundError | null,
     {
-        user: User;
+        user: Omit<UserProps, "password"> & { id: string };
     }
 >;
+
 
 @Injectable()
 export class CreateAccountUseCase {
@@ -84,7 +85,7 @@ export class CreateAccountUseCase {
             console.log("create account userSendEmail",userSendEmail);
 
             return right({
-                user,
+                user: user.toResponseObject(),
             });
         } catch (error) {
             return left(error as Error);
