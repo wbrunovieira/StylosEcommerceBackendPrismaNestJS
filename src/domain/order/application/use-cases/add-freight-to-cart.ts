@@ -16,7 +16,7 @@ interface SenderInfo {
         country: string;
         zipCode: string;
     };
-    economic_activity_code?: string; // Código CNAE para envios com CNPJ
+    economic_activity_code?: string; 
 }
 
 interface RecipientInfo {
@@ -34,7 +34,7 @@ interface RecipientInfo {
         country: string;
         zipCode: string;
     };
-    economic_activity_code?: string; // Código CNAE para envios com CNPJ reverso
+    economic_activity_code?: string; 
 }
 
 interface ProductInfo {
@@ -113,7 +113,7 @@ export class AddFreightToCartUseCase {
                         Accept: "application/json",
                         Authorization: `Bearer ${accessToken}`,
                         "Content-Type": "application/json",
-                        "User-Agent": "Aplicação (email@contato.com)", //
+                        "User-Agent": "Aplicação (email@contato.com)", 
                     },
                 }
             );
