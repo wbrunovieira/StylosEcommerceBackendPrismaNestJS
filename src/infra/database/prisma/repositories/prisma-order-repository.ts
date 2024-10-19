@@ -80,6 +80,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                     paymentStatus: orderData.paymentStatus,
                     paymentMethod: orderData.paymentMethod,
                     paymentDate: orderData.paymentDate,
+                    cartId: order.cartId,
                     items: {
                         create: orderData.items.map((item) => ({
                             id: item.id?.toString(),
