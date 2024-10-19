@@ -29,6 +29,14 @@ export class Order extends Entity<OrderProps> {
         return this.props.userId;
     }
 
+    get cartId(): string | undefined {
+        return this.props.cartId;
+    }
+    get customerId
+    (): string | undefined {
+        return this.props.customerId;
+    }
+
     get status(): OrderStatus {
         return this.props.status;
     }
@@ -68,6 +76,8 @@ export class Order extends Entity<OrderProps> {
             paymentStatus: this.paymentStatus,
             paymentMethod: this.paymentMethod,
             paymentDate: this.paymentDate,
+            cartId: this.cartId,
+            customerId: this.customerId,
         };
     }
 
@@ -96,6 +106,8 @@ export class Order extends Entity<OrderProps> {
                 paymentStatus: orderData.paymentStatus,
                 paymentMethod: orderData.paymentMethod,
                 paymentDate: orderData.paymentDate,
+                cartId: orderData.cartId,
+                customerId: orderData.customerId,
             },
             new UniqueEntityID(orderData.id)
         );
