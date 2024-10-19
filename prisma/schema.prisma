@@ -240,6 +240,8 @@ model Cart {
   paymentIntentId String?   
   paymentStatus  String?  
 
+  orderId     String?
+
 
   @@map("carts")
 }
@@ -283,6 +285,7 @@ model Order {
   paymentStatus  String?             
   paymentMethod  String?             
   paymentDate    DateTime?
+  cartId      String?
 
   @@map("orders")
 }

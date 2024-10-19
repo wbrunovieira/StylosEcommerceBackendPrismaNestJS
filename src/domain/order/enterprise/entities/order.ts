@@ -5,6 +5,8 @@ import { OrderStatus } from "./order-status";
 
 interface OrderProps {
     userId: string;
+    customerId?: string;
+    cartId?: string;
     items: OrderItem[];
 
     status: OrderStatus;
@@ -28,7 +30,7 @@ export class Order extends Entity<OrderProps> {
     }
 
     get status(): OrderStatus {
-        return this.props.status ;
+        return this.props.status;
     }
 
     get items(): OrderItem[] {

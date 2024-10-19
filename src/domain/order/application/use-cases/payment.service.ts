@@ -227,8 +227,15 @@ export class MercadoPagoService {
             const cart = cartResult.value;
 
             if (status === "approved") {
+                if (!cartId) {
+                    throw new Error(
+                        "Cart ID is missing. Cannot create order without cartId."
+                    );
+                }
+
                 const createOrderRequest = {
                     userId: cart.userId,
+                    cartId: cartId,
                     items: cart.items.map((item) => ({
                         productId: item.productId,
                         productName: item.productName,
@@ -239,7 +246,8 @@ export class MercadoPagoService {
                     status: OrderStatus.COMPLETED,
                     paymentId: paymentId,
                     paymentStatus: "APPROVED",
-                    paymentMethod: paymentDetails.payment_method_id,
+                    paymentMethod:
+                        paymentDetails.payment_method_id || "unknown",
                     paymentDate: new Date(dateCreated),
                 };
                 console.log("createOrderRequest", createOrderRequest);

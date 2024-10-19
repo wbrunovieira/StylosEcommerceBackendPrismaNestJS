@@ -11,7 +11,9 @@ import { ICustomerRepository } from "./i-customer-repositor";
 export class PrismaCustomerRepository implements ICustomerRepository {
     constructor(private prisma: PrismaService) {}
 
-    async findCustomerById(customerId: string): Promise<Either<Error, Customer>> {
+    async findCustomerById(
+        customerId: string
+    ): Promise<Either<Error, Customer>> {
         try {
             const customer = await this.prisma.customer.findUnique({
                 where: {
@@ -26,11 +28,10 @@ export class PrismaCustomerRepository implements ICustomerRepository {
                 return left(new Error("Customer not found"));
             }
 
-            
             const customerEntity = Customer.create(
                 {
-                    userId: new UniqueEntityID(customer.userId), 
-                    firstOrderDate: customer.firstOrderDate ?? undefined, 
+                    userId: new UniqueEntityID(customer.userId),
+                    firstOrderDate: customer.firstOrderDate ?? undefined,
                     customerSince: customer.customerSince,
                 },
                 new UniqueEntityID(customer.id)
@@ -49,7 +50,7 @@ export class PrismaCustomerRepository implements ICustomerRepository {
             await this.prisma.customer.create({
                 data: {
                     id: customerData.id,
-                    userId: customerData.userId, 
+                    userId: customerData.userId,
                     firstOrderDate: customerData.firstOrderDate,
                     customerSince: customerData.customerSince,
                 },
@@ -72,8 +73,8 @@ export class PrismaCustomerRepository implements ICustomerRepository {
             const customerEntities = customers.map((customer) =>
                 Customer.create(
                     {
-                        userId: new UniqueEntityID(customer.userId), 
-                        firstOrderDate: customer.firstOrderDate ?? undefined, 
+                        userId: new UniqueEntityID(customer.userId),
+                        firstOrderDate: customer.firstOrderDate ?? undefined,
                         customerSince: customer.customerSince,
                     },
                     new UniqueEntityID(customer.id)
@@ -83,6 +84,38 @@ export class PrismaCustomerRepository implements ICustomerRepository {
             return right(customerEntities);
         } catch (error) {
             return left(new Error("Failed to list customers"));
+        }
+    }
+
+    async findByUserId(
+        userId: string
+    ): Promise<Either<Error, Customer | null>> {
+        try {
+            const customer = await this.prisma.customer.findUnique({
+                where: {
+                    userId: userId,
+                },
+                include: {
+                    orders: true,
+                },
+            });
+
+            if (!customer) {
+                return right(null); // Retornar null se o cliente não for encontrado
+            }
+
+            const customerEntity = Customer.create(
+                {
+                    userId: new UniqueEntityID(customer.userId),
+                    firstOrderDate: customer.firstOrderDate ?? undefined,
+                    customerSince: customer.customerSince,
+                },
+                new UniqueEntityID(customer.id)
+            );
+
+            return right(customerEntity);
+        } catch (error) {
+            return left(new Error("Failed to find customer by userId"));
         }
     }
 }
