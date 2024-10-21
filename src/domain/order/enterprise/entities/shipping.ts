@@ -54,6 +54,11 @@ export class Shipping extends Entity<ShippingProps> {
     get orderId(): string | undefined {
         return this.props.orderId;
     }
+  
+    set orderId(value: string) {
+        this.props.orderId = value;
+        
+    }
 
     get service(): string | undefined {
         return this.props.service;

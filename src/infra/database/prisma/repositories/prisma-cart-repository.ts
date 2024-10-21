@@ -8,6 +8,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { CartItem } from "@/domain/order/enterprise/entities/cart-item";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ArchivedCart } from "@/domain/order/enterprise/entities/archived-cart";
 
 @Injectable()
 export class PrismaCartRepository implements ICartRepository {
@@ -375,20 +376,56 @@ export class PrismaCartRepository implements ICartRepository {
                 `Saving preferenceId for cart ${cartId} with preferenceId: ${collection_id}`
             );
 
-            await this.prisma.cart.update({
+            
+            const cart = await this.prisma.cart.findUnique({
                 where: { id: cartId },
-                data: {
-                    collection_id: collection_id,
-                },
-            });
-            await this.prisma.cart.update({
-                where: { id: cartId },
-                data: {
-                    merchant_order_id: merchant_order_id,
-                },
             });
 
-            console.log(`Successfully saved preferenceId for cart ${cartId}`);
+            if (cart) {
+               
+                await this.prisma.cart.update({
+                    where: { id: cart.id },
+                    data: {
+                        collection_id,
+                        merchant_order_id,
+                    },
+                });
+
+                console.log(
+                    `Successfully updated cart ${cartId} in active carts.`
+                );
+            } else {
+                console.warn(
+                    `Cart with ID ${cartId} not found in active carts. Checking archived carts...`
+                );
+
+                
+                const archivedCart = await this.prisma.archivedCart.findUnique({
+                    where: { id: cartId },
+                });
+
+                if (!archivedCart) {
+                    console.error(
+                        `Cart with ID ${cartId} not found in any table.`
+                    );
+                    return left(new Error(`Cart not found: ${cartId}`));
+                }
+
+                
+                await this.prisma.archivedCart.update({
+                    where: { id: archivedCart.id },
+                    data: {
+                        collection_id,
+                        merchant_order_id,
+                        paymentStatus: "approved",
+                    },
+                });
+
+                console.log(
+                    `Successfully updated cart ${cartId} in archived carts.`
+                );
+            }
+
             return right(undefined);
         } catch (error) {
             console.error("Error saving preferenceId:", error);
@@ -396,7 +433,9 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
-    async findByPreferenceId(preference_id: string): Promise<Cart | null> {
+    async findByPreferenceId(
+        preference_id: string
+    ): Promise<Either<Error, Cart>> {
         try {
             const cart = await this.prisma.cart.findFirst({
                 where: { paymentIntentId: preference_id },
@@ -405,9 +444,9 @@ export class PrismaCartRepository implements ICartRepository {
 
             if (!cart) {
                 console.error(
-                    `Cart not found for collection_id ID: ${preference_id}`
+                    `Cart not found for preference ID: ${preference_id}`
                 );
-                return null;
+                return left(new Error("Cart not found"));
             }
 
             const cartItems = cart.items.map((item) =>
@@ -422,7 +461,6 @@ export class PrismaCartRepository implements ICartRepository {
                         height: item.height,
                         width: item.width,
                         length: item.length,
-
                         weight: item.weight,
                         color: item.colorId?.toString(),
                         size: item.sizeId?.toString(),
@@ -432,7 +470,7 @@ export class PrismaCartRepository implements ICartRepository {
                 )
             );
 
-            return Cart.create(
+            const cartEntity = Cart.create(
                 {
                     userId: cart.userId,
                     items: cartItems,
@@ -441,9 +479,11 @@ export class PrismaCartRepository implements ICartRepository {
                 },
                 new UniqueEntityID(cart.id)
             );
+
+            return right(cartEntity);
         } catch (error) {
             console.error("Error finding cart by preference ID:", error);
-            throw new Error("Failed to find cart by preference ID");
+            return left(new Error("Failed to find cart by preference ID"));
         }
     }
 

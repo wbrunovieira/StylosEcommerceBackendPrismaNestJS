@@ -34,6 +34,8 @@ interface ArchiveCartRequestConvert {
 type ArchiveCartResponse = Either<Error, void>;
 
 export function mapCartToArchiveCartRequest(cart: Cart): ArchivedCart {
+    console.log("mapCartToArchiveCartRequest cart.id", cart.id);
+
     const archivedItems = cart.items.map((item) =>
         CartItem.create(
             {
@@ -56,7 +58,9 @@ export function mapCartToArchiveCartRequest(cart: Cart): ArchivedCart {
         )
     );
 
-    return ArchivedCart.create(
+    console.log("ArchivedCart.create before cart.id", cart.id);
+
+    const archivedCart = ArchivedCart.create(
         {
             userId: cart.userId,
             cartId: cart.id.toString(),
@@ -67,8 +71,13 @@ export function mapCartToArchiveCartRequest(cart: Cart): ArchivedCart {
             merchant_order_id: cart.merchant_order_id,
             archivedAt: new Date(),
         },
-        new UniqueEntityID()
+        new UniqueEntityID(cart.id.toString())
     );
+
+    console.log("ArchivedCart.create archivedCart", archivedCart);
+
+
+    return archivedCart
 }
 
 @Injectable()
@@ -78,8 +87,12 @@ export class ArchiveCartUseCase {
     async execute(request: ArchiveCartRequest): Promise<ArchiveCartResponse> {
         const { archivedCart } = request;
 
+        console.log("ArchivedCart.create archivedCart execute", archivedCart);
+
         const archiveResult =
             await this.archivedCartRepository.archive(archivedCart);
+
+            console.log("ArchivedCart.create execute archiveResult", archiveResult);
         if (archiveResult.isLeft()) {
             return left(archiveResult.value);
         }

@@ -104,6 +104,10 @@ export class MercadoPagoService {
 
             const preferenceId = response.id;
 
+            if (!preferenceId) {
+                throw new Error("Failed to retrieve preference ID");
+            }
+
             console.log("Payment preference preferenceId", preferenceId);
 
             const savedPreferenceId =
@@ -113,6 +117,24 @@ export class MercadoPagoService {
                 );
 
             console.log("savedPreferenceId", savedPreferenceId);
+            console.log("payment response", response);
+
+           
+            const collectionId = response.collector_id ?? "default_collector_id";
+            const merchantOrderId = response.additional_info?? "default_order_id";
+
+            console.log("payment merchantOrderId", merchantOrderId);
+            console.log("payment collectionId", collectionId);
+
+
+
+            // const savedCollection =
+            // await this.findCartByPreferenceId.saveCollectionId(
+            //     cartId,
+            //     collectionId.toString(),
+            //     response.additional_info,
+                
+            // );
 
             return response;
         } catch (error) {
@@ -202,10 +224,7 @@ export class MercadoPagoService {
 
         const paymentId = data.id;
         const dateCreated = body.date_created;
-        const liveMode = body.live_mode;
-        const apiVersion = body.api_version;
-        const userId = body.user_id;
-
+       
         let cartResult = await this.findCartByPreferenceId.execute(cartId);
 
         console.log("processWebhookNotification cart", cartResult);
@@ -233,6 +252,10 @@ export class MercadoPagoService {
                     );
                 }
 
+                console.log("createOrderRequest before cartId", cartId);
+
+                
+
                 const createOrderRequest = {
                     userId: cart.userId,
                     cartId: cartId,
@@ -256,14 +279,23 @@ export class MercadoPagoService {
                     await this.orderUseCase.execute(createOrderRequest);
                 console.log("Order created successfully:", order);
 
+                console.log("createOrderRequest cart", cart);
+
                 const archivedCart = mapCartToArchiveCartRequest(cart);
+
+                console.log("createOrderRequest archivedCart", archivedCart);
+
                 const archiveCartRequest: ArchiveCartRequest = {
                     archivedCart: archivedCart,
                 };
 
+                console.log("createOrderRequest archiveCartRequest", archiveCartRequest);
+
                 const result =
                     this.archiveCartUseCase.execute(archiveCartRequest);
+
                 console.log("archiveCartUseCase result:", result);
+                console.log("archiveCartUseCase final cartId:", cartId);
 
                 if (!cartId) {
                     console.error(`cartId not fn: ${cartId}`);
