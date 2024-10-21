@@ -104,7 +104,7 @@ export class ShippingController {
         try {
             console.log("epayment-success");
             console.log("entrou payment-success body", body);
-            const { cartId, collection_id,merchant_order_id } = body;
+            const { cartId, collection_id, merchant_order_id } = body;
             const result = await this.findCart.saveCollectionId(
                 cartId,
                 collection_id,
@@ -135,7 +135,7 @@ export class ShippingController {
     @Post("/webhookpro")
     async handleMercadoPagoWebhook(
         @Body(mercadoPagoWebhookValidationPipe) body: MercadoPagoWebhookSchema,
-       
+
         @Headers("x-signature") xSignature: string,
         @Headers("x-request-id") xRequestId: string,
         @Query("data.id") queryDataId: string,
@@ -172,7 +172,10 @@ export class ShippingController {
             const type = queryType || bodyType;
 
             if (!dataId || !type) {
-                throw new HttpException('Missing required parameters', HttpStatus.BAD_REQUEST);
+                throw new HttpException(
+                    "Missing required parameters",
+                    HttpStatus.BAD_REQUEST
+                );
             }
 
             console.log("Action:", action);

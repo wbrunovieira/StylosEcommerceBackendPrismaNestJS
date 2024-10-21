@@ -14,7 +14,10 @@ export class PrismaArchivedCartRepository implements IArchivedCartRepository {
         try {
             const cartData = cart.toObject();
 
-            await this.prisma.archivedCart.create({
+            console.log("PrismaArchivedCartRepository cartData",cartData)
+            console.log("PrismaArchivedCartRepository cartData.id",cartData.id)
+
+            const cartArchievd =   await this.prisma.archivedCart.create({
                 data: {
                     id: cartData.id.toString(),
                     userId: cartData.userId,
@@ -43,6 +46,8 @@ export class PrismaArchivedCartRepository implements IArchivedCartRepository {
                     },
                 },
             });
+
+            console.log("PrismaArchivedCartRepository cartArchievd",cartArchievd)
 
             return right(undefined);
         } catch (error) {

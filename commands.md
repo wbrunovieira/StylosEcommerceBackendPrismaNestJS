@@ -104,6 +104,7 @@ width = 10,
 length = 12,
 weight = 1;
 
+
 UPDATE public.products
 SET "stock" = 10;
 
