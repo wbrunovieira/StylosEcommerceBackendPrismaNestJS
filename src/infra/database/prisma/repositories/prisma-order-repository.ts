@@ -13,7 +13,60 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
-    
+    async findOrdersByCategory(categoryId: string): Promise<Either<Error, Order[]>> {
+        try {
+            const orders = await this.prisma.order.findMany({
+                where: {
+                    items: {
+                        some: {
+                            product: {
+                                productCategories: {
+                                    some: { categoryId: categoryId },
+                                },
+                            },
+                        },
+                    },
+                },
+                include: {
+                    items: {
+                        include: {
+                            product: true,
+                        },
+                    },
+                },
+            });
+
+            // Mapeia os resultados do Prisma para entidades Order
+            const orderEntities = orders.map((order) =>
+                Order.create(
+                    {
+                        userId: order.userId,
+                        items: order.items.map((item) =>
+                            OrderItem.create({
+                                orderId: item.orderId,
+                                productId: item.product.id,
+                                productName: item.product.name,
+                                imageUrl: item.product.images[0] || "",
+                                quantity: item.quantity,
+                                price: item.price,
+                            })
+                        ),
+                        status: mapPrismaOrderStatusToDomain(order.status), 
+                        paymentId: order.paymentId || undefined,
+                        paymentStatus: order.paymentStatus || undefined,
+                        paymentMethod: order.paymentMethod || undefined,
+                        paymentDate: order.paymentDate || undefined,
+                    },
+                    new UniqueEntityID(order.id)
+                )
+            );
+
+            return right(orderEntities);
+        } catch (error) {
+            console.error("Error finding orders by category:", error);
+            return left(new Error("Failed to find orders by category"));
+        }
+    }
 
     async findOrdersByProduct(productId: string): Promise<Either<Error, Order[]>> {
         try {
