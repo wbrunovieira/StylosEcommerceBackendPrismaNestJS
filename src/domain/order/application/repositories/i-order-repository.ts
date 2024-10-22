@@ -6,4 +6,5 @@ export abstract class IOrderRepository {
     abstract listAllOrders(): Promise<Either<Error, Order[]>>
     abstract listOrdersByUserId(userId: string): Promise<Either<Error, Order[]>> 
     abstract findOrderById(orderId: string): Promise<Either<Error, Order>>
+    abstract findOrdersByProduct(productId: string): Promise<Either<Error, Order[]>> 
 }
