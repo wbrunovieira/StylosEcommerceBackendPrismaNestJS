@@ -105,6 +105,7 @@ import { CustomerController } from "./controllers/customer-controller";
 import { ListAllCustomersUseCase } from "@/domain/costumer/apllication/use-cases/list-all-customers";
 import { FindCustomerByIdUseCase } from "@/domain/costumer/apllication/use-cases/find-customer-by-id";
 import { CreateCustomerUseCase } from "@/domain/costumer/apllication/use-cases/create-customer";
+import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-products";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -227,6 +228,7 @@ import { CreateCustomerUseCase } from "@/domain/costumer/apllication/use-cases/c
         ListAllOrdersUseCase,
         ListOrdersByUserUseCase,
         FindOrderByIdUseCase,
+        FindOrdersByProductUseCase,
 
         ListAllCustomersUseCase,
         FindCustomerByIdUseCase,

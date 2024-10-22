@@ -12,6 +12,12 @@ Content-Type: application/json
 
 ###
 
+# @name get-orders-by-product
+GET {{BASE_URL}}/orders/product/155d83d6-3ed1-479c-8c92-4fe26e3d566d
+Content-Type: application/json
+
+
+###
 # @name get-orders-all
 GET {{BASE_URL}}/orders/all?
 Content-Type: application/json
