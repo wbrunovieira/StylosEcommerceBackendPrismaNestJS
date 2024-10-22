@@ -1,3 +1,4 @@
+import { FindOrdersByCategoryUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-categories";
 import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-products";
 import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-order-by-id";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
@@ -16,8 +17,28 @@ export class OrderController {
         private readonly listAllOrdersUseCase: ListAllOrdersUseCase,
         private readonly listOrdersByUserUseCase: ListOrdersByUserUseCase,
         private readonly findOrderByIdUseCase: FindOrderByIdUseCase,
-        private readonly findOrdersByProductUseCase: FindOrdersByProductUseCase
+        private readonly findOrdersByProductUseCase: FindOrdersByProductUseCase,
+        private readonly findOrdersByCategoryUseCase: FindOrdersByCategoryUseCase
     ) {}
+
+    @Get("category/:categoryId")
+    async findOrdersByCategory(@Param("categoryId") categoryId: string) {
+        try {
+            const result = await this.findOrdersByCategoryUseCase.execute(categoryId);
+
+            if (result.isLeft()) {
+                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+            }
+
+            return result.value;
+        } catch (error) {
+            console.error("Error finding orders by category:", error);
+            throw new HttpException(
+                "Failed to find orders by category",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Get("product/:productId")
     async findOrdersByProduct(@Param("productId") productId: string) {
