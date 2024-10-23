@@ -2,16 +2,32 @@ import { Either, left, right } from "@/core/either";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 
-import { Order } from "../../../../domain/order/enterprise/entities/order";
+import { Order, OrderDTO } from "../../../../domain/order/enterprise/entities/order";
 
 import { IOrderRepository } from "@/domain/order/application/repositories/i-order-repository";
 import { OrderStatus, mapPrismaOrderStatusToDomain } from "@/domain/order/enterprise/entities/order-status";
 import { OrderItem } from "@/domain/order/enterprise/entities/order-item";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
+
+
 @Injectable()
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
+
+    private convertOrderStatus(status: any): OrderStatus {
+       
+        switch (status) {
+            case "PENDING":
+                return OrderStatus.PENDING;
+            case "COMPLETED":
+                return OrderStatus.COMPLETED;
+            case "CANCELLED":
+                return OrderStatus.CANCELLED;
+            default:
+                throw new Error(`Unknown order status: ${status}`);
+        }
+    }
 
 
     async findTopSellingProductsByTotalValue(): Promise<Either<Error, any>> {
@@ -398,43 +414,43 @@ export class PrismaOrderRepository implements IOrderRepository {
         }
     }
 
-    async listAllOrders(): Promise<Either<Error, Order[]>> {
+    async listAllOrders(): Promise<Either<Error, OrderDTO[]>> {
         try {
             const orders = await this.prisma.order.findMany({
                 include: {
                     items: true,
+                    user: true,  
                 },
             });
-
-            const orderEntities = orders.map((order) =>
-                Order.create(
-                    {
-                        userId: order.userId,
-                        items: order.items.map((item) =>
-                            OrderItem.create({
-                                orderId: item.orderId,
-                                productId: item.productId,
-                                productName: item.productName,
-                                imageUrl: item.imageUrl,
-                                quantity: item.quantity,
-                                price: item.price,
-                            })
-                        ),
-                        status: OrderStatus.PENDING,
-                        paymentId: order.paymentId || undefined,
-                        paymentStatus: order.paymentStatus || undefined,
-                        paymentMethod: order.paymentMethod || undefined,
-                        paymentDate: order.paymentDate || undefined,
-                    },
-                    new UniqueEntityID(order.id)
-                )
-            );
-
-            return right(orderEntities);
+    
+            const orderDTOs = orders.map((order) => ({
+                id: order.id,
+                userId: order.userId,
+                userName: order.user.name, 
+                cartId: order.cartId ?? undefined, 
+                customerId: order.customerId ?? undefined, 
+                items: order.items.map((item) => ({
+                    orderId: item.orderId,
+                    productId: item.productId,
+                    productName: item.productName,
+                    imageUrl: item.imageUrl,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+                status: this.convertOrderStatus(order.status), 
+                paymentId: order.paymentId || undefined,
+                paymentStatus: order.paymentStatus || undefined,
+                paymentMethod: order.paymentMethod || undefined,
+                paymentDate: order.paymentDate || undefined,
+            }));
+    
+            return right(orderDTOs);
         } catch (error) {
             return left(new Error("Failed to list orders"));
         }
     }
+    
+    
 
     async listOrdersByUserId(userId: string): Promise<Either<Error, Order[]>> {
         try {
