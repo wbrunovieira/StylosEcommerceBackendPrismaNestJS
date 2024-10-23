@@ -109,6 +109,7 @@ import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases
 import { FindOrdersByCategoryUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-categories";
 import { FindOrdersByBrandUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-brand";
 import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-brands-selling";
+import { FindTopSellingCategoriesByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-categories-selling-by-values";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -235,6 +236,7 @@ import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/applicat
         FindOrdersByCategoryUseCase,
         FindOrdersByBrandUseCase,
         FindTopSellingBrandsByTotalValueUseCase,
+        FindTopSellingCategoriesByTotalValueUseCase,
 
         ListAllCustomersUseCase,
         FindCustomerByIdUseCase,

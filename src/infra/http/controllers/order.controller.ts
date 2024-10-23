@@ -3,6 +3,7 @@ import { FindOrdersByCategoryUseCase } from "@/domain/order/application/use-case
 import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-products";
 import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-order-by-id";
 import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-brands-selling";
+import { FindTopSellingCategoriesByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-categories-selling-by-values";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 import { ListOrdersByUserUseCase } from "@/domain/order/application/use-cases/list-order-by-user";
 import {
@@ -23,7 +24,27 @@ export class OrderController {
         private readonly findOrdersByCategoryUseCase: FindOrdersByCategoryUseCase,
         private readonly findOrdersByBrandUseCase: FindOrdersByBrandUseCase,
         private readonly findTopSellingBrandsByTotalValueUseCase: FindTopSellingBrandsByTotalValueUseCase,
+        private readonly findTopSellingCategoriesByTotalValueUseCase: FindTopSellingCategoriesByTotalValueUseCase,
     ) {}
+
+    @Get("top-selling-categories-by-value")
+    async findTopSellingCategoriesByTotalValue() {
+        try {
+            const result = await this.findTopSellingCategoriesByTotalValueUseCase.execute();
+
+            if (result.isLeft()) {
+                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+            }
+
+            return result.value;
+        } catch (error) {
+            console.error("Error fetching top selling categories by total value:", error);
+            throw new HttpException(
+                "Failed to fetch top selling categories by total value",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Get("top-selling-brands-by-value")
     async findTopSellingBrandsByTotalValue() {
