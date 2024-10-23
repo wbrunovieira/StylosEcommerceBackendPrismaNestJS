@@ -108,6 +108,7 @@ import { CreateCustomerUseCase } from "@/domain/costumer/apllication/use-cases/c
 import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-products";
 import { FindOrdersByCategoryUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-categories";
 import { FindOrdersByBrandUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-brand";
+import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-brands-selling";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -233,6 +234,7 @@ import { FindOrdersByBrandUseCase } from "@/domain/order/application/use-cases/f
         FindOrdersByProductUseCase,
         FindOrdersByCategoryUseCase,
         FindOrdersByBrandUseCase,
+        FindTopSellingBrandsByTotalValueUseCase,
 
         ListAllCustomersUseCase,
         FindCustomerByIdUseCase,

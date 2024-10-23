@@ -2,6 +2,7 @@ import { FindOrdersByBrandUseCase } from "@/domain/order/application/use-cases/f
 import { FindOrdersByCategoryUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-categories";
 import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases/find-all-orders-by-products";
 import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-order-by-id";
+import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-brands-selling";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 import { ListOrdersByUserUseCase } from "@/domain/order/application/use-cases/list-order-by-user";
 import {
@@ -20,8 +21,28 @@ export class OrderController {
         private readonly findOrderByIdUseCase: FindOrderByIdUseCase,
         private readonly findOrdersByProductUseCase: FindOrdersByProductUseCase,
         private readonly findOrdersByCategoryUseCase: FindOrdersByCategoryUseCase,
-        private readonly findOrdersByBrandUseCase: FindOrdersByBrandUseCase
+        private readonly findOrdersByBrandUseCase: FindOrdersByBrandUseCase,
+        private readonly findTopSellingBrandsByTotalValueUseCase: FindTopSellingBrandsByTotalValueUseCase,
     ) {}
+
+    @Get("top-selling-brands-by-value")
+    async findTopSellingBrandsByTotalValue() {
+        try {
+            const result = await this.findTopSellingBrandsByTotalValueUseCase.execute();
+
+            if (result.isLeft()) {
+                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+            }
+
+            return result.value;
+        } catch (error) {
+            console.error("Error fetching top selling brands by total value:", error);
+            throw new HttpException(
+                "Failed to fetch top selling brands by total value",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Get("brand/:brandId")
     async findOrdersByBrand(@Param("brandId") brandId: string) {
