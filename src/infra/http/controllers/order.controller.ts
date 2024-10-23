@@ -4,6 +4,7 @@ import { FindOrdersByProductUseCase } from "@/domain/order/application/use-cases
 import { FindOrderByIdUseCase } from "@/domain/order/application/use-cases/find-order-by-id";
 import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-brands-selling";
 import { FindTopSellingCategoriesByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-categories-selling-by-values";
+import { FindTopSellingProductsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-selling-product-by-value";
 import { ListAllOrdersUseCase } from "@/domain/order/application/use-cases/get-all-orders";
 import { ListOrdersByUserUseCase } from "@/domain/order/application/use-cases/list-order-by-user";
 import {
@@ -25,20 +26,54 @@ export class OrderController {
         private readonly findOrdersByBrandUseCase: FindOrdersByBrandUseCase,
         private readonly findTopSellingBrandsByTotalValueUseCase: FindTopSellingBrandsByTotalValueUseCase,
         private readonly findTopSellingCategoriesByTotalValueUseCase: FindTopSellingCategoriesByTotalValueUseCase,
+        private readonly findTopSellingProductsByTotalValueUseCase: FindTopSellingProductsByTotalValueUseCase
     ) {}
 
-    @Get("top-selling-categories-by-value")
-    async findTopSellingCategoriesByTotalValue() {
+    @Get("top-selling-products-by-value")
+    async findTopSellingProductsByTotalValue() {
         try {
-            const result = await this.findTopSellingCategoriesByTotalValueUseCase.execute();
+            const result =
+                await this.findTopSellingProductsByTotalValueUseCase.execute();
 
             if (result.isLeft()) {
-                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+                throw new HttpException(
+                    result.value.message,
+                    HttpStatus.NOT_FOUND
+                );
             }
 
             return result.value;
         } catch (error) {
-            console.error("Error fetching top selling categories by total value:", error);
+            console.error(
+                "Error fetching top selling products by total value:",
+                error
+            );
+            throw new HttpException(
+                "Failed to fetch top selling products by total value",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Get("top-selling-categories-by-value")
+    async findTopSellingCategoriesByTotalValue() {
+        try {
+            const result =
+                await this.findTopSellingCategoriesByTotalValueUseCase.execute();
+
+            if (result.isLeft()) {
+                throw new HttpException(
+                    result.value.message,
+                    HttpStatus.NOT_FOUND
+                );
+            }
+
+            return result.value;
+        } catch (error) {
+            console.error(
+                "Error fetching top selling categories by total value:",
+                error
+            );
             throw new HttpException(
                 "Failed to fetch top selling categories by total value",
                 HttpStatus.INTERNAL_SERVER_ERROR
@@ -49,15 +84,22 @@ export class OrderController {
     @Get("top-selling-brands-by-value")
     async findTopSellingBrandsByTotalValue() {
         try {
-            const result = await this.findTopSellingBrandsByTotalValueUseCase.execute();
+            const result =
+                await this.findTopSellingBrandsByTotalValueUseCase.execute();
 
             if (result.isLeft()) {
-                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+                throw new HttpException(
+                    result.value.message,
+                    HttpStatus.NOT_FOUND
+                );
             }
 
             return result.value;
         } catch (error) {
-            console.error("Error fetching top selling brands by total value:", error);
+            console.error(
+                "Error fetching top selling brands by total value:",
+                error
+            );
             throw new HttpException(
                 "Failed to fetch top selling brands by total value",
                 HttpStatus.INTERNAL_SERVER_ERROR
@@ -71,7 +113,10 @@ export class OrderController {
             const result = await this.findOrdersByBrandUseCase.execute(brandId);
 
             if (result.isLeft()) {
-                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+                throw new HttpException(
+                    result.value.message,
+                    HttpStatus.NOT_FOUND
+                );
             }
 
             return result.value;
@@ -87,10 +132,14 @@ export class OrderController {
     @Get("category/:categoryId")
     async findOrdersByCategory(@Param("categoryId") categoryId: string) {
         try {
-            const result = await this.findOrdersByCategoryUseCase.execute(categoryId);
+            const result =
+                await this.findOrdersByCategoryUseCase.execute(categoryId);
 
             if (result.isLeft()) {
-                throw new HttpException(result.value.message, HttpStatus.NOT_FOUND);
+                throw new HttpException(
+                    result.value.message,
+                    HttpStatus.NOT_FOUND
+                );
             }
 
             return result.value;
@@ -106,7 +155,8 @@ export class OrderController {
     @Get("product/:productId")
     async findOrdersByProduct(@Param("productId") productId: string) {
         try {
-            const result = await this.findOrdersByProductUseCase.execute(productId);
+            const result =
+                await this.findOrdersByProductUseCase.execute(productId);
 
             if (result.isLeft()) {
                 throw new HttpException(
