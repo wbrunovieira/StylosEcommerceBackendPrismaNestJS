@@ -12,6 +12,14 @@ Content-Type: application/json
 
 ###
 
+# @name get-top-selling-products-by-value
+GET {{BASE_URL}}/orders/top-selling-products-by-value
+Content-Type: application/json
+
+
+###
+###
+
 # @name get-top-selling-categories-by-value
 GET {{BASE_URL}}/orders/top-selling-categories-by-value
 Content-Type: application/json

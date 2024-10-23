@@ -13,6 +13,49 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
+
+    async findTopSellingProductsByTotalValue(): Promise<Either<Error, any>> {
+        try {
+            
+            const orderItems = await this.prisma.orderItem.findMany({
+                include: {
+                    product: true, 
+                }
+            });
+
+            
+            const productSales = {};
+
+            
+            orderItems.forEach((item) => {
+                
+                if (item.product) {
+                    const productId = item.product.id;
+                    const productName = item.product.name;
+                    const totalValue = item.price * item.quantity;
+
+                    if (!productSales[productId]) {
+                        productSales[productId] = {
+                            productId,
+                            productName,
+                            totalValue: 0
+                        };
+                    }
+
+                    productSales[productId].totalValue += totalValue;
+                }
+            });
+
+            
+            const topProducts = Object.values(productSales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+
+            return right(topProducts.slice(0, 10)); 
+        } catch (error) {
+            console.error("Error fetching top selling products by total value:", error);
+            return left(new Error("Failed to fetch top selling products by total value"));
+        }
+    }
+
     async findTopSellingCategoriesByTotalValue(): Promise<Either<Error, any>> {
         try {
             
