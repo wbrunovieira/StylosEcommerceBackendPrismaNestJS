@@ -10,4 +10,5 @@ export abstract class IOrderRepository {
     abstract findOrdersByCategory(categoryId: string): Promise<Either<Error, Order[]>> 
     abstract findOrdersByBrand(brandId: string): Promise<Either<Error, Order[]>> 
     abstract findTopSellingBrandsByTotalValue(): Promise<Either<Error, any>> 
+    abstract findTopSellingCategoriesByTotalValue(): Promise<Either<Error, any>>
 }

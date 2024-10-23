@@ -13,6 +13,58 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
+    async findTopSellingCategoriesByTotalValue(): Promise<Either<Error, any>> {
+        try {
+            
+            const orderItems = await this.prisma.orderItem.findMany({
+                include: {
+                    product: {
+                        include: {
+                            productCategories: {
+                                include: {
+                                    category: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            
+            const categorySales = {};
+
+            
+            orderItems.forEach((item) => {
+                
+                if (item.product && item.product.productCategories.length > 0) {
+                    item.product.productCategories.forEach((productCategory) => {
+                        const categoryId = productCategory.category.id;
+                        const categoryName = productCategory.category.name;
+                        const totalValue = item.price * item.quantity;
+
+                        if (!categorySales[categoryId]) {
+                            categorySales[categoryId] = {
+                                categoryId,
+                                categoryName,
+                                totalValue: 0
+                            };
+                        }
+
+                        categorySales[categoryId].totalValue += totalValue;
+                    });
+                }
+            });
+
+            
+            const topCategories = Object.values(categorySales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+
+            return right(topCategories.slice(0, 10)); 
+        } catch (error) {
+            console.error("Error fetching top selling categories by total value:", error);
+            return left(new Error("Failed to fetch top selling categories by total value"));
+        }
+    }
+
 
 
     async findTopSellingBrandsByTotalValue(): Promise<Either<Error, any>> {
