@@ -16,6 +16,22 @@ interface OrderProps {
     paymentDate?: Date;
 }
 
+export interface OrderDTO {
+    id: string;
+    userId: string;
+    userName: string;
+    cartId?: string | null; 
+    customerId?: string | null;
+    items: any[];
+    status: OrderStatus;
+    paymentId?: string;
+    paymentStatus?: string;
+    paymentMethod?: string;
+    paymentDate?: Date;
+}
+
+
+
 export class Order extends Entity<OrderProps> {
     private constructor(props: OrderProps, id?: UniqueEntityID) {
         super(props, id || new UniqueEntityID());
