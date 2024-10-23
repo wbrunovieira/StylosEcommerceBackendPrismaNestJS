@@ -13,6 +13,55 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
+
+
+    async findTopSellingBrandsByTotalValue(): Promise<Either<Error, any>> {
+        try {
+            
+            const orderItems = await this.prisma.orderItem.findMany({
+                include: {
+                    product: {
+                        include: {
+                            brand: true
+                        }
+                    }
+                }
+            });
+
+           
+            const brandSales = {};
+
+           
+            orderItems.forEach((item) => {
+                
+                if (item.product && item.product.brand) {
+                    const brandId = item.product.brand.id;
+                    const brandName = item.product.brand.name;
+                    const totalValue = item.price * item.quantity;
+            
+                    if (!brandSales[brandId]) {
+                        brandSales[brandId] = {
+                            brandId,
+                            brandName,
+                            totalValue: 0
+                        };
+                    }
+            
+                    brandSales[brandId].totalValue += totalValue;
+                }
+            });
+            
+
+            
+            const topBrands = Object.values(brandSales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+
+            return right(topBrands.slice(0, 10)); 
+        } catch (error) {
+            console.error("Error fetching top selling brands by total value:", error);
+            return left(new Error("Failed to fetch top selling brands by total value"));
+        }
+    }
+
     async findOrdersByBrand(brandId: string): Promise<Either<Error, Order[]>> {
         try {
             const orders = await this.prisma.order.findMany({
