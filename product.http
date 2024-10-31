@@ -188,7 +188,7 @@ GET {{BASE_URL}}/products/slug/404-cinta-esbelt-body-b42efcd8-fbb4-4a55-a1a3-2a7
 ###
 
 # @name get-product-by-name
-GET {{BASE_URL}}/products/search?name=blusa testes
+GET {{BASE_URL}}/products/search?name=calc
 Content-Type: application/json
 
 ###
