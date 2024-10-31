@@ -212,7 +212,11 @@ export class ProductController {
     async searchProducts(@Query("name") name: string) {
         if (!name) {
             throw new HttpException(
-                "Query parameter 'name' is required",
+                {
+                    statusCode: HttpStatus.BAD_REQUEST,
+                    error: "Bad Request",
+                    message: "Query parameter 'name' is required",
+                },
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -220,11 +224,14 @@ export class ProductController {
         const result = await this.findProductByName.execute({ name });
 
         if (result.isLeft()) {
-            const error = result.value;
-
-            if (error instanceof ResourceNotFoundError) {
-                throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-            }
+            throw new HttpException(
+                {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: "Not Found",
+                    message: `No products found for the specified name: ${name}.`,
+                },
+                HttpStatus.NOT_FOUND
+            );
         }
 
         return { products: result.value };
