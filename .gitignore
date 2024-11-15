@@ -42,6 +42,9 @@ commands.md
 !.vscode/launch.json
 !.vscode/extensions.json
 
+
+main.tf
+
 data
 commands.md
 
@@ -51,7 +54,8 @@ commands.md
 .env.test.local
 .env.production.local
 .env.local
-
+.env.prod
+.env.dev
 # temp directory
 .temp
 .tmp

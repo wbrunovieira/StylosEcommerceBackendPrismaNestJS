@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: stylos_app_dev
+    env_file:
+      - .env.prod
+    ports:
+      - "3333:3333"
+    command: >
+      sh -c "
+      echo 'Aguardando conexão com o banco de dados no RDS...';
+      while ! nc -z $DB_HOST 5432; do
+        sleep 1;
+      done;
+      echo 'Conexão com o banco de dados estabelecida!';
+      npx prisma generate;
+      npx prisma migrate deploy;
+      psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
+      npm run seed;
+      npm run start;
+      "

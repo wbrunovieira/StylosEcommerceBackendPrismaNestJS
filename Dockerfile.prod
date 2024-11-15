@@ -1,0 +1,36 @@
+
+FROM node:20-buster AS builder
+
+
+WORKDIR /app
+
+
+COPY package*.json ./
+
+
+RUN npm install --production
+
+
+COPY . .
+
+
+RUN npx prisma generate
+RUN npm run build
+
+
+FROM node:20-alpine
+
+
+WORKDIR /app
+
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/load_env.sh /app/load_env.sh
+
+
+EXPOSE 3333
+
+
+CMD ["sh", "/app/load_env.sh", "npm", "run", "start"]

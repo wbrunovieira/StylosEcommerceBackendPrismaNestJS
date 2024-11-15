@@ -22,8 +22,7 @@ export class ProductMigrationService {
     constructor(
         private configService: ConfigService,
         private readonly prisma: PrismaService,
-        private productColorRepository: IProductColorRepository,
-        private productSizeRepository: IProductSizeRepository
+      
     ) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
 

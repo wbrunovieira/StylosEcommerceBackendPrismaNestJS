@@ -1,10 +1,12 @@
 version: "3.8"
 services:
     app:
-        build: .
-        container_name: stylos_backP
+        build:
+           context: .
+           dockerfile: Dockerfile.dev  
+        container_name: stylos_app_prod
         env_file:
-            - .env
+            - .env.dev
         volumes:
             - ./src:/app/src
             - ./prisma:/app/prisma
@@ -36,8 +38,6 @@ services:
 
     db:
         image: postgres:16
-
-
         container_name: stylos_db_prisma
         ports:
             - "5432:5432"
@@ -56,23 +56,23 @@ services:
             timeout: 5s
             retries: 5
 
-    test:
-        build: .
-        command: sh -c "npm run test:e2e && tail -f /dev/null"
-        container_name: stylos_db_test
-        volumes:
-            - ./src:/app/src
-            - ./prisma:/app/prisma
-            - ./.env:/app/.env
-        depends_on:
-            - db
-        environment:
-            - DATABASE_URL=${DATABASE_URL}
-            - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-            - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+    # test:
+        # build: .
+        # command: sh -c "npm run test:e2e && tail -f /dev/null"
+        # container_name: stylos_db_test
+        # volumes:
+        #     - ./src:/app/src
+        #     - ./prisma:/app/prisma
+        #     - ./.env:/app/.env
+        # depends_on:
+        #     - db
+        # environment:
+        #     - DATABASE_URL=${DATABASE_URL}
+        #     - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+        #     - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
 
-        networks:
-            - backend
+        # networks:
+        #     - backend
 networks:
     backend:
         driver: bridge
