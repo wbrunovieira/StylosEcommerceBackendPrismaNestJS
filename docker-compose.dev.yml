@@ -1,10 +1,15 @@
-version: "3.8"
+
 services:
     app:
-        build: .
-        container_name: stylos_backP
+       
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        container_name: stylos_app_dev
         env_file:
-            - .env
+            - .env.development
+        environment:
+            NODE_ENV: development
         volumes:
             - ./src:/app/src
             - ./prisma:/app/prisma
@@ -27,7 +32,7 @@ services:
 
             npx prisma generate
             npx prisma migrate deploy;
-            psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
+           
             npm run seed;
             npm run start:dev;
             "
@@ -36,8 +41,6 @@ services:
 
     db:
         image: postgres:16
-
-
         container_name: stylos_db_prisma
         ports:
             - "5432:5432"
@@ -56,23 +59,6 @@ services:
             timeout: 5s
             retries: 5
 
-    test:
-        build: .
-        command: sh -c "npm run test:e2e && tail -f /dev/null"
-        container_name: stylos_db_test
-        volumes:
-            - ./src:/app/src
-            - ./prisma:/app/prisma
-            - ./.env:/app/.env
-        depends_on:
-            - db
-        environment:
-            - DATABASE_URL=${DATABASE_URL}
-            - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-            - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
-
-        networks:
-            - backend
 networks:
     backend:
         driver: bridge

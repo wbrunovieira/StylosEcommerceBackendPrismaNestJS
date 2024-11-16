@@ -1,0 +1,71 @@
+FROM node:20-buster-slim AS builder
+
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+
+RUN npm install
+
+COPY . .
+
+FROM node:20-buster-slim AS builder
+
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+COPY .env.production ./
+
+RUN npm install
+
+COPY . .
+
+RUN rm -rf test 
+
+RUN rm -rf vitest.config.ts 
+RUN rm -rf vitest.config.e2e.ts
+
+RUN npx prisma generate
+RUN npm run build
+
+RUN npm prune --production
+
+FROM node:20-buster-slim
+
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+RUN npm install -g @nestjs/cli ts-node
+
+EXPOSE 3333
+
+CMD ["node", "dist/main"]
+
+RUN npx prisma generate
+RUN npm run build
+
+RUN npm prune --production
+
+FROM node:20-buster-slim
+
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+RUN npm install -g @nestjs/cli ts-node
+
+EXPOSE 3333
+
+CMD ["node", "dist/main"]
