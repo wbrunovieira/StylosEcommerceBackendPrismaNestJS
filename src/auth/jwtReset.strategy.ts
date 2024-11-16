@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "src/env";
+import { Env } from "@/env";
 
 @Injectable()
 export class JwtResetPasswordService {

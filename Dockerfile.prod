@@ -1,36 +1,35 @@
+FROM node:20-buster-slim AS builder
 
-FROM node:20-buster AS builder
-
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
 
 WORKDIR /app
 
-
 COPY package*.json ./
+COPY tsconfig.prod.json ./
+COPY tsconfig.json ./
+COPY nest-cli.json ./
 
-
-RUN npm install --production
-
+RUN npm install
 
 COPY . .
 
+RUN rm -rf test
 
 RUN npx prisma generate
 RUN npm run build
 
+RUN npm prune --production
 
-FROM node:20-alpine
+FROM node:20-buster-slim
 
+RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
 
 WORKDIR /app
 
+COPY --from=builder /app /app
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/load_env.sh /app/load_env.sh
-
+RUN npm install -g @nestjs/cli ts-node
 
 EXPOSE 3333
 
-
-CMD ["sh", "/app/load_env.sh", "npm", "run", "start"]
+CMD ["node", "dist/main"]

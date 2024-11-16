@@ -8,9 +8,8 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "target": "es2022",
-        "sourceMap": true,
-        "outDir": "./dist",
         "baseUrl": "./",
+        "outDir": "./dist",
         "incremental": true,
         "skipLibCheck": true,
         "strictNullChecks": true,
@@ -19,10 +18,10 @@
         "strictBindCallApply": false,
         "forceConsistentCasingInFileNames": false,
         "noFallthroughCasesInSwitch": false,
+       
         "paths": {
-            "@/*": ["src/*"],
-            "@test/*": ["test/*"]
-        },
-        "types": ["vitest/globals"]
-    }
+            "@/*": ["src/*"]
+          }
+    },
+    "include": ["src/**/*"]
 }

@@ -2,13 +2,12 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { Env } from "src/env";
+import { Env } from "@/env";
 import { JwtStrategy } from "./jwt.strategy";
 
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { JwtResetPasswordService } from "./jwtReset.strategy";
-import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
-
+import { AuthMelhorEnvioUseCase } from "../domain/order/application/use-cases/melhor-envio-auth";
 @Module({
     imports: [
         PassportModule,

@@ -5,7 +5,7 @@ import { PrismaService } from "./prisma/prisma.service";
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-import { envSchema } from "src/env";
+import { envSchema } from "@/env";
 import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 
 import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";

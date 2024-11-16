@@ -377,9 +377,3 @@ model ArchivedCartItem {
   @@map("archived_cart_items")
 }
 
-
-
-
-
-
-

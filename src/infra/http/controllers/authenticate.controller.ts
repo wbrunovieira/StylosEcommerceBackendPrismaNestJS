@@ -19,7 +19,8 @@ import { PrismaService } from "../../../prisma/prisma.service";
 import { compare, hash } from "bcryptjs";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
-import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
+import { AuthMelhorEnvioUseCase } from "../../../domain/order/application/use-cases/melhor-envio-auth";
+
 
 const autheticateBodySchema = z.object({
     email: z.string(),
