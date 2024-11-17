@@ -45,6 +45,9 @@ commands.md
 data
 commands.md
 
+
+terraform/terraform.tfvars
+
 # dotenv environment variable files
 .env
 .env.development
