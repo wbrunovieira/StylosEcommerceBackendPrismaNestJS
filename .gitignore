@@ -44,9 +44,33 @@ commands.md
 
 data
 commands.md
+*.pem
+*.key
 
+
+
+#ansible
+ansible-config/group_vars/all.yml
+ansible-config/admin_ssh_key
+ansible-config/admin_ssh_key.public_key
+ansible-config/stylos.pem
+
+ansible-config/group_vars/all.yml
+ansible.cfg
+inventory.ini
+group_vars/*
+host_vars/*
+*.retry
+*.log
+tmp/
+debug.txt
+
+fresh-clone/
+
+#terraform
 
 terraform/terraform.tfvars
+.terraform/
 
 # dotenv environment variable files
 .env
