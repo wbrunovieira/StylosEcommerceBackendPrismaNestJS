@@ -34,25 +34,3 @@ RUN npm install -g @nestjs/cli ts-node
 EXPOSE 3333
 
 CMD ["node", "dist/main"]
-<<<<<<< HEAD
-=======
-
-RUN npx prisma generate
-RUN npm run build
-
-RUN npm prune --production
-
-FROM node:20-buster-slim
-
-RUN apt-get update && apt-get install -y postgresql-client netcat openssl --no-install-recommends
-
-WORKDIR /app
-
-COPY --from=builder /app /app
-
-RUN npm install -g @nestjs/cli ts-node
-
-EXPOSE 3333
-
-CMD ["node", "dist/main"]
->>>>>>> branch-com-commit
