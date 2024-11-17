@@ -1,8 +1,6 @@
----
 - name: Initial server setup
-  hosts: web
+  hosts: all
   become: true
-
   tasks:
     - name: Update and upgrade the system
       apt:
@@ -14,9 +12,7 @@
         name:
           - curl
           - wget
-          - vim
-          - git
-          - net-tools
+          - unzip
         state: present
 
     - name: Install Docker
@@ -26,59 +22,85 @@
 
     - name: Install Docker Compose
       get_url:
-        url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-linux-x86_64"
+        url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-Linux-x86_64"
         dest: /usr/local/bin/docker-compose
         mode: '0755'
 
+    - name: Ensure Docker CLI plugins directory exists
+      file:
+        path: /usr/libexec/docker/cli-plugins
+        state: directory
+        mode: '0755'    
+
     - name: Verify Docker Compose Installation
-      command: docker-compose --version
-      register: docker_compose_output
+      command: /usr/local/bin/docker-compose --version
+
+    - name: Ensure /usr/local/bin is in PATH
+      lineinfile:
+        path: ~/.bashrc
+        line: 'export PATH=$PATH:/usr/local/bin'
+        state: present
+
+    - name: Ensure Docker Compose is available as a Docker subcommand
+      file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/libexec/docker/cli-plugins/docker-compose
+        state: link  
+
+    - name: Check if swap is already configured
+      command: swapon --show
+      register: swap_status
       changed_when: false
 
-    - name: Display Docker Compose Version
-      debug:
-        var: docker_compose_output.stdout
-
-    - name: Create a 1GB swap file
+    - name: Create a 1GB swap file if not exists
       command: fallocate -l 1G /swapfile
       args:
         creates: /swapfile
+      when: swap_status.stdout == ""
 
     - name: Secure the swap file
       file:
         path: /swapfile
-        owner: root
-        group: root
         mode: '0600'
+      when: swap_status.stdout == ""
 
-    - name: Set up swap space
+    - name: Format the swap file
       command: mkswap /swapfile
-      args:
-        creates: /swapfile
+      when: swap_status.stdout == ""
 
-    - name: Enable the swap file
+    - name: Activate the swap file
       command: swapon /swapfile
-      args:
-        creates: /proc/swaps
+      when: swap_status.stdout == ""
 
-    - name: Make the swap file permanent
+    - name: Ensure the swap is enabled at boot
       lineinfile:
         path: /etc/fstab
         line: "/swapfile none swap sw 0 0"
         state: present
 
-    - name: Check if reboot is required
-      stat:
-        path: /var/run/reboot-required
-      register: reboot_required
-
-    - name: Reboot the server if required
-      reboot:
-      when: reboot_required.stat.exists
-
     - name: Clone or update the project from GitHub
       git:
         repo: "https://github.com/wbrunovieira/StylosEcommerceBackendPrismaNestJS.git"
-        dest: "/opt/StylosEcommerceBackendPrismaNestJS"
-        version: main
-        force: yes
+        dest: /opt/StylosEcommerceBackendPrismaNestJS
+        update: yes
+
+    - name: Ensure target directory exists for .env.production
+      file:
+        path: /opt/StylosEcommerceBackendPrismaNestJS
+        state: directory
+        mode: '0755'
+
+    - name: Copy .env.production to the server
+      copy:
+        src: /home/wbruno/projects/StylosEcommerceBackendPrismaNestJS/.env.production
+        dest: /opt/StylosEcommerceBackendPrismaNestJS/.env.production
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Start the production Docker Compose services
+      shell: |
+        cd /opt/StylosEcommerceBackendPrismaNestJS
+        docker compose -f docker-compose.prod.yml up -d
+      args:
+        executable: /bin/bash

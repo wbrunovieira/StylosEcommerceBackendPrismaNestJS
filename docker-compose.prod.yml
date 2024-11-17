@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-version: "3.8"
+version: "3.9"  # Specify the Docker Compose version
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    container_name: stylos_app_dev
-    env_file:
-      - .env.prod
-=======
-services:
-  app:
-    NODE_ENV: production
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -20,8 +9,7 @@ services:
     env_file:
       - .env.production
     environment:
-      NODE_ENV: production  
->>>>>>> branch-com-commit
+      NODE_ENV: production
     ports:
       - "3333:3333"
     command: >
@@ -33,10 +21,5 @@ services:
       echo 'Conexão com o banco de dados estabelecida!';
       npx prisma generate;
       npx prisma migrate deploy;
-<<<<<<< HEAD
-      psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c 'SET search_path TO public;' -f /app/scripts/triggers.sql;
-      npm run seed;
-=======
->>>>>>> branch-com-commit
       npm run start;
       "
