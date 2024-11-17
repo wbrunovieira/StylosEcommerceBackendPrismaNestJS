@@ -1,12 +1,24 @@
 
 services:
     app:
+<<<<<<< HEAD
         build:
            context: .
            dockerfile: Dockerfile.dev  
         container_name: stylos_app_dev
         env_file:
             - .env.dev
+=======
+       
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        container_name: stylos_app_dev
+        env_file:
+            - .env.development
+        environment:
+            NODE_ENV: development
+>>>>>>> branch-com-commit
         volumes:
             - ./src:/app/src
             - ./prisma:/app/prisma
@@ -27,10 +39,19 @@ services:
               sleep 1;
             done;
             echo 'Banco de dados pronto!';
+<<<<<<< HEAD
             sleep 3;
             npx prisma generate &&
             npx prisma migrate deploy &&
             npm run seed &&
+=======
+            sleep 5;
+
+            npx prisma generate
+            npx prisma migrate deploy;
+           
+            npm run seed;
+>>>>>>> branch-com-commit
             npm run start:dev;
             "
         networks:
@@ -58,7 +79,10 @@ services:
             retries: 5
         restart: unless-stopped
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> branch-com-commit
 networks:
     backend:
         driver: bridge
