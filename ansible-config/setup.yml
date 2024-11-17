@@ -96,8 +96,8 @@
       register: swap_status
       changed_when: false
 
-    - name: Create a 2GB swap file if not exists
-      command: fallocate -l 2G /swapfile
+    - name: Create a 4GB swap file if not exists
+      command: fallocate -l 4G /swapfile
       args:
         creates: /swapfile
       when: swap_status.stdout == ""
