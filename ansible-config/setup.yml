@@ -2,6 +2,50 @@
   hosts: all
   become: true
   tasks:
+    - name: Ensure growpart is installed (for resizing partition)
+      apt:
+        name: cloud-guest-utils
+        state: present
+
+    - name: Check current disk and partition details
+      command: lsblk -b --noheadings --raw -o NAME,SIZE,MOUNTPOINT
+      register: disk_info
+      changed_when: false
+
+    - name: Debug disk info
+      debug:
+        var: disk_info.stdout_lines
+
+    - name: Parse current root partition size
+      set_fact:
+        root_partition_size: >-
+          {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
+        disk_size: >-
+          {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
+
+    - name: Debug parsed sizes
+      debug:
+        msg:
+          - "Root partition size: {{ root_partition_size }} bytes"
+          - "Disk size: {{ disk_size }} bytes"
+
+    - name: Resize the filesystem to match the new partition size
+      command: resize2fs /dev/nvme0n1p1
+      when: root_partition_size < disk_size
+      register: resize2fs_result
+
+    - name: Debug resize2fs output
+      debug:
+        var: resize2fs_result.stdout_lines
+
+    - name: Ensure the filesystem is resized
+      command: df -h /
+      register: filesystem_info
+
+    - name: Debug filesystem info
+      debug:
+        var: filesystem_info.stdout_lines
+    
     - name: Update and upgrade the system
       apt:
         update_cache: yes
@@ -52,8 +96,8 @@
       register: swap_status
       changed_when: false
 
-    - name: Create a 1GB swap file if not exists
-      command: fallocate -l 1G /swapfile
+    - name: Create a 2GB swap file if not exists
+      command: fallocate -l 2G /swapfile
       args:
         creates: /swapfile
       when: swap_status.stdout == ""
