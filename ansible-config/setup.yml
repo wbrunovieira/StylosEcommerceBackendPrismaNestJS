@@ -1,0 +1,84 @@
+---
+- name: Initial server setup
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Update and upgrade the system
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install essential packages
+      apt:
+        name:
+          - curl
+          - wget
+          - vim
+          - git
+          - net-tools
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Verify Docker Compose Installation
+      command: docker-compose --version
+      register: docker_compose_output
+      changed_when: false
+
+    - name: Display Docker Compose Version
+      debug:
+        var: docker_compose_output.stdout
+
+    - name: Create a 1GB swap file
+      command: fallocate -l 1G /swapfile
+      args:
+        creates: /swapfile
+
+    - name: Secure the swap file
+      file:
+        path: /swapfile
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Set up swap space
+      command: mkswap /swapfile
+      args:
+        creates: /swapfile
+
+    - name: Enable the swap file
+      command: swapon /swapfile
+      args:
+        creates: /proc/swaps
+
+    - name: Make the swap file permanent
+      lineinfile:
+        path: /etc/fstab
+        line: "/swapfile none swap sw 0 0"
+        state: present
+
+    - name: Check if reboot is required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: Reboot the server if required
+      reboot:
+      when: reboot_required.stat.exists
+
+    - name: Clone or update the project from GitHub
+      git:
+        repo: "https://github.com/wbrunovieira/StylosEcommerceBackendPrismaNestJS.git"
+        dest: "/opt/StylosEcommerceBackendPrismaNestJS"
+        version: main
+        force: yes
