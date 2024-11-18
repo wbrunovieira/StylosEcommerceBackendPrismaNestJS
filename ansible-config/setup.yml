@@ -147,12 +147,12 @@
         group: ubuntu
         mode: '0644'
 
-   - name: Start the production Docker Compose services with a new build
-     shell: |
-      cd /opt/StylosEcommerceBackendPrismaNestJS
-      docker compose -f docker-compose.prod.yml up --build -d
-     args:
-      executable: /bin/bash
+    - name: Start the production Docker Compose services with a new build
+      shell: |
+        cd /opt/StylosEcommerceBackendPrismaNestJS
+        docker compose -f docker-compose.prod.yml up --build -d
+      args:
+        executable: /bin/bash
 
 
     - name: Ensure Docker services are running (docker ps)

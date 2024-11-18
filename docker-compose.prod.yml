@@ -1,4 +1,4 @@
-version: "3.9"  
+version: "4.9"
 
 services:
   app:
@@ -9,19 +9,11 @@ services:
     env_file:
       - .env.production
     environment:
-      NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL}
-      DB_HOST: stylos-db.czc0uc626uv5.us-east-1.rds.amazonaws.com
+      - NODE_ENV=production
     ports:
       - "3333:3333"
     command: >
-      sh -c "
-      echo 'Aguardando conexão com o banco de dados no RDS...';
-      while ! nc -z $DB_HOST 5432; do
-        sleep 1;
-      done;
-      echo 'Conexão com o banco de dados estabelecida!';
-      npx prisma generate;
-      npx prisma migrate deploy;
-      npm run start:prod;
-      "
+        sh -c "
+        chmod +x /app/start-prod.sh;
+        ./start-prod.sh;
+        "
