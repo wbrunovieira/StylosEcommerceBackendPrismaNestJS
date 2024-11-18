@@ -22,5 +22,5 @@ services:
       echo 'Conexão com o banco de dados estabelecida!';
       npx prisma generate;
       npx prisma migrate deploy;
-      npm run start;
+      npm run start:prod;
       "

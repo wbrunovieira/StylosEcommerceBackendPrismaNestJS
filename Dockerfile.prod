@@ -7,7 +7,7 @@ COPY nest-cli.json ./
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN npm install
 COPY . .
-RUN rm -rf test vitest.config.e2e.ts vitest.config.ts
+RUN rm -rf test vitest.config*.ts jest.config.js *.spec.ts *.test.ts
 RUN npx prisma generate
 RUN npm run build
 RUN npm prune --production

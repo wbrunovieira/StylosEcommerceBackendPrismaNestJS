@@ -7,8 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc --project tsconfig.prod.json",
+    "build:dev": "tsc --project tsconfig.dev.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/main",
     "start:dev": "ts-node --project tsconfig.dev.json src/main.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
