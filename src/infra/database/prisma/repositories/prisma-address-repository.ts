@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Either, left, right } from "@/core/either";
 import { IAddressRepository } from "@/domain/auth/application/repositories/i-address-repository";
 import { Address } from "@/domain/auth/enterprise/entities/address";

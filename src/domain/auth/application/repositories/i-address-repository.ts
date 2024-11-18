@@ -1,6 +1,7 @@
 import { Either } from "@/core/either";
-import { Address } from "../../enterprise/entities/address";
+
 import { PaginationParams } from "@/core/repositories/pagination-params";
+import { Address } from "../../enterprise/entities/address";
 
 export abstract class IAddressRepository {
     abstract findById(id: string): Promise<Either<Error, Address>>;

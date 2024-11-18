@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductSizeRepository } from "../../../../domain/catalog/application/repositories/i-product-size-repository";
-import { ProductSize } from "../../../../domain/catalog/enterprise/entities/product-size";
+import { PrismaService } from "@/prisma/prisma.service";
+import { IProductSizeRepository } from "@/domain/catalog/application/repositories/i-product-size-repository";
+import { ProductSize } from "@/domain/catalog/enterprise/entities/product-size";
 import { Either, left, right } from "@/core/either";
 import { PrismaSizeRepository } from "./prisma-size-repository";
 

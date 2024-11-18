@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductColorRepository } from "../../../../domain/catalog/application/repositories/i-product-color-repository";
+import { PrismaService } from "@/prisma/prisma.service";
+import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
 import { Either, left, right } from "@/core/either";
-import { ProductColor } from "../../../../domain/catalog/enterprise/entities/product-color";
+import { ProductColor } from "@/domain/catalog/enterprise/entities/product-color";
 import { PrismaColorRepository } from "./prisma-color-repository";
 
 @Injectable()

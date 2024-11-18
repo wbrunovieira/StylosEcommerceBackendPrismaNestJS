@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../prisma/prisma.service";
-import { IProductRepository } from "../../../../domain/catalog/application/repositories/i-product-repository";
-import { Product } from "../../../../domain/catalog/enterprise/entities/product";
+import { PrismaService } from "@/prisma/prisma.service";
+import { IProductRepository } from "@/domain/catalog/application/repositories/i-product-repository";
+import { Product } from "@/domain/catalog/enterprise/entities/product";
 
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";

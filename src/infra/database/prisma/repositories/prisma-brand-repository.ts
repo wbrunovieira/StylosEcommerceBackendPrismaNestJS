@@ -1,12 +1,12 @@
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 
-import { PaginationParams } from "../../../../core/repositories/pagination-params";
+import { PaginationParams } from "@/core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
-import { IBrandRepository } from "../../../../domain/catalog/application/repositories/i-brand-repository";
-import { Brand } from "../../../../domain/catalog/enterprise/entities/brand";
+import { IBrandRepository } from "@/domain/catalog/application/repositories/i-brand-repository";
+import { Brand } from "@/domain/catalog/enterprise/entities/brand";
 import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "../../../../domain/catalog/application/use-cases/errors/resource-not-found-error";
+import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 function normalizeName(name: string): string {
     return name.trim().toLowerCase().replace(/\s+/g, " ");

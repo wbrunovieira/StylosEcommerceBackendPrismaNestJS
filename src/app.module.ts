@@ -7,11 +7,12 @@ import { join } from "path";
 
 import { envSchema } from "@/env/env";
 import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
-
 import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";
-
 import { DatabaseModule } from "./infra/database/database.module";
 import { HttpModule } from "./infra/http/http.module";
+import { APP_GUARD } from "@nestjs/core";
+import { JwtAuthGuard } from "./auth/jwt-auth.guard";
+import { RolesGuard } from "./auth/roles.guard";
 
 @Module({
     imports: [
@@ -28,6 +29,18 @@ import { HttpModule } from "./infra/http/http.module";
         }),
     ],
     controllers: [AuthenticateController, ListAllAccountsController],
-    providers: [PrismaService],
+    providers: [
+        PrismaService,
+        {
+            provide: APP_GUARD,
+            useClass: JwtAuthGuard, 
+            
+        },
+        {
+            provide: APP_GUARD,
+            useClass: RolesGuard, 
+            
+        },
+    ],
 })
 export class AppModule {}

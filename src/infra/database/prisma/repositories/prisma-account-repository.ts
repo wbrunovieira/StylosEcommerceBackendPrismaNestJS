@@ -1,5 +1,5 @@
-import { PrismaService } from "../../../../prisma/prisma.service";
-import { PaginationParams } from "../../../../core/repositories/pagination-params";
+import { PrismaService } from "@/prisma/prisma.service";
+import { PaginationParams } from "@/core/repositories/pagination-params";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 

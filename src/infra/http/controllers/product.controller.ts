@@ -33,7 +33,8 @@ import { GetProductsBySizeIdUseCase } from "@/domain/catalog/application/use-cas
 import { GetProductsByPriceRangeUseCase } from "@/domain/catalog/application/use-cases/get-all-products-by-price-range";
 
 import { GetProductByIdUseCase } from "@/domain/catalog/application/use-cases/get-product-by-id";
-import { ProductStatus } from "@prisma/client";
+
+
 import { UpdateProductVariantUseCase } from "@/domain/catalog/application/use-cases/update-product-variant-use-case";
 import { toDomainProductStatus } from "@/infra/database/prisma/utils/convert-product-status";
 import {

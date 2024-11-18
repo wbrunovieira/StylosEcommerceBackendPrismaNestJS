@@ -12,7 +12,8 @@ import {
 } from "@nestjs/common";
 import { Body, Controller, HttpCode, Post, UsePipes } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { hash } from "bcryptjs";
+
+
 import { z } from "zod";
 import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { JwtService } from "@nestjs/jwt";

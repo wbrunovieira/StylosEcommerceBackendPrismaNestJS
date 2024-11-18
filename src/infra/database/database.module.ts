@@ -7,6 +7,7 @@ import { PrismaCategoryRepository } from "./prisma/repositories/prisma-category-
 import { IColorRepository } from "@/domain/catalog/application/repositories/i-color-repository";
 import { PrismaColorRepository } from "./prisma/repositories/prisma-color-repository";
 
+
 import { IProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
 import { PrismaProductCategoryRepository } from "./prisma/repositories/prisma-product-category-repository";
 import { IProductColorRepository } from "@/domain/catalog/application/repositories/i-product-color-repository";
@@ -139,6 +140,7 @@ import { PrismaCustomerRepository } from "@/domain/costumer/apllication/reposito
         IShippingRepository,
         IOrderRepository,
         ICustomerRepository,
+        PrismaService
     ],
 })
 export class DatabaseModule {}

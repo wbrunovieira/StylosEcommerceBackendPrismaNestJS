@@ -1,11 +1,11 @@
 import { Either, left, right } from "@/core/either";
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 
 import {
     Order,
     OrderDTO,
-} from "../../../../domain/order/enterprise/entities/order";
+} from "@/domain/order/enterprise/entities/order";
 
 import { IOrderRepository } from "@/domain/order/application/repositories/i-order-repository";
 import {

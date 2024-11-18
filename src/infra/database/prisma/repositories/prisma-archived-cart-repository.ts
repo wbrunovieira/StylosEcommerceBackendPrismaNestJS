@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/core/either";
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";

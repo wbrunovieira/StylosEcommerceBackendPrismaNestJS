@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 
-import { IProductCategoryRepository } from "../../../../domain/catalog/application/repositories/i-product-category-repository";
+import { IProductCategoryRepository } from "@/domain/catalog/application/repositories/i-product-category-repository";
 import { Either, left, right } from "@/core/either";
-import { ProductCategory } from "../../../../domain/catalog/enterprise/entities/product-category";
+import { ProductCategory } from "@/domain/catalog/enterprise/entities/product-category";
 import { PrismaCategoryRepository } from "./prisma-category-repository";
 
 @Injectable()

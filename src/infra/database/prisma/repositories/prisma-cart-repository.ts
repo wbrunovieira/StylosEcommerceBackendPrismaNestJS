@@ -1,14 +1,14 @@
 import { Either, left, right } from "@/core/either";
-import { PrismaService } from "../../../../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 
-import { Cart } from "../../../../domain/order/enterprise/entities/cart";
+import { Cart } from "@/domain/order/enterprise/entities/cart";
 import { ICartRepository } from "@/domain/order/application/repositories/i-cart-repository";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { CartItem } from "@/domain/order/enterprise/entities/cart-item";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { ArchivedCart } from "@/domain/order/enterprise/entities/archived-cart";
+
 
 @Injectable()
 export class PrismaCartRepository implements ICartRepository {
