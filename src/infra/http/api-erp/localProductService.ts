@@ -35,7 +35,6 @@
 //     description: string
 //     image: string
 
-
 // }
 // interface relationshipsProps {
 //     category: {
@@ -47,7 +46,7 @@
 //     id: number
 //     properties:propertiesProps
 //     relationships: relationshipsProps
-   
+
 // //   code: "EX123",
 // //   name: "Produto Externo",
 // //   unit_of_measure: "unidade",

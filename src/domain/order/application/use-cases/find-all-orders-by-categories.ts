@@ -8,9 +8,8 @@ export class FindOrdersByCategoryUseCase {
 
     async execute(categoryId: string): Promise<Either<Error, any[]>> {
         try {
-            const result = await this.orderRepository.
-            
-            findOrdersByCategory(categoryId);
+            const result =
+                await this.orderRepository.findOrdersByCategory(categoryId);
 
             if (result.isLeft()) {
                 return left(result.value);

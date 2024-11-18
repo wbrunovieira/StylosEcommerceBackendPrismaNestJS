@@ -76,8 +76,7 @@ export function mapCartToArchiveCartRequest(cart: Cart): ArchivedCart {
 
     console.log("ArchivedCart.create archivedCart", archivedCart);
 
-
-    return archivedCart
+    return archivedCart;
 }
 
 @Injectable()
@@ -92,7 +91,7 @@ export class ArchiveCartUseCase {
         const archiveResult =
             await this.archivedCartRepository.archive(archivedCart);
 
-            console.log("ArchivedCart.create execute archiveResult", archiveResult);
+        console.log("ArchivedCart.create execute archiveResult", archiveResult);
         if (archiveResult.isLeft()) {
             return left(archiveResult.value);
         }

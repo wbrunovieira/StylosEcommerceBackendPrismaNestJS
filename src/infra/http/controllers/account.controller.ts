@@ -11,10 +11,10 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { Body, Controller, HttpCode, Post, UsePipes } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { hash } from "bcryptjs";
 import { z } from "zod";
-import { ZodValidationsPipe } from "src/pipes/zod-validations-pipe";
+import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
 import { JwtService } from "@nestjs/jwt";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { CreateAccountUseCase } from "@/domain/auth/application/use-cases/create-account";
@@ -208,13 +208,11 @@ export class AccountController {
     @Post("reset-password")
     async resetPassword(
         @Body("token") token: string,
-        @Body("newPassword") newPassword: string,
-      
+        @Body("newPassword") newPassword: string
     ) {
         const result = await this.resetPasswordUseCase.execute({
             token,
             newPassword,
-            
         });
 
         if (result.isLeft()) {
@@ -235,7 +233,8 @@ export class AccountController {
         }
 
         return {
-            message: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.",
+            message:
+                "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.",
         };
     }
 

@@ -5,39 +5,37 @@ import { IProductRepository } from "../repositories/i-product-repository";
 import { Injectable } from "@nestjs/common";
 
 interface GetProductsByColorIdUseCaseRequest {
-  colorId: string;
+    colorId: string;
 }
 
 type GetProductsByColorIdUseCaseResponse = Either<
-  ResourceNotFoundError,
-  Product[]
+    ResourceNotFoundError,
+    Product[]
 >;
 
 @Injectable()
 export class GetProductsByColorIdUseCase {
-  constructor(private productRepository: IProductRepository) {}
+    constructor(private productRepository: IProductRepository) {}
 
-  async execute({
-    colorId,
-  }: GetProductsByColorIdUseCaseRequest): Promise<GetProductsByColorIdUseCaseResponse> {
+    async execute({
+        colorId,
+    }: GetProductsByColorIdUseCaseRequest): Promise<GetProductsByColorIdUseCaseResponse> {
+        const result = await this.productRepository.findByColorId(colorId);
 
+        if (result.isLeft()) {
+            return left(new ResourceNotFoundError("Products not found"));
+        }
 
-    const result = await this.productRepository.findByColorId(colorId);
+        const products = result.value.filter((product) => product.showInSite);
 
-    if (result.isLeft()) {
-      return left(new ResourceNotFoundError("Products not found"));
+        if (products.length === 0) {
+            return left(
+                new ResourceNotFoundError(
+                    "No available products for this brand"
+                )
+            );
+        }
+
+        return right(products);
     }
-
-    const products = result.value.filter((product) => product.showInSite);
-
-    if (products.length === 0) {
-      return left(
-          new ResourceNotFoundError(
-              "No available products for this brand"
-          )
-      );
-  }
-
-    return right(products);
-  }
 }

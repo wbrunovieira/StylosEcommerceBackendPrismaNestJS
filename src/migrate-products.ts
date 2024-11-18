@@ -21,8 +21,7 @@ export class ProductMigrationService {
 
     constructor(
         private configService: ConfigService,
-        private readonly prisma: PrismaService,
-      
+        private readonly prisma: PrismaService
     ) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
 

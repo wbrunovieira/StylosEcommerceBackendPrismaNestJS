@@ -138,7 +138,7 @@ import { PrismaCustomerRepository } from "@/domain/costumer/apllication/reposito
         IAddressRepository,
         IShippingRepository,
         IOrderRepository,
-        ICustomerRepository
+        ICustomerRepository,
     ],
 })
 export class DatabaseModule {}

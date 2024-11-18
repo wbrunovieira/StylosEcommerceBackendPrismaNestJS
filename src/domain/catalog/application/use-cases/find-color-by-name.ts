@@ -5,29 +5,29 @@ import { Color } from "../../enterprise/entities/color";
 import { IColorRepository } from "../repositories/i-color-repository";
 
 interface FindColorByNameUseCaseRequest {
-  name: string;
+    name: string;
 }
 
 type FindColorByNameUseCaseResponse = Either<
-  ResourceNotFoundError,
-  { color: Color }
+    ResourceNotFoundError,
+    { color: Color }
 >;
 
 @Injectable()
 export class FindColorByNameUseCase {
-  constructor(private colorsRepository: IColorRepository) {}
+    constructor(private colorsRepository: IColorRepository) {}
 
-  async execute({
-    name,
-  }: FindColorByNameUseCaseRequest): Promise<FindColorByNameUseCaseResponse> {
-    const colorResult = await this.colorsRepository.findByName(name);
+    async execute({
+        name,
+    }: FindColorByNameUseCaseRequest): Promise<FindColorByNameUseCaseResponse> {
+        const colorResult = await this.colorsRepository.findByName(name);
 
-    if (colorResult.isLeft()) {
-      return left(new ResourceNotFoundError("Color not found"));
+        if (colorResult.isLeft()) {
+            return left(new ResourceNotFoundError("Color not found"));
+        }
+
+        return right({
+            color: colorResult.value,
+        });
     }
-
-    return right({
-      color: colorResult.value,
-    });
-  }
 }

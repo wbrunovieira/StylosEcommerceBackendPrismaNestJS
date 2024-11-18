@@ -1,4 +1,4 @@
-import { Env } from "@/env";
+import { Env } from "@/env/env";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
@@ -119,21 +119,20 @@ export class MercadoPagoService {
             console.log("savedPreferenceId", savedPreferenceId);
             console.log("payment response", response);
 
-           
-            const collectionId = response.collector_id ?? "default_collector_id";
-            const merchantOrderId = response.additional_info?? "default_order_id";
+            const collectionId =
+                response.collector_id ?? "default_collector_id";
+            const merchantOrderId =
+                response.additional_info ?? "default_order_id";
 
             console.log("payment merchantOrderId", merchantOrderId);
             console.log("payment collectionId", collectionId);
-
-
 
             // const savedCollection =
             // await this.findCartByPreferenceId.saveCollectionId(
             //     cartId,
             //     collectionId.toString(),
             //     response.additional_info,
-                
+
             // );
 
             return response;
@@ -224,7 +223,7 @@ export class MercadoPagoService {
 
         const paymentId = data.id;
         const dateCreated = body.date_created;
-       
+
         let cartResult = await this.findCartByPreferenceId.execute(cartId);
 
         console.log("processWebhookNotification cart", cartResult);
@@ -253,8 +252,6 @@ export class MercadoPagoService {
                 }
 
                 console.log("createOrderRequest before cartId", cartId);
-
-                
 
                 const createOrderRequest = {
                     userId: cart.userId,
@@ -289,7 +286,10 @@ export class MercadoPagoService {
                     archivedCart: archivedCart,
                 };
 
-                console.log("createOrderRequest archiveCartRequest", archiveCartRequest);
+                console.log(
+                    "createOrderRequest archiveCartRequest",
+                    archiveCartRequest
+                );
 
                 const result =
                     this.archiveCartUseCase.execute(archiveCartRequest);

@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import sgMail from "@sendgrid/mail";
-import { Env } from "@/env";
+import { Env } from "@/env/env";
 
 @Injectable()
 export class MailerService {

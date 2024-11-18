@@ -10,52 +10,49 @@ import { ProductColor } from "../../enterprise/entities/product-color";
 import { IColorRepository } from "../repositories/i-color-repository";
 
 interface ProductColorUseCaseRequest {
-  colorId: string;
-  productId: string;
-  
+    colorId: string;
+    productId: string;
 }
 
 type ProductColorUseCaseResponse = Either<
-ResourceNotFoundError | null,
-  {
-    productColor: ProductColor;
-  }
+    ResourceNotFoundError | null,
+    {
+        productColor: ProductColor;
+    }
 >;
 
 @Injectable()
 export class CreateProductColorUseCase {
+    constructor(
+        private productRepository: IProductRepository,
+        private colorRepository: IColorRepository,
+        private productColorRepository: IProductColorRepository
+    ) {}
 
-  constructor(
-    private productRepository: IProductRepository,
-    private colorRepository: IColorRepository,
-    private productColorRepository: IProductColorRepository
-  ) {}
+    async execute({
+        colorId,
+        productId,
+    }: ProductColorUseCaseRequest): Promise<ProductColorUseCaseResponse> {
+        const product = await this.productRepository.findById(productId);
 
-  async execute({
-    colorId,
-    productId,
-  }: ProductColorUseCaseRequest): Promise<ProductColorUseCaseResponse> {
+        if (!product) {
+            return left(new ResourceNotFoundError());
+        }
+        const color = await this.colorRepository.findById(colorId);
 
-    const product = await this.productRepository.findById(productId);
+        if (!color) {
+            return left(new ResourceNotFoundError());
+        }
 
-    if (!product) {
-      return left(new ResourceNotFoundError());
+        const productColor = ProductColor.create({
+            colorId: new UniqueEntityID(colorId),
+            productId: new UniqueEntityID(productId),
+        });
+
+        await this.productColorRepository.create(colorId, productId);
+
+        return right({
+            productColor,
+        });
     }
-    const color = await this.colorRepository.findById(colorId);
-
-    if (!color) {
-      return left(new ResourceNotFoundError());
-    }
-
-    const productColor = ProductColor.create({
-      colorId: new UniqueEntityID(colorId),
-      productId: new UniqueEntityID(productId),
-    });
-
-    await this.productColorRepository.create(colorId, productId);
-
-    return right({
-      productColor,
-    });
-  }
 }

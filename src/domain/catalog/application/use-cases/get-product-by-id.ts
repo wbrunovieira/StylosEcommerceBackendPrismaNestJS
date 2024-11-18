@@ -31,12 +31,10 @@ export class GetProductByIdUseCase {
         const product = result.value;
 
         if (!isAdminContext && !product.showInSite) {
-          return left(
-              new ResourceNotFoundError("Product not available for display")
-          );
-      }
-
-   
+            return left(
+                new ResourceNotFoundError("Product not available for display")
+            );
+        }
 
         return right(product);
     }

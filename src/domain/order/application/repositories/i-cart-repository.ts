@@ -21,7 +21,9 @@ export abstract class ICartRepository {
         preferenceId: string,
         paymentStatus: string
     ): Promise<Either<Error, void>>;
-    abstract findByPreferenceId(preference_id: string): Promise<Either<Error, Cart>> 
+    abstract findByPreferenceId(
+        preference_id: string
+    ): Promise<Either<Error, Cart>>;
 
     abstract saveCollectionId(
         cartId: string,
@@ -29,5 +31,5 @@ export abstract class ICartRepository {
         merchant_order_id: string
     ): Promise<Either<Error, void>>;
 
-    abstract deleteCartById(cartId: string): Promise<Either<Error, void>>
+    abstract deleteCartById(cartId: string): Promise<Either<Error, void>>;
 }

@@ -12,7 +12,9 @@ export class InMemoryOrderRepository implements IOrderRepository {
     }
 
     async listOrdersByUserId(userId: string): Promise<Either<Error, Order[]>> {
-        const userOrders = this.orders.filter(order => order.userId === userId);
+        const userOrders = this.orders.filter(
+            (order) => order.userId === userId
+        );
 
         if (!userOrders.length) {
             return left(new Error("Orders not found for the given user id"));
@@ -29,7 +31,9 @@ export class InMemoryOrderRepository implements IOrderRepository {
     }
 
     async findOrderById(orderId: string): Promise<Either<Error, Order>> {
-        const order = this.orders.find(order => order.id.toString() === orderId);
+        const order = this.orders.find(
+            (order) => order.id.toString() === orderId
+        );
 
         if (!order) {
             return left(new Error("Order not found"));

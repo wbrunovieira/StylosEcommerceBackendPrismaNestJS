@@ -834,7 +834,9 @@ export class PrismaProductRepository implements IProductRepository {
                         (category) => ({
                             id: new UniqueEntityID(category.categoryId),
                             name: category.category.name,
-                            imageUrl: category.category.imageUrl ?? "default-image-url.png",
+                            imageUrl:
+                                category.category.imageUrl ??
+                                "default-image-url.png",
                         })
                     ),
 

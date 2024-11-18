@@ -21,7 +21,6 @@ import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { RolesGuard } from "@/auth/roles.guard";
 import { AuthMelhorEnvioUseCase } from "../../../domain/order/application/use-cases/melhor-envio-auth";
 
-
 const autheticateBodySchema = z.object({
     email: z.string(),
     password: z.string(),
@@ -132,7 +131,7 @@ export class AuthenticateController {
         const authUrl = this.authMelhorEnvioUseCase.generateAuthUrl();
         console.log(" authUrl", authUrl);
         return { authUrl };
-}
+    }
 
     @Post("refresh-token")
     async refreshToken(@Body("refresh_token") refresh_token: string) {

@@ -7,7 +7,9 @@ COPY nest-cli.json ./
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN npm install
 COPY . .
-RUN rm -rf test vitest.config*.ts jest.config.js *.spec.ts *.test.ts
+RUN find /app -type f \( -name "*.spec.ts" -o -name "*.test.ts" -o -name "*.e2e-spec.ts" \) -exec rm -f {} + && echo "Arquivos de teste excluídos"
+RUN echo "Verificação do diretório /app após exclusão dos testes:" && ls -R /app
+
 RUN npx prisma generate
 RUN npm run build
 RUN npm prune --production

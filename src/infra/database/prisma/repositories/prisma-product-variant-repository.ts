@@ -89,7 +89,6 @@ export class PrismaProductVariantRepository
     }
 
     async findById(
-      
         id: string
     ): Promise<Either<ResourceNotFoundError, ProductVariant>> {
         console.log("entrou prisma repo findByProductId id", id);

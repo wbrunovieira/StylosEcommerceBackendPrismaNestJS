@@ -1,4 +1,4 @@
-import { Env } from "@/env";
+import { Env } from "@/env/env";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 ("@nestjs/common");
 import { ConfigService } from "@nestjs/config";
@@ -68,7 +68,6 @@ export class AuthMelhorEnvioUseCase {
         }
     }
 
-
     async refreshToken(refreshToken: string): Promise<any> {
         const url = "https://sandbox.melhorenvio.com.br/oauth/token";
         const headers = {
@@ -85,12 +84,21 @@ export class AuthMelhorEnvioUseCase {
         try {
             console.log("AuthMelhorEnvioUseCase refreshToken body", body);
             const response = await axios.post(url, body, { headers });
-            console.log("AuthMelhorEnvioUseCase refreshToken response", response);
+            console.log(
+                "AuthMelhorEnvioUseCase refreshToken response",
+                response
+            );
             return response.data;
         } catch (error: any) {
             if (error.response) {
-                console.log("AuthMelhorEnvioUseCase refreshToken error.response", error.response);
-                throw new HttpException(error.response.data, error.response.status);
+                console.log(
+                    "AuthMelhorEnvioUseCase refreshToken error.response",
+                    error.response
+                );
+                throw new HttpException(
+                    error.response.data,
+                    error.response.status
+                );
             } else {
                 throw new HttpException(
                     "An error occurred while refreshing the token",

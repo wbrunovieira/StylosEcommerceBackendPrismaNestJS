@@ -6,45 +6,49 @@ import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/er
 import { PaginationParams } from "@/core/repositories/pagination-params";
 
 export class InMemoryAddressRepository implements IAddressRepository {
-  findAll(params: PaginationParams): Promise<Either<Error, Address[]>> {
-      throw new Error("Method not implemented.");
-  }
-
-  public items: Address[] = [];
-
-  async create(address: Address): Promise<Either<Error, void>> {
-    this.items.push(address);
-    return right(undefined);
-  }
-
-  async findById(id: string): Promise<Either<Error, Address>> {
-    const address = this.items.find(item => item.id.toString() === id);
-    if (!address) {
-      return left(new ResourceNotFoundError("Address not found"));
+    findAll(params: PaginationParams): Promise<Either<Error, Address[]>> {
+        throw new Error("Method not implemented.");
     }
-    return right(address);
-  }
 
-  async delete(address: Address): Promise<Either<Error, void>> {
-    const index = this.items.findIndex(item => item.id.toString() === address.id.toString());
-    if (index === -1) {
-      return left(new ResourceNotFoundError("Address not found"));
+    public items: Address[] = [];
+
+    async create(address: Address): Promise<Either<Error, void>> {
+        this.items.push(address);
+        return right(undefined);
     }
-    this.items.splice(index, 1);
-    return right(undefined);
-  }
 
-  async save(address: Address): Promise<Either<Error, void>> {
-    const index = this.items.findIndex(item => item.id.toString() === address.id.toString());
-    if (index === -1) {
-      return left(new ResourceNotFoundError("Address not found"));
+    async findById(id: string): Promise<Either<Error, Address>> {
+        const address = this.items.find((item) => item.id.toString() === id);
+        if (!address) {
+            return left(new ResourceNotFoundError("Address not found"));
+        }
+        return right(address);
     }
-    this.items[index] = address;
-    return right(undefined);
-  }
 
-  async findByUserId(userId: string): Promise<Either<Error, Address[]>> {
-    const addresses = this.items.filter(item => item.userId === userId);
-    return right(addresses);
-  }
+    async delete(address: Address): Promise<Either<Error, void>> {
+        const index = this.items.findIndex(
+            (item) => item.id.toString() === address.id.toString()
+        );
+        if (index === -1) {
+            return left(new ResourceNotFoundError("Address not found"));
+        }
+        this.items.splice(index, 1);
+        return right(undefined);
+    }
+
+    async save(address: Address): Promise<Either<Error, void>> {
+        const index = this.items.findIndex(
+            (item) => item.id.toString() === address.id.toString()
+        );
+        if (index === -1) {
+            return left(new ResourceNotFoundError("Address not found"));
+        }
+        this.items[index] = address;
+        return right(undefined);
+    }
+
+    async findByUserId(userId: string): Promise<Either<Error, Address[]>> {
+        const addresses = this.items.filter((item) => item.userId === userId);
+        return right(addresses);
+    }
 }

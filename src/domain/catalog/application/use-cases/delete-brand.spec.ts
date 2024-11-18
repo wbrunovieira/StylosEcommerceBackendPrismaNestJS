@@ -9,29 +9,29 @@ let inMemoryBrandRepository: InMemoryBrandRepository;
 let sut: DeleteBrandUseCase;
 
 describe("Delete Brand", () => {
-  beforeEach(() => {
-    inMemoryBrandRepository = new InMemoryBrandRepository();
-    sut = new DeleteBrandUseCase(inMemoryBrandRepository as any);
-  });
-
-  it("should be able to delete a brand", async () => {
-    const newBrand = makeBrand({}, new UniqueEntityID("brand-1"));
-
-    await inMemoryBrandRepository.create(newBrand);
-
-    const result = await sut.execute({
-      brandId: "brand-1",
+    beforeEach(() => {
+        inMemoryBrandRepository = new InMemoryBrandRepository();
+        sut = new DeleteBrandUseCase(inMemoryBrandRepository as any);
     });
 
-    expect(result.isRight()).toBe(true);
-  });
+    it("should be able to delete a brand", async () => {
+        const newBrand = makeBrand({}, new UniqueEntityID("brand-1"));
 
-  it("should return an error if the brand does not exist", async () => {
-    const result = await sut.execute({
-      brandId: "non-existing-brand",
+        await inMemoryBrandRepository.create(newBrand);
+
+        const result = await sut.execute({
+            brandId: "brand-1",
+        });
+
+        expect(result.isRight()).toBe(true);
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  });
+    it("should return an error if the brand does not exist", async () => {
+        const result = await sut.execute({
+            brandId: "non-existing-brand",
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+    });
 });

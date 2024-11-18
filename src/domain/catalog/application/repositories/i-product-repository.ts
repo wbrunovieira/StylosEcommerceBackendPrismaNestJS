@@ -32,8 +32,10 @@ export abstract class IProductRepository {
                 colors: { id: string; name: string; hex: string }[];
                 sizes: { id: string; name: string }[];
                 categories: {
-                    imageUrl: any; id: string; name: string 
-}[];
+                    imageUrl: any;
+                    id: string;
+                    name: string;
+                }[];
                 variants: {
                     id: string;
                     sizeId?: string;
@@ -50,7 +52,7 @@ export abstract class IProductRepository {
         product: Product
     ): Promise<Either<ResourceNotFoundError, void>>;
 
-    abstract getFeaturedProducts(): Promise<Product[]> 
+    abstract getFeaturedProducts(): Promise<Product[]>;
 
-    abstract nameAlreadyExists(name: string): Promise<boolean> 
+    abstract nameAlreadyExists(name: string): Promise<boolean>;
 }

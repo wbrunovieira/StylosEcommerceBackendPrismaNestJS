@@ -8,7 +8,7 @@ interface CartProps {
     paymentIntentId?: string;
     paymentStatus?: string;
     collection_id?: string;
-    merchant_order_id?:string
+    merchant_order_id?: string;
 }
 
 export class Cart extends Entity<CartProps> {

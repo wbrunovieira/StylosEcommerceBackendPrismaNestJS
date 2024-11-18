@@ -1,5 +1,6 @@
 - name: Initial server setup
   hosts: all
+  gather_facts: yes
   become: true
   tasks:
     - name: Ensure growpart is installed (for resizing partition)
@@ -63,6 +64,10 @@
       apt:
         name: docker.io
         state: present
+    
+    - name: Add current user to docker group
+      command: usermod -aG docker {{ ansible_user_id }}
+      become: true
 
     - name: Install Docker Compose
       get_url:
@@ -148,3 +153,12 @@
         docker compose -f docker-compose.prod.yml up -d
       args:
         executable: /bin/bash
+
+    - name: Ensure Docker services are running (docker ps)
+      command: docker ps
+      become: true
+      register: docker_ps_output
+
+    - name: Debug Docker ps output
+      debug:
+        var: docker_ps_output.stdout_lines

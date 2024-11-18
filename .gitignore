@@ -42,7 +42,6 @@ commands.md
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
 main.tf
 
 data
@@ -50,17 +49,13 @@ commands.md
 *.pem
 *.key
 
-
-
 #ansible
 ansible-config/group_vars/all.yml
 ansible-config/admin_ssh_key
 ansible-config/admin_ssh_key.public_key
 ansible-config/stylos.pem
+ansible-config/--start-at-task
 
-ansible-config/group_vars/all.yml
-ansible.cfg
-inventory.ini
 group_vars/*
 host_vars/*
 *.retry
@@ -71,9 +66,10 @@ debug.txt
 fresh-clone/
 
 #terraform
-
 terraform/terraform.tfvars
 .terraform/
+terraform.tfstate
+terraform.tfstate.backup
 
 # dotenv environment variable files
 .env
@@ -83,6 +79,7 @@ terraform/terraform.tfvars
 .env.local
 .env.prod
 .env.dev
+
 # temp directory
 .temp
 .tmp
@@ -95,3 +92,5 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+

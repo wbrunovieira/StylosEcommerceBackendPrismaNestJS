@@ -5,13 +5,13 @@ import { Injectable } from "@nestjs/common";
 
 interface ArchivedCartProps {
     userId: string;
-    cartId: string
+    cartId: string;
     items: CartItem[];
     paymentIntentId?: string;
     paymentStatus?: string;
     collection_id?: string;
     merchant_order_id?: string;
-    archivedAt: Date; 
+    archivedAt: Date;
 }
 
 @Injectable()

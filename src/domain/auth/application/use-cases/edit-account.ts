@@ -13,57 +13,58 @@ interface EditAccountUseCaseRequest {
     gender?: string;
     profileImageUrl?: string;
     lastLogin?: string;
-  }
+}
 
 type EditAccountUseCaseResponse = Either<
-  ResourceNotFoundError | Error,
-  {
-    user: User;
-  }
+    ResourceNotFoundError | Error,
+    {
+        user: User;
+    }
 >;
 
 @Injectable()
 export class EditAccountUseCase {
-  constructor(private accountRepository: IAccountRepository) {}
+    constructor(private accountRepository: IAccountRepository) {}
 
-  async execute({
-    id,
-    name,
+    async execute({
+        id,
+        name,
 
-    profileImageUrl,
+        profileImageUrl,
 
-    phone,
-    birthDate,
-    gender,
-  }: EditAccountUseCaseRequest): Promise<EditAccountUseCaseResponse> {
-    try {
-      const userOrError = await this.accountRepository.findById(id);
+        phone,
+        birthDate,
+        gender,
+    }: EditAccountUseCaseRequest): Promise<EditAccountUseCaseResponse> {
+        try {
+            const userOrError = await this.accountRepository.findById(id);
 
-      if (userOrError.isLeft()) {
-        return left(new ResourceNotFoundError("User not found"));
-      }
+            if (userOrError.isLeft()) {
+                return left(new ResourceNotFoundError("User not found"));
+            }
 
-      const user = userOrError.value;
+            const user = userOrError.value;
 
-      if (name !== undefined) user.name = name;
+            if (name !== undefined) user.name = name;
 
-      if (profileImageUrl !== undefined) user.profileImageUrl = profileImageUrl;
+            if (profileImageUrl !== undefined)
+                user.profileImageUrl = profileImageUrl;
 
-      if (phone !== undefined) user.phone = phone;
-      if (birthDate !== undefined) user.birthDate = new Date(birthDate);
-      if (gender !== undefined) user.gender = gender;
+            if (phone !== undefined) user.phone = phone;
+            if (birthDate !== undefined) user.birthDate = new Date(birthDate);
+            if (gender !== undefined) user.gender = gender;
 
-      const saveOrError = await this.accountRepository.save(user);
+            const saveOrError = await this.accountRepository.save(user);
 
-      if (saveOrError.isLeft()) {
-        return left(saveOrError.value);
-      }
+            if (saveOrError.isLeft()) {
+                return left(saveOrError.value);
+            }
 
-      return right({
-        user,
-      });
-    } catch (error) {
-      return left(error as Error);
+            return right({
+                user,
+            });
+        } catch (error) {
+            return left(error as Error);
+        }
     }
-  }
 }

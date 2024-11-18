@@ -152,18 +152,22 @@ export class PrismaCategoryRepository implements ICategoryRepository {
             const categories = await this.prisma.category.findMany({
                 where: {
                     productCategories: {
-                        some: {}, 
+                        some: {},
                     },
                 },
                 include: {
-                    productCategories: true, 
+                    productCategories: true,
                 },
             });
-    
+
             if (categories.length === 0) {
-                return left(new ResourceNotFoundError("No categories with products found"));
+                return left(
+                    new ResourceNotFoundError(
+                        "No categories with products found"
+                    )
+                );
             }
-    
+
             const convertedCategories = categories.map((category) =>
                 Category.create(
                     {
@@ -174,13 +178,10 @@ export class PrismaCategoryRepository implements ICategoryRepository {
                     new UniqueEntityID(category.id)
                 )
             );
-    
+
             return right(convertedCategories);
         } catch (error) {
             return left(new Error("Failed to find categories with products"));
         }
     }
-    
-
-    
 }

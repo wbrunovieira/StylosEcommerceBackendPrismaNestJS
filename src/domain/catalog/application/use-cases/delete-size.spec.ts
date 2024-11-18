@@ -9,29 +9,29 @@ let inMemorySizeRepository: InMemorySizeRepository;
 let sut: DeleteSizeUseCase;
 
 describe("Delete Size", () => {
-  beforeEach(() => {
-    inMemorySizeRepository = new InMemorySizeRepository();
-    sut = new DeleteSizeUseCase(inMemorySizeRepository as any);
-  });
-
-  it("should be able to delete a size", async () => {
-    const newSize = makeSize({}, new UniqueEntityID("size-1"));
-
-    await inMemorySizeRepository.create(newSize);
-
-    const result = await sut.execute({
-      sizeId: "size-1",
+    beforeEach(() => {
+        inMemorySizeRepository = new InMemorySizeRepository();
+        sut = new DeleteSizeUseCase(inMemorySizeRepository as any);
     });
 
-    expect(result.isRight()).toBe(true);
-  });
+    it("should be able to delete a size", async () => {
+        const newSize = makeSize({}, new UniqueEntityID("size-1"));
 
-  it("should return an error if the size does not exist", async () => {
-    const result = await sut.execute({
-      sizeId: "non-existing-size",
+        await inMemorySizeRepository.create(newSize);
+
+        const result = await sut.execute({
+            sizeId: "size-1",
+        });
+
+        expect(result.isRight()).toBe(true);
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  });
+    it("should return an error if the size does not exist", async () => {
+        const result = await sut.execute({
+            sizeId: "non-existing-size",
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+    });
 });

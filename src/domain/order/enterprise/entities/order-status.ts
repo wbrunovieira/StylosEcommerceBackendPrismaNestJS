@@ -6,7 +6,9 @@ export enum OrderStatus {
     CANCELLED = "CANCELLED",
 }
 
-export function mapPrismaOrderStatusToDomain(status: PrismaOrderStatus): OrderStatus {
+export function mapPrismaOrderStatusToDomain(
+    status: PrismaOrderStatus
+): OrderStatus {
     switch (status) {
         case PrismaOrderStatus.PENDING:
             return OrderStatus.PENDING;

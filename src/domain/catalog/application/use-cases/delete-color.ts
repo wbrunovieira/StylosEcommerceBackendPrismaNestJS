@@ -6,28 +6,28 @@ import { PrismaColorRepository } from "../../../../infra/database/prisma/reposit
 import { IColorRepository } from "../repositories/i-color-repository";
 
 interface DeleteColorUseCaseRequest {
-  colorId: string;
+    colorId: string;
 }
 
 type DeleteColorUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
 @Injectable()
 export class DeleteColorUseCase {
-  constructor(private colorsRepository: IColorRepository) {}
+    constructor(private colorsRepository: IColorRepository) {}
 
-  async execute({
-    colorId,
-  }: DeleteColorUseCaseRequest): Promise<DeleteColorUseCaseResponse> {
-    const colorResult = await this.colorsRepository.findById(colorId);
+    async execute({
+        colorId,
+    }: DeleteColorUseCaseRequest): Promise<DeleteColorUseCaseResponse> {
+        const colorResult = await this.colorsRepository.findById(colorId);
 
-    if (colorResult.isLeft()) {
-      return left(new ResourceNotFoundError("Color not found"));
+        if (colorResult.isLeft()) {
+            return left(new ResourceNotFoundError("Color not found"));
+        }
+
+        const color = colorResult.value;
+
+        await this.colorsRepository.delete(color);
+
+        return right({});
     }
-
-    const color = colorResult.value;
-
-    await this.colorsRepository.delete(color);
-
-    return right({});
-  }
 }

@@ -6,28 +6,28 @@ import { Injectable } from "@nestjs/common";
 import { IBrandRepository } from "../repositories/i-brand-repository";
 
 interface DeleteBrandUseCaseRequest {
-  brandId: string;
+    brandId: string;
 }
 
 type DeleteBrandUseCaseResponse = Either<ResourceNotFoundError, {}>;
 
 @Injectable()
 export class DeleteBrandUseCase {
-  constructor(private brandsRepository: IBrandRepository) {}
+    constructor(private brandsRepository: IBrandRepository) {}
 
-  async execute({
-    brandId,
-  }: DeleteBrandUseCaseRequest): Promise<DeleteBrandUseCaseResponse> {
-    const brandResult = await this.brandsRepository.findById(brandId);
+    async execute({
+        brandId,
+    }: DeleteBrandUseCaseRequest): Promise<DeleteBrandUseCaseResponse> {
+        const brandResult = await this.brandsRepository.findById(brandId);
 
-    if (brandResult.isLeft()) {
-      return left(new ResourceNotFoundError("Brand not found"));
+        if (brandResult.isLeft()) {
+            return left(new ResourceNotFoundError("Brand not found"));
+        }
+
+        const brand = brandResult.value;
+
+        await this.brandsRepository.delete(brand);
+
+        return right({});
     }
-
-    const brand = brandResult.value;
-
-    await this.brandsRepository.delete(brand);
-
-    return right({});
-  }
 }

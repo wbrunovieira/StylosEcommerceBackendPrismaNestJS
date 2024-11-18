@@ -376,13 +376,11 @@ export class PrismaCartRepository implements ICartRepository {
                 `Saving preferenceId for cart ${cartId} with preferenceId: ${collection_id}`
             );
 
-            
             const cart = await this.prisma.cart.findUnique({
                 where: { id: cartId },
             });
 
             if (cart) {
-               
                 await this.prisma.cart.update({
                     where: { id: cart.id },
                     data: {
@@ -399,7 +397,6 @@ export class PrismaCartRepository implements ICartRepository {
                     `Cart with ID ${cartId} not found in active carts. Checking archived carts...`
                 );
 
-                
                 const archivedCart = await this.prisma.archivedCart.findUnique({
                     where: { id: cartId },
                 });
@@ -411,7 +408,6 @@ export class PrismaCartRepository implements ICartRepository {
                     return left(new Error(`Cart not found: ${cartId}`));
                 }
 
-                
                 await this.prisma.archivedCart.update({
                     where: { id: archivedCart.id },
                     data: {

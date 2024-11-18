@@ -23,12 +23,12 @@ export class RolesGuard implements CanActivate {
 
         const canActivate = await this.jwtAuthGuard.canActivate(context);
         if (!canActivate) {
-          console.log("JwtAuthGuard denied the request");
+            console.log("JwtAuthGuard denied the request");
             return false;
         }
 
         const request = context.switchToHttp().getRequest();
-   
+
         const user = request.user;
         console.log("User in RolesGuard:", user);
 

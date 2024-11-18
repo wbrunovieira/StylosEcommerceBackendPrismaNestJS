@@ -1,17 +1,17 @@
+import 'module-alias/register';
+
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "@/env";
-import { resolve } from 'path';
-console.log('Using tsconfig:', resolve(__dirname, '../tsconfig.json'));
-
+import { Env } from "@/env/env";
+import { resolve } from "path";
+console.log("Using tsconfig:", resolve(__dirname, "../tsconfig.json"));
 
 async function bootstrap() {
-
     console.log("==> Starting application bootstrap");
-console.log("==> NODE_ENV:", process.env.NODE_ENV);
-console.log("==> DATABASE_URL:", process.env.DATABASE_URL);
-console.log("==> Using tsconfig:", resolve(__dirname, '../tsconfig.json'));
+    console.log("==> NODE_ENV:", process.env.NODE_ENV);
+    console.log("==> DATABASE_URL:", process.env.DATABASE_URL);
+    console.log("==> Using tsconfig:", resolve(__dirname, "../tsconfig.json"));
 
     const app = await NestFactory.create(AppModule, { cors: true });
 

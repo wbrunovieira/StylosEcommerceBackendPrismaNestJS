@@ -43,7 +43,6 @@ import {
 import { AddCategoriesToProductUseCase } from "@/domain/catalog/application/use-cases/add-category-to-product";
 import { GetFeaturedProductsUseCase } from "@/domain/catalog/application/use-cases/get-featured-products";
 
-
 const createProductBodySchema = z.object({
     name: z.string(),
     description: z.string(),
@@ -492,7 +491,6 @@ export class ProductController {
                     );
                 }
             } else {
-                
                 const {
                     product,
                     brandName = "Unknown Brand",

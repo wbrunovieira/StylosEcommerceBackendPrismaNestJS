@@ -108,13 +108,15 @@ export class EditProductUseCase {
         let nameChanged = false;
 
         if (name !== undefined && name !== product.name) {
-            const nameExists = await this.productRepository.nameAlreadyExists(name);
+            const nameExists =
+                await this.productRepository.nameAlreadyExists(name);
 
             if (nameExists) {
-                return left(new ResourceNotFoundError("Product name already in use"));
+                return left(
+                    new ResourceNotFoundError("Product name already in use")
+                );
             }
-        
-          
+
             product.name = name;
             nameChanged = true;
         }

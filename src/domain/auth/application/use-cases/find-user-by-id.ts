@@ -6,33 +6,33 @@ import { User } from "../../enterprise/entities/user";
 import { ResourceNotFoundError } from "@/domain/catalog/application/use-cases/errors/resource-not-found-error";
 
 interface FindAccountByIdUseCaseRequest {
-  id: string;
+    id: string;
 }
 
 type FindAccountByIdUseCaseResponse = Either<
-  ResourceNotFoundError | Error,
-  {
-    user: User;
-  }
+    ResourceNotFoundError | Error,
+    {
+        user: User;
+    }
 >;
 
 @Injectable()
 export class FindAccountByIdUseCase {
-  constructor(private accountRepository: IAccountRepository) {}
+    constructor(private accountRepository: IAccountRepository) {}
 
-  async execute({
-    id,
-  }: FindAccountByIdUseCaseRequest): Promise<FindAccountByIdUseCaseResponse> {
-    try {
-      const userOrError = await this.accountRepository.findById(id);
+    async execute({
+        id,
+    }: FindAccountByIdUseCaseRequest): Promise<FindAccountByIdUseCaseResponse> {
+        try {
+            const userOrError = await this.accountRepository.findById(id);
 
-      if (userOrError.isLeft()) {
-        return left(userOrError.value);
-      }
+            if (userOrError.isLeft()) {
+                return left(userOrError.value);
+            }
 
-      return right({ user: userOrError.value });
-    } catch (error) {
-      return left(new Error("An unexpected error occurred"));
+            return right({ user: userOrError.value });
+        } catch (error) {
+            return left(new Error("An unexpected error occurred"));
+        }
     }
-  }
 }

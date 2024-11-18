@@ -5,29 +5,29 @@ import { Category } from "../../enterprise/entities/category";
 import { ICategoryRepository } from "../repositories/i-category-repository";
 
 interface FindCategoryByNameUseCaseRequest {
-  name: string;
+    name: string;
 }
 
 type FindCategoryByNameUseCaseResponse = Either<
-  ResourceNotFoundError,
-  { category: Category }
+    ResourceNotFoundError,
+    { category: Category }
 >;
 
 @Injectable()
 export class FindCategoryByNameUseCase {
-  constructor(private categoryRepository: ICategoryRepository) {}
+    constructor(private categoryRepository: ICategoryRepository) {}
 
-  async execute({
-    name,
-  }: FindCategoryByNameUseCaseRequest): Promise<FindCategoryByNameUseCaseResponse> {
-    const categoryResult = await this.categoryRepository.findByName(name);
+    async execute({
+        name,
+    }: FindCategoryByNameUseCaseRequest): Promise<FindCategoryByNameUseCaseResponse> {
+        const categoryResult = await this.categoryRepository.findByName(name);
 
-    if (categoryResult.isLeft()) {
-      return left(new ResourceNotFoundError("Category not found"));
+        if (categoryResult.isLeft()) {
+            return left(new ResourceNotFoundError("Category not found"));
+        }
+
+        return right({
+            category: categoryResult.value,
+        });
     }
-
-    return right({
-      category: categoryResult.value,
-    });
-  }
 }

@@ -162,7 +162,7 @@ export class CartController {
         @Body(addItemValidationPipe) body: AddItemBodySchema
     ) {
         try {
-            console.log("body",body)
+            console.log("body", body);
             const item = {
                 ...body,
                 weight: body.weight ?? 0,
@@ -177,7 +177,7 @@ export class CartController {
                 item,
             });
 
-            console.log("boresultdy",result)
+            console.log("boresultdy", result);
 
             if (result.isLeft()) {
                 const error = result.value;

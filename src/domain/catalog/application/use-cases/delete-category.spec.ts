@@ -9,29 +9,29 @@ let inMemoryCategoryRepository: InMemoryCategoryRepository;
 let sut: DeleteCategoryUseCase;
 
 describe("Delete Category", () => {
-  beforeEach(() => {
-    inMemoryCategoryRepository = new InMemoryCategoryRepository();
-    sut = new DeleteCategoryUseCase(inMemoryCategoryRepository as any);
-  });
-
-  it("should be able to delete a category", async () => {
-    const newcategory = makeCategory({}, new UniqueEntityID("category-1"));
-
-    await inMemoryCategoryRepository.create(newcategory);
-
-    const result = await sut.execute({
-      categoryId: "category-1",
+    beforeEach(() => {
+        inMemoryCategoryRepository = new InMemoryCategoryRepository();
+        sut = new DeleteCategoryUseCase(inMemoryCategoryRepository as any);
     });
 
-    expect(result.isRight()).toBe(true);
-  });
+    it("should be able to delete a category", async () => {
+        const newcategory = makeCategory({}, new UniqueEntityID("category-1"));
 
-  it("should return an error if the category does not exist", async () => {
-    const result = await sut.execute({
-      categoryId: "non-existing-category",
+        await inMemoryCategoryRepository.create(newcategory);
+
+        const result = await sut.execute({
+            categoryId: "category-1",
+        });
+
+        expect(result.isRight()).toBe(true);
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-  });
+    it("should return an error if the category does not exist", async () => {
+        const result = await sut.execute({
+            categoryId: "non-existing-category",
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+    });
 });

@@ -8,58 +8,58 @@ let inMemoryBrandsRepository: InMemoryBrandRepository;
 let sut: EditBrandUseCase;
 
 describe("Edit Brand", () => {
-  beforeEach(() => {
-    inMemoryBrandsRepository = new InMemoryBrandRepository();
-    sut = new EditBrandUseCase(inMemoryBrandsRepository as any);
-  });
-
-  it("should be able to edit an existing  brand", async () => {
-    const newBrand = makeBrand({}, new UniqueEntityID("brand-1"));
-
-    await inMemoryBrandsRepository.create(newBrand);
-
-    const result = await sut.execute({
-      brandId: newBrand.id.toValue(),
-      name: "Updated Brand Name",
+    beforeEach(() => {
+        inMemoryBrandsRepository = new InMemoryBrandRepository();
+        sut = new EditBrandUseCase(inMemoryBrandsRepository as any);
     });
 
-    expect(result.isRight()).toBe(true);
-    if (result.isRight()) {
-      const updatedBrand = result.value.brand;
-      expect(updatedBrand.id.toValue()).toBe("brand-1");
-      expect(updatedBrand.name).toBe("Updated Brand Name");
-    }
-  });
+    it("should be able to edit an existing  brand", async () => {
+        const newBrand = makeBrand({}, new UniqueEntityID("brand-1"));
 
-  it("should return an error if the brand does not exist", async () => {
-    const result = await sut.execute({
-      brandId: "non-existing-brand",
-      name: "name teste",
+        await inMemoryBrandsRepository.create(newBrand);
+
+        const result = await sut.execute({
+            brandId: newBrand.id.toValue(),
+            name: "Updated Brand Name",
+        });
+
+        expect(result.isRight()).toBe(true);
+        if (result.isRight()) {
+            const updatedBrand = result.value.brand;
+            expect(updatedBrand.id.toValue()).toBe("brand-1");
+            expect(updatedBrand.name).toBe("Updated Brand Name");
+        }
     });
 
-    if (result.isLeft()) {
-      const error = result.value as ResourceNotFoundError;
-      expect(error).toBeInstanceOf(ResourceNotFoundError);
-      expect(error.message).toBe("Brand not found");
-    }
-  });
+    it("should return an error if the brand does not exist", async () => {
+        const result = await sut.execute({
+            brandId: "non-existing-brand",
+            name: "name teste",
+        });
 
-  it("should not change the brand if the name is the same", async () => {
-    const brandId = new UniqueEntityID("brand-3");
-    const newBrand = makeBrand({ name: "Same Brand Name" }, brandId);
-
-    await inMemoryBrandsRepository.create(newBrand);
-
-    const result = await sut.execute({
-      brandId: brandId.toValue(),
-      name: "Same Brand Name",
+        if (result.isLeft()) {
+            const error = result.value as ResourceNotFoundError;
+            expect(error).toBeInstanceOf(ResourceNotFoundError);
+            expect(error.message).toBe("Brand not found");
+        }
     });
 
-    expect(result.isRight()).toBe(true);
-    if (result.isRight()) {
-      const updatedBrand = result.value.brand;
-      expect(updatedBrand.id.toValue()).toBe("brand-3");
-      expect(updatedBrand.name).toBe("Same Brand Name");
-    }
-  });
+    it("should not change the brand if the name is the same", async () => {
+        const brandId = new UniqueEntityID("brand-3");
+        const newBrand = makeBrand({ name: "Same Brand Name" }, brandId);
+
+        await inMemoryBrandsRepository.create(newBrand);
+
+        const result = await sut.execute({
+            brandId: brandId.toValue(),
+            name: "Same Brand Name",
+        });
+
+        expect(result.isRight()).toBe(true);
+        if (result.isRight()) {
+            const updatedBrand = result.value.brand;
+            expect(updatedBrand.id.toValue()).toBe("brand-3");
+            expect(updatedBrand.name).toBe("Same Brand Name");
+        }
+    });
 });

@@ -8,38 +8,38 @@ let inMemoryCategoryRepository: InMemoryCategoryRepository;
 let findCategoryByNameUseCase: FindCategoryByNameUseCase;
 
 describe("FindCategoryByNameUseCase", () => {
-  beforeEach(() => {
-    inMemoryCategoryRepository = new InMemoryCategoryRepository();
-    findCategoryByNameUseCase = new FindCategoryByNameUseCase(
-      inMemoryCategoryRepository as any
-    );
-  });
-
-  it("should find a category by name", async () => {
-    const newCategory = makeCategory(
-      { name: "Test Category" },
-      new UniqueEntityID("category-1")
-    );
-    await inMemoryCategoryRepository.create(newCategory);
-
-    const result = await findCategoryByNameUseCase.execute({
-      name: "Test Category",
+    beforeEach(() => {
+        inMemoryCategoryRepository = new InMemoryCategoryRepository();
+        findCategoryByNameUseCase = new FindCategoryByNameUseCase(
+            inMemoryCategoryRepository as any
+        );
     });
 
-    expect(result.isRight()).toBe(true);
-    if (result.isRight()) {
-      expect(result.value.category.name).toBe("Test Category");
-    }
-  });
+    it("should find a category by name", async () => {
+        const newCategory = makeCategory(
+            { name: "Test Category" },
+            new UniqueEntityID("category-1")
+        );
+        await inMemoryCategoryRepository.create(newCategory);
 
-  it("should return an error if the category is not found", async () => {
-    const result = await findCategoryByNameUseCase.execute({
-      name: "Non-existing Category",
+        const result = await findCategoryByNameUseCase.execute({
+            name: "Test Category",
+        });
+
+        expect(result.isRight()).toBe(true);
+        if (result.isRight()) {
+            expect(result.value.category.name).toBe("Test Category");
+        }
     });
 
-    expect(result.isLeft()).toBe(true);
-    if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-    }
-  });
+    it("should return an error if the category is not found", async () => {
+        const result = await findCategoryByNameUseCase.execute({
+            name: "Non-existing Category",
+        });
+
+        expect(result.isLeft()).toBe(true);
+        if (result.isLeft()) {
+            expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+        }
+    });
 });

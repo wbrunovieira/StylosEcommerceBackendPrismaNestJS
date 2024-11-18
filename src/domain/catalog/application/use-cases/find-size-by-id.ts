@@ -5,29 +5,29 @@ import { Size } from "../../enterprise/entities/size";
 import { ISizeRepository } from "../repositories/i-size-repository";
 
 interface FindSizeByIdUseCaseRequest {
-  id: string;
+    id: string;
 }
 
 type FindSizeByIdUseCaseResponse = Either<
-  ResourceNotFoundError,
-  { size: Size }
+    ResourceNotFoundError,
+    { size: Size }
 >;
 
 @Injectable()
 export class FindSizeByIdUseCase {
-  constructor(private sizeRepository: ISizeRepository) {}
+    constructor(private sizeRepository: ISizeRepository) {}
 
-  async execute({
-    id,
-  }: FindSizeByIdUseCaseRequest): Promise<FindSizeByIdUseCaseResponse> {
-    const sizeResult = await this.sizeRepository.findById(id);
+    async execute({
+        id,
+    }: FindSizeByIdUseCaseRequest): Promise<FindSizeByIdUseCaseResponse> {
+        const sizeResult = await this.sizeRepository.findById(id);
 
-    if (sizeResult.isLeft()) {
-      return left(new ResourceNotFoundError("Size not found"));
+        if (sizeResult.isLeft()) {
+            return left(new ResourceNotFoundError("Size not found"));
+        }
+
+        return right({
+            size: sizeResult.value,
+        });
     }
-
-    return right({
-      size: sizeResult.value,
-    });
-  }
 }

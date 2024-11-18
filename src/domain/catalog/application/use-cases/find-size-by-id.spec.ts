@@ -9,35 +9,35 @@ let inMemorySizeRepository: InMemorySizeRepository;
 let sut: FindSizeByIdUseCase;
 
 describe("FindSizeByIdUseCase", () => {
-  beforeEach(() => {
-    inMemorySizeRepository = new InMemorySizeRepository();
-    sut = new FindSizeByIdUseCase(inMemorySizeRepository);
-  });
+    beforeEach(() => {
+        inMemorySizeRepository = new InMemorySizeRepository();
+        sut = new FindSizeByIdUseCase(inMemorySizeRepository);
+    });
 
-  it("should be able to find a size by id", async () => {
-    const size = Size.create(
-      {
-        name: "SizeName",
-      },
-      new UniqueEntityID("size-1")
-    );
+    it("should be able to find a size by id", async () => {
+        const size = Size.create(
+            {
+                name: "SizeName",
+            },
+            new UniqueEntityID("size-1")
+        );
 
-    inMemorySizeRepository.items.push(size);
+        inMemorySizeRepository.items.push(size);
 
-    const result = await sut.execute({ id: "size-1" });
+        const result = await sut.execute({ id: "size-1" });
 
-    expect(result.isRight()).toBeTruthy();
-    if (result.isRight()) {
-      expect(result.value.size).toEqual(size);
-    }
-  });
+        expect(result.isRight()).toBeTruthy();
+        if (result.isRight()) {
+            expect(result.value.size).toEqual(size);
+        }
+    });
 
-  it("should return an error if the size does not exist", async () => {
-    const result = await sut.execute({ id: "non-existent-id" });
+    it("should return an error if the size does not exist", async () => {
+        const result = await sut.execute({ id: "non-existent-id" });
 
-    expect(result.isLeft()).toBeTruthy();
-    if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-    }
-  });
+        expect(result.isLeft()).toBeTruthy();
+        if (result.isLeft()) {
+            expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+        }
+    });
 });

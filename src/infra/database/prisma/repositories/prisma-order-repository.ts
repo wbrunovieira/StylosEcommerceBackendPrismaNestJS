@@ -2,21 +2,24 @@ import { Either, left, right } from "@/core/either";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 
-import { Order, OrderDTO } from "../../../../domain/order/enterprise/entities/order";
+import {
+    Order,
+    OrderDTO,
+} from "../../../../domain/order/enterprise/entities/order";
 
 import { IOrderRepository } from "@/domain/order/application/repositories/i-order-repository";
-import { OrderStatus, mapPrismaOrderStatusToDomain } from "@/domain/order/enterprise/entities/order-status";
+import {
+    OrderStatus,
+    mapPrismaOrderStatusToDomain,
+} from "@/domain/order/enterprise/entities/order-status";
 import { OrderItem } from "@/domain/order/enterprise/entities/order-item";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-
-
 
 @Injectable()
 export class PrismaOrderRepository implements IOrderRepository {
     constructor(private prisma: PrismaService) {}
 
     private convertOrderStatus(status: any): OrderStatus {
-       
         switch (status) {
             case "PENDING":
                 return OrderStatus.PENDING;
@@ -29,22 +32,17 @@ export class PrismaOrderRepository implements IOrderRepository {
         }
     }
 
-
     async findTopSellingProductsByTotalValue(): Promise<Either<Error, any>> {
         try {
-            
             const orderItems = await this.prisma.orderItem.findMany({
                 include: {
-                    product: true, 
-                }
+                    product: true,
+                },
             });
 
-            
             const productSales = {};
 
-            
             orderItems.forEach((item) => {
-                
                 if (item.product) {
                     const productId = item.product.id;
                     const productName = item.product.name;
@@ -54,7 +52,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                         productSales[productId] = {
                             productId,
                             productName,
-                            totalValue: 0
+                            totalValue: 0,
                         };
                     }
 
@@ -62,114 +60,125 @@ export class PrismaOrderRepository implements IOrderRepository {
                 }
             });
 
-            
-            const topProducts = Object.values(productSales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+            const topProducts = Object.values(productSales).sort(
+                (a: any, b: any) => b.totalValue - a.totalValue
+            );
 
-            return right(topProducts.slice(0, 10)); 
+            return right(topProducts.slice(0, 10));
         } catch (error) {
-            console.error("Error fetching top selling products by total value:", error);
-            return left(new Error("Failed to fetch top selling products by total value"));
+            console.error(
+                "Error fetching top selling products by total value:",
+                error
+            );
+            return left(
+                new Error("Failed to fetch top selling products by total value")
+            );
         }
     }
 
     async findTopSellingCategoriesByTotalValue(): Promise<Either<Error, any>> {
         try {
-            
             const orderItems = await this.prisma.orderItem.findMany({
                 include: {
                     product: {
                         include: {
                             productCategories: {
                                 include: {
-                                    category: true
-                                }
-                            }
-                        }
-                    }
-                }
+                                    category: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
 
-            
             const categorySales = {};
 
-            
             orderItems.forEach((item) => {
-                
                 if (item.product && item.product.productCategories.length > 0) {
-                    item.product.productCategories.forEach((productCategory) => {
-                        const categoryId = productCategory.category.id;
-                        const categoryName = productCategory.category.name;
-                        const totalValue = item.price * item.quantity;
+                    item.product.productCategories.forEach(
+                        (productCategory) => {
+                            const categoryId = productCategory.category.id;
+                            const categoryName = productCategory.category.name;
+                            const totalValue = item.price * item.quantity;
 
-                        if (!categorySales[categoryId]) {
-                            categorySales[categoryId] = {
-                                categoryId,
-                                categoryName,
-                                totalValue: 0
-                            };
+                            if (!categorySales[categoryId]) {
+                                categorySales[categoryId] = {
+                                    categoryId,
+                                    categoryName,
+                                    totalValue: 0,
+                                };
+                            }
+
+                            categorySales[categoryId].totalValue += totalValue;
                         }
-
-                        categorySales[categoryId].totalValue += totalValue;
-                    });
+                    );
                 }
             });
 
-            
-            const topCategories = Object.values(categorySales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+            const topCategories = Object.values(categorySales).sort(
+                (a: any, b: any) => b.totalValue - a.totalValue
+            );
 
-            return right(topCategories.slice(0, 10)); 
+            return right(topCategories.slice(0, 10));
         } catch (error) {
-            console.error("Error fetching top selling categories by total value:", error);
-            return left(new Error("Failed to fetch top selling categories by total value"));
+            console.error(
+                "Error fetching top selling categories by total value:",
+                error
+            );
+            return left(
+                new Error(
+                    "Failed to fetch top selling categories by total value"
+                )
+            );
         }
     }
 
-
-
     async findTopSellingBrandsByTotalValue(): Promise<Either<Error, any>> {
         try {
-            
             const orderItems = await this.prisma.orderItem.findMany({
                 include: {
                     product: {
                         include: {
-                            brand: true
-                        }
-                    }
-                }
+                            brand: true,
+                        },
+                    },
+                },
             });
 
-           
             const brandSales = {};
 
-           
             orderItems.forEach((item) => {
-                
                 if (item.product && item.product.brand) {
                     const brandId = item.product.brand.id;
                     const brandName = item.product.brand.name;
                     const totalValue = item.price * item.quantity;
-            
+
                     if (!brandSales[brandId]) {
                         brandSales[brandId] = {
                             brandId,
                             brandName,
-                            totalValue: 0
+                            totalValue: 0,
                         };
                     }
-            
+
                     brandSales[brandId].totalValue += totalValue;
                 }
             });
-            
 
-            
-            const topBrands = Object.values(brandSales).sort((a: any, b: any) => b.totalValue - a.totalValue);
+            const topBrands = Object.values(brandSales).sort(
+                (a: any, b: any) => b.totalValue - a.totalValue
+            );
 
-            return right(topBrands.slice(0, 10)); 
+            return right(topBrands.slice(0, 10));
         } catch (error) {
-            console.error("Error fetching top selling brands by total value:", error);
-            return left(new Error("Failed to fetch top selling brands by total value"));
+            console.error(
+                "Error fetching top selling brands by total value:",
+                error
+            );
+            return left(
+                new Error("Failed to fetch top selling brands by total value")
+            );
         }
     }
 
@@ -194,7 +203,6 @@ export class PrismaOrderRepository implements IOrderRepository {
                 },
             });
 
-           
             const orderEntities = orders.map((order) =>
                 Order.create(
                     {
@@ -226,8 +234,9 @@ export class PrismaOrderRepository implements IOrderRepository {
         }
     }
 
-
-    async findOrdersByCategory(categoryId: string): Promise<Either<Error, Order[]>> {
+    async findOrdersByCategory(
+        categoryId: string
+    ): Promise<Either<Error, Order[]>> {
         try {
             const orders = await this.prisma.order.findMany({
                 where: {
@@ -265,7 +274,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                                 price: item.price,
                             })
                         ),
-                        status: mapPrismaOrderStatusToDomain(order.status), 
+                        status: mapPrismaOrderStatusToDomain(order.status),
                         paymentId: order.paymentId || undefined,
                         paymentStatus: order.paymentStatus || undefined,
                         paymentMethod: order.paymentMethod || undefined,
@@ -282,7 +291,9 @@ export class PrismaOrderRepository implements IOrderRepository {
         }
     }
 
-    async findOrdersByProduct(productId: string): Promise<Either<Error, Order[]>> {
+    async findOrdersByProduct(
+        productId: string
+    ): Promise<Either<Error, Order[]>> {
         try {
             const orders = await this.prisma.order.findMany({
                 where: {
@@ -294,7 +305,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                     items: true,
                 },
             });
-    
+
             const orderEntities = orders.map((order) =>
                 Order.create(
                     {
@@ -309,7 +320,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                                 price: item.price,
                             })
                         ),
-                        status: mapPrismaOrderStatusToDomain(order.status), 
+                        status: mapPrismaOrderStatusToDomain(order.status),
                         paymentId: order.paymentId || undefined,
                         paymentStatus: order.paymentStatus || undefined,
                         paymentMethod: order.paymentMethod || undefined,
@@ -318,14 +329,13 @@ export class PrismaOrderRepository implements IOrderRepository {
                     new UniqueEntityID(order.id)
                 )
             );
-    
+
             return right(orderEntities);
         } catch (error) {
             console.error("Error finding orders by product:", error);
             return left(new Error("Failed to find orders by product"));
         }
     }
-    
 
     async findOrderById(orderId: string): Promise<Either<Error, Order>> {
         try {
@@ -334,7 +344,7 @@ export class PrismaOrderRepository implements IOrderRepository {
                     id: orderId,
                 },
                 include: {
-                    items: true, 
+                    items: true,
                 },
             });
 
@@ -372,19 +382,17 @@ export class PrismaOrderRepository implements IOrderRepository {
 
     async create(order: Order): Promise<Either<Error, void>> {
         try {
-
             const orderData = order.toObject();
 
             const customer = await this.prisma.customer.findUnique({
                 where: { userId: orderData.userId },
-            })
+            });
 
             if (!customer) {
                 return left(new Error("Customer not found"));
             }
 
             const createdOrder = await this.prisma.order.create({
-                
                 data: {
                     id: orderData.id.toString(),
                     userId: orderData.userId,
@@ -419,16 +427,16 @@ export class PrismaOrderRepository implements IOrderRepository {
             const orders = await this.prisma.order.findMany({
                 include: {
                     items: true,
-                    user: true,  
+                    user: true,
                 },
             });
-    
+
             const orderDTOs = orders.map((order) => ({
                 id: order.id,
                 userId: order.userId,
-                userName: order.user.name, 
-                cartId: order.cartId ?? undefined, 
-                customerId: order.customerId ?? undefined, 
+                userName: order.user.name,
+                cartId: order.cartId ?? undefined,
+                customerId: order.customerId ?? undefined,
                 items: order.items.map((item) => ({
                     orderId: item.orderId,
                     productId: item.productId,
@@ -437,20 +445,18 @@ export class PrismaOrderRepository implements IOrderRepository {
                     quantity: item.quantity,
                     price: item.price,
                 })),
-                status: this.convertOrderStatus(order.status), 
+                status: this.convertOrderStatus(order.status),
                 paymentId: order.paymentId || undefined,
                 paymentStatus: order.paymentStatus || undefined,
                 paymentMethod: order.paymentMethod || undefined,
                 paymentDate: order.paymentDate || undefined,
             }));
-    
+
             return right(orderDTOs);
         } catch (error) {
             return left(new Error("Failed to list orders"));
         }
     }
-    
-    
 
     async listOrdersByUserId(userId: string): Promise<Either<Error, Order[]>> {
         try {
@@ -492,6 +498,4 @@ export class PrismaOrderRepository implements IOrderRepository {
             return left(new Error("Failed to list orders for user"));
         }
     }
-
-    
 }

@@ -51,7 +51,7 @@ describe("List all products (E2E)", () => {
                     description: "calcinha 2 description",
                     color: "black",
                     size: "G",
-                   
+
                     brand: "brand 2",
                     price: "200.00",
                     stock: 10,

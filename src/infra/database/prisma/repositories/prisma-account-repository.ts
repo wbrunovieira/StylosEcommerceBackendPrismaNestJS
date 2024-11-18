@@ -163,7 +163,6 @@ export class PrismaAccountRepository implements IAccountRepository {
 
             const user = User.create(
                 {
-                    
                     name: accountData.name,
                     email: accountData.email,
                     password: accountData.password,

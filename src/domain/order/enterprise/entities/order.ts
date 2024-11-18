@@ -20,7 +20,7 @@ export interface OrderDTO {
     id: string;
     userId: string;
     userName: string;
-    cartId?: string | null; 
+    cartId?: string | null;
     customerId?: string | null;
     items: any[];
     status: OrderStatus;
@@ -29,8 +29,6 @@ export interface OrderDTO {
     paymentMethod?: string;
     paymentDate?: Date;
 }
-
-
 
 export class Order extends Entity<OrderProps> {
     private constructor(props: OrderProps, id?: UniqueEntityID) {
@@ -48,8 +46,7 @@ export class Order extends Entity<OrderProps> {
     get cartId(): string | undefined {
         return this.props.cartId;
     }
-    get customerId
-    (): string | undefined {
+    get customerId(): string | undefined {
         return this.props.customerId;
     }
 

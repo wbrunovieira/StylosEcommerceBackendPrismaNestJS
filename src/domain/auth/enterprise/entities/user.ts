@@ -65,7 +65,7 @@ export class User extends Entity<UserProps> {
     get name(): string {
         return this.props.name;
     }
-    
+
     get verificationToken(): string | null {
         return this.props.verificationToken || null;
     }

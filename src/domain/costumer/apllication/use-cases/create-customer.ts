@@ -16,9 +16,11 @@ interface CreateCustomerRequest {
 export class CreateCustomerUseCase {
     constructor(private customerRepository: ICustomerRepository) {}
 
-    async execute(request: CreateCustomerRequest): Promise<Either<Error, void>> {
+    async execute(
+        request: CreateCustomerRequest
+    ): Promise<Either<Error, void>> {
         const customer = Customer.create({
-            userId: new UniqueEntityID(request.userId), 
+            userId: new UniqueEntityID(request.userId),
             firstOrderDate: request.firstOrderDate,
             customerSince: request.customerSince,
         });

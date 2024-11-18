@@ -6,43 +6,43 @@ import { Injectable } from "@nestjs/common";
 import { IColorRepository } from "../repositories/i-color-repository";
 
 interface EditColorUseCaseRequest {
-  colorId: string;
-  name: string;
-  hex: string
+    colorId: string;
+    name: string;
+    hex: string;
 }
 
 type EditColorUseCaseResponse = Either<
-  ResourceNotFoundError,
-  {
-    color: Color;
-  }
+    ResourceNotFoundError,
+    {
+        color: Color;
+    }
 >;
 @Injectable()
 export class EditColorUseCase {
-  constructor(private colorsRepository: IColorRepository) {}
+    constructor(private colorsRepository: IColorRepository) {}
 
-  async execute({
-    colorId,
-    name,
-    hex,
-  }: EditColorUseCaseRequest): Promise<EditColorUseCaseResponse> {
-    const colorResult = await this.colorsRepository.findById(colorId);
+    async execute({
+        colorId,
+        name,
+        hex,
+    }: EditColorUseCaseRequest): Promise<EditColorUseCaseResponse> {
+        const colorResult = await this.colorsRepository.findById(colorId);
 
-    if (colorResult.isLeft()) {
-      return left(new ResourceNotFoundError("Color not found"));
+        if (colorResult.isLeft()) {
+            return left(new ResourceNotFoundError("Color not found"));
+        }
+
+        const color = colorResult.value;
+        color.name = name;
+        color.hex = hex;
+        const saveResult = await this.colorsRepository.save(color);
+
+        if (saveResult.isLeft()) {
+            return left(new ResourceNotFoundError("Failed to update brand"));
+        }
+
+        return right({
+            color,
+        });
     }
-
-    const color = colorResult.value;
-    color.name = name;
-    color.hex = hex;
-    const saveResult = await this.colorsRepository.save(color);
-
-    if (saveResult.isLeft()) {
-      return left(new ResourceNotFoundError("Failed to update brand"));
-    }
-
-    return right({
-      color,
-    });
-  }
 }

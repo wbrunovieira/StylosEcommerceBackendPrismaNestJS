@@ -11,12 +11,19 @@ type GetCategoriesWithProductsUseCaseResponse = Either<Error, Category[]>;
 export class GetCategoriesWithProductsUseCase {
     constructor(private categoryRepository: ICategoryRepository) {}
 
-    async execute(params: PaginationParams): Promise<GetCategoriesWithProductsUseCaseResponse> {
+    async execute(
+        params: PaginationParams
+    ): Promise<GetCategoriesWithProductsUseCaseResponse> {
         try {
-            const categoriesResult = await this.categoryRepository.findCategoriesWithProducts();
-            
+            const categoriesResult =
+                await this.categoryRepository.findCategoriesWithProducts();
+
             if (categoriesResult.isLeft()) {
-                return left(new ResourceNotFoundError("No categories with products found"));
+                return left(
+                    new ResourceNotFoundError(
+                        "No categories with products found"
+                    )
+                );
             }
 
             return right(categoriesResult.value);

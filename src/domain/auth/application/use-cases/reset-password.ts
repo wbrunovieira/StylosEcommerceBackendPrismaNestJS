@@ -29,11 +29,10 @@ export class ResetPasswordUseCase {
         newPassword,
         token,
     }: ResetPasswordUseCaseRequest): Promise<ResetPasswordUseCaseResponse> {
-       let decoded
+        let decoded;
 
         try {
-             decoded =
-                this.jwtResetPasswordService.validateResetToken(token);
+            decoded = this.jwtResetPasswordService.validateResetToken(token);
 
             if (!decoded) {
                 throw new UnauthorizedException("Invalid or expired token");
@@ -43,7 +42,7 @@ export class ResetPasswordUseCase {
         }
 
         const userId = decoded.sub;
-        
+
         const userOrError = await this.accountRepository.findById(userId);
         console.log("user", userOrError);
         console.log("user", userOrError);

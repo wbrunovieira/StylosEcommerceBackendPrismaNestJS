@@ -66,12 +66,10 @@ export class AddCategoriesToProductUseCase {
                 "AddCategoriesToProductUseCase for (const categoryId of categories validCategoryId",
                 validCategoryId
             );
-         
+
             if (!validCategoryId) {
                 return left(new Error("InvalidCategoryError"));
             }
-
-            
 
             if (uniqueCategories.has(validCategoryId)) {
                 return left(

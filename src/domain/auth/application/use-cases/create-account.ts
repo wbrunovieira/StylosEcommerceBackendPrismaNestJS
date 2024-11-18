@@ -21,7 +21,6 @@ type CreateAccountUseCaseResponse = Either<
     }
 >;
 
-
 @Injectable()
 export class CreateAccountUseCase {
     constructor(
@@ -77,12 +76,13 @@ export class CreateAccountUseCase {
 
             console.log("create account user", user);
             const usercreated = await this.accountRepository.create(user);
-            console.log("create account usercreated",usercreated);
-            const userSendEmail =  await this.mailerService.sendVerificationEmail(
-                email,
-                verificationToken
-            );
-            console.log("create account userSendEmail",userSendEmail);
+            console.log("create account usercreated", usercreated);
+            const userSendEmail =
+                await this.mailerService.sendVerificationEmail(
+                    email,
+                    verificationToken
+                );
+            console.log("create account userSendEmail", userSendEmail);
 
             return right({
                 user: user.toResponseObject(),

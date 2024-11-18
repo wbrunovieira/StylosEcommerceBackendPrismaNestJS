@@ -4,5 +4,12 @@
         "removeComments": true,
         "sourceMap": false
     },
-    "exclude": ["test/**/*", "vitest.config.ts", "vitest.config.e2e.ts", "**/*.spec.ts", "**/*.test.ts"]
-}
+    "exclude": [
+        "src/**/*.spec.ts",
+        "src/**/*.test.ts",
+        "src/**/*.e2e-spec.ts",
+        "test",
+        "**/*.test.ts",
+        "**/*.spec.ts"
+      ]
+    }

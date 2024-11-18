@@ -8,51 +8,53 @@ import { PrismaCategoryRepository } from "./prisma-category-repository";
 
 @Injectable()
 export class PrismaProductCategoryRepository
-  implements IProductCategoryRepository
+    implements IProductCategoryRepository
 {
-  constructor(private prisma: PrismaService,
-    private categoryRepository: PrismaCategoryRepository
-  ) {}
-  async create(
-    productId: string,
-    categoryId: string
-  ): Promise<Either<Error, void>> {
-    try {
-      const catergoryExists = await this.categoryRepository.findById(categoryId);
-      if (catergoryExists.isLeft()) {
-        return left(new Error("Category not found"));
-      }
-      console.log(
-        "PrismaProductCategoryRepository create catergoryExists",
-        catergoryExists
-    );
+    constructor(
+        private prisma: PrismaService,
+        private categoryRepository: PrismaCategoryRepository
+    ) {}
+    async create(
+        productId: string,
+        categoryId: string
+    ): Promise<Either<Error, void>> {
+        try {
+            const catergoryExists =
+                await this.categoryRepository.findById(categoryId);
+            if (catergoryExists.isLeft()) {
+                return left(new Error("Category not found"));
+            }
+            console.log(
+                "PrismaProductCategoryRepository create catergoryExists",
+                catergoryExists
+            );
 
-      const productExists = await this.prisma.product.findUnique({
-        where: { id: productId },
-      });
-      if (!productExists) {
-        return left(new Error("Product not found"));
-      }
+            const productExists = await this.prisma.product.findUnique({
+                where: { id: productId },
+            });
+            if (!productExists) {
+                return left(new Error("Product not found"));
+            }
 
-      await this.prisma.productCategory.create({
-        data: { productId, categoryId },
-      });
+            await this.prisma.productCategory.create({
+                data: { productId, categoryId },
+            });
 
-      return right(undefined);
-    } catch (error) {
-      return left(new Error("Failed to create product category"));
+            return right(undefined);
+        } catch (error) {
+            return left(new Error("Failed to create product category"));
+        }
     }
-  }
-  findByProductId(productId: string): Promise<ProductCategory[]> {
-    throw new Error("Method not implemented.");
-  }
-  findByCategoyId(ColorId: string): Promise<ProductCategory[]> {
-    throw new Error("Method not implemented.");
-  }
-  addItem(productcategory: any): void {
-    throw new Error("Method not implemented.");
-  }
-  delete(productcategory: ProductCategory): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
+    findByProductId(productId: string): Promise<ProductCategory[]> {
+        throw new Error("Method not implemented.");
+    }
+    findByCategoyId(ColorId: string): Promise<ProductCategory[]> {
+        throw new Error("Method not implemented.");
+    }
+    addItem(productcategory: any): void {
+        throw new Error("Method not implemented.");
+    }
+    delete(productcategory: ProductCategory): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 }

@@ -8,14 +8,22 @@ export class FindTopSellingCategoriesByTotalValueUseCase {
 
     async execute(): Promise<Either<Error, any>> {
         try {
-            const result = await this.orderRepository.findTopSellingCategoriesByTotalValue();
+            const result =
+                await this.orderRepository.findTopSellingCategoriesByTotalValue();
             if (result.isLeft()) {
                 return left(result.value);
             }
             return right(result.value);
         } catch (error) {
-            console.error("Error fetching top selling categories by total value:", error);
-            return left(new Error("Failed to fetch top selling categories by total value"));
+            console.error(
+                "Error fetching top selling categories by total value:",
+                error
+            );
+            return left(
+                new Error(
+                    "Failed to fetch top selling categories by total value"
+                )
+            );
         }
     }
 }

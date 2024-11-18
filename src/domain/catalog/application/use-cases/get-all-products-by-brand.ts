@@ -20,12 +20,11 @@ export class GetProductsByBrandIdUseCase {
         brandId,
     }: GetProductsByBrandIdUseCaseRequest): Promise<GetProductsByBrandIdUseCaseResponse> {
         const result = await this.productRepository.findByBrandId(brandId);
-    
+
         if (result.isLeft()) {
             return left(new ResourceNotFoundError("Products not found"));
         }
         const products = result.value.filter((product) => product.showInSite);
-   
 
         if (products.length === 0) {
             return left(
