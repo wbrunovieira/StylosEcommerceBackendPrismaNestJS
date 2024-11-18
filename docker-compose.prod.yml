@@ -10,6 +10,7 @@ services:
       - .env.production
     environment:
       NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
       DB_HOST: stylos-db.czc0uc626uv5.us-east-1.rds.amazonaws.com
     ports:
       - "3333:3333"

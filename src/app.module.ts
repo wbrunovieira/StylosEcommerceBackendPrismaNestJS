@@ -6,7 +6,6 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
 import { envSchema } from "@/env/env";
-// import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";
 import { DatabaseModule } from "./infra/database/database.module";
 import { HttpModule } from "./infra/http/http.module";
@@ -17,6 +16,9 @@ import { RolesGuard } from "./auth/roles.guard";
 @Module({
     imports: [
         ConfigModule.forRoot({
+            envFilePath: process.env.NODE_ENV === 'production' 
+                ? '.env.production' 
+                : '.env.development',
             validate: (env) => envSchema.parse(env),
             isGlobal: true,
         }),
@@ -28,18 +30,16 @@ import { RolesGuard } from "./auth/roles.guard";
             serveRoot: "/public",
         }),
     ],
-    controllers: [ ListAllAccountsController],
+    controllers: [ListAllAccountsController],
     providers: [
         PrismaService,
         {
             provide: APP_GUARD,
-            useClass: JwtAuthGuard, 
-            
+            useClass: JwtAuthGuard,
         },
         {
             provide: APP_GUARD,
-            useClass: RolesGuard, 
-            
+            useClass: RolesGuard,
         },
     ],
 })
