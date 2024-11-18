@@ -112,7 +112,7 @@ import { FindTopSellingBrandsByTotalValueUseCase } from "@/domain/order/applicat
 import { FindTopSellingCategoriesByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-categories-selling-by-values";
 import { FindTopSellingProductsByTotalValueUseCase } from "@/domain/order/application/use-cases/find-top-selling-product-by-value";
 import { AuthMelhorEnvioUseCase } from "@/domain/order/application/use-cases/melhor-envio-auth";
-import { AuthenticateController } from "./controllers/authenticate.controller";
+// import { AuthenticateController } from "./controllers/authenticate.controller";
 
 @Module({
     imports: [DatabaseModule, AuthModule],
@@ -121,7 +121,7 @@ import { AuthenticateController } from "./controllers/authenticate.controller";
         CategoryController,
         ColorsController,
         ListAllAccountsController,
-        AuthenticateController,
+        // AuthenticateController,
 
         ProductController,
         SizeController,
