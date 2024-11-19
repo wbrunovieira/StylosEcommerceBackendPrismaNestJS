@@ -6,14 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     container_name: stylos_app_prod
-    env_file:
-      - .env.production
     environment:
-      - NODE_ENV=production
+    - AWS_REGION=us-east-1
+    - DATABASE_URL=ssm:///app/DATABASE_URL 
     ports:
       - "3333:3333"
-    command: >
-        sh -c "
-        chmod +x /app/start-prod.sh;
-        ./start-prod.sh;
-        "
