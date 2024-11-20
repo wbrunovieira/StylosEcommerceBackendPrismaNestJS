@@ -1,6 +1,6 @@
 resource "aws_iam_policy" "ssm_access_policy" {
   name        = "SSMAccessPolicy"
-  description = "Policy to allow access to SSM Parameter Store"
+  description = "Policy to allow access to SSM Parameter Store and EC2 operations"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -8,22 +8,43 @@ resource "aws_iam_policy" "ssm_access_policy" {
         Effect   = "Allow",
         Action   = [
           "ssm:GetParameter",
-          "ssm:GetParameters"
+          "ssm:GetParameters",
+          "ssm:GetParametersByPath"
         ],
         Resource = [
-          "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/app/DATABASE_URL"
+          "arn:aws:ssm:us-east-1:761018873312:parameter/app",
+          "arn:aws:ssm:us-east-1:761018873312:parameter/app/*"
         ]
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "ssm:DescribeParameters"
+        ],
+        Resource = "*"
       },
       {
         Effect   = "Allow",
         Action   = [
           "kms:Decrypt"
         ],
-        Resource = "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/alias/aws/ssm"
+        Resource = "arn:aws:kms:us-east-1:761018873312:key/alias/aws/ssm"
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "ec2:DescribeIamInstanceProfileAssociations",
+          "ec2:AssociateIamInstanceProfile",
+          "ec2:DescribeInstances"
+        ],
+        Resource = "*"
       }
     ]
   })
 }
+
+
+
 
 resource "aws_iam_instance_profile" "ssm_instance_profile" {
   name = "SSMInstanceProfile"

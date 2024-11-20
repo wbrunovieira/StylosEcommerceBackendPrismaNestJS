@@ -1,5 +1,3 @@
-
-
 variable "db_instance_identifier" {
   description = "The identifier of the existing RDS database instance in AWS."
   type        = string
@@ -27,7 +25,7 @@ variable "security_group" {
 
 variable "db_access_cidr" {
   description = "The CIDR block allowed to access the database (e.g., developer IP or office network)."
-  default     = "0.0.0.0/0" 
+  default     = "0.0.0.0/0"
 }
 
 variable "trusted_ip" {
@@ -35,11 +33,20 @@ variable "trusted_ip" {
   type        = string
 }
 
-
 variable "aws_region" {
   description = "The AWS region where resources will be created."
-  default     = "us-east-1" 
-  
+  default     = "us-east-1"
 }
 
+variable "environment" {
+  description = "The environment for the resources (e.g., Production, Staging, Development)."
+  default     = "Production"
+}
 
+variable "parameters" {
+  description = "A map of parameters to be created in the AWS Systems Manager Parameter Store."
+  type = map(object({
+    value = string
+    type  = string
+  }))
+}

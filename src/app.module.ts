@@ -16,12 +16,12 @@ import { RolesGuard } from "./auth/roles.guard";
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: process.env.NODE_ENV === 'production' 
-                ? '.env.production' 
-                : '.env.development',
-            validate: (env) => envSchema.parse(env),
             isGlobal: true,
+            envFilePath: process.env.NODE_ENV === 'production' ? undefined : '.env.development',
+            validate: (env) => envSchema.parse(env),
+            ignoreEnvFile: process.env.NODE_ENV === 'production', 
         }),
+        
         AuthModule,
         HttpModule,
         DatabaseModule,

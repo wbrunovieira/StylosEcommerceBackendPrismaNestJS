@@ -11,6 +11,8 @@ async function bootstrap() {
     console.log("==> Starting application bootstrap");
     console.log("==> NODE_ENV:", process.env.NODE_ENV);
     console.log("==> DATABASE_URL:", process.env.DATABASE_URL);
+    console.log('Variáveis carregadas:', process.env);
+
     console.log("==> Using tsconfig:", resolve(__dirname, "../tsconfig.json"));
 
     const app = await NestFactory.create(AppModule, { cors: true });
