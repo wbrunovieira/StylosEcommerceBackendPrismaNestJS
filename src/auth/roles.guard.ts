@@ -13,12 +13,10 @@ export class RolesGuard implements CanActivate {
 
         console.log("Roles required for this route:", roles);
 
-        
         if (!roles) {
             return true;
         }
 
-        
         const request = context.switchToHttp().getRequest();
         const user = request.user;
 
@@ -29,7 +27,6 @@ export class RolesGuard implements CanActivate {
 
         console.log("User in RolesGuard:", user);
 
-        
         return roles.includes(user.role);
     }
 }

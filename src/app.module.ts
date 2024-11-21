@@ -12,16 +12,20 @@ import { HttpModule } from "./infra/http/http.module";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { RolesGuard } from "./auth/roles.guard";
+import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: process.env.NODE_ENV === 'production' ? undefined : '.env.development',
+            envFilePath:
+                process.env.NODE_ENV === "production"
+                    ? undefined
+                    : ".env.development",
             validate: (env) => envSchema.parse(env),
-            ignoreEnvFile: process.env.NODE_ENV === 'production', 
+            ignoreEnvFile: process.env.NODE_ENV === "production",
         }),
-        
+
         AuthModule,
         HttpModule,
         DatabaseModule,
@@ -30,17 +34,7 @@ import { RolesGuard } from "./auth/roles.guard";
             serveRoot: "/public",
         }),
     ],
-    controllers: [ListAllAccountsController],
-    providers: [
-        PrismaService,
-        {
-            provide: APP_GUARD,
-            useClass: JwtAuthGuard,
-        },
-        {
-            provide: APP_GUARD,
-            useClass: RolesGuard,
-        },
-    ],
+    controllers: [AuthenticateController, ListAllAccountsController],
+    providers: [PrismaService],
 })
 export class AppModule {}
