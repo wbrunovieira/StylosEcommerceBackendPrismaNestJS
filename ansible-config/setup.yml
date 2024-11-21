@@ -1,165 +1,163 @@
 - name: Initial server setup
   hosts: all
-  gather_facts: yes
+  gather_facts: true
   become: true
   tasks:
-    - name: Ensure growpart is installed (for resizing partition)
-      apt:
-        name: cloud-guest-utils
-        state: present
+      - name: Ensure growpart is installed (for resizing partition)
+        ansible.builtin.apt:
+            name: cloud-guest-utils
+            state: present
 
-    - name: Check current disk and partition details
-      command: lsblk -b --noheadings --raw -o NAME,SIZE,MOUNTPOINT
-      register: disk_info
-      changed_when: false
+      - name: Check current disk and partition details
+        ansible.builtin.command:
+            cmd: lsblk -b --noheadings --raw -o NAME,SIZE,MOUNTPOINT
+        register: disk_info
+        changed_when: false
 
-    - name: Debug disk info
-      debug:
-        var: disk_info.stdout_lines
+      - name: Debug disk info
+        ansible.builtin.debug:
+            var: disk_info.stdout_lines
 
-    - name: Parse current root partition size
-      set_fact:
-        root_partition_size: >-
-          {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
-        disk_size: >-
-          {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
+      - name: Parse current root partition size
+        ansible.builtin.set_fact:
+            root_partition_size: >-
+                {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
+            disk_size: >-
+                {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
 
-    - name: Debug parsed sizes
-      debug:
-        msg:
-          - "Root partition size: {{ root_partition_size }} bytes"
-          - "Disk size: {{ disk_size }} bytes"
+      - name: Debug parsed sizes
+        ansible.builtin.debug:
+            msg:
+                - "Root partition size: {{ root_partition_size }} bytes"
+                - "Disk size: {{ disk_size }} bytes"
 
-    - name: Resize the filesystem to match the new partition size
-      command: resize2fs /dev/nvme0n1p1
-      when: root_partition_size < disk_size
-      register: resize2fs_result
+      - name: Resize the filesystem to match the new partition size
+        ansible.builtin.command:
+            cmd: resize2fs /dev/nvme0n1p1
+        when: root_partition_size < disk_size
+        register: resize2fs_result
+        changed_when: "'Filesystem already has the requested size' not in resize2fs_result.stdout"
 
-    - name: Debug resize2fs output
-      debug:
-        var: resize2fs_result.stdout_lines
+      - name: Debug resize2fs output
+        ansible.builtin.debug:
+            var: resize2fs_result.stdout_lines
 
-    - name: Ensure the filesystem is resized
-      command: df -h /
-      register: filesystem_info
+      - name: Ensure the filesystem is resized
+        ansible.builtin.command:
+            cmd: df -h /
+        register: filesystem_info
+        changed_when: false
 
-    - name: Debug filesystem info
-      debug:
-        var: filesystem_info.stdout_lines
-    
-    - name: Update and upgrade the system
-      apt:
-        update_cache: yes
-        upgrade: dist
+      - name: Debug filesystem info
+        ansible.builtin.debug:
+            var: filesystem_info.stdout_lines
 
-    - name: Install essential packages
-      apt:
-        name:
-          - curl
-          - wget
-          - unzip
-        state: present
+      - name: Update and upgrade the system
+        ansible.builtin.apt:
+            update_cache: true
+            upgrade: dist
 
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
-    
-    - name: Add current user to docker group
-      command: usermod -aG docker {{ ansible_user_id }}
-      become: true
+      - name: Install essential packages
+        ansible.builtin.apt:
+            name:
+                - curl
+                - wget
+                - unzip
+            state: present
 
-    - name: Install Docker Compose
-      get_url:
-        url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-Linux-x86_64"
-        dest: /usr/local/bin/docker-compose
-        mode: '0755'
+      - name: Install Docker
+        ansible.builtin.apt:
+            name: docker.io
+            state: present
 
-    - name: Ensure Docker CLI plugins directory exists
-      file:
-        path: /usr/libexec/docker/cli-plugins
-        state: directory
-        mode: '0755'    
+      - name: Add current user to docker group
+        ansible.builtin.user:
+            name: "{{ ansible_user_id }}"
+            groups: docker
+            append: true
 
-    - name: Verify Docker Compose Installation
-      command: /usr/local/bin/docker-compose --version
+      - name: Install Docker Compose
+        ansible.builtin.get_url:
+            url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-Linux-x86_64"
+            dest: /usr/local/bin/docker-compose
+            mode: "0755"
 
-    - name: Ensure /usr/local/bin is in PATH
-      lineinfile:
-        path: ~/.bashrc
-        line: 'export PATH=$PATH:/usr/local/bin'
-        state: present
+      - name: Ensure Docker CLI plugins directory exists
+        ansible.builtin.file:
+            path: /usr/libexec/docker/cli-plugins
+            state: directory
+            mode: "0755"
 
-    - name: Ensure Docker Compose is available as a Docker subcommand
-      file:
-        src: /usr/local/bin/docker-compose
-        dest: /usr/libexec/docker/cli-plugins/docker-compose
-        state: link  
+      - name: Verify Docker Compose Installation
+        ansible.builtin.command:
+            cmd: /usr/local/bin/docker-compose --version
+        register: docker_compose_version
+        changed_when: false
 
-    - name: Check if swap is already configured
-      command: swapon --show
-      register: swap_status
-      changed_when: false
+      - name: Ensure /usr/local/bin is in PATH
+        ansible.builtin.lineinfile:
+            path: ~/.bashrc
+            line: "export PATH=$PATH:/usr/local/bin"
+            state: present
 
-    - name: Create a 4GB swap file if not exists
-      command: fallocate -l 4G /swapfile
-      args:
-        creates: /swapfile
-      when: swap_status.stdout == ""
+      - name: Ensure Docker Compose is available as a Docker subcommand
+        ansible.builtin.file:
+            src: /usr/local/bin/docker-compose
+            dest: /usr/libexec/docker/cli-plugins/docker-compose
+            state: link
 
-    - name: Secure the swap file
-      file:
-        path: /swapfile
-        mode: '0600'
-      when: swap_status.stdout == ""
+      - name: Configure Nginx as a reverse proxy
+        ansible.builtin.copy:
+            dest: /etc/nginx/sites-available/styloslingerie
+            content: |
+                server {
+                    listen 80;
+                    server_name styloslingerie.com.br www.styloslingerie.com.br;
 
-    - name: Format the swap file
-      command: mkswap /swapfile
-      when: swap_status.stdout == ""
+                    location / {
+                        proxy_pass http://127.0.0.1:3333; # Backend port
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_cache_bypass $http_upgrade;
+                    }
 
-    - name: Activate the swap file
-      command: swapon /swapfile
-      when: swap_status.stdout == ""
+                    error_page 500 502 503 504 /50x.html;
+                    location = /50x.html {
+                        root /usr/share/nginx/html;
+                    }
+                }
+            mode: "0644"
+        notify:
+            - Restart Nginx
 
-    - name: Ensure the swap is enabled at boot
-      lineinfile:
-        path: /etc/fstab
-        line: "/swapfile none swap sw 0 0"
-        state: present
+      - name: Enable Nginx site configuration
+        ansible.builtin.file:
+            src: /etc/nginx/sites-available/styloslingerie
+            dest: /etc/nginx/sites-enabled/styloslingerie
+            state: link
+            force: true
 
-    - name: Clone or update the project from GitHub
-      git:
-        repo: "https://github.com/wbrunovieira/StylosEcommerceBackendPrismaNestJS.git"
-        dest: /opt/StylosEcommerceBackendPrismaNestJS
-        update: yes
+      - name: Remove default Nginx site
+        ansible.builtin.file:
+            path: /etc/nginx/sites-enabled/default
+            state: absent
 
-    - name: Ensure target directory exists for .env.production
-      file:
-        path: /opt/StylosEcommerceBackendPrismaNestJS
-        state: directory
-        mode: '0755'
+      - name: Test Nginx configuration
+        ansible.builtin.command:
+            cmd: nginx -t
+        register: nginx_test
+        changed_when: false
+        failed_when: "'syntax is ok' not in nginx_test.stderr or 'test is successful' not in nginx_test.stderr"
 
-    - name: Copy .env.production to the server
-      copy:
-        src: /home/wbruno/projects/StylosEcommerceBackendPrismaNestJS/.env.production
-        dest: /opt/StylosEcommerceBackendPrismaNestJS/.env.production
-        owner: ubuntu
-        group: ubuntu
-        mode: '0644'
+      - name: Restart Nginx
+        ansible.builtin.service:
+            name: nginx
+            state: restarted
 
-    - name: Start the production Docker Compose services with a new build
-      shell: |
-        cd /opt/StylosEcommerceBackendPrismaNestJS
-        docker compose -f docker-compose.prod.yml up --build -d
-      args:
-        executable: /bin/bash
-
-
-    - name: Ensure Docker services are running (docker ps)
-      command: docker ps
-      become: true
-      register: docker_ps_output
-
-    - name: Debug Docker ps output
-      debug:
-        var: docker_ps_output.stdout_lines
+  handlers:
+      - name: Restart Nginx
+        ansible.builtin.service:
+            name: nginx
+            state: restarted

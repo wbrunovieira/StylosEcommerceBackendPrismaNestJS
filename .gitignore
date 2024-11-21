@@ -55,6 +55,8 @@ ansible-config/admin_ssh_key
 ansible-config/admin_ssh_key.public_key
 ansible-config/stylos.pem
 ansible-config/--start-at-task
+ansible-config/secrets.yml
+secrets.yml
 
 group_vars/*
 host_vars/*
@@ -83,6 +85,8 @@ terraform.tfstate.backup
 # temp directory
 .temp
 .tmp
+
+
 
 # Runtime data
 pids
