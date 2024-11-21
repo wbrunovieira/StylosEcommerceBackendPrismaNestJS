@@ -57,6 +57,8 @@ ansible-config/stylos.pem
 ansible-config/--start-at-task
 ansible-config/secrets.yml
 secrets.yml
+.vault-password
+ansible-config/.vault-password
 
 group_vars/*
 host_vars/*

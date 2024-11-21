@@ -157,6 +157,7 @@ export class CategoryController {
             return left(new Error("Repository error"));
         }
     }
+
     @Get("all-withProducts")
     async getAllCategoriesWithProducts(
         @Query(paginationPipe) params: PaginationParams

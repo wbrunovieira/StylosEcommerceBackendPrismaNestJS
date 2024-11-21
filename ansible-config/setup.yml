@@ -1,7 +1,9 @@
 - name: Initial server setup
   hosts: all
-  gather_facts: true
   become: true
+  gather_facts: true
+  vars_files:
+      - secrets.yml
   tasks:
       - name: Ensure growpart is installed (for resizing partition)
         ansible.builtin.apt:
@@ -21,9 +23,20 @@
       - name: Parse current root partition size
         ansible.builtin.set_fact:
             root_partition_size: >-
-                {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
+                {% if disk_info.stdout_lines %}
+                  {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
+                {% else %}
+                  0
+                {% endif %}
+
+      - name: Parse current disk size
+        ansible.builtin.set_fact:
             disk_size: >-
-                {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
+                {% if disk_info.stdout_lines %}
+                  {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
+                {% else %}
+                  0
+                {% endif %}
 
       - name: Debug parsed sizes
         ansible.builtin.debug:
@@ -111,22 +124,31 @@
             dest: /etc/nginx/sites-available/styloslingerie
             content: |
                 server {
-                    listen 80;
-                    server_name styloslingerie.com.br www.styloslingerie.com.br;
+                  listen 80;
+                  server_name styloslingerie.com.br www.styloslingerie.com.br;
 
-                    location / {
-                        proxy_pass http://127.0.0.1:3333; # Backend port
-                        proxy_http_version 1.1;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection 'upgrade';
-                        proxy_set_header Host $host;
-                        proxy_cache_bypass $http_upgrade;
-                    }
+                  location / {
+                    proxy_pass http://127.0.0.1:3000; # Porta do frontend
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_cache_bypass $http_upgrade;
+                  }
 
-                    error_page 500 502 503 504 /50x.html;
-                    location = /50x.html {
-                        root /usr/share/nginx/html;
-                    }
+                  location /api {
+                    proxy_pass http://127.0.0.1:3333; # Backend port
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_cache_bypass $http_upgrade;
+                  }
+
+                  error_page 500 502 503 504 /50x.html;
+                  location = /50x.html {
+                    root /usr/share/nginx/html;
+                  }
                 }
             mode: "0644"
         notify:
@@ -155,6 +177,47 @@
         ansible.builtin.service:
             name: nginx
             state: restarted
+
+      - name: Find existing DNS record for frontend
+        ansible.builtin.uri:
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=styloslingerie.com.br"
+            method: GET
+            headers:
+                Authorization: "Bearer {{ cloudflare_api_token }}"
+                Content-Type: "application/json"
+        register: existing_record
+
+      - name: Update existing DNS record for frontend
+        ansible.builtin.uri:
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record.json.result[0].id }}"
+            method: PUT
+            headers:
+                Authorization: "Bearer {{ cloudflare_api_token }}"
+                Content-Type: "application/json"
+            body_format: json
+            body:
+                type: A
+                name: styloslingerie.com.br
+                content: "52.23.117.92"
+                proxied: true
+        when: existing_record.json.result | length > 0
+
+      - name: Update DNS record for backend in Cloudflare
+        ansible.builtin.uri:
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
+            method: POST
+            headers:
+                Authorization: "Bearer {{ cloudflare_api_token }}"
+                Content-Type: "application/json"
+            body: |
+                {
+                  "type": "A",
+                  "name": "api.styloslingerie.com.br",
+                  "content": "52.23.117.92",
+                  "proxied": true
+                }
+            body_format: json
+            status_code: 200
 
   handlers:
       - name: Restart Nginx
