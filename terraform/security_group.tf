@@ -30,6 +30,13 @@ ingress {
   cidr_blocks = [var.db_access_cidr]
 }
 
+  ingress {
+    from_port   = 3333
+    to_port     = 3333
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0

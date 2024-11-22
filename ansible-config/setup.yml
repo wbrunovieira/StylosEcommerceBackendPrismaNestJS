@@ -70,6 +70,37 @@
             update_cache: true
             upgrade: dist
 
+      - name: Check if swap is already configured
+        command: swapon --show
+        register: swap_status
+        changed_when: false
+
+      - name: Create a 4GB swap file if not exists
+        command: fallocate -l 4G /swapfile
+        args:
+            creates: /swapfile
+        when: swap_status.stdout == ""
+
+      - name: Secure the swap file
+        file:
+            path: /swapfile
+            mode: "0600"
+        when: swap_status.stdout == ""
+
+      - name: Format the swap file
+        command: mkswap /swapfile
+        when: swap_status.stdout == ""
+
+      - name: Activate the swap file
+        command: swapon /swapfile
+        when: swap_status.stdout == ""
+
+      - name: Ensure the swap is enabled at boot
+        lineinfile:
+            path: /etc/fstab
+            line: "/swapfile none swap sw 0 0"
+            state: present
+
       - name: Install essential packages
         ansible.builtin.apt:
             name:
@@ -107,17 +138,32 @@
         register: docker_compose_version
         changed_when: false
 
-      - name: Ensure /usr/local/bin is in PATH
-        ansible.builtin.lineinfile:
-            path: ~/.bashrc
-            line: "export PATH=$PATH:/usr/local/bin"
-            state: present
+      - name: Clone or update the project from GitHub
+        git:
+            repo: "https://github.com/wbrunovieira/StylosEcommerceBackendPrismaNestJS.git"
+            dest: /opt/StylosEcommerceBackendPrismaNestJS
+            update: yes
 
-      - name: Ensure Docker Compose is available as a Docker subcommand
-        ansible.builtin.file:
-            src: /usr/local/bin/docker-compose
-            dest: /usr/libexec/docker/cli-plugins/docker-compose
-            state: link
+      - name: Remove unused Docker volumes
+        ansible.builtin.command:
+            cmd: docker volume prune -f
+
+      - name: Remove unused Docker images
+        ansible.builtin.command:
+            cmd: docker image prune -af
+
+      - name: Remove unused Docker build caches
+        ansible.builtin.command:
+            cmd: docker builder prune -af
+        register: prune_build_cache_result
+        changed_when: prune_build_cache_result.rc == 0
+
+      - name: Start the production Docker Compose services
+        shell: |
+            cd /opt/StylosEcommerceBackendPrismaNestJS
+            docker compose -f docker-compose.prod.yml up --build -d
+        args:
+            executable: /bin/bash
 
       - name: Configure Nginx as a reverse proxy
         ansible.builtin.copy:
@@ -128,21 +174,26 @@
                   server_name styloslingerie.com.br www.styloslingerie.com.br;
 
                   location / {
-                    proxy_pass http://127.0.0.1:3000; # Porta do frontend
+                    proxy_pass http://127.0.0.1:3000/;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection 'upgrade';
                     proxy_set_header Host $host;
-                    proxy_cache_bypass $http_upgrade;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
                   }
 
-                  location /api {
-                    proxy_pass http://127.0.0.1:3333; # Backend port
+                  location /api/ {
+                    rewrite ^/api/(.*)$ /$1 break; 
+                    proxy_pass http://127.0.0.1:3333/;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection 'upgrade';
                     proxy_set_header Host $host;
-                    proxy_cache_bypass $http_upgrade;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
                   }
 
                   error_page 500 502 503 504 /50x.html;
@@ -161,11 +212,6 @@
             state: link
             force: true
 
-      - name: Remove default Nginx site
-        ansible.builtin.file:
-            path: /etc/nginx/sites-enabled/default
-            state: absent
-
       - name: Test Nginx configuration
         ansible.builtin.command:
             cmd: nginx -t
@@ -173,10 +219,8 @@
         changed_when: false
         failed_when: "'syntax is ok' not in nginx_test.stderr or 'test is successful' not in nginx_test.stderr"
 
-      - name: Restart Nginx
-        ansible.builtin.service:
-            name: nginx
-            state: restarted
+        notify:
+            - Restart Nginx
 
       - name: Find existing DNS record for frontend
         ansible.builtin.uri:
@@ -197,9 +241,9 @@
             body_format: json
             body:
                 type: A
-                name: styloslingerie.com.br
+                name: "styloslingerie.com.br"
                 content: "52.23.117.92"
-                proxied: true
+                proxied: false
         when: existing_record.json.result | length > 0
 
       - name: Update DNS record for backend in Cloudflare
@@ -209,14 +253,14 @@
             headers:
                 Authorization: "Bearer {{ cloudflare_api_token }}"
                 Content-Type: "application/json"
+            body_format: json
             body: |
                 {
                   "type": "A",
                   "name": "api.styloslingerie.com.br",
                   "content": "52.23.117.92",
-                  "proxied": true
+                  "proxied": false  # Define como DNS Only
                 }
-            body_format: json
             status_code: 200
 
   handlers:
