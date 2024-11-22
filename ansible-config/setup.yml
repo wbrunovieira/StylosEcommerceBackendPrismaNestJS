@@ -2,6 +2,11 @@
   hosts: all
   become: true
   gather_facts: true
+  gather_subset:
+      - min
+      - network
+
+  gather_timeout: 10
   vars_files:
       - secrets.yml
   tasks:
@@ -144,26 +149,103 @@
             dest: /opt/StylosEcommerceBackendPrismaNestJS
             update: yes
 
-      - name: Remove unused Docker volumes
-        ansible.builtin.command:
-            cmd: docker volume prune -f
+      - name: Ensure Docker service is started and enabled
+        ansible.builtin.service:
+            name: docker
+            state: started
+            enabled: yes
 
-      - name: Remove unused Docker images
-        ansible.builtin.command:
-            cmd: docker image prune -af
+      - name: Wait for Docker service to be ready
+        ansible.builtin.wait_for:
+            timeout: 30
+            connect_timeout: 5
+            path: /var/run/docker.sock
 
-      - name: Remove unused Docker build caches
+      - name: Check Docker service status
         ansible.builtin.command:
-            cmd: docker builder prune -af
-        register: prune_build_cache_result
-        changed_when: prune_build_cache_result.rc == 0
+            cmd: systemctl status docker
+        register: docker_status
+        changed_when: false
+        ignore_errors: true
+
+      - name: Debug Docker status
+        ansible.builtin.debug:
+            var: docker_status.stdout_lines
+
+      - name: Remove unused Docker resources
+        block:
+            - name: Remove unused Docker volumes
+              ansible.builtin.command:
+                  cmd: docker volume prune -f
+              register: volume_prune_result
+              changed_when: volume_prune_result.rc == 0
+
+            - name: Remove unused Docker images
+              ansible.builtin.command:
+                  cmd: docker image prune -af
+              register: image_prune_result
+              changed_when: image_prune_result.rc == 0
+
+            - name: Remove unused Docker build caches
+              ansible.builtin.command:
+                  cmd: docker builder prune -af
+              register: prune_build_cache_result
+              changed_when: prune_build_cache_result.rc == 0
 
       - name: Start the production Docker Compose services
-        shell: |
-            cd /opt/StylosEcommerceBackendPrismaNestJS
-            docker compose -f docker-compose.prod.yml up --build -d
-        args:
-            executable: /bin/bash
+        block:
+            - name: Stop existing Docker Compose services if running
+              shell: |
+                  cd /opt/StylosEcommerceBackendPrismaNestJS
+                  docker compose -f docker-compose.prod.yml down
+              args:
+                  executable: /bin/bash
+              ignore_errors: true
+
+            - name: Start Docker Compose services
+              shell: |
+                  cd /opt/StylosEcommerceBackendPrismaNestJS
+                  timeout 600 docker compose -f docker-compose.prod.yml up --build -d
+              args:
+                  executable: /bin/bash
+              register: compose_result
+              failed_when: compose_result.rc != 0 and compose_result.rc != 124
+              async: 400
+              poll: 30
+
+            - name: Wait for containers to be healthy
+              ansible.builtin.shell: |
+                  docker ps --format '{{ '{{' }}.Names{{ '}}' }}' | while read container; do
+                    until [ "`docker inspect -f {{ '{{' }}.State.Health.Status{{ '}}' }} $container 2>/dev/null`" == "healthy" ] || [ "`docker inspect -f {{ '{{' }}.State.Status{{ '}}' }} $container`" == "running" ]; do
+                      sleep 5
+                    done
+                  done
+              args:
+                  executable: /bin/bash
+              register: health_check_result
+              changed_when: false
+
+            - name: Debug Docker Compose output
+              ansible.builtin.debug:
+                  var: compose_result.stdout_lines
+
+            - name: Check running containers
+              ansible.builtin.command:
+                  cmd: docker ps
+              register: docker_ps_result
+              when: compose_result.rc != 0
+              changed_when: false
+
+            - name: Show container logs on failure
+              ansible.builtin.shell: |
+                  docker logs $(docker ps -q --filter "label=com.docker.compose.project=styloslingerie")
+              register: container_logs
+              when: compose_result.rc != 0
+              changed_when: false
+
+            - name: Debug running containers
+              ansible.builtin.debug:
+                  var: docker_ps_result.stdout_lines
 
       - name: Configure Nginx as a reverse proxy
         ansible.builtin.copy:
@@ -205,6 +287,12 @@
         notify:
             - Restart Nginx
 
+      - name: Remove default Nginx site if exists
+        ansible.builtin.file:
+            path: /etc/nginx/sites-enabled/default
+            state: absent
+        notify: Restart Nginx
+
       - name: Enable Nginx site configuration
         ansible.builtin.file:
             src: /etc/nginx/sites-available/styloslingerie
@@ -222,6 +310,39 @@
         notify:
             - Restart Nginx
 
+      - name: Ensure Nginx service is stopped
+        ansible.builtin.service:
+            name: nginx
+            state: stopped
+
+      - name: Wait for Nginx to stop
+        ansible.builtin.wait_for:
+            port: 80
+            state: stopped
+            timeout: 30
+
+      - name: Ensure Nginx service is started and enabled
+        ansible.builtin.service:
+            name: nginx
+            state: started
+            enabled: yes
+
+      - name: Wait for Nginx to start
+        ansible.builtin.wait_for:
+            port: 80
+            timeout: 30
+
+      - name: Check Nginx status
+        ansible.builtin.command:
+            cmd: systemctl status nginx
+        register: nginx_status
+        changed_when: false
+        ignore_errors: true
+
+      - name: Debug Nginx status
+        ansible.builtin.debug:
+            var: nginx_status.stdout_lines
+
       - name: Find existing DNS record for frontend
         ansible.builtin.uri:
             url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=styloslingerie.com.br"
@@ -229,11 +350,11 @@
             headers:
                 Authorization: "Bearer {{ cloudflare_api_token }}"
                 Content-Type: "application/json"
-        register: existing_record
+        register: existing_record_frontend
 
       - name: Update existing DNS record for frontend
         ansible.builtin.uri:
-            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record.json.result[0].id }}"
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record_frontend.json.result[0].id }}"
             method: PUT
             headers:
                 Authorization: "Bearer {{ cloudflare_api_token }}"
@@ -244,27 +365,40 @@
                 name: "styloslingerie.com.br"
                 content: "52.23.117.92"
                 proxied: false
-        when: existing_record.json.result | length > 0
+        when: existing_record_frontend.json.result | length > 0
 
-      - name: Update DNS record for backend in Cloudflare
+      - name: Find existing DNS record for backend
         ansible.builtin.uri:
-            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
-            method: POST
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=api.styloslingerie.com.br"
+            method: GET
+            headers:
+                Authorization: "Bearer {{ cloudflare_api_token }}"
+                Content-Type: "application/json"
+        register: existing_record_backend
+
+      - name: Update existing DNS record for backend
+        ansible.builtin.uri:
+            url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record_backend.json.result[0].id }}"
+            method: PUT
             headers:
                 Authorization: "Bearer {{ cloudflare_api_token }}"
                 Content-Type: "application/json"
             body_format: json
-            body: |
-                {
-                  "type": "A",
-                  "name": "api.styloslingerie.com.br",
-                  "content": "52.23.117.92",
-                  "proxied": false  # Define como DNS Only
-                }
-            status_code: 200
+            body:
+                type: A
+                name: "api.styloslingerie.com.br"
+                content: "52.23.117.92"
+                proxied: false
+        when: existing_record_backend.json.result | length > 0
 
   handlers:
       - name: Restart Nginx
         ansible.builtin.service:
             name: nginx
             state: restarted
+        notify: Wait for Nginx restart
+
+      - name: Wait for Nginx restart
+        ansible.builtin.wait_for:
+            port: 80
+            timeout: 30
