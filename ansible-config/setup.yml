@@ -197,7 +197,7 @@
             - name: Stop existing Docker Compose services if running
               shell: |
                   cd /opt/StylosEcommerceBackendPrismaNestJS
-                  docker compose -f docker-compose.prod.yml down
+                  sudo docker compose -f docker-compose.prod.yml down
               args:
                   executable: /bin/bash
               ignore_errors: true
@@ -247,42 +247,86 @@
               ansible.builtin.debug:
                   var: docker_ps_result.stdout_lines
 
+      - name: Generate SSL Certificates
+        block:
+            - name: Install Certbot
+              ansible.builtin.apt:
+                  name:
+                      - certbot
+                      - python3-certbot-nginx
+                  state: present
+
+      - name: Obtain SSL certificates for domains
+        ansible.builtin.command:
+            cmd: >
+                certbot --nginx -d styloslingerie.com.br -d www.styloslingerie.com.br 
+                --non-interactive 
+                --agree-tos 
+                -m wbrunovieira77@gmail.com
+        args:
+            creates: /etc/letsencrypt/live/styloslingerie.com.br/fullchain.pem
+      - name: Configure automatic certificate renewal
+        ansible.builtin.cron:
+            name: "Certbot automatic renewal"
+            job: "certbot renew --quiet"
+            minute: "0"
+            hour: "1,13"
+            user: root
+
       - name: Configure Nginx as a reverse proxy
         ansible.builtin.copy:
             dest: /etc/nginx/sites-available/styloslingerie
             content: |
+                # HTTP to HTTPS redirect
                 server {
-                  listen 80;
-                  server_name styloslingerie.com.br www.styloslingerie.com.br;
-
-                  location / {
-                    proxy_pass http://127.0.0.1:3000/;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection 'upgrade';
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                  }
-
-                  location /api/ {
-                    rewrite ^/api/(.*)$ /$1 break; 
-                    proxy_pass http://127.0.0.1:3333/;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection 'upgrade';
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                  }
-
-                  error_page 500 502 503 504 /50x.html;
-                  location = /50x.html {
-                    root /usr/share/nginx/html;
-                  }
+                    listen 80;
+                    server_name styloslingerie.com.br www.styloslingerie.com.br;
+                    return 301 https://$host$request_uri;
                 }
+
+
+                server {
+                    listen 443 ssl;
+                    server_name styloslingerie.com.br www.styloslingerie.com.br;
+                    ssl_certificate /etc/letsencrypt/live/styloslingerie.com.br/fullchain.pem;
+                    ssl_certificate_key /etc/letsencrypt/live/styloslingerie.com.br/privkey.pem;  
+
+                    ssl_protocols TLSv1.2 TLSv1.3;
+                    ssl_prefer_server_ciphers on;
+                    ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+                    ssl_ecdh_curve secp384r1;
+                    ssl_session_timeout  10m;
+                    ssl_session_cache shared:SSL:10m;
+                    ssl_session_tickets off;
+                    ssl_stapling on;
+                    ssl_stapling_verify on;
+
+                    location / {
+                        proxy_pass http://127.0.0.1:3000/;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+
+                    location /api/ {
+                        rewrite ^/api/(.*)$ /$1 break; 
+                        proxy_pass http://127.0.0.1:3333;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection 'upgrade';
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+
+                 
+                }
+
             mode: "0644"
         notify:
             - Restart Nginx
