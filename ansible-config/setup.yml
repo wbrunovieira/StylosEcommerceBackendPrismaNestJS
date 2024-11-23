@@ -209,9 +209,20 @@
               args:
                   executable: /bin/bash
               register: compose_result
-              failed_when: compose_result.rc != 0 and compose_result.rc != 124
-              async: 400
+              async: 500
               poll: 30
+              failed_when: >
+                  (compose_result is not defined or compose_result.rc is not defined) or
+                  (compose_result.rc != 0 and compose_result.rc != 124)
+
+            - name: Show Docker Compose logs on failure
+              shell: |
+                  cd /opt/StylosEcommerceBackendPrismaNestJS
+                  docker compose -f docker-compose.prod.yml logs
+              args:
+                  executable: /bin/bash
+              when: compose_result.rc != 0
+              ignore_errors: true
 
             - name: Wait for containers to be healthy
               ansible.builtin.shell: |
@@ -434,6 +445,24 @@
                 content: "52.23.117.92"
                 proxied: false
         when: existing_record_backend.json.result | length > 0
+
+      - name: Clean S3 bucket before sync
+        ansible.builtin.command:
+            cmd: aws s3 rm s3://stylos-images-bucket/ --recursive
+
+      - name: Copy public folder from local to remote
+        ansible.builtin.copy:
+            src: /home/wbruno/projects/stylosFrontEcommerce/public/
+            dest: /tmp/public/
+            owner: "{{ ansible_user }}"
+            group: "{{ ansible_user }}"
+            mode: "0755"
+
+      - name: Sync all public content to S3 bucket
+        ansible.builtin.command:
+            cmd: aws s3 sync /tmp/public/ s3://stylos-images-bucket/ --delete
+        register: sync_result
+        failed_when: "'error' in sync_result.stderr.lower()"
 
   handlers:
       - name: Restart Nginx
