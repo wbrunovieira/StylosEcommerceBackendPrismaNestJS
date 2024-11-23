@@ -8,7 +8,8 @@ const API_URL_CREATE_CATEGORY = process.env.API_URL_CREATE_CATEGORY;
 const EMAIL = process.env.ADMIN_EMAIL;
 const PASSWORD = process.env.ADMIN_PASSWORD;
 const TOKEN_CONNECTPLUG = process.env.TOKEN_CONNECTPLUG;
-const baseImageUrl = "http://localhost:3000/public/";
+const baseImageUrl = process.env.BASE_IMAGE_URL;
+//const baseImageUrl = "http://localhost:3000/public/";
 
 const createCategorySchema = z.object({
     name: z

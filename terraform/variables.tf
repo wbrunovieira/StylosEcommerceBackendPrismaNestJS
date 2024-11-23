@@ -50,3 +50,9 @@ variable "parameters" {
     type  = string
   }))
 }
+
+variable "s3_bucket_url" {
+  description = "The URL of the S3 bucket for images"
+  type        = string
+  default     = "" 
+}

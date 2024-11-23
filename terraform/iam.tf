@@ -38,7 +38,24 @@ resource "aws_iam_policy" "ssm_access_policy" {
           "ec2:DescribeInstances"
         ],
         Resource = "*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "s3:ListBucket"
+        ],
+        Resource = "arn:aws:s3:::stylos-images-bucket" 
+      },
+           {
+        Effect   = "Allow",
+        Action   = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource = "arn:aws:s3:::stylos-images-bucket/*" 
       }
+
+
     ]
   })
 }

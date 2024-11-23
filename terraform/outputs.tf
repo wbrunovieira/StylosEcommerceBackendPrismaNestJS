@@ -7,3 +7,8 @@ output "rds_endpoint" {
   value       = data.aws_db_instance.stylos_rds.endpoint
   description = "RDS Endpoint"
 }
+
+output "s3_bucket_url" {
+  value       = "https://${aws_s3_bucket.images_bucket.bucket_domain_name}"
+  description = "The URL of the images S3 bucket with https://"
+}
