@@ -1,4 +1,4 @@
-  @BASE_URL = https://wbstylosbackend.sa.ngrok.io
+@BASE_URL = https://styloslingerie.com.br/api
 
 @AUTH_TOKEN = {{authenticate.response.body.access_token}}
 

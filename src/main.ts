@@ -15,7 +15,10 @@ async function bootstrap() {
 
     console.log("==> Using tsconfig:", resolve(__dirname, "../tsconfig.json"));
 
-    const app = await NestFactory.create(AppModule, { cors: true });
+    const app = await NestFactory.create(AppModule, {
+        cors: true,
+        logger: ["error", "warn", "log", "debug", "verbose"],
+    });
 
     const configService = app.get<ConfigService<Env, true>>(ConfigService);
     const port = configService.get("PORT", { infer: true });

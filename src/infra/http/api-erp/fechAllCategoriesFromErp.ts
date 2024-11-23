@@ -77,6 +77,10 @@ const defaultImage = `${baseImageUrl}no-photos.svg`;
 export class SyncCategoriesUseCase {
     async authenticate() {
         try {
+            if (!AUTH_URL || !BASE_URL || !API_URL_CREATE_CATEGORY) {
+                throw new Error("Required environment variables are missing");
+            }
+
             if (!AUTH_URL) {
                 return null;
             }
@@ -145,8 +149,10 @@ export class SyncCategoriesUseCase {
                         "fetchCategories createdCategory",
                         createdCategory
                     );
+                    return categories;
                 } catch (error) {
                     console.error("Validation or creation error:", error);
+                    return null;
                 }
             }
         } catch (error) {
@@ -229,8 +235,10 @@ export class SyncCategoriesUseCase {
             const token = await this.authenticate();
             const syncedCategories = await this.fetchCategories(token);
             console.log(" syncedCategories", syncedCategories);
+            return syncedCategories;
         } catch (error) {
             console.error("Error in main execution:", error);
+            throw error;
         }
     }
 }
