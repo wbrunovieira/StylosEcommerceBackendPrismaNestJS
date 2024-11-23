@@ -24,52 +24,52 @@ const createCategorySchema = z.object({
 });
 
 const categoryImages = {
-    8: `${baseImageUrl}acessorios.svg`,
-    11: `${baseImageUrl}ballet-shoes.svg`,
-    10: `${baseImageUrl}ballet-shoes.svg`,
-    43: `${baseImageUrl}bikini.svg`,
-    52: `${baseImageUrl}bodysuit.svg`,
-    25: `${baseImageUrl}bag-mini.svg`,
-    26: `${baseImageUrl}scarf.svg`,
-    53: `${baseImageUrl}underwear.svg`,
-    46: `${baseImageUrl}camisole.svg`,
-    33: `${baseImageUrl}nightie.svg`,
-    34: `${baseImageUrl}pamela-hat.svg`,
-    35: `${baseImageUrl}flip-flops.svg`,
-    38: `${baseImageUrl}flip-flops.svg`,
-    56: `${baseImageUrl}windbreaker.svg`,
-    49: `${baseImageUrl}sex-lube.svg`,
-    13: `${baseImageUrl}skincare.svg`,
-    15: `${baseImageUrl}skincare.svg`,
-    19: `${baseImageUrl}skincare.svg`,
-    17: `${baseImageUrl}skincare.svg`,
-    31: `${baseImageUrl}boy.svg`,
-    5: `${baseImageUrl}package.svg`,
-    50: `${baseImageUrl}mask.svg`,
-    23: `${baseImageUrl}extended.svg`,
-    18: `${baseImageUrl}extended.svg`,
-    41: `${baseImageUrl}pregnant-woman.svg`,
-    37: `${baseImageUrl}hydrated-skin.svg`,
-    27: `${baseImageUrl}scarf (1).svg`,
-    9: `${baseImageUrl}lingeries.svg`,
-    32: `${baseImageUrl}love.svg`,
-    44: `${baseImageUrl}swimsuit.svg`,
-    20: `${baseImageUrl}socks.svg`,
-    21: `${baseImageUrl}woman (1).svg`,
-    39: `${baseImageUrl}sport.svg`,
-    28: `${baseImageUrl}glasses-mini.svg`,
-    29: `${baseImageUrl}bag.svg`,
-    30: `${baseImageUrl}glasses-mini.svg`,
-    51: `${baseImageUrl}dry-skin.svg`,
-    16: `${baseImageUrl}perfume-mini.svg`,
-    22: `${baseImageUrl}dry-skin.svg`,
-    48: `${baseImageUrl}robe.svg`,
-    45: `${baseImageUrl}manwear.svg`,
-    55: `${baseImageUrl}ballet-shoes.svg`,
-    40: `${baseImageUrl}robe.svg`,
-    57: `${baseImageUrl}underware.svg`,
-    12: `${baseImageUrl}bikini.svg`,
-    47: `${baseImageUrl}nightie.svg`,
+    8: `${baseImageUrl}/acessorios.svg`,
+    11: `${baseImageUrl}/ballet-shoes.svg`,
+    10: `${baseImageUrl}/ballet-shoes.svg`,
+    43: `${baseImageUrl}/bikini.svg`,
+    52: `${baseImageUrl}/bodysuit.svg`,
+    25: `${baseImageUrl}/bag-mini.svg`,
+    26: `${baseImageUrl}/scarf.svg`,
+    53: `${baseImageUrl}/underwear.svg`,
+    46: `${baseImageUrl}/camisole.svg`,
+    33: `${baseImageUrl}/nightie.svg`,
+    34: `${baseImageUrl}/pamela-hat.svg`,
+    35: `${baseImageUrl}/flip-flops.svg`,
+    38: `${baseImageUrl}/flip-flops.svg`,
+    56: `${baseImageUrl}/windbreaker.svg`,
+    49: `${baseImageUrl}/sex-lube.svg`,
+    13: `${baseImageUrl}/skincare.svg`,
+    15: `${baseImageUrl}/skincare.svg`,
+    19: `${baseImageUrl}/skincare.svg`,
+    17: `${baseImageUrl}/skincare.svg`,
+    31: `${baseImageUrl}/boy.svg`,
+    5: `${baseImageUrl}/package.svg`,
+    50: `${baseImageUrl}/mask.svg`,
+    23: `${baseImageUrl}/extended.svg`,
+    18: `${baseImageUrl}/extended.svg`,
+    41: `${baseImageUrl}/pregnant-woman.svg`,
+    37: `${baseImageUrl}/hydrated-skin.svg`,
+    27: `${baseImageUrl}/scarf (1).svg`,
+    9: `${baseImageUrl}/lingeries.svg`,
+    32: `${baseImageUrl}/love.svg`,
+    44: `${baseImageUrl}/swimsuit.svg`,
+    20: `${baseImageUrl}/socks.svg`,
+    21: `${baseImageUrl}/woman (1).svg`,
+    39: `${baseImageUrl}/sport.svg`,
+    28: `${baseImageUrl}/glasses-mini.svg`,
+    29: `${baseImageUrl}/bag.svg`,
+    30: `${baseImageUrl}/glasses-mini.svg`,
+    51: `${baseImageUrl}/dry-skin.svg`,
+    16: `${baseImageUrl}/perfume-mini.svg`,
+    22: `${baseImageUrl}/dry-skin.svg`,
+    48: `${baseImageUrl}/robe.svg`,
+    45: `${baseImageUrl}/manwear.svg`,
+    55: `${baseImageUrl}/ballet-shoes.svg`,
+    40: `${baseImageUrl}/robe.svg`,
+    57: `${baseImageUrl}/underware.svg`,
+    12: `${baseImageUrl}/bikini.svg`,
+    47: `${baseImageUrl}/nightie.svg`,
 };
 
 const defaultImage = `${baseImageUrl}no-photos.svg`;
@@ -110,7 +110,7 @@ export class SyncCategoriesUseCase {
     async fetchCategories(token: string) {
         try {
             if (!API_URL_CREATE_CATEGORY) {
-                return null;
+                throw new Error("API_URL_CREATE_CATEGORY is not defined");
             }
 
             const response = await axios.get(API_URL_CREATE_CATEGORY, {
@@ -127,37 +127,10 @@ export class SyncCategoriesUseCase {
                 (category: any) => !category.properties.deleted_at
             );
 
-            for (const category of categories) {
-                const imageUrl = categoryImages[category.id] || defaultImage;
-                const erpId = String(category.id);
-                console.log("fetchCategories erpId", erpId);
-                const categoryData = {
-                    name: category.properties.name,
-                    imageUrl,
-                    erpId,
-                };
-
-                console.log("fetchCategories categoryData", categoryData);
-
-                try {
-                    // createCategorySchema.parse(categoryData);
-
-                    const createdCategory = await this.createCategory(
-                        categoryData,
-                        token
-                    );
-                    console.log(
-                        "fetchCategories createdCategory",
-                        createdCategory
-                    );
-                    return categories;
-                } catch (error) {
-                    console.error("Validation or creation error:", error);
-                    return null;
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching categories:", error);
+            return categories;
+        } catch (error: any) {
+            console.error("Error fetching categories:", error.message);
+            throw new Error("Failed to fetch categories");
         }
     }
 
@@ -234,9 +207,30 @@ export class SyncCategoriesUseCase {
     async syncCategories() {
         try {
             const token = await this.authenticate();
-            const syncedCategories = await this.fetchCategories(token);
-            console.log(" syncedCategories", syncedCategories);
-            return syncedCategories;
+            const categories = await this.fetchCategories(token);
+            console.log(" syncedCategories", categories);
+
+            for (const category of categories) {
+                const imageUrl = categoryImages[category.id] || defaultImage;
+                const erpId = String(category.id);
+
+                const categoryData = {
+                    name: category.properties.name,
+                    imageUrl,
+                    erpId,
+                };
+                console.log("Creating category:", categoryData);
+                try {
+                    await this.createCategoryIfNotExist(categoryData, token);
+                } catch (error: any) {
+                    console.error(
+                        `Error creating category ${categoryData.name}:`,
+                        error.message
+                    );
+                }
+            }
+
+            return categories;
         } catch (error) {
             console.error("Error in main execution:", error);
             throw error;

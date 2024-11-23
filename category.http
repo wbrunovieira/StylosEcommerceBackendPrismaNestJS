@@ -19,9 +19,9 @@ Content-Type: application/json
 Authorization: Bearer {{AUTH_TOKEN}}
 
 {
-  "name": "category 9",
-   "imageUrl": "http://localhost:3000/public/no-photos.svg",
-"erpId": "2"
+  "name": "category teste 90",
+   "imageUrl": "https://stylos-images-bucket.s3.amazonaws.com/no-photos.svg",
+"erpId": "20000"
   
 }
 

@@ -25,8 +25,9 @@ export class ApiController {
     @Get("sync-categories")
     async syncCategories() {
         try {
-            await this.syncCategoriesService.syncCategories();
-            return { message: "Categories synced successfully" };
+            const categories =
+                await this.syncCategoriesService.syncCategories();
+            return { message: "Categories synced successfully", categories };
         } catch (error) {
             console.error(
                 "Error syncing categories:",
