@@ -20,7 +20,6 @@ export class ApiGetAllProducts {
     private readonly token: string;
 
     private readonly startPage = 1;
-    private readonly endPage = 39;
 
     constructor(private configService: ConfigService) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
@@ -37,11 +36,52 @@ export class ApiGetAllProducts {
             throw new InternalServerErrorException("BASE_URL is not defined");
         }
 
-        this.apiUrl = `https://connectplug.com.br//api/v2/product?page=`;
-        this.stockApiUrl = `https://connectplug.com.br//api/v2/product-stock-balance`;
+        this.apiUrl = `https://connectplug.com.br/api/v2/product?page=`;
+        this.stockApiUrl = `https://connectplug.com.br/api/v2/product-stock-balance`;
         this.categoriesApiUrl = `${baseUrl}/category/all?page=1&pageSize=80`;
         this.colorsApiUrl = `${baseUrl}/colors/all?page=1&pageSize=80`;
         this.sizesApiUrl = `${baseUrl}/size/all?page=1&pageSize=80`;
+    }
+
+    sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    async retryRequest(
+        requestFn: () => Promise<any>,
+        retries: number = 5,
+        delay: number = 1000
+    ) {
+        let attempt = 0;
+        while (attempt < retries) {
+            try {
+                const response = await requestFn();
+                console.log("Headers:", response.headers);
+                return response;
+            } catch (error: any) {
+                attempt++;
+
+                if (error.response?.status === 429) {
+                    const retryAfter = error.response.headers["retry-after"]
+                        ? parseInt(error.response.headers["retry-after"], 10) *
+                          1000
+                        : delay;
+
+                    console.warn(
+                        `Rate limit reached. Retrying after ${retryAfter}ms...`
+                    );
+                    await this.sleep(retryAfter);
+                    continue;
+                }
+
+                console.error(`Attempt ${attempt} failed:`, error.message);
+
+                if (attempt >= retries) {
+                    throw new Error(`Max retries reached: ${error.message}`);
+                }
+
+                await this.sleep(delay);
+                delay *= 2;
+            }
+        }
     }
 
     async fetchAndSaveProducts() {
@@ -67,40 +107,59 @@ export class ApiGetAllProducts {
         console.log(`Fetched sizes:`, sizes);
 
         try {
-            while (page <= this.endPage) {
-                const response = await axios.get(`${this.apiUrl}${page}`, {
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                        Authorization: `${this.token}`,
-                    },
-                });
+            while (true) {
+                const response = await this.retryRequest(() =>
+                    axios.get(`${this.apiUrl}${page}`, {
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            Authorization: `${this.token}`,
+                        },
+                    })
+                );
 
                 const products = response.data.data;
-                console.log(`Page ${page} responsess:`, products);
+                console.log(`Page ${page} response:`, products);
 
                 if (!Array.isArray(products) || products.length === 0) {
+                    console.log(
+                        `No more products found on page ${page}. Stopping...`
+                    );
                     break;
                 }
 
-                const filteredProducts = products
-                    .filter((product) => {
-                        const isNotDeleted =
-                            product.properties.deleted_at === null;
-
-                        return isNotDeleted;
+                console.log("Received products:", products.length);
+                const stockResponse = await this.retryRequest(() =>
+                    axios.get(this.stockApiUrl, {
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            Authorization: `${this.token}`,
+                        },
                     })
+                );
+
+                const stockData = stockResponse.data.data;
+                console.log("Received stock data:", stockData.length);
+
+                const filteredProducts = products
+                    .filter((product) => product.properties.deleted_at === null)
                     .map((product) => {
+                        const stockInfo = stockData.find(
+                            (stock) => stock.id === product.id
+                        );
+
+                        const stock = stockInfo ? stockInfo.last_cost || 0 : 0;
                         const productCategoryId =
                             product?.relationships?.category?.data?.id;
 
                         const productCategory = productCategoryId
                             ? categories.find((category) => {
                                   categoryErpId = Number(category.props.erpId);
-
                                   return categoryErpId === productCategoryId;
                               })
                             : null;
+
                         const productColors: {
                             id: UniqueEntityID;
                             name: string;
@@ -110,6 +169,7 @@ export class ApiGetAllProducts {
                             id: UniqueEntityID;
                             name: string;
                         }[] = [];
+
                         const productVariants: ProductVariantProps[] = [];
 
                         if (product?.relationships?.attributes?.data) {
@@ -121,22 +181,19 @@ export class ApiGetAllProducts {
                                         (c) =>
                                             Number(c.props.erpId) === option.id
                                     );
-
                                     const matchingSize = sizes.find(
                                         (s) =>
                                             Number(s.props.erpId) === option.id
                                     );
-                                    console.log("matchingSize", matchingSize);
                                     if (matchingColor) {
                                         productColors.push({
                                             id: new UniqueEntityID(
                                                 String(option.id)
                                             ),
                                             name: matchingColor.props.name,
-                                            hex: matchingColor.props.hex,
+                                            hex: matchingColor.props.hex, // hex é opcional, pode não existir em algumas cores
                                         });
                                     }
-                                    console.log("matchingColor", matchingColor);
 
                                     if (matchingSize) {
                                         productSizes.push({
@@ -177,14 +234,13 @@ export class ApiGetAllProducts {
                                 }
                             }
                         }
-                        const brandId = "";
 
                         const productProps: ProductProps = {
                             erpId: String(product.id),
                             name: product.properties.name || "NameNotFound",
                             description: product.properties.description || "",
                             price: product.properties.unitary_value,
-                            stock: 0,
+                            stock,
                             productColors:
                                 productColors.length > 0
                                     ? productColors
@@ -193,7 +249,6 @@ export class ApiGetAllProducts {
                                 productSizes.length > 0
                                     ? productSizes
                                     : undefined,
-
                             sku: product.sku || "",
                             slug: Slug.createFromText(product.properties.name),
                             height: product.height || 0,
@@ -201,15 +256,12 @@ export class ApiGetAllProducts {
                             length: product.length || 0,
                             weight: product.weight || 0,
                             showInSite: product.showInSite || true,
-                            brandId: new UniqueEntityID(brandId),
+                            brandId: new UniqueEntityID(""),
                             createdAt: new Date(product.created_at),
                             updatedAt: new Date(product.updated_at),
                             hasVariants:
                                 productColors.length > 0 ||
-                                productSizes.length > 0
-                                    ? true
-                                    : false,
-
+                                productSizes.length > 0,
                             productCategories: productCategory
                                 ? [
                                       {
@@ -235,10 +287,7 @@ export class ApiGetAllProducts {
                                   ]
                                 : product.properties.additionals_photos || [],
                         };
-                        console.log(
-                            "productCategory aqquisss",
-                            productCategory
-                        );
+
                         const createdProduct = Product.create(
                             productProps,
                             new UniqueEntityID(product.id)
@@ -250,104 +299,37 @@ export class ApiGetAllProducts {
                         return createdProduct;
                     });
 
-                console.log(
-                    `Filtered products on pagessss ${page}:`,
-                    filteredProducts
-                );
-
                 allProducts = [...allProducts, ...filteredProducts];
                 productCount += filteredProducts.length;
 
                 console.log(
-                    `Page ${page}: ${filteredProducts.length} produtos adicionadossss.`
+                    `Page ${page}: ${filteredProducts.length} products added.`
                 );
-                console.log(`Total de produtos até agorass: ${productCount}`);
+                console.log(`Total products so far: ${productCount}`);
+                console.log("Filtered products:", filteredProducts);
+                console.log("Received products data:", products);
+
+                await this.sleep(3000);
 
                 page++;
             }
 
-            try {
-                const stockResponse = await axios.get(`${this.stockApiUrl}`, {
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                        Authorization: `${this.token}`,
-                    },
-                });
-
-                const stockData = stockResponse.data.data;
-
-                console.log(`Raw stockData novinhoss`, stockData);
-                console.log("Before entering the loopss");
-                console.log(
-                    "Is stockData an arrays?",
-                    Array.isArray(stockData)
-                );
-                if (Array.isArray(stockData)) {
-                    for (const product of allProducts) {
-                        console.log(`Checking products: ${product.erpId}`);
-                        console.log(`product aqui mesmo s${product}`);
-                        console.log(`entrou no fors`);
-                        if (
-                            product.erpId !== undefined &&
-                            product.erpId !== null
-                        ) {
-                            const stockInfo = stockData.find(
-                                (stock: { id: number }) =>
-                                    stock.id === Number(product.erpId)
-                            );
-
-                            console.log(
-                                `stockInfos  ${JSON.stringify(stockInfo)}`
-                            );
-
-                            if (stockInfo) {
-                                const totalStock = stockInfo.bl;
-                                console.log(`totalStocks  ${totalStock}`);
-                                product.stock = totalStock;
-                                console.log(
-                                    `Product ${product.erpId} sstock updated: ${totalStock}`
-                                );
-                                console.log(
-                                    ` product.stocks ${product.stock} `
-                                );
-                            } else {
-                                console.log(
-                                    `No stock info found for products ${product.erpId}`
-                                );
-                            }
-                        } else {
-                            console.warn(
-                                `product.erpId is undefinesd or null for product`,
-                                product
-                            );
-                        }
-                    }
-                } else {
-                    console.error(
-                        "stockData is not an array or is undefineds:",
-                        stockData
-                    );
-                }
-            } catch (err: any) {
-                console.error(`Error fetching stocks`, err.message);
-            }
-
-            const filePath = path.resolve("/app/src", "products.json");
+            const filePath = path.resolve(
+                process.cwd(),
+                "data",
+                "products.json"
+            );
+            console.log("Saving to file:", filePath);
 
             await fs.writeFile(
                 filePath,
                 JSON.stringify(
-                    {
-                        products: allProducts,
-                        count: productCount,
-                    },
+                    { products: allProducts, count: productCount },
                     null,
                     2
                 )
             );
-
-            console.log(`Total de produtos salvos: ${productCount}`);
+            console.log(`Total products saved: ${productCount}`);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error(
@@ -358,5 +340,6 @@ export class ApiGetAllProducts {
                 console.error("Unexpected error:", error);
             }
         }
+        await this.sleep(3000);
     }
 }

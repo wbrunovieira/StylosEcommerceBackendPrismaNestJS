@@ -9,8 +9,7 @@ import * as fs from "fs/promises";
 import { ProductStatus } from "./domain/catalog/enterprise/entities/product-status";
 import { UniqueEntityID } from "./core/entities/unique-entity-id";
 import { generateSlug } from "./domain/catalog/application/utils/generate-slug";
-import { IProductColorRepository } from "./domain/catalog/application/repositories/i-product-color-repository";
-import { IProductSizeRepository } from "./domain/catalog/application/repositories/i-product-size-repository";
+
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 
@@ -18,19 +17,25 @@ import axios from "axios";
 export class ProductMigrationService {
     private readonly logger = new Logger(ProductMigrationService.name);
     private readonly token: string;
+    private readonly baseUrl: string;
 
     constructor(
         private configService: ConfigService,
         private readonly prisma: PrismaService
     ) {
         const token = this.configService.get<string>("TOKEN_CONNECTPLUG");
-
         if (!token) {
             throw new InternalServerErrorException(
                 "TOKEN_CONNECTPLUG is not defined"
             );
         }
         this.token = token;
+        const baseUrl = this.configService.get<string>("BASE_URL");
+
+        if (!baseUrl) {
+            throw new InternalServerErrorException("BASE_URL is not defined");
+        }
+        this.baseUrl = baseUrl;
     }
 
     private calculateFinalPrice(price: number, discount?: number): number {
@@ -43,7 +48,7 @@ export class ProductMigrationService {
     async getDefaultBrandId(): Promise<string> {
         try {
             const response = await axios.get(
-                "https://wbstylosbackend.sa.ngrok.io/brands/name?name=BRAND"
+                `${this.baseUrl}/brands/name?name=BRAND`
             );
 
             if (
@@ -76,7 +81,13 @@ export class ProductMigrationService {
     async migrateProducts() {
         await this.prisma.onModuleInit();
 
-        const data = await fs.readFile("./src/products100up.json", "utf-8");
+        const path = require("path");
+        const fs = require("fs").promises;
+
+        const filePath = path.resolve(process.cwd(), "data", "products.json");
+        console.log("Reading from file:", filePath);
+
+        const data = await fs.readFile(filePath, "utf-8");
         const parsedData = JSON.parse(data);
 
         if (!Array.isArray(parsedData.products)) {
