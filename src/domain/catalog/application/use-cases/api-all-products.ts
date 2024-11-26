@@ -316,9 +316,32 @@ export class ApiGetAllProducts {
 
             const filePath = path.resolve(
                 process.cwd(),
+
                 "data",
                 "products.json"
             );
+            const dirPath = path.dirname(filePath);
+
+            (async () => {
+                try {
+                    await fs.mkdir(dirPath, { recursive: true });
+                } catch (error: any) {
+                    console.error(
+                        `Failed to create directory: ${error.message}`
+                    );
+                }
+
+                try {
+                    await fs.access(filePath);
+                } catch {
+                    await fs.writeFile(
+                        filePath,
+                        JSON.stringify({ products: [] }, null, 2)
+                    );
+                    console.log("File created:", filePath);
+                }
+            })();
+
             console.log("Saving to file:", filePath);
 
             await fs.writeFile(
