@@ -11,15 +11,11 @@ import { ProductStatus } from "../../enterprise/entities/product-status";
 
 @Injectable()
 export class ApiGetAllProducts {
-    private readonly apiUrl = "https://connectplug.com.br/api/v2/product?page=";
-    private readonly stockApiUrl =
-        "https://connectplug.com.br/api/v2/product-stock-balance";
-    private readonly categoriesApiUrl =
-        "https://wbstylosbackend.sa.ngrok.io/category/all?page=1&pageSize=80";
-    private readonly colorsApiUrl =
-        "https://wbstylosbackend.sa.ngrok.io/colors/all?page=1&pageSize=80";
-    private readonly sizesApiUrl =
-        "https://wbstylosbackend.sa.ngrok.io/size/all?page=1&pageSize=80";
+    private readonly apiUrl: string;
+    private readonly stockApiUrl: string;
+    private readonly categoriesApiUrl: string;
+    private readonly colorsApiUrl: string;
+    private readonly sizesApiUrl: string;
 
     private readonly token: string;
 
@@ -34,6 +30,18 @@ export class ApiGetAllProducts {
             );
         }
         this.token = token;
+
+        const baseUrl = this.configService.get<string>("BASE_URL");
+
+        if (!baseUrl) {
+            throw new InternalServerErrorException("BASE_URL is not defined");
+        }
+
+        this.apiUrl = `https://connectplug.com.br//api/v2/product?page=`;
+        this.stockApiUrl = `https://connectplug.com.br//api/v2/product-stock-balance`;
+        this.categoriesApiUrl = `${baseUrl}/category/all?page=1&pageSize=80`;
+        this.colorsApiUrl = `${baseUrl}/colors/all?page=1&pageSize=80`;
+        this.sizesApiUrl = `${baseUrl}/size/all?page=1&pageSize=80`;
     }
 
     async fetchAndSaveProducts() {

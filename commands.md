@@ -1,5 +1,3 @@
-
-
 ### Docker
 
 ## iniciar docker
@@ -104,7 +102,6 @@ width = 10,
 length = 12,
 weight = 1;
 
-
 UPDATE public.products
 SET "stock" = 10;
 
@@ -115,3 +112,12 @@ psql -U postgres -h db -d stylos_db_prisma -c 'SET search_path TO public;' && ps
 
 ssh -vvv -R wbstylosbackend.serveo.net:80:localhost:3333 serveo.net
 ssh -v -R wbstylosfrontend.serveo.net:80:localhost:3000 serveo.net
+
+ssh -v -i stylos.pem -L 5432:stylos-db.czc0uc626uv5.us-east-1.rds.amazonaws.com:5432 ubuntu@52.23.117.92 -o StrictHostKeyChecking=no
+ssh -i ./stylos.pem ubuntu@52.23.117.92 -o StrictHostKeyChecking=no
+
+dentro do container:
+psql -h stylos-db.czc0uc626uv5.us-east-1.rds.amazonaws.com -U postgres -d stylos-db -p 5432
+TRUNCATE TABLE public.categories RESTART IDENTITY CASCADE;
+
+SELECT \* FROM public.categories;

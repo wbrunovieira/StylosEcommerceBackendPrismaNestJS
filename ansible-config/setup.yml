@@ -112,6 +112,7 @@
                 - curl
                 - wget
                 - unzip
+                - postgresql-client
             state: present
 
       - name: Install Docker
@@ -445,24 +446,6 @@
                 content: "52.23.117.92"
                 proxied: false
         when: existing_record_backend.json.result | length > 0
-
-      - name: Clean S3 bucket before sync
-        ansible.builtin.command:
-            cmd: aws s3 rm s3://stylos-images-bucket/ --recursive
-
-      - name: Copy public folder from local to remote
-        ansible.builtin.copy:
-            src: /home/wbruno/projects/stylosFrontEcommerce/public/
-            dest: /tmp/public/
-            owner: "{{ ansible_user }}"
-            group: "{{ ansible_user }}"
-            mode: "0755"
-
-      - name: Sync all public content to S3 bucket
-        ansible.builtin.command:
-            cmd: aws s3 sync /tmp/public/ s3://stylos-images-bucket/ --delete
-        register: sync_result
-        failed_when: "'error' in sync_result.stderr.lower()"
 
   handlers:
       - name: Restart Nginx
