@@ -29,7 +29,7 @@
         ansible.builtin.command:
             cmd: >
                 docker compose -f /opt/StylosFrontEcommerce/docker-compose.prod.yml
-                up --build -d
+                up --build --no-cache -d
         register: compose_result
         async: 500
         poll: 0
