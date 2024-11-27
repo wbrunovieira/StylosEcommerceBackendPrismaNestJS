@@ -33,7 +33,6 @@
         register: compose_result
         async: 500
         poll: 0
-        changed_when: "'Creating' in compose_result.stdout or 'Recreating' in compose_result.stdout"
 
       - name: Wait for Docker Compose to finish for frontend
         ansible.builtin.async_status:
@@ -46,6 +45,19 @@
       - name: Debug Docker Compose Output for frontend
         ansible.builtin.debug:
             var: compose_status.result.stdout_lines
+
+      - name: Validate Docker Compose Changes for frontend
+        ansible.builtin.set_fact:
+            docker_compose_changes: >-
+                {% if 'Creating' in compose_status.result.stdout or 'Recreating' in compose_status.result.stdout %}
+                  true
+                {% else %}
+                  false
+                {% endif %}
+
+      - name: Debug Docker Compose Changes for frontend
+        ansible.builtin.debug:
+            msg: "Docker Compose changes detected: {{ docker_compose_changes }}"
 
 - name: Wait for frontend containers to be healthy
   block:

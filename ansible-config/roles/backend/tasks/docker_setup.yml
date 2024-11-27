@@ -32,7 +32,10 @@
       name: docker.io
       state: present
   register: docker_install_result
-  changed_when: "'Installing' in docker_install_result.stdout"
+
+- name: Debug Docker installation result
+  ansible.builtin.debug:
+      msg: "Docker installation result: {{ docker_install_result }}"
 
 - name: Wait for Docker service to be ready
   ansible.builtin.wait_for:
@@ -100,7 +103,6 @@
         register: compose_result
         async: 500
         poll: 0
-        changed_when: "'Creating' in compose_result.stdout or 'Recreating' in compose_result.stdout"
 
       - name: Wait for Docker Compose to finish
         ansible.builtin.async_status:
@@ -114,6 +116,14 @@
         ansible.builtin.debug:
             var: compose_status.result.stdout_lines
 
+      - name: Validate Docker Compose Changes
+        ansible.builtin.debug:
+            msg: >
+                Docker Compose changes: {{ compose_status.result.stdout_lines | default('No output from Compose') }}
+        changed_when: >
+            compose_status.result is defined and
+            ('Creating' in compose_status.result.stdout or 'Recreating' in compose_status.result.stdout)
+
 - name: Wait for containers to be healthy
   block:
       - name: Get running Docker containers
@@ -123,7 +133,7 @@
         changed_when: false
 
       - name: Wait for all containers to be healthy
-        ansible.builtin.command:
+        ansible.builtin.shell:
             cmd: >
                 for container in {{ docker_containers.stdout_lines | join(' ') }}; do
                   until [ "$(docker inspect -f '{{ "{{" }}.State.Health.Status{{ "}}" }}' $container 2>/dev/null)" == "healthy" ] ||
@@ -131,6 +141,8 @@
                     sleep 5;
                   done;
                 done
+        args:
+            executable: /bin/bash
         register: health_check_result
         changed_when: false
 

@@ -9,7 +9,7 @@
   ansible.builtin.command:
       cmd: >
           certbot --nginx
-          {% for domain in common_common_certbot_domains -%}
+          {% for domain in common_certbot_domains -%}
           -d {{ domain }}
           {% endfor -%}
           --non-interactive
