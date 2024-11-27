@@ -29,10 +29,12 @@
         ansible.builtin.command:
             cmd: >
                 docker compose -f /opt/StylosFrontEcommerce/docker-compose.prod.yml
-                up --build --no-cache -d
+                up --build --detach
+
         register: compose_result
         async: 500
         poll: 0
+        changed_when: false
 
       - name: Wait for Docker Compose to finish for frontend
         ansible.builtin.async_status:
@@ -41,10 +43,12 @@
         until: compose_status.finished
         retries: 60
         delay: 10
+        changed_when: false
 
       - name: Debug Docker Compose Output for frontend
         ansible.builtin.debug:
             var: compose_status.result.stdout_lines
+        changed_when: false
 
       - name: Validate Docker Compose Changes for frontend
         ansible.builtin.set_fact:
@@ -54,10 +58,12 @@
                 {% else %}
                   false
                 {% endif %}
+        changed_when: false
 
       - name: Debug Docker Compose Changes for frontend
         ansible.builtin.debug:
             msg: "Docker Compose changes detected: {{ docker_compose_changes }}"
+        changed_when: false
 
 - name: Wait for frontend containers to be healthy
   block:

@@ -1,2 +1,3 @@
 - name: Import Docker setup tasks
+  tags: frontend
   ansible.builtin.import_tasks: docker_frontend_setup.yml

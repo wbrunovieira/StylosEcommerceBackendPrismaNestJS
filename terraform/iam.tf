@@ -88,3 +88,35 @@ resource "aws_iam_role_policy_attachment" "ssm_role_attachment" {
   role       = aws_iam_role.ssm_role.name
   policy_arn = aws_iam_policy.ssm_access_policy.arn
 }
+
+
+resource "aws_iam_policy" "cloudwatch_agent_policy" {
+  name        = "CloudWatchAgentPolicy"
+  description = "Policy for CloudWatch Agent"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "cloudwatch:PutMetricData",
+          "ec2messages:*",
+          "ssmmessages:*",
+          "ssm:UpdateInstanceInformation"
+        ],
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams",
+          "logs:CreateLogGroup"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
