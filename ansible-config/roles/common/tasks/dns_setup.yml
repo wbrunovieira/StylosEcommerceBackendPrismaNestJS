@@ -1,0 +1,47 @@
+- name: Find existing DNS record for frontend
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=styloslingerie.com.br"
+      method: GET
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+  register: existing_record_frontend
+
+- name: Update existing DNS record for frontend
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record_frontend.json.result[0].id }}"
+      method: PUT
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+      body_format: json
+      body:
+          type: A
+          name: "styloslingerie.com.br"
+          content: "52.23.117.92"
+          proxied: false
+  when: existing_record_frontend.json.result | length > 0
+
+- name: Find existing DNS record for backend
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=api.styloslingerie.com.br"
+      method: GET
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+  register: existing_record_backend
+
+- name: Update existing DNS record for backend
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records/{{ existing_record_backend.json.result[0].id }}"
+      method: PUT
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+      body_format: json
+      body:
+          type: A
+          name: "api.styloslingerie.com.br"
+          content: "52.23.117.92"
+          proxied: false
+  when: existing_record_backend.json.result | length > 0

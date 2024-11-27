@@ -1,0 +1,10 @@
+server {
+    listen 80;
+    server_name frontend.styloslingerie.com.br;
+
+    location / {
+        root /opt/StylosFrontEcommerce/build;
+        index index.html;
+        try_files $uri /index.html;
+    }
+}

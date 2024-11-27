@@ -1,0 +1,5 @@
+- name: Backend system setup
+  ansible.builtin.import_tasks: system_setup.yml
+
+- name: Import Docker setup tasks
+  ansible.builtin.import_tasks: docker_setup.yml

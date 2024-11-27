@@ -1,0 +1,176 @@
+- name: Install Docker
+  ansible.builtin.apt:
+      name: docker.io
+      state: present
+
+- name: Add current user to docker group
+  ansible.builtin.user:
+      name: "{{ ansible_user_id }}"
+      groups: docker
+      append: true
+
+- name: Install Docker Compose
+  ansible.builtin.get_url:
+      url: "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-Linux-x86_64"
+      dest: /usr/local/bin/docker-compose
+      mode: "0755"
+
+- name: Ensure Docker CLI plugins directory exists
+  ansible.builtin.file:
+      path: /usr/libexec/docker/cli-plugins
+      state: directory
+      mode: "0755"
+
+- name: Verify Docker Compose Installation
+  ansible.builtin.command:
+      cmd: /usr/local/bin/docker-compose --version
+  register: docker_compose_version
+  changed_when: false
+
+- name: Ensure Docker is installed
+  ansible.builtin.apt:
+      name: docker.io
+      state: present
+  register: docker_install_result
+  changed_when: "'Installing' in docker_install_result.stdout"
+
+- name: Wait for Docker service to be ready
+  ansible.builtin.wait_for:
+      timeout: 30
+      connect_timeout: 5
+      path: /var/run/docker.sock
+
+- name: Check Docker service status
+  ansible.builtin.command:
+      cmd: systemctl status docker
+  register: docker_status
+  changed_when: false
+
+- name: Debug Docker status
+  ansible.builtin.debug:
+      var: docker_status.stdout_lines
+
+- name: Remove unused Docker resources
+  block:
+      - name: Remove unused Docker volumes
+        ansible.builtin.command:
+            cmd: docker volume prune -f
+        register: volume_prune_result
+        changed_when: "'Reclaimed' in volume_prune_result.stdout"
+
+      - name: Remove unused Docker images
+        ansible.builtin.command:
+            cmd: docker image prune -af
+        register: image_prune_result
+        changed_when: "'Reclaimed' in image_prune_result.stdout"
+
+      - name: Remove unused Docker build caches
+        ansible.builtin.command:
+            cmd: docker builder prune -af
+        register: prune_build_cache_result
+        changed_when: "'Reclaimed' in prune_build_cache_result.stdout"
+
+- name: Stop existing Docker Compose services if running
+  block:
+      - name: Run Docker Compose Down
+        ansible.builtin.command:
+            cmd: docker compose -f /opt/StylosEcommerceBackendPrismaNestJS/docker-compose.prod.yml down
+        register: compose_down_result
+        changed_when: "'Removing' in compose_down_result.stdout"
+
+      - name: Debug Compose Down Output
+        ansible.builtin.debug:
+            var: compose_down_result.stdout_lines
+
+- name: Clone or update the project from GitHub
+  ansible.builtin.git:
+      repo: "https://github.com/wbrunovieira/StylosEcommerceBackendPrismaNestJS.git"
+      dest: /opt/StylosEcommerceBackendPrismaNestJS
+      version: main
+      force: true
+      update: true
+
+- name: Start Docker Compose services
+  block:
+      - name: Run Docker Compose Up
+        ansible.builtin.command:
+            cmd: >
+                docker compose -f /opt/StylosEcommerceBackendPrismaNestJS/docker-compose.prod.yml
+                up --build -d
+        register: compose_result
+        async: 500
+        poll: 0
+        changed_when: "'Creating' in compose_result.stdout or 'Recreating' in compose_result.stdout"
+
+      - name: Wait for Docker Compose to finish
+        ansible.builtin.async_status:
+            jid: "{{ compose_result.ansible_job_id }}"
+        register: compose_status
+        until: compose_status.finished
+        retries: 60
+        delay: 10
+
+      - name: Debug Docker Compose Output
+        ansible.builtin.debug:
+            var: compose_status.result.stdout_lines
+
+- name: Wait for containers to be healthy
+  block:
+      - name: Get running Docker containers
+        ansible.builtin.command:
+            cmd: docker ps --format '{{ "{{" }}.Names{{ "}}" }}'
+        register: docker_containers
+        changed_when: false
+
+      - name: Wait for all containers to be healthy
+        ansible.builtin.command:
+            cmd: >
+                for container in {{ docker_containers.stdout_lines | join(' ') }}; do
+                  until [ "$(docker inspect -f '{{ "{{" }}.State.Health.Status{{ "}}" }}' $container 2>/dev/null)" == "healthy" ] ||
+                        [ "$(docker inspect -f '{{ "{{" }}.State.Status{{ "}}" }}' $container)" == "running" ]; do
+                    sleep 5;
+                  done;
+                done
+        register: health_check_result
+        changed_when: false
+
+- name: Debug Docker health check output
+  ansible.builtin.debug:
+      var: health_check_result.stdout_lines
+
+- name: Check running containers
+  ansible.builtin.command:
+      cmd: docker ps
+  register: docker_ps_result
+  changed_when: false
+
+- name: Debug running containers
+  ansible.builtin.debug:
+      var: docker_ps_result.stdout_lines
+
+- name: Prune unused Docker resources after services are started
+  block:
+      - name: Remove unused Docker volumes
+        ansible.builtin.command:
+            cmd: docker volume prune -f
+        register: volume_prune_result
+        changed_when: "'Reclaimed' in volume_prune_result.stdout"
+
+      - name: Remove unused Docker images
+        ansible.builtin.command:
+            cmd: docker image prune -af
+        register: image_prune_result
+        changed_when: "'Reclaimed' in image_prune_result.stdout"
+
+      - name: Remove unused Docker build caches
+        ansible.builtin.command:
+            cmd: docker builder prune -af
+        register: prune_build_cache_result
+        changed_when: "'Reclaimed' in prune_build_cache_result.stdout"
+
+- name: Debug prune results
+  ansible.builtin.debug:
+      msg:
+          - "Docker volume prune result: {{ volume_prune_result.stdout }}"
+          - "Docker image prune result: {{ image_prune_result.stdout }}"
+          - "Docker builder prune result: {{ prune_build_cache_result.stdout }}"

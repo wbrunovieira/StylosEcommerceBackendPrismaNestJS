@@ -1,0 +1,121 @@
+- name: Ensure growpart is installed (for resizing partition)
+  ansible.builtin.apt:
+      name: cloud-guest-utils
+      state: present
+
+- name: Check current disk and partition details
+  ansible.builtin.command:
+      cmd: lsblk -b --noheadings --raw -o NAME,SIZE,MOUNTPOINT
+  register: disk_info
+  changed_when: false
+
+- name: Debug disk info
+  ansible.builtin.debug:
+      var: disk_info.stdout_lines
+
+- name: Parse current root partition size
+  ansible.builtin.set_fact:
+      root_partition_size: >-
+          {% if disk_info.stdout_lines %}
+            {{ (disk_info.stdout_lines | select('search', '^nvme0n1p1 ') | map('split') | list | first)[1] | int(default=0) }}
+          {% else %}
+            0
+          {% endif %}
+
+- name: Parse current disk size
+  ansible.builtin.set_fact:
+      disk_size: >-
+          {% if disk_info.stdout_lines %}
+            {{ (disk_info.stdout_lines | select('search', '^nvme0n1 ') | map('split') | list | first)[1] | int(default=0) }}
+          {% else %}
+            0
+          {% endif %}
+
+- name: Debug parsed sizes
+  ansible.builtin.debug:
+      msg:
+          - "Root partition size: {{ root_partition_size }} bytes"
+          - "Disk size: {{ disk_size }} bytes"
+
+- name: Resize the filesystem to match the new partition size
+  ansible.builtin.command:
+      cmd: resize2fs /dev/nvme0n1p1
+  when: root_partition_size < disk_size
+  register: resize2fs_result
+  changed_when: "'Filesystem already has the requested size' not in resize2fs_result.stdout"
+
+- name: Debug resize2fs output
+  ansible.builtin.debug:
+      var: resize2fs_result.stdout_lines
+
+- name: Ensure the filesystem is resized
+  ansible.builtin.command:
+      cmd: df -h /
+  register: filesystem_info
+  changed_when: false
+
+- name: Debug filesystem info
+  ansible.builtin.debug:
+      var: filesystem_info.stdout_lines
+
+- name: Update and upgrade the system
+  ansible.builtin.apt:
+      update_cache: true
+      upgrade: dist
+
+- name: Check if swap is already configured
+  ansible.builtin.command:
+      cmd: swapon --show
+  register: swap_status
+  changed_when: false
+
+- name: Create a 4GB swap file if not exists
+  ansible.builtin.command:
+      cmd: fallocate -l 4G /swapfile
+  args:
+      creates: /swapfile
+  when: swap_status.stdout == ""
+
+- name: Secure the swap file
+  ansible.builtin.file:
+      path: /swapfile
+      mode: "0600"
+  when: swap_status.stdout == ""
+
+- name: Format the swap file
+  ansible.builtin.command:
+      cmd: mkswap /swapfile
+  when:
+      - swap_status.stdout == ""
+      - ansible_facts['ansible_swapfile'] is not defined
+  changed_when: "'swap area' in command_result.stdout"
+  register: command_result
+
+- name: Activate the swap file
+  ansible.builtin.command:
+      cmd: swapon /swapfile
+  when:
+      - swap_status.stdout == ""
+      - "'/swapfile' not in swap_status.stdout"
+  changed_when: "'activated' in command_result.stdout"
+  register: command_result
+
+- name: Ensure the swap is enabled at boot
+  ansible.builtin.lineinfile:
+      path: /etc/fstab
+      line: "/swapfile none swap sw 0 0"
+      state: present
+
+- name: Install PostgreSQL client
+  ansible.builtin.apt:
+      name:
+          - postgresql-client-11
+      state: present
+
+- name: Install essential packages
+  ansible.builtin.apt:
+      name:
+          - curl
+          - wget
+          - unzip
+      state: present

@@ -1,0 +1,109 @@
+- name: Clone or update the frontend project from GitHub
+  ansible.builtin.git:
+      repo: "https://github.com/wbrunovieira/stylosFrontEcommerce.git"
+      dest: /opt/StylosFrontEcommerce
+      version: main
+      force: true
+      update: true
+
+- name: Ensure Docker is installed for frontend
+  ansible.builtin.apt:
+      name: docker.io
+      state: present
+
+- name: Stop existing Docker Compose services for frontend if running
+  block:
+      - name: Run Docker Compose Down for frontend
+        ansible.builtin.command:
+            cmd: docker compose -f /opt/StylosFrontEcommerce/docker-compose.prod.yml down
+        register: compose_down_result
+        changed_when: "'Removing' in compose_down_result.stdout"
+
+      - name: Debug Compose Down Output for frontend
+        ansible.builtin.debug:
+            var: compose_down_result.stdout_lines
+
+- name: Start Docker Compose services for frontend
+  block:
+      - name: Run Docker Compose Up for frontend
+        ansible.builtin.command:
+            cmd: >
+                docker compose -f /opt/StylosFrontEcommerce/docker-compose.prod.yml
+                up --build -d
+        register: compose_result
+        async: 500
+        poll: 0
+        changed_when: "'Creating' in compose_result.stdout or 'Recreating' in compose_result.stdout"
+
+      - name: Wait for Docker Compose to finish for frontend
+        ansible.builtin.async_status:
+            jid: "{{ compose_result.ansible_job_id }}"
+        register: compose_status
+        until: compose_status.finished
+        retries: 60
+        delay: 10
+
+      - name: Debug Docker Compose Output for frontend
+        ansible.builtin.debug:
+            var: compose_status.result.stdout_lines
+
+- name: Wait for frontend containers to be healthy
+  block:
+      - name: Get running Docker containers for frontend
+        ansible.builtin.command:
+            cmd: docker ps --format '{{ "{{" }}.Names{{ "}}" }}'
+        register: docker_containers
+        changed_when: false
+
+      - name: Wait for all frontend containers to be healthy
+        ansible.builtin.command:
+            cmd: >
+                for container in {{ docker_containers.stdout_lines | join(' ') }}; do
+                  until [ "$(docker inspect -f '{{ "{{" }}.State.Health.Status{{ "}}" }}' $container 2>/dev/null)" == "healthy" ] ||
+                        [ "$(docker inspect -f '{{ "{{" }}.State.Status{{ "}}" }}' $container)" == "running" ]; do
+                    sleep 5;
+                  done;
+                done
+        register: health_check_result
+        changed_when: false
+
+- name: Debug frontend container health check
+  ansible.builtin.debug:
+      var: health_check_result.stdout_lines
+
+- name: Check running containers for frontend
+  ansible.builtin.command:
+      cmd: docker ps
+  register: docker_ps_result
+  changed_when: false
+
+- name: Debug running containers for frontend
+  ansible.builtin.debug:
+      var: docker_ps_result.stdout_lines
+
+- name: Prune unused Docker resources for frontend
+  block:
+      - name: Remove unused Docker volumes
+        ansible.builtin.command:
+            cmd: docker volume prune -f
+        register: volume_prune_result
+        changed_when: "'Reclaimed' in volume_prune_result.stdout"
+
+      - name: Remove unused Docker images
+        ansible.builtin.command:
+            cmd: docker image prune -af
+        register: image_prune_result
+        changed_when: "'Reclaimed' in image_prune_result.stdout"
+
+      - name: Remove unused Docker build caches
+        ansible.builtin.command:
+            cmd: docker builder prune -af
+        register: prune_build_cache_result
+        changed_when: "'Reclaimed' in prune_build_cache_result.stdout"
+
+- name: Debug prune results for frontend
+  ansible.builtin.debug:
+      msg:
+          - "Docker volume prune result: {{ volume_prune_result.stdout }}"
+          - "Docker image prune result: {{ image_prune_result.stdout }}"
+          - "Docker builder prune result: {{ prune_build_cache_result.stdout }}"

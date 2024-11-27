@@ -1,0 +1,4 @@
+common_certbot_email: "wbrunovieira77@gmail.com"
+common_certbot_domains:
+    - "styloslingerie.com.br"
+    - "www.styloslingerie.com.br"
