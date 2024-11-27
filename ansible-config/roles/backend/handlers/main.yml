@@ -2,3 +2,8 @@
   ansible.builtin.service:
       name: nginx
       state: restarted
+
+- name: Restart sysstat
+  ansible.builtin.systemd:
+      name: sysstat
+      state: restarted

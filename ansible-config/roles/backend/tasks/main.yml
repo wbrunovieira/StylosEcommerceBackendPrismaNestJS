@@ -3,3 +3,6 @@
 
 - name: Import Docker setup tasks
   ansible.builtin.import_tasks: docker_setup.yml
+
+- name: Monitoring the cpu mem and disk
+  ansible.builtin.import_tasks: monitoring.yml
