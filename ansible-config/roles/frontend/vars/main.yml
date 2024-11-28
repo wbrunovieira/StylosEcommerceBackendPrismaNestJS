@@ -1,0 +1,13 @@
+# vars/main.yml
+
+amplify_app_name: "stylos-front" # Nome do seu app no Amplify
+amplify_repository_url: "https://github.com/wbrunovieira/stylosFrontEcommerce" # URL do repositório do frontend
+amplify_branch: "main" # Branch que será usado no Amplify
+amplify_region: "us-east-1" # Região onde o Amplify está hospedado
+
+# ID do app no Amplify (deve ser obtido após a criação do app)
+amplify_app_id: "{{ lookup('env', 'AMPLIFY_APP_ID') }}" # Ou defina diretamente o ID
+
+# Configurações relacionadas ao app
+# Você pode adicionar variáveis adicionais se necessário, por exemplo:
+# amplify_app_description: "App de Frontend para o Stylos"
