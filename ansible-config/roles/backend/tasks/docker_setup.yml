@@ -96,33 +96,17 @@
 - name: Start Docker Compose services
   block:
       - name: Run Docker Compose Up
-        ansible.builtin.command:
+        ansible.builtin.shell:
             cmd: >
                 docker compose -f /opt/StylosEcommerceBackendPrismaNestJS/docker-compose.prod.yml
                 up --build -d
+        args:
+            chdir: /opt/StylosEcommerceBackendPrismaNestJS
         register: compose_result
-        async: 500
-        poll: 0
-
-      - name: Wait for Docker Compose to finish
-        ansible.builtin.async_status:
-            jid: "{{ compose_result.ansible_job_id }}"
-        register: compose_status
-        until: compose_status.finished
-        retries: 60
-        delay: 10
-
-      - name: Debug Docker Compose Output
-        ansible.builtin.debug:
-            var: compose_status.result.stdout_lines
-
-      - name: Validate Docker Compose Changes
-        ansible.builtin.debug:
-            msg: >
-                Docker Compose changes: {{ compose_status.result.stdout_lines | default('No output from Compose') }}
-        changed_when: >
-            compose_status.result is defined and
-            ('Creating' in compose_status.result.stdout or 'Recreating' in compose_status.result.stdout)
+        changed_when:
+            - "'Creating' in compose_result.stdout"
+            - "'Recreating' in compose_result.stdout"
+        failed_when: compose_result.rc != 0
 
 - name: Wait for containers to be healthy
   block:

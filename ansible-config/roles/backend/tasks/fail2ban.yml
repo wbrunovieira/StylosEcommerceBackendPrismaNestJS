@@ -1,0 +1,96 @@
+- name: Install Fail2Ban
+  ansible.builtin.apt:
+      name: fail2ban
+      state: present
+      update_cache: true
+
+- name: Configure jail.local
+  ansible.builtin.copy:
+      dest: /etc/fail2ban/jail.local
+      content: |
+          [DEFAULT]
+          bantime = 10m
+          findtime = 5m
+          maxretry = 5
+
+          [sshd]
+          enabled = true
+          port = ssh
+          logpath = /var/log/auth.log
+          maxretry = 3
+      mode: "0644"
+      owner: root
+      group: root
+- name: Configure Fail2Ban for Nginx
+  ansible.builtin.copy:
+      dest: /etc/fail2ban/jail.local
+      content: |
+          [nginx-http-auth]
+          enabled  = true
+          port     = http,https
+          filter   = nginx-http-auth
+          logpath  = /var/log/nginx/error.log
+          maxretry = 3
+          bantime  = 3600
+
+          [nginx-404]
+          enabled  = true
+          port     = http,https
+          filter   = nginx-404
+          logpath  = /var/log/nginx/access.log
+          maxretry = 10
+          findtime = 600
+          bantime  = 3600
+
+          [nginx-badbots]
+          enabled  = true
+          port     = http,https
+          filter   = nginx-badbots
+          logpath  = /var/log/nginx/access.log
+          maxretry = 2
+          bantime  = 86400
+
+      mode: "0644"
+  notify: Restart Fail2Ban
+
+- name: Configure nginx-http-auth filter
+  ansible.builtin.copy:
+      dest: /etc/fail2ban/filter.d/nginx-http-auth.conf
+      content: |
+          [Definition]
+          failregex = ^<HOST> -.*"(GET|POST).*HTTP.*" 401
+          ignoreregex =
+      mode: "0644"
+
+- name: Configure nginx-404 filter
+  ansible.builtin.copy:
+      dest: /etc/fail2ban/filter.d/nginx-404.conf
+      content: |
+          [Definition]
+          failregex = ^<HOST> -.*"(GET|POST).*HTTP.*" 404
+          ignoreregex =
+      mode: "0644"
+
+- name: Configure nginx-badbots filter
+  ansible.builtin.copy:
+      dest: /etc/fail2ban/filter.d/nginx-badbots.conf
+      content: |
+          [Definition]
+          failregex = ^<HOST> .*?"GET.*?" 403
+          ignoreregex =
+      mode: "0644"
+
+- name: Check Fail2Ban status
+  ansible.builtin.command:
+      cmd: fail2ban-client status
+  register: fail2ban_status
+  changed_when: false
+
+- name: Debug Fail2Ban status
+  ansible.builtin.debug:
+      var: fail2ban_status.stdout_lines
+
+- name: Restart Fail2Ban
+  ansible.builtin.service:
+      name: fail2ban
+      state: restarted

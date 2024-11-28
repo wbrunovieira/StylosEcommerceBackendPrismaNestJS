@@ -5,4 +5,8 @@
   ansible.builtin.import_tasks: docker_setup.yml
 
 - name: Monitoring the cpu mem and disk
+  tags: monitoring
   ansible.builtin.import_tasks: monitoring.yml
+
+- name: Implement fail2ban
+  ansible.builtin.import_tasks: fail2ban.yml

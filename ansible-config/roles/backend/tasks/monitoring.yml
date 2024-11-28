@@ -1,37 +1,33 @@
-- name: Update the system
-  ansible.builtin.yum:
-      name: "*"
-      state: latest
-
-- name: Install sysstat
-  ansible.builtin.yum:
+- name: Install sysstat package
+  ansible.builtin.apt:
       name: sysstat
       state: present
 
 - name: Enable and start sysstat service
   ansible.builtin.systemd:
       name: sysstat
-      enabled: yes
+      enabled: true
       state: started
 
-- name: Set sysstat data retention to 7 days
+- name: Set sysstat data retention to 7 days (Debian-based systems)
   ansible.builtin.replace:
-      path: /etc/sysconfig/sysstat
+      path: /etc/default/sysstat
       regexp: "^HISTORY=[0-9]+"
       replace: "HISTORY=7"
+  when: ansible_facts.pkg_mgr == 'apt'
   notify: Restart sysstat
 
 - name: Set sysstat collection interval to 1 minute
   ansible.builtin.lineinfile:
       path: /etc/cron.d/sysstat
-      regexp: "^.*"
-      line: "*/1 * * * * root /usr/lib64/sa/sa1 1 1"
+      regexp: "^."
+      line: "/1 * * * * root /usr/lib64/sa/sa1 1 1"
       state: present
   notify: Restart sysstat
 
-- name: Install procps-ng for vmstat
-  ansible.builtin.yum:
-      name: procps-ng
+- name: Install procps package for vmstat
+  ansible.builtin.apt:
+      name: procps
       state: present
 
 - name: Create vmstat monitoring script
@@ -42,7 +38,7 @@
           vmstat 1 10 >> /var/log/vmstat.log
       mode: "0755"
 
-- name: Schedule vmstat script execution every 5 minutes
+- name: Schedule vmstat monitoring script execution
   ansible.builtin.cron:
       name: "Vmstat monitoring"
       minute: "*/5"
@@ -52,4 +48,4 @@
   ansible.builtin.service:
       name: sysstat
       state: started
-      enabled: yes
+      enabled: true
