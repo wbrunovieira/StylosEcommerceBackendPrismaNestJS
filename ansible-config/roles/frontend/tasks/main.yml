@@ -1,3 +1,0 @@
-- name: Deploy frontend in AWS Amplify
-  tags: frontend
-  ansible.builtin.import_tasks: amplify_deploy.yml

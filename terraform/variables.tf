@@ -57,9 +57,22 @@ variable "s3_bucket_url" {
   default     = "" 
 }
 
-variable "github_app_access_token" {
+
+
+variable "github_oauth_token" {
   description = "OAuth token for GitHub used in Amplify"
   type        = string
 }
+
+variable "Client_ID_github_app" {
+  description = "Client ID para o GitHub App"
+  type        = string
+}
+
+variable "github_app_secret" {
+  description = "GitHub App Secret"
+  type        = string
+}
+
 
 

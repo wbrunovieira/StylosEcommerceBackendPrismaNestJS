@@ -53,6 +53,17 @@ resource "aws_iam_policy" "ssm_access_policy" {
           "s3:PutObject"
         ],
         Resource = "arn:aws:s3:::stylos-images-bucket/*" 
+      },
+       {
+        Effect   = "Allow",
+        Action   = [
+          "amplify:ListApps",
+          "amplify:CreateApp",
+          "amplify:UpdateApp",
+          "amplify:StartJob",
+          "amplify:GetJob"
+        ],
+        Resource = "*"
       }
 
 
