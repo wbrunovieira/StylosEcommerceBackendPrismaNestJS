@@ -1,8 +1,7 @@
-- name: Import SSL setup tasks
-  ansible.builtin.import_tasks: ssl_setup.yml
-
-- name: Import Nginx setup tasks
-  ansible.builtin.import_tasks: nginx_setup.yml
+- name: Import SSL e Nginx setup tasks
+  tags: common
+  ansible.builtin.import_tasks: ssl_nginx_setup.yml
 
 - name: DNS setup tasks
+  tags: common
   ansible.builtin.import_tasks: dns_setup.yml

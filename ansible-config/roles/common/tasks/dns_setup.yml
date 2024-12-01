@@ -1,6 +1,6 @@
 - name: Find existing DNS record for frontend
   ansible.builtin.uri:
-      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=A&name=styloslingerie.com.br"
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records?type=CNAME&name=styloslingerie.com.br"
       method: GET
       headers:
           Authorization: "Bearer {{ cloudflare_api_token }}"
@@ -16,11 +16,26 @@
           Content-Type: "application/json"
       body_format: json
       body:
-          type: A
+          type: "CNAME"
           name: "styloslingerie.com.br"
-          content: "52.23.117.92"
-          proxied: false
+          content: "cname.vercel-dns.com"
+          proxied: true
   when: existing_record_frontend.json.result | length > 0
+
+- name: Create DNS record for frontend if it does not exist
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
+      method: POST
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+      body_format: json
+      body:
+          type: "CNAME"
+          name: "styloslingerie.com.br"
+          content: "cname.vercel-dns.com"
+          proxied: true
+  when: existing_record_frontend.json.result | length == 0
 
 - name: Find existing DNS record for backend
   ansible.builtin.uri:
@@ -40,8 +55,27 @@
           Content-Type: "application/json"
       body_format: json
       body:
-          type: A
+          type: "A"
           name: "api.styloslingerie.com.br"
           content: "52.23.117.92"
           proxied: false
   when: existing_record_backend.json.result | length > 0
+
+- name: Create DNS record for backend if it does not exist
+  ansible.builtin.uri:
+      url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
+      method: POST
+      headers:
+          Authorization: "Bearer {{ cloudflare_api_token }}"
+          Content-Type: "application/json"
+      body_format: json
+      body:
+          type: "A"
+          name: "api.styloslingerie.com.br"
+          content: "52.23.117.92"
+          proxied: false
+  when: existing_record_backend.json.result | length == 0
+
+- name: Debug DNS record creation/update
+  ansible.builtin.debug:
+      var: existing_record_backend

@@ -1,0 +1,108 @@
+- name: Clean up old Nginx configuration
+  ansible.builtin.file:
+      path: /etc/nginx/sites-enabled/styloslingerie.com.br
+      state: absent
+  ignore_errors: true
+
+- name: Check for invalid SSL certificate references in Nginx config
+  ansible.builtin.shell: grep -l 'ssl_certificate' /etc/nginx/sites-available/*
+  register: invalid_cert_configs
+  ignore_errors: true
+
+- name: Debug invalid certificate configurations
+  ansible.builtin.debug:
+      msg: "Invalid SSL certificate references found: {{ invalid_cert_configs.stdout_lines }}"
+  when: invalid_cert_configs.stdout_lines is defined
+
+- name: Remove invalid SSL certificate references
+  ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      regexp: "ssl_certificate"
+      state: absent
+  loop: "{{ invalid_cert_configs.stdout_lines }}"
+  when: invalid_cert_configs.stdout_lines is defined
+  notify:
+      - Restart Nginx
+
+- name: Ensure SSL certificate for API exists
+  ansible.builtin.stat:
+      path: /etc/letsencrypt/live/api.styloslingerie.com.br/fullchain.pem
+  register: api_ssl_cert
+
+- name: Fail if SSL certificate is missing
+  ansible.builtin.fail:
+      msg: "SSL certificate for api.styloslingerie.com.br is missing. Please check Certbot setup."
+  when: not api_ssl_cert.stat.exists
+
+- name: Generate temporary self-signed certificate for API
+  ansible.builtin.command:
+      cmd: >
+          openssl req -x509 -nodes -days 1 -newkey rsa:2048
+          -keyout /etc/letsencrypt/live/api.styloslingerie.com.br/privkey.pem
+          -out /etc/letsencrypt/live/api.styloslingerie.com.br/fullchain.pem
+          -subj "/CN=api.styloslingerie.com.br"
+  when: not api_ssl_cert.stat.exists
+  changed_when: api_ssl_cert.stat.exists == false
+  notify:
+      - Restart Nginx
+
+- name: Configure Nginx as a reverse proxy
+  ansible.builtin.copy:
+      dest: /etc/nginx/sites-available/styloslingerie
+      content: |
+          # Redirecionamento HTTP para HTTPS
+          server {
+              listen 80;
+              server_name api.styloslingerie.com.br;
+
+              location / {
+                  return 301 https://$host$request_uri;
+              }
+          }
+
+          # Configuração HTTPS para API
+          server {
+              listen 443 ssl;
+              server_name api.styloslingerie.com.br;
+
+              ssl_certificate /etc/letsencrypt/live/api.styloslingerie.com.br/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/api.styloslingerie.com.br/privkey.pem;
+
+              location /api/ {
+                  rewrite ^/api/(.*)$ /$1 break;
+                  proxy_pass http://127.0.0.1:3333/;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+
+                  proxy_read_timeout 600;
+                  proxy_connect_timeout 600;
+                  proxy_send_timeout 600;
+              }
+
+              location / {
+                  return 404;
+              }
+          }
+      mode: "0644"
+  notify:
+      - Restart Nginx
+
+- name: Test Nginx configuration
+  ansible.builtin.command:
+      cmd: nginx -t
+  register: nginx_test
+  changed_when: false
+  failed_when: "'syntax is ok' not in nginx_test.stderr or 'test is successful' not in nginx_test.stderr"
+
+- name: Configure automatic certificate renewal
+  ansible.builtin.cron:
+      name: "Certbot automatic renewal"
+      job: "certbot renew --quiet"
+      minute: "0"
+      hour: "1,13"
+      user: root

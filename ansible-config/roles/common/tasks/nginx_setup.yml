@@ -1,48 +1,53 @@
-- name: Configure Nginx as a reverse proxy
+- name: Ensure Certbot is installed
+  ansible.builtin.apt:
+      name:
+          - certbot
+          - python3-certbot-nginx
+      state: present
+
+- name: Obtain SSL certificates for api.styloslingerie.com.br
+  ansible.builtin.command:
+      cmd: >
+          certbot certonly --nginx
+          -d api.styloslingerie.com.br
+          --non-interactive
+          --agree-tos
+          -m your-email@example.com
+      creates: /etc/letsencrypt/live/api.styloslingerie.com.br/fullchain.pem
+  register: certbot_output
+  changed_when: certbot_output.rc == 0
+
+- name: Configure Nginx as a reverse proxy for the API
   ansible.builtin.copy:
       dest: /etc/nginx/sites-available/styloslingerie
       content: |
-          # HTTP to HTTPS redirect
+          # HTTP to HTTPS redirect for API
           server {
               listen 80;
-              server_name styloslingerie.com.br www.styloslingerie.com.br;
-              return 301 https://$host$request_uri;
+              server_name api.styloslingerie.com.br;
+
+              location / {
+                  return 301 https://$host$request_uri;
+              }
+
+              location ~ /\. {
+                  deny all;
+              }
           }
 
+          # HTTPS configuration for API
           server {
               listen 443 ssl;
-              server_name styloslingerie.com.br www.styloslingerie.com.br;
-              ssl_certificate /etc/letsencrypt/live/styloslingerie.com.br/fullchain.pem;
-              ssl_certificate_key /etc/letsencrypt/live/styloslingerie.com.br/privkey.pem;
+              server_name api.styloslingerie.com.br;
+
+              ssl_certificate /etc/letsencrypt/live/api.styloslingerie.com.br/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/api.styloslingerie.com.br/privkey.pem;
 
               ssl_protocols TLSv1.2 TLSv1.3;
               ssl_prefer_server_ciphers on;
-              ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
-              ssl_ecdh_curve secp384r1;
-              ssl_session_timeout  10m;
-              ssl_session_cache shared:SSL:10m;
-              ssl_session_tickets off;
-              ssl_stapling on;
-              ssl_stapling_verify on;
-
-              proxy_read_timeout 600;
-              proxy_connect_timeout 600;
-              proxy_send_timeout 600;
-
-              location / {
-                  proxy_pass http://127.0.0.1:3000/;
-                  proxy_http_version 1.1;
-                  proxy_set_header Upgrade $http_upgrade;
-                  proxy_set_header Connection 'upgrade';
-                  proxy_set_header Host $host;
-                  proxy_set_header X-Real-IP $remote_addr;
-                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto $scheme;
-              }
 
               location /api/ {
-                  rewrite ^/api/(.*)$ /$1 break;
-                  proxy_pass http://127.0.0.1:3333;
+                  proxy_pass http://127.0.0.1:3333/;
                   proxy_http_version 1.1;
                   proxy_set_header Upgrade $http_upgrade;
                   proxy_set_header Connection 'upgrade';
@@ -50,10 +55,20 @@
                   proxy_set_header X-Real-IP $remote_addr;
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                   proxy_set_header X-Forwarded-Proto $scheme;
+
+                  proxy_read_timeout 600;
+                  proxy_connect_timeout 600;
+                  proxy_send_timeout 600;
               }
 
-          }
+              location / {
+                  return 404;
+              }
 
+              location ~ /\. {
+                  deny all;
+              }
+          }
       mode: "0644"
   notify:
       - Restart Nginx
@@ -77,39 +92,11 @@
   register: nginx_test
   changed_when: false
   failed_when: "'syntax is ok' not in nginx_test.stderr or 'test is successful' not in nginx_test.stderr"
-
   notify:
       - Restart Nginx
-
-- name: Ensure Nginx service is stopped
-  ansible.builtin.service:
-      name: nginx
-      state: stopped
-
-- name: Wait for Nginx to stop
-  ansible.builtin.wait_for:
-      port: 80
-      state: stopped
-      timeout: 30
 
 - name: Ensure Nginx service is started and enabled
   ansible.builtin.service:
       name: nginx
       state: started
       enabled: true
-
-- name: Wait for Nginx to start
-  ansible.builtin.wait_for:
-      port: 80
-      timeout: 30
-
-- name: Check Nginx status
-  ansible.builtin.command:
-      cmd: systemctl status nginx
-  register: nginx_status
-  changed_when: false
-  ignore_errors: true
-
-- name: Debug Nginx status
-  ansible.builtin.debug:
-      var: nginx_status.stdout_lines
