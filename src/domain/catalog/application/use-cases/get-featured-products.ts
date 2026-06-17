@@ -30,17 +30,17 @@ export class GetFeaturedProductsUseCase {
                     imageUrl: product.brand?.imageUrl || "",
                 },
                 productCategories:
-                    product.productCategories?.map((category) => ({
-                        name: category.name,
+                    product.productCategories?.map((pc: any) => ({
+                        name: pc.category?.name ?? pc.name,
                     })) || [],
                 hasVariants: product.hasVariants,
 
-                colors: product.productColors?.map((color) => ({
-                    name: color.name,
-                    hex: color.hex,
+                colors: product.productColors?.map((pc: any) => ({
+                    name: pc.color?.name ?? pc.name,
+                    hex: pc.color?.hex ?? pc.hex,
                 })),
-                sizes: product.productSizes?.map((size) => ({
-                    name: size.name,
+                sizes: product.productSizes?.map((ps: any) => ({
+                    name: ps.size?.name ?? ps.name,
                 })),
             } as unknown as Product;
         });
