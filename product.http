@@ -1,5 +1,5 @@
 
-@BASE_URL =  https://wbstylosbackend.sa.ngrok.io
+@BASE_URL = https://api.styloslingerie.com.br/api
 @AUTH_TOKEN = {{authenticate.response.body.access_token}}
 
 
@@ -176,13 +176,14 @@ Content-Type: application/json
 
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/020002-fio-pluss-duplo-b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae-1724092866248
+GET {{BASE_URL}}/products/slug/0108001-sutia-nadador-2b7a8e1b-f2f1-44db-b918-7a254f4b7e0b-1732655978311
 
 
 ###
 
 # @name get-product-by-slug
-GET {{BASE_URL}}/products/slug/404-cinta-esbelt-body-b42efcd8-fbb4-4a55-a1a3-2a71bab4f9ae-1724092890426
+GET {{BASE_URL}}/products/slug/0108001-sutia-nadador-2b7a8e1b-f2f1-44db-b918-7a254f4b7e0b-1732655978311
+
 
 
 ###

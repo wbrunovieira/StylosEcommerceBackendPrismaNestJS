@@ -1,4 +1,4 @@
-@BASE_URL = https://styloslingerie.com.br/api
+@BASE_URL = https://api.styloslingerie.com.br/api
 
 @AUTH_TOKEN = {{authenticate.response.body.access_token}}
 

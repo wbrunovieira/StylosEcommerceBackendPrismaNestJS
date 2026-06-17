@@ -120,4 +120,4 @@ dentro do container:
 psql -h stylos-db.czc0uc626uv5.us-east-1.rds.amazonaws.com -U postgres -d stylos-db -p 5432
 TRUNCATE TABLE public.categories RESTART IDENTITY CASCADE;
 
-SELECT \* FROM public.categories;
+SELECT \* FROM public.products;
