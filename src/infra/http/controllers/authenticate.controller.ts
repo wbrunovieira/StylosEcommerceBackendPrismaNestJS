@@ -13,8 +13,8 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { z } from "zod";
-import { ZodValidationsPipe } from "../../../pipes/zod-validations-pipe";
-import { PrismaService } from "../../../prisma/prisma.service";
+import { ZodValidationsPipe } from "@/pipes/zod-validations-pipe";
+import { PrismaService } from "@/prisma/prisma.service";
 
 import { compare, hash } from "bcryptjs";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";

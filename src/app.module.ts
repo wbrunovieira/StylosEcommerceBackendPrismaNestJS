@@ -6,13 +6,11 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
 import { envSchema } from "@/env/env";
-import { ListAllAccountsController } from "./infra/http/controllers/list-all-accounts.controller";
 import { DatabaseModule } from "./infra/database/database.module";
 import { HttpModule } from "./infra/http/http.module";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { RolesGuard } from "./auth/roles.guard";
-import { AuthenticateController } from "./infra/http/controllers/authenticate.controller";
 
 @Module({
     imports: [
@@ -34,7 +32,7 @@ import { AuthenticateController } from "./infra/http/controllers/authenticate.co
             serveRoot: "/public",
         }),
     ],
-    controllers: [AuthenticateController, ListAllAccountsController],
+    controllers: [],
     providers: [PrismaService],
 })
 export class AppModule {}
